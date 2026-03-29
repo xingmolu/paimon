@@ -34,7 +34,7 @@ npm run dev -- --file prompt.txt
 
 - `DASHSCOPE_API_KEY` — API key for Bailian (required)
 - `PAIMON_MODEL` — Model to use (default: glm-5)
-- `PAIMON_BASE_URL` — API endpoint (default: Bailian OpenAI-compatible)
+- `PAIMON_BASE_URL` — API endpoint (default: Bailian Coding Plan)
 
 ## Architecture
 

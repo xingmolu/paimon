@@ -100,7 +100,7 @@ function getConfig(): PaimonConfig {
   return {
     apiKey,
     model: process.env.PAIMON_MODEL || 'glm-5',
-    baseUrl: process.env.PAIMON_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    baseUrl: process.env.PAIMON_BASE_URL || 'https://coding.dashscope.aliyuncs.com/v1',
     skillsDir: './skills',
   };
 }
