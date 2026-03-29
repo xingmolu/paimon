@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
 	Agent,
@@ -10,6 +10,7 @@ import {
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
 import { globSync } from "glob";
+import { loadContextFiles } from "./context.js";
 
 export interface PaimonConfig {
 	apiKey: string;
@@ -22,6 +23,73 @@ export interface PaimonConfig {
 
 interface ErrorMessage {
 	errorMessage?: string;
+}
+
+/**
+ * Parse YAML frontmatter from a SKILL.md file
+ */
+function parseFrontmatter(content: string): { name?: string; description?: string } {
+	let name: string | undefined;
+	let description: string | undefined;
+
+	let inFrontmatter = false;
+	for (const line of content.split("\n")) {
+		if (line === "---") {
+			inFrontmatter = !inFrontmatter;
+			continue;
+		}
+		if (inFrontmatter) {
+			if (line.startsWith("name:")) {
+				name = line.slice(5).trim();
+			} else if (line.startsWith("description:")) {
+				description = line.slice(12).trim();
+			}
+		}
+	}
+
+	return { name, description };
+}
+
+/**
+ * Build a skills index from the skills directory.
+ * Uses progressive disclosure: only includes name and description,
+ * not full skill content. Agent loads full skill on-demand.
+ */
+function buildSkillsIndex(skillsDir: string): string {
+	if (!existsSync(skillsDir)) return "";
+
+	const entries = readdirSync(skillsDir, { withFileTypes: true });
+	const skills: Array<{ name: string; description: string; dir: string }> = [];
+
+	for (const entry of entries) {
+		if (entry.isDirectory()) {
+			const skillFile = join(skillsDir, entry.name, "SKILL.md");
+			if (existsSync(skillFile)) {
+				const content = readFileSync(skillFile, "utf-8");
+				const { name, description } = parseFrontmatter(content);
+				skills.push({
+					name: name || entry.name,
+					description: description || "No description",
+					dir: entry.name,
+				});
+			}
+		}
+	}
+
+	if (skills.length === 0) return "";
+
+	// Generate XML format per Agent Skills standard
+	let xml = "<skills>\n";
+	for (const skill of skills) {
+		xml += `<skill>\n`;
+		xml += `<name>${skill.name}</name>\n`;
+		xml += `<description>${skill.description}</description>\n`;
+		xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
+		xml += `</skill>\n`;
+	}
+	xml += "</skills>";
+
+	return xml;
 }
 
 const tools: AgentTool[] = [
@@ -442,6 +510,12 @@ You have persistent memory in MEMORY.md. Read it to recall past learnings, updat
 
 When done with a task, summarize what you accomplished.`;
 
+	// Load project context from AGENTS.md / CLAUDE.md files
+	const contextContent = loadContextFiles(process.cwd());
+	if (contextContent) {
+		prompt += `\n\n## Project Context\n\n${contextContent}`;
+	}
+
 	// Load persistent memory
 	const memoryPath = config.memoryPath || "MEMORY.md";
 	if (existsSync(memoryPath)) {
@@ -563,9 +637,17 @@ Before making changes, consider:
 
 When done, say "DONE" and summarize.`;
 
-	const skillsDir = config.skillsDir;
-	if (skillsDir && existsSync(join(skillsDir, "SKILLS.md"))) {
-		prompt += `\n\n## Skills\n${readFileSync(join(skillsDir, "SKILLS.md"), "utf-8")}`;
+	// Add skills index (progressive loading - only names/descriptions)
+	const skillsDir = config.skillsDir || "skills";
+	const skillsIndex = buildSkillsIndex(skillsDir);
+	if (skillsIndex) {
+		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Important**: When a task matches a skill above, read it first:\n\n\`\`\`\nread skills/<name>/SKILL.md\n\`\`\`\n`;
+	}
+
+	// Load project context from AGENTS.md / CLAUDE.md files
+	const contextContent = loadContextFiles(process.cwd());
+	if (contextContent) {
+		prompt += `\n\n## Project Context\n\n${contextContent}`;
 	}
 
 	// Load persistent memory
