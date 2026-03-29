@@ -148,6 +148,72 @@ describe("Tools", () => {
 			expect(files).toContain("nested.txt");
 		});
 	});
+
+	describe("grep tool", () => {
+		it("should search for pattern in files", () => {
+			writeFileSync(join(TEST_DIR, "test.txt"), "hello world\nfoo bar", "utf-8");
+			const result = execSync(`grep -rn "hello" ${TEST_DIR}`, { encoding: "utf-8" });
+			expect(result).toContain("hello world");
+		});
+
+		it("should return no matches for missing pattern", () => {
+			writeFileSync(join(TEST_DIR, "test.txt"), "hello world", "utf-8");
+			// grep returns exit code 1 for no matches, which throws
+			expect(() => execSync(`grep -rn "nonexistent" ${TEST_DIR}`, { encoding: "utf-8" })).toThrow();
+		});
+
+		it("should filter by file pattern", () => {
+			writeFileSync(join(TEST_DIR, "a.ts"), "pattern here", "utf-8");
+			writeFileSync(join(TEST_DIR, "b.js"), "pattern here", "utf-8");
+			const result = execSync(`grep -rn --include="*.ts" "pattern" ${TEST_DIR}`, { encoding: "utf-8" });
+			expect(result).toContain("a.ts");
+			expect(result).not.toContain("b.js");
+		});
+	});
+
+	describe("find tool", () => {
+		it("should find files by name", () => {
+			writeFileSync(join(TEST_DIR, "test.txt"), "", "utf-8");
+			writeFileSync(join(TEST_DIR, "other.md"), "", "utf-8");
+			const result = execSync(`find ${TEST_DIR} -name "*.txt"`, { encoding: "utf-8" });
+			expect(result).toContain("test.txt");
+			expect(result).not.toContain("other.md");
+		});
+
+		it("should find files by type", () => {
+			mkdirSync(join(TEST_DIR, "subdir"), { recursive: true });
+			writeFileSync(join(TEST_DIR, "file.txt"), "", "utf-8");
+			const files = execSync(`find ${TEST_DIR} -type f`, { encoding: "utf-8" });
+			const dirs = execSync(`find ${TEST_DIR} -type d`, { encoding: "utf-8" });
+			expect(files).toContain("file.txt");
+			expect(dirs).toContain("subdir");
+		});
+
+		it("should find in nested directories", () => {
+			mkdirSync(join(TEST_DIR, "a", "b"), { recursive: true });
+			writeFileSync(join(TEST_DIR, "a", "b", "deep.txt"), "", "utf-8");
+			const result = execSync(`find ${TEST_DIR} -name "deep.txt"`, { encoding: "utf-8" });
+			expect(result).toContain("deep.txt");
+		});
+	});
+
+	describe("ls tool", () => {
+		it("should list directory contents", () => {
+			writeFileSync(join(TEST_DIR, "file1.txt"), "", "utf-8");
+			writeFileSync(join(TEST_DIR, "file2.txt"), "", "utf-8");
+			const result = execSync(`ls -a ${TEST_DIR}`, { encoding: "utf-8" });
+			expect(result).toContain("file1.txt");
+			expect(result).toContain("file2.txt");
+		});
+
+		it("should show detailed info with long flag", () => {
+			writeFileSync(join(TEST_DIR, "test.txt"), "content", "utf-8");
+			const result = execSync(`ls -la ${TEST_DIR}`, { encoding: "utf-8" });
+			expect(result).toContain("test.txt");
+			// Long format includes permissions, size, date
+			expect(result).toMatch(/\d/); // has numbers (size/date)
+		});
+	});
 });
 
 describe("Agent", () => {

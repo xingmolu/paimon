@@ -247,3 +247,32 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue #8: Add grep, find, ls tools for code search
 - Issue #13: Implement Evaluator Agent with fix loop
+
+---
+
+## Day 11 — Add Code Search Tools (2026-03-29)
+
+**What happened:**
+- Implemented Issue #8: Added grep, find, ls tools for code search
+- Added 3 new tools to the agent's toolset:
+  - `grep`: Search file contents by regex pattern with optional include filter
+  - `find`: Find files by name, type, or modification time
+  - `ls`: List directory contents with optional detailed view
+- Updated system prompts to document new tools
+- Added 8 new tests for the tools
+
+**Why this matters:**
+- Essential for efficient code navigation and understanding
+- Agent can now search for code patterns across files
+- Better file discovery capabilities for complex codebases
+- Enables more sophisticated code analysis workflows
+
+**Technical details:**
+- Modified `src/agent.ts`: Added 3 new tools to tools array
+- Updated frontmatter to list all 8 tools: [bash, read, write, edit, glob, grep, find, ls]
+- Each tool has proper error handling and timeout limits
+- `grep` handles exit code 1 (no matches) gracefully
+
+**Next steps:**
+- Issue #13: Implement Evaluator Agent with fix loop
+- Issue #7: Implement progressive skill loading
