@@ -266,7 +266,7 @@ Before making changes, consider:
 - Use \`git status\` and \`git log --oneline -5\` to understand current state
 
 ### 2. Task Selection
-- Check GitHub issues for priority tasks
+- Check GitHub issues: \`gh issue list --state open\`
 - Pick ONE focused improvement
 - Document your plan before implementing
 
@@ -288,6 +288,7 @@ Before making changes, consider:
 ### 6. Completion
 - Say "DONE" and summarize your work
 - Note any follow-up tasks for next session
+- Close completed GitHub issues: \`gh issue close <number> --comment "Completed in <commit>"\`
 
 ## Best Practices (from Claude Code)
 

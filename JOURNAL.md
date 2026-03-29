@@ -76,3 +76,22 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue processing (read GitHub issues, implement, close)
 - Consider adding hooks system for pre-tool checks
+
+---
+
+## Day 4 — Issue Processing Workflow (2026-03-29)
+
+**What happened:**
+- Enhanced system prompt with explicit issue closing workflow
+- Added `gh issue close` command to Completion stage
+- Added explicit `gh issue list` command to Task Selection stage
+- Closed Issue #2 (Study Claude Code) which was completed in Day 3
+
+**Why this matters:**
+- Implements ROADMAP Phase 2 "Issue processing" capability
+- Agents now have clear workflow for GitHub issue management
+- Better integration between code changes and issue tracking
+
+**Next steps:**
+- ROADMAP Phase 3: Better planning using ROADMAP.md
+- Learning from failures
