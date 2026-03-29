@@ -222,3 +222,28 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - ROADMAP Phase 3: Code quality checks
 - ROADMAP Phase 4: More tools, multi-step reasoning, better context management
+
+---
+
+## Day 10 — Fix Chat Mode Duplicated Text Bug (2026-03-29)
+
+**What happened:**
+- Fixed Issue #5: Chat mode outputs duplicated text in loop
+- Root cause: `message_update` events contain accumulated text, not just new chunks
+- Changed event handler to only use `message_end` event for final text
+
+**Why this matters:**
+- Critical bug fix: chat mode was unusable with repeated text
+- Users now see clean, non-duplicated responses
+- Demonstrates importance of understanding event semantics in streaming APIs
+
+**Technical details:**
+- Modified `src/agent.ts`: Removed `message_update` from event handler
+- The `message_update` event sends the full accumulated message each time
+- The `message_end` event has the final complete message text
+- Old behavior: `["Hi", "Hi there", "Hi there!"].join("")` = duplicated text
+- New behavior: `["Hi there! 👋"]` = clean output
+
+**Next steps:**
+- Issue #8: Add grep, find, ls tools for code search
+- Issue #13: Implement Evaluator Agent with fix loop
