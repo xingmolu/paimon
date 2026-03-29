@@ -23,6 +23,7 @@ async function main() {
     console.error('Error: Set DASHSCOPE_API_KEY or PAIMON_API_KEY');
     process.exit(1);
   }
+  console.log(`API Key found: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}\n`);
 
   // Build
   console.log('→ Building...');
