@@ -67,7 +67,6 @@ Open a [GitHub issue](https://github.com/xingmolu/paimon/issues) and Paimon will
 ## Based On
 
 - [pi-mono](https://github.com/badlogic/pi-mono) — Agent framework
-- [yoyo-evolve](https://github.com/yologdev/yoyo-evolve) — Inspiration
 
 ## License
 
