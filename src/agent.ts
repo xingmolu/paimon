@@ -194,6 +194,9 @@ export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt:
   agent.setSystemPrompt(systemPrompt);
   agent.setTools(tools);
 
+  // Provide API key dynamically for the custom provider
+  agent.getApiKey = () => config.apiKey;
+
   const run = (prompt: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       const outputs: string[] = [];
