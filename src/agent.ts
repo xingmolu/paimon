@@ -461,11 +461,11 @@ export function createAgent(config: PaimonConfig): {
 			const outputs: string[] = [];
 			const startTime = Date.now();
 
-			// Timeout after 180 seconds (API can be slow)
+			// Timeout after 600 seconds (API can be slow for complex tasks)
 			const timeout = setTimeout(() => {
 				const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 				reject(new Error(`Agent timeout after ${elapsed}s. No response received.`));
-			}, 180000);
+			}, 600000);
 
 			if (verbose) {
 				console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);
