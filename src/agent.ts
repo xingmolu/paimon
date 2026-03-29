@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { setMaxListeners } from "node:events";
 
 // Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
-setMaxListeners(20);
+setMaxListeners(100);
 import {
 	Agent,
 	type AgentEvent,
