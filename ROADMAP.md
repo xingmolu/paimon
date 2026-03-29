@@ -4,12 +4,12 @@ Planned improvements for evo.
 
 ## Phase 1: Foundation
 - [x] TypeScript project setup
-- [ ] Basic agent working with Bailian API
-- [ ] Self-evolution script
-- [ ] GitHub Actions automation
+- [x] Basic agent working with Bailian API
+- [x] Self-evolution script
+- [x] GitHub Actions automation
 
 ## Phase 2: Self-Improvement
-- [ ] Self-review capability (run tests, clippy equivalent)
+- [x] Self-review capability (run tests)
 - [ ] Memory persistence (store learnings)
 - [ ] Issue processing (read, implement, close)
 
