@@ -61,12 +61,16 @@ ${issues}
 - **Claude Code** — Anthropic's CLI agent, excellent tool use
 - **OpenAI Codex** — Strong at code generation
 - **Cursor** — IDE integration, context management
-- **yoyo-evolve** — Similar self-evolving agent in Rust
 
 Study them with:
 \`\`\`bash
 curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md | head -100
 \`\`\`
+
+## Rules
+- Do NOT modify files in \`.github/workflows/\` directory
+- Do NOT modify this evolution script
+- Make minimal, focused changes
 
 ## Task Priority
 1. **Open Issues** — If any, implement the most important one

@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   issues: write
-  workflows: write
 
 env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,4 +46,8 @@ jobs:
         run: npm run evolve
 
       - name: Push changes
-        run: git push || echo "No changes to push"
+        run: |
+          # Prevent workflow files from being pushed
+          git reset HEAD -- .github/workflows/ 2>/dev/null || true
+          git checkout -- .github/workflows/ 2>/dev/null || true
+          git push || echo "No changes to push"
