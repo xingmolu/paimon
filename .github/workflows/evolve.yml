@@ -1,0 +1,49 @@
+name: Evolve
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Configure git
+        run: |
+          git config user.name "paimon[bot]"
+          git config user.email "paimon[bot]@users.noreply.github.com"
+
+      - name: Run evolution
+        env:
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          PAIMON_MODEL: ${{ vars.PAIMON_MODEL || 'glm-5' }}
+        run: npm run evolve
+
+      - name: Push changes
+        run: git push || echo "No changes to push"

@@ -1,0 +1,37 @@
+{
+  "name": "paimon",
+  "version": "0.1.0",
+  "description": "A self-evolving AI agent",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "paimon": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "evolve": "tsx scripts/evolve.ts",
+    "test": "vitest",
+    "lint": "biome check .",
+    "format": "biome format . --write"
+  },
+  "dependencies": {
+    "@mariozechner/pi-agent-core": "^0.63.1",
+    "@mariozechner/pi-ai": "^0.63.1",
+    "@sinclair/typebox": "^0.34.49",
+    "dotenv": "^16.4.0",
+    "glob": "^10.3.0",
+    "yaml": "^2.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.0",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
