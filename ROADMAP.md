@@ -10,7 +10,7 @@ Planned improvements for evo.
 
 ## Phase 2: Self-Improvement
 - [x] Self-review capability (run tests)
-- [ ] Memory persistence (store learnings)
+- [x] Memory persistence (store learnings)
 - [ ] Issue processing (read, implement, close)
 
 ## Phase 3: Intelligence

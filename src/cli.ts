@@ -102,6 +102,7 @@ function getConfig(): PaimonConfig {
     model: process.env.PAIMON_MODEL || 'glm-5',
     baseUrl: process.env.PAIMON_BASE_URL || 'https://coding.dashscope.aliyuncs.com/v1',
     skillsDir: './skills',
+    memoryPath: './MEMORY.md',
   };
 }
 

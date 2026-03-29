@@ -34,3 +34,22 @@ A daily log of Paimon's self-improvements.
 - Add GitHub Actions test step
 - Memory persistence
 - Issue processing
+
+---
+
+## Day 2 — Memory Persistence (2026-03-29)
+
+**What happened:**
+- Created `MEMORY.md` for storing learnings across sessions
+- Added `memoryPath` config option to `PaimonConfig`
+- Modified `buildSystemPrompt` to load and include memory contents
+- Updated workflow to: read memory → work → update memory
+
+**Why this matters:**
+- Agent can now remember learnings between sessions
+- Implements Issue #1 (Add memory persistence to store learnings)
+- Completes first item of Phase 2 roadmap
+
+**Next steps:**
+- Issue processing (read GitHub issues, implement, close)
+- Better planning using ROADMAP.md

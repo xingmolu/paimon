@@ -14,6 +14,7 @@ export interface PaimonConfig {
   model: string;
   baseUrl: string;
   skillsDir?: string;
+  memoryPath?: string;
 }
 
 const tools: AgentTool[] = [
@@ -187,7 +188,7 @@ function createModel(config: PaimonConfig): Model<Api> {
 
 export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt: string) => Promise<string> } {
   const model = createModel(config);
-  const systemPrompt = buildSystemPrompt(config.skillsDir);
+  const systemPrompt = buildSystemPrompt(config);
 
   const agent = new Agent();
   agent.setModel(model);
@@ -227,7 +228,7 @@ export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt:
   return { agent, run };
 }
 
-function buildSystemPrompt(skillsDir?: string): string {
+function buildSystemPrompt(config: PaimonConfig): string {
   let prompt = `You are evo, a self-evolving AI agent.
 
 Your goal is to improve yourself. You can read your own code, make changes, run tests, and commit improvements.
@@ -239,17 +240,30 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - edit: Edit a file by replacing text
 - glob: Find files by pattern
 
+## Memory
+You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
+
 ## Workflow
 1. Read IDENTITY.md to understand your purpose
 2. Read JOURNAL.md to see what you've done
-3. Read ROADMAP.md to see what's planned
-4. Pick ONE improvement
-5. Implement → Test → Commit
+3. Read MEMORY.md to recall learnings
+4. Read ROADMAP.md to see what's planned
+5. Pick ONE improvement
+6. Implement → Test → Commit
+7. Update MEMORY.md if you learned something
 
 When done, say "DONE" and summarize.`;
 
+  const skillsDir = config.skillsDir;
   if (skillsDir && existsSync(join(skillsDir, 'SKILLS.md'))) {
     prompt += '\n\n## Skills\n' + readFileSync(join(skillsDir, 'SKILLS.md'), 'utf-8');
+  }
+
+  // Load persistent memory
+  const memoryPath = config.memoryPath || 'MEMORY.md';
+  if (existsSync(memoryPath)) {
+    const memory = readFileSync(memoryPath, 'utf-8');
+    prompt += '\n\n## Current Memory\n\n' + memory;
   }
 
   return prompt;
