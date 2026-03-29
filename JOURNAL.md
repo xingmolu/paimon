@@ -362,3 +362,36 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue #13: Implement Evaluator Agent with fix loop
 - Issue #10: Auto-load AGENTS.md context files (already implemented in context.ts)
+
+---
+
+## Day 13 — Context Compaction for Long Sessions (2026-03-29)
+
+**What happened:**
+- Implemented Issue #9: Context compaction for long sessions
+- Created `src/compaction.ts` module with `ContextManager` class
+- Integrated compaction into `createAgent()` function
+- Added conversation summary injection into system prompts when compaction occurs
+- Features:
+  - Token usage estimation (~4 chars per token heuristic)
+  - Automatic compaction triggers at 100k tokens
+  - LLM-based summarization of old messages
+  - Keeps last 10 messages unsummarized
+  - Debug logging via verbose mode
+
+**Why this matters:**
+- Prevents context overflow in long conversations
+- Agent can handle extended sessions without hitting token limits
+- Summaries preserve key decisions, errors, and progress
+- More efficient use of context window
+
+**Technical details:**
+- Created `src/compaction.ts`: `ContextManager` class with `compact()`, `shouldCompact()`, `addMessage()`
+- Modified `src/agent.ts`: Integrated context manager into `createAgent()`, added `getContextStatus()` method
+- Modified prompt builders: Added `summary` parameter for conversation summary injection
+- Configuration via `config.compaction` (can disable with `compaction: false`)
+- Type-safe API response parsing for summary generation
+
+**Next steps:**
+- Issue #11: Session persistence and resume capability
+- Issue #13: Implement Evaluator Agent with fix loop

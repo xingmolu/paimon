@@ -93,3 +93,17 @@ gh issue view <number>  # Check specific issue
 - Always verify git state before starting work
 - Check if features are already implemented
 - Close duplicate issues that were already completed
+
+---
+
+### 2026-03-29: Verification Before Commit
+
+**Context:** Iteration 1 failed verification
+
+**Insight:** 
+- Build: FAIL
+- Tests: PASS
+- Error: Error: Agent timeout after 180.0s. No response received.
+
+**Action:** Always run `npm run build && npm test -- --run` before committing changes. If tests fail, do not commit.
+

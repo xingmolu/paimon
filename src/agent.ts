@@ -10,6 +10,7 @@ import {
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
 import { globSync } from "glob";
+import { type CompactionConfig, ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
 
 export interface PaimonConfig {
@@ -19,6 +20,8 @@ export interface PaimonConfig {
 	skillsDir?: string;
 	memoryPath?: string;
 	mode?: "chat" | "evolve";
+	/** Enable context compaction for long sessions */
+	compaction?: Partial<CompactionConfig> | false;
 }
 
 interface ErrorMessage {
@@ -81,11 +84,11 @@ function buildSkillsIndex(skillsDir: string): string {
 	// Generate XML format per Agent Skills standard
 	let xml = "<skills>\n";
 	for (const skill of skills) {
-		xml += `<skill>\n`;
+		xml += "<skill>\n";
 		xml += `<name>${skill.name}</name>\n`;
 		xml += `<description>${skill.description}</description>\n`;
 		xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
-		xml += `</skill>\n`;
+		xml += "</skill>\n";
 	}
 	xml += "</skills>";
 
@@ -269,7 +272,7 @@ const tools: AgentTool[] = [
 			};
 			try {
 				// Use grep with -n for line numbers, -r for recursive
-				let cmd = `grep -rn`;
+				let cmd = "grep -rn";
 				if (include) {
 					cmd += ` --include="${include}"`;
 				}
@@ -404,9 +407,21 @@ function createModel(config: PaimonConfig): Model<Api> {
 export function createAgent(config: PaimonConfig): {
 	agent: Agent;
 	run: (prompt: string, verbose?: boolean) => Promise<string>;
+	/** Get context status for debugging */
+	getContextStatus: () => { messages: number; tokens: number; hasSummary: boolean };
 } {
 	const model = createModel(config);
-	const systemPrompt = buildSystemPrompt(config);
+
+	// Create context manager for tracking conversation length
+	const compactionEnabled = config.compaction !== false;
+	const contextManager = new ContextManager(
+		compactionEnabled ? config.compaction || {} : { enabled: false },
+	);
+	contextManager.setModel(model);
+	contextManager.setApiKeyGetter(() => config.apiKey);
+
+	// Initial system prompt without compaction summary
+	const systemPrompt = buildSystemPrompt(config, null);
 
 	const agent = new Agent();
 	agent.setModel(model);
@@ -416,7 +431,32 @@ export function createAgent(config: PaimonConfig): {
 	// Provide API key dynamically for the custom provider
 	agent.getApiKey = () => config.apiKey;
 
-	const run = (prompt: string, verbose = false): Promise<string> => {
+	const run = async (prompt: string, verbose = false): Promise<string> => {
+		// Track user message
+		contextManager.addMessage("user", prompt);
+
+		// Check if compaction is needed
+		if (contextManager.shouldCompact()) {
+			if (verbose) {
+				const status = contextManager.getStatus();
+				console.log(`[Compaction] Context at ~${status.tokens} tokens, compacting...`);
+			}
+
+			// Perform compaction
+			const result = await contextManager.compact();
+
+			if (verbose) {
+				console.log(
+					`[Compaction] Summarized ${result.messagesSummarized} messages, kept ${result.messagesKept}, saved ~${result.tokensSaved} tokens`,
+				);
+			}
+
+			// Rebuild agent with summary in system prompt
+			const summary = contextManager.getMessages()[0]?.content || "";
+			const newSystemPrompt = buildSystemPrompt(config, summary);
+			agent.setSystemPrompt(newSystemPrompt);
+		}
+
 		return new Promise((resolve, reject) => {
 			const outputs: string[] = [];
 			const startTime = Date.now();
@@ -430,6 +470,8 @@ export function createAgent(config: PaimonConfig): {
 			if (verbose) {
 				console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);
 				console.log(`[DEBUG] Prompt: ${prompt.slice(0, 100)}...`);
+				const status = contextManager.getStatus();
+				console.log(`[DEBUG] Context: ${status.messages} messages, ~${status.tokens} tokens`);
 			}
 
 			agent.subscribe((event: AgentEvent) => {
@@ -451,11 +493,16 @@ export function createAgent(config: PaimonConfig): {
 				}
 				if (event.type === "agent_end") {
 					clearTimeout(timeout);
+
+					// Track assistant response
+					const response = outputs.join("");
+					contextManager.addMessage("assistant", response);
+
 					if (verbose) {
 						const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 						console.log(`[DEBUG] Agent completed in ${elapsed}s`);
 					}
-					resolve(outputs.join(""));
+					resolve(response);
 				}
 				if (event.type === "turn_end" && (event.message as ErrorMessage).errorMessage) {
 					clearTimeout(timeout);
@@ -473,19 +520,23 @@ export function createAgent(config: PaimonConfig): {
 		});
 	};
 
-	return { agent, run };
+	return {
+		agent,
+		run,
+		getContextStatus: () => contextManager.getStatus(),
+	};
 }
 
-function buildSystemPrompt(config: PaimonConfig): string {
+function buildSystemPrompt(config: PaimonConfig, summary?: string | null): string {
 	const mode = config.mode || "chat";
 
 	if (mode === "evolve") {
-		return buildEvolvePrompt(config);
+		return buildEvolvePrompt(config, summary);
 	}
-	return buildChatPrompt(config);
+	return buildChatPrompt(config, summary);
 }
 
-function buildChatPrompt(config: PaimonConfig): string {
+function buildChatPrompt(config: PaimonConfig, summary?: string | null): string {
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
@@ -509,7 +560,7 @@ You can help users with various tasks like reading files, writing code, executin
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
 
-## Guidelines
+${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Guidelines
 - Be helpful, concise, and accurate
 - Use tools when needed to complete tasks
 - Explain what you're doing when using tools
@@ -534,7 +585,7 @@ When done with a task, summarize what you accomplished.`;
 	return prompt;
 }
 
-function buildEvolvePrompt(config: PaimonConfig): string {
+function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): string {
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
@@ -558,7 +609,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
 
-## Learning from Failures
+${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Learning from Failures
 
 When something fails (build errors, test failures, runtime errors), follow this process:
 

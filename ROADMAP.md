@@ -24,7 +24,7 @@ Planned improvements for evo.
 - [x] Context file loading (AGENTS.md, CLAUDE.md) — Issue #10
 - [ ] Web search, API calls
 - [ ] Multi-step reasoning
-- [ ] Context compaction for long sessions — Issue #9
+- [x] Context compaction for long sessions — Issue #9
 - [ ] Session persistence and resume — Issue #11
 
 ---

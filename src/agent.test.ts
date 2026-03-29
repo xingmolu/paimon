@@ -165,7 +165,9 @@ describe("Tools", () => {
 		it("should filter by file pattern", () => {
 			writeFileSync(join(TEST_DIR, "a.ts"), "pattern here", "utf-8");
 			writeFileSync(join(TEST_DIR, "b.js"), "pattern here", "utf-8");
-			const result = execSync(`grep -rn --include="*.ts" "pattern" ${TEST_DIR}`, { encoding: "utf-8" });
+			const result = execSync(`grep -rn --include="*.ts" "pattern" ${TEST_DIR}`, {
+				encoding: "utf-8",
+			});
 			expect(result).toContain("a.ts");
 			expect(result).not.toContain("b.js");
 		});
