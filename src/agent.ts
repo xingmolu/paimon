@@ -258,6 +258,56 @@ export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt:
 }
 
 function buildSystemPrompt(config: PaimonConfig): string {
+  const mode = config.mode || 'chat';
+  
+  if (mode === 'evolve') {
+    return buildEvolvePrompt(config);
+  } else {
+    return buildChatPrompt(config);
+  }
+}
+
+function buildChatPrompt(config: PaimonConfig): string {
+  let prompt = `---
+name: paimon
+description: A helpful AI assistant
+tools: [bash, read, write, edit, glob]
+---
+
+You are Paimon, a helpful AI assistant with access to file system tools.
+
+You can help users with various tasks like reading files, writing code, executing commands, and more.
+
+## Tools
+- bash: Execute shell commands
+- read: Read a file
+- write: Write a file
+- edit: Edit a file by replacing text
+- glob: Find files by pattern
+
+## Memory
+You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
+
+## Guidelines
+- Be helpful, concise, and accurate
+- Use tools when needed to complete tasks
+- Explain what you're doing when using tools
+- If something fails, explain the error and suggest solutions
+- Ask for clarification if the request is unclear
+
+When done with a task, summarize what you accomplished.`;
+
+  // Load persistent memory
+  const memoryPath = config.memoryPath || 'MEMORY.md';
+  if (existsSync(memoryPath)) {
+    const memory = readFileSync(memoryPath, 'utf-8');
+    prompt += '\n\n## Current Memory\n\n' + memory;
+  }
+
+  return prompt;
+}
+
+function buildEvolvePrompt(config: PaimonConfig): string {
   let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase

@@ -96,6 +96,7 @@ Start now. Begin by reading ROADMAP.md and checking for open issues.`;
       baseUrl: process.env.PAIMON_BASE_URL || 'https://coding.dashscope.aliyuncs.com/v1',
       skillsDir: './skills',
       memoryPath: './MEMORY.md',
+      mode: 'evolve',  // Always use evolve mode for self-evolution
     });
 
     try {

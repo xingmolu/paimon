@@ -20,8 +20,14 @@ npm install
 # Set API key
 export DASHSCOPE_API_KEY=your-key
 
-# Run interactive mode
+# Run interactive chat mode (default)
 npm run dev
+
+# Run self-evolution mode
+npm run dev -- --mode evolve
+
+# Or use environment variable
+PAIMON_MODE=evolve npm run dev
 
 # Run with a prompt
 npm run dev "read ROADMAP.md and suggest improvements"
@@ -30,11 +36,30 @@ npm run dev "read ROADMAP.md and suggest improvements"
 npm run dev -- --file prompt.txt
 ```
 
+## Modes
+
+Paimon operates in two modes:
+
+### Chat Mode (default)
+- Normal conversational AI assistant
+- No self-modification workflows
+- Use for general questions and tasks
+- Activate with: `npm run dev` or `--mode chat`
+
+### Evolve Mode
+- Self-evolving AI agent
+- Reads own code, runs tests, makes commits
+- Full self-improvement workflow
+- Activate with: `--mode evolve` or `PAIMON_MODE=evolve`
+
+**Important:** The self-evolution script (`scripts/evolve.ts`) always uses evolve mode for automated runs.
+
 ## Environment Variables
 
 - `DASHSCOPE_API_KEY` — API key for Bailian (required)
 - `PAIMON_MODEL` — Model to use (default: glm-5)
 - `PAIMON_BASE_URL` — API endpoint (default: Bailian Coding Plan)
+- `PAIMON_MODE` — Operating mode: "chat" or "evolve" (default: chat)
 
 ## Architecture
 
