@@ -276,3 +276,30 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue #13: Implement Evaluator Agent with fix loop
 - Issue #7: Implement progressive skill loading
+
+---
+
+## Day 12 — Progressive Skill Loading (2026-03-29)
+
+**What happened:**
+- Implemented Issue #7: Progressive skill loading (like pi-coding-agent)
+- Added `parseFrontmatter` function to extract name and description from SKILL.md files
+- Added `buildSkillsIndex` function to build XML index with only names/descriptions
+- Updated `buildEvolvePrompt` to include skills index instead of loading full skill content
+- Skills are now loaded on-demand when agent reads the SKILL.md file
+
+**Why this matters:**
+- Saves ~10k+ tokens at startup (only ~50 tokens per skill)
+- Agent sees skill names/descriptions and loads full instructions when needed
+- Follows Agent Skills specification (XML format)
+- Better prompt efficiency for many skills
+
+**Technical details:**
+- Skills directory structure: skills/<name>/SKILL.md
+- Parses YAML frontmatter to extract name and description
+- Generates XML format: `<skills><skill><name>...</skill></skills>`
+- Agent instructed to use `read skills/<name>/SKILL.md` when needed
+
+**Next steps:**
+- Issue #13: Implement Evaluator Agent with fix loop
+- Issue #10: Auto-load AGENTS.md context files (already implemented in context.ts)
