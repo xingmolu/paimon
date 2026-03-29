@@ -1,6 +1,10 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { setMaxListeners } from "node:events";
+
+// Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
+setMaxListeners(20);
 import {
 	Agent,
 	type AgentEvent,
