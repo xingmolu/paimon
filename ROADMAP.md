@@ -19,9 +19,13 @@ Planned improvements for evo.
 - [x] Code quality checks
 
 ## Phase 4: Growth
-- [ ] More tools (web search, API calls)
+- [x] More tools (grep, find, ls for code search) — Issue #8
+- [x] Progressive skill loading — Issue #7
+- [x] Context file loading (AGENTS.md, CLAUDE.md) — Issue #10
+- [ ] Web search, API calls
 - [ ] Multi-step reasoning
-- [ ] Better context management
+- [ ] Context compaction for long sessions — Issue #9
+- [ ] Session persistence and resume — Issue #11
 
 ---
 

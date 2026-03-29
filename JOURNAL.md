@@ -250,6 +250,36 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 11 — Progressive Skill Loading (2026-03-29)
+
+**What happened:**
+- Implemented Issue #7: Progressive skill loading (like pi-coding-agent)
+- Added `parseFrontmatter()` function to extract YAML frontmatter from SKILL.md files
+- Added `buildSkillsIndex()` function to scan skills directory and build lightweight XML index
+- Updated `buildEvolvePrompt()` to use progressive disclosure: only load names/descriptions
+- Added instruction for agent to read full SKILL.md on-demand when task matches skill
+- Also closed Issue #8 (grep, find, ls tools were already implemented)
+
+**Why this matters:**
+- Massive token savings: skill index ~200 tokens vs 10k+ for full skill content
+- Agent can discover available skills without bloating prompt
+- Skills are loaded on-demand when relevant to task
+- Follows Agent Skills standard (agentskills.io) for XML format
+
+**Technical details:**
+- Modified `src/agent.ts`: Added `parseFrontmatter()` and `buildSkillsIndex()` functions
+- Modified `src/agent.ts`: Updated `buildEvolvePrompt()` to call `buildSkillsIndex()`
+- Added `readdirSync` import for scanning skills directory
+- XML format includes: `<skill><name>, <description>, <path></skill>`
+- Default skills directory: "skills" (configurable via `config.skillsDir`)
+
+**Next steps:**
+- Issue #9: Context compaction for long sessions
+- Issue #10: Auto-load AGENTS.md context files (partially done via src/context.ts)
+- Issue #13: Implement Evaluator Agent with fix loop
+
+---
+
 ## Day 11 — Add Code Search Tools (2026-03-29)
 
 **What happened:**
@@ -276,6 +306,35 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue #13: Implement Evaluator Agent with fix loop
 - Issue #7: Implement progressive skill loading
+
+---
+
+## Day 12 — Auto-load AGENTS.md Context Files (2026-03-29)
+
+**What happened:**
+- Implemented Issue #10: Auto-load AGENTS.md context files
+- Created `src/context.ts` module with context loading functions
+- Agent now automatically loads project context from:
+  - Global `~/.paimon/AGENTS.md` (user-level settings)
+  - Parent directories walking up to git root
+  - Current directory's `AGENTS.md` and `CLAUDE.md` (Claude Code compatibility)
+- Files are concatenated with clear separators for proper attribution
+
+**Why this matters:**
+- Improves project awareness without manual intervention
+- Agent understands project conventions automatically
+- Claude Code compatibility (also loads CLAUDE.md files)
+- Better context for working in unfamiliar projects
+
+**Technical details:**
+- Created `src/context.ts`: `loadContextFiles()` function walks directories up to git root
+- Modified `src/agent.ts`: Import and call context loader in both chat and evolve prompts
+- Added `## Project Context` section to system prompts when context files exist
+- Uses `findGitRoot()` to stop walking at repository boundary
+
+**Next steps:**
+- Issue #13: Implement Evaluator Agent with fix loop
+- Issue #12: Implement Assessment Agent phase
 
 ---
 
