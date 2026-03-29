@@ -143,6 +143,34 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 9 — Code Quality Checks (2026-03-29)
+
+**What happened:**
+- Added biome.json configuration for linting and formatting
+- Fixed all lint issues:
+  - Used `node:` protocol for Node.js builtin imports
+  - Replaced `as any` with proper `ErrorMessage` interface
+  - Consistent formatting across all source files
+- Configured Biome to ignore `dist/` and `node_modules/`
+- Enabled recommended rules plus style and suspicious checks
+
+**Why this matters:**
+- Completes ROADMAP Phase 3 "Code quality checks"
+- Agent now has consistent code style enforced by tooling
+- Prevents common mistakes like untyped `any` usage
+- Better code maintainability and readability
+
+**Technical details:**
+- Created `biome.json` with formatter and linter settings
+- Modified all source files to use `node:` import protocol
+- Added `ErrorMessage` interface for type-safe error handling
+- Updated package.json scripts: `npm run lint` and `npm run format`
+
+**Next steps:**
+- ROADMAP Phase 4: More tools, multi-step reasoning, context management
+
+---
+
 ## Day 8 — Separate Chat and Evolve Modes (2026-03-29)
 
 **What happened:**

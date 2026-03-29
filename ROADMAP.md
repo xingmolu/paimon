@@ -16,7 +16,7 @@ Planned improvements for evo.
 ## Phase 3: Intelligence
 - [x] Better planning (use ROADMAP.md)
 - [x] Learning from failures
-- [ ] Code quality checks
+- [x] Code quality checks
 
 ## Phase 4: Growth
 - [ ] More tools (web search, API calls)
