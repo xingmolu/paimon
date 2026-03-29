@@ -46,12 +46,13 @@ async function main() {
 async function runOnce(prompt: string) {
   const config = getConfig();
   const { run } = createAgent(config);
+  const debug = process.env.PAIMON_DEBUG === 'true' || process.env.PAIMON_DEBUG === '1';
 
   printBanner();
   console.log(`${COLORS.dim}  model: ${config.model}${COLORS.reset}\n`);
 
   try {
-    const result = await run(prompt);
+    const result = await run(prompt, debug);
     console.log(`\n${result}\n`);
   } catch (error) {
     console.error(`${COLORS.red}Error: ${error instanceof Error ? error.message : String(error)}${COLORS.reset}`);
@@ -62,10 +63,15 @@ async function runOnce(prompt: string) {
 async function runRepl() {
   const config = getConfig();
   const { agent, run } = createAgent(config);
+  const debug = process.env.PAIMON_DEBUG === 'true' || process.env.PAIMON_DEBUG === '1';
 
   printBanner();
   console.log(`${COLORS.dim}  model: ${config.model}`);
-  console.log(`${COLORS.dim}  Type /quit to exit${COLORS.reset}\n`);
+  if (debug) {
+    console.log(`${COLORS.dim}  debug: enabled${COLORS.reset}\n`);
+  } else {
+    console.log(`${COLORS.dim}  Type /quit to exit${COLORS.reset}\n`);
+  }
 
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const prompt = (q: string): Promise<string> => new Promise(r => rl.question(q, r));
@@ -82,7 +88,7 @@ async function runRepl() {
     }
 
     try {
-      const result = await run(trimmed);
+      const result = await run(trimmed, debug);
       console.log(`\n${result}\n`);
     } catch (error) {
       console.error(`${COLORS.red}Error: ${error instanceof Error ? error.message : String(error)}${COLORS.reset}\n`);

@@ -186,7 +186,7 @@ function createModel(config: PaimonConfig): Model<Api> {
   };
 }
 
-export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt: string) => Promise<string> } {
+export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt: string, verbose?: boolean) => Promise<string> } {
   const model = createModel(config);
   const systemPrompt = buildSystemPrompt(config);
 
@@ -198,11 +198,27 @@ export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt:
   // Provide API key dynamically for the custom provider
   agent.getApiKey = () => config.apiKey;
 
-  const run = (prompt: string): Promise<string> => {
+  const run = (prompt: string, verbose = false): Promise<string> => {
     return new Promise((resolve, reject) => {
       const outputs: string[] = [];
+      const startTime = Date.now();
+      
+      // Timeout after 60 seconds
+      const timeout = setTimeout(() => {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        reject(new Error(`Agent timeout after ${elapsed}s. No response received.`));
+      }, 60000);
+
+      if (verbose) {
+        console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);
+        console.log(`[DEBUG] Prompt: ${prompt.slice(0, 100)}...`);
+      }
 
       agent.subscribe((event: AgentEvent) => {
+        if (verbose) {
+          console.log(`[DEBUG] Event: ${event.type}`);
+        }
+        
         if (event.type === 'message_update' || event.type === 'message_end') {
           const content = event.message.content;
           if (Array.isArray(content)) {
@@ -214,14 +230,26 @@ export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt:
           }
         }
         if (event.type === 'agent_end') {
+          clearTimeout(timeout);
+          if (verbose) {
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            console.log(`[DEBUG] Agent completed in ${elapsed}s`);
+          }
           resolve(outputs.join(''));
         }
         if (event.type === 'turn_end' && (event.message as any).errorMessage) {
+          clearTimeout(timeout);
           reject(new Error((event.message as any).errorMessage));
         }
       });
 
-      agent.prompt(prompt).catch(reject);
+      agent.prompt(prompt).catch(error => {
+        clearTimeout(timeout);
+        if (verbose) {
+          console.log(`[DEBUG] Prompt error: ${error}`);
+        }
+        reject(error);
+      });
     });
   };
 
