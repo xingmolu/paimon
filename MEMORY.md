@@ -67,3 +67,29 @@ Each learning should be:
 - **Context:** What problem was being solved  
 - **Insight:** What was learned
 - **Action:** How to apply it
+
+---
+
+### 2026-03-29: Check Git State Before Editing
+
+**Context:** Attempted to edit a file that had already been modified in previous sessions
+
+**Insight:** In self-evolution workflows, the codebase may change between sessions:
+1. **Always check git status** - Run `git status` and `git log` before starting
+2. **Verify file exists** - Read the file to see its current state
+3. **Check issue status** - Issues may be closed in previous iterations
+4. **Don't assume file state** - The codebase evolves, so verify before editing
+
+**Pattern:**
+```bash
+# Check state before working
+git status --porcelain  # See uncommitted changes
+git log --oneline -5    # See recent commits
+gh issue list --state open  # See open issues
+gh issue view <number>  # Check specific issue
+```
+
+**Action:**
+- Always verify git state before starting work
+- Check if features are already implemented
+- Close duplicate issues that were already completed
