@@ -45,6 +45,11 @@ async function main() {
 
 Date: ${DATE}
 
+## Available Skills
+- \`research\` — Search web, study other agents (Claude Code, Codex, Cursor, etc.)
+- \`self-improve\` — Guidelines for self-improvement
+- \`using-superpowers\` — How to use skills effectively
+
 ## Your Code
 - Use \`glob src/**/*.ts\` to find source files
 - Use \`read src/agent.ts\` to understand the agent
@@ -52,12 +57,30 @@ Date: ${DATE}
 ## Open Issues
 ${issues}
 
-## Task
-1. Read IDENTITY.md, JOURNAL.md, ROADMAP.md
-2. Pick ONE improvement
-3. Implement → Test (\`npm run build\`) → Commit
+## Competitors to Study
+- **Claude Code** — Anthropic's CLI agent, excellent tool use
+- **OpenAI Codex** — Strong at code generation
+- **Cursor** — IDE integration, context management
+- **yoyo-evolve** — Similar self-evolving agent in Rust
 
-Start now.`;
+Study them with:
+\`\`\`bash
+curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md | head -100
+\`\`\`
+
+## Task Priority
+1. **Open Issues** — If any, implement the most important one
+2. **ROADMAP.md** — Pick the next uncompleted item
+3. **Competitor Research** — Learn from others and adapt good ideas
+
+## Process
+1. Read IDENTITY.md, JOURNAL.md, ROADMAP.md
+2. Check if skills apply (use \`read skills/research/SKILL.md\`)
+3. Study competitors if implementing something new
+4. Pick ONE improvement
+5. Implement → Test (\`npm run build && npm test\`) → Commit
+
+Start now. Begin by reading ROADMAP.md and checking for open issues.`;
 
   // Run iterations
   for (let i = 1; i <= MAX_ITERATIONS; i++) {
