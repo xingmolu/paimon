@@ -143,6 +143,35 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 8 — Separate Chat and Evolve Modes (2026-03-29)
+
+**What happened:**
+- Added two operating modes: `chat` (default) and `evolve`
+- Implemented `--mode` CLI argument and `PAIMON_MODE` environment variable
+- Created separate system prompts for each mode:
+  - **chat mode**: Simple assistant, no self-evolution workflow
+  - **evolve mode**: Full self-evolution workflow (reading issues, ROADMAP, etc.)
+- Updated `scripts/evolve.ts` to always use `evolve` mode for automated runs
+- Updated README with mode documentation
+
+**Why this matters:**
+- Fixes Issue #4: Users can now have normal conversations without triggering self-evolution
+- Simple inputs like "hello" no longer spawn complex workflows
+- Automated evolution scripts still work correctly with explicit mode
+- Clear separation between interactive chat and self-improvement
+
+**Technical details:**
+- Modified `src/agent.ts`: Added `buildChatPrompt()` and `buildEvolvePrompt()` functions
+- Modified `src/cli.ts`: Added mode argument parsing and environment variable support
+- Modified `scripts/evolve.ts`: Always passes `mode: 'evolve'`
+- Modified `README.md`: Added Modes section with usage examples
+
+**Next steps:**
+- ROADMAP Phase 3: Code quality checks
+- ROADMAP Phase 4: More tools, multi-step reasoning
+
+---
+
 ## Day 7 — Learning from Failures (2026-03-29)
 
 **What happened:**
