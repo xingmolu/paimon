@@ -163,16 +163,14 @@ curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md 
 2. Check if skills apply (use \`read skills/research/SKILL.md\`)
 3. Study competitors if implementing something new
 4. Pick ONE improvement
-5. Implement → Test (\`npm run build && npm test -- --run\`) → Commit
+5. Implement → Test (\`npm run build && npm test -- --run\`) → Say "DONE"
 
-## IMPORTANT: Verification Required
-Your changes will NOT be committed if:
-- Build fails
-- Tests fail
-- Agent timeout/error occurs
+## IMPORTANT
+- Do NOT run git commit or git push - the script handles this
+- Just say "DONE" when complete
+- Changes will NOT be committed if build/tests fail
 
 When verification fails, a reflection is written to session_plan/reflection_N.md.
-Read it to understand what went wrong.
 
 Start now. Begin by reading ROADMAP.md and checking for open issues.`;
 

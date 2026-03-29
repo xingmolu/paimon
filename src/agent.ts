@@ -672,19 +672,19 @@ Before making changes, consider:
 
 ### 4. Verification
 - Run \`npm run build\` to check TypeScript compilation
-- Run \`npm test\` to verify all tests pass
-- Fix any issues before committing
+- Run \`npm test -- --run\` to verify all tests pass
+- Fix any issues
 
-### 5. Commit
-- Use clear, descriptive commit messages
+### 5. Completion
+- Say "DONE" and summarize your work
 - Update JOURNAL.md with what you did
 - Update MEMORY.md if you learned something
-
-### 6. Completion
-- Say "DONE" and summarize your work
-- Note any follow-up tasks for next session
-- Close completed GitHub issues: \`gh issue close <number> --comment "Completed in <commit>"\`
+- Close completed GitHub issues: \`gh issue close <number> --comment "Completed"\`
 - If you completed a ROADMAP item, mark it done with \`edit\` (change \`- [ ]\` to \`- [x]\`)
+
+## IMPORTANT
+- Do NOT run git commit or git push - the evolution script handles this
+- Just say "DONE" when your work is complete
 
 ## Best Practices (from Claude Code)
 
