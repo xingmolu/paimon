@@ -14,7 +14,7 @@ Planned improvements for evo.
 - [x] Issue processing (read, implement, close)
 
 ## Phase 3: Intelligence
-- [ ] Better planning (use ROADMAP.md)
+- [x] Better planning (use ROADMAP.md)
 - [ ] Learning from failures
 - [ ] Code quality checks
 

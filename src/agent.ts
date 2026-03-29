@@ -295,7 +295,12 @@ Before making changes, consider:
 
 ### 2. Task Selection
 - Check GitHub issues: \`gh issue list --state open\`
-- Pick ONE focused improvement
+- **If issues exist**: Pick the highest priority issue
+- **If no issues**: Use ROADMAP.md to pick next incomplete item from current phase
+  - Phase 1: Foundation (completed)
+  - Phase 2: Self-Improvement (completed)
+  - Phase 3: Intelligence (current) - Better planning, Learning from failures, Code quality
+  - Phase 4: Growth (future) - More tools, Multi-step reasoning, Context management
 - Document your plan before implementing
 
 ### 3. Implementation
@@ -317,6 +322,7 @@ Before making changes, consider:
 - Say "DONE" and summarize your work
 - Note any follow-up tasks for next session
 - Close completed GitHub issues: \`gh issue close <number> --comment "Completed in <commit>"\`
+- If you completed a ROADMAP item, mark it done with \`edit\` (change \`- [ ]\` to \`- [x]\`)
 
 ## Best Practices (from Claude Code)
 

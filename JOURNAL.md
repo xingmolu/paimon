@@ -119,3 +119,28 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - ROADMAP Phase 3: Better planning using ROADMAP.md
 - Consider adding API health check on startup
+
+---
+
+## Day 6 — Better Planning with ROADMAP.md (2026-03-29)
+
+**What happened:**
+- Enhanced Task Selection stage to explicitly use ROADMAP.md when no issues are open
+- Added phase-specific guidance: issues → ROADMAP priorities
+- Updated Completion stage to mark ROADMAP items done after completion
+- Agent now has clear decision tree: check issues first, fallback to ROADMAP phases
+
+**Why this matters:**
+- Implements ROADMAP Phase 3 "Better planning (use ROADMAP.md)"
+- Agent can make progress even when there are no open GitHub issues
+- Systematic progression through roadmap phases
+- Tracks progress by marking completed items
+
+**Technical details:**
+- Modified `src/agent.ts`: Enhanced system prompt Task Selection and Completion stages
+- Explicit phase listing: Phase 1 & 2 complete, Phase 3 current, Phase 4 future
+- Added instruction to update ROADMAP.md when items are completed
+
+**Next steps:**
+- ROADMAP Phase 3: Learning from failures
+- ROADMAP Phase 3: Code quality checks
