@@ -180,6 +180,131 @@ const tools: AgentTool[] = [
 			}
 		},
 	},
+	{
+		name: "grep",
+		label: "Search File Contents",
+		description: "Search for patterns in file contents using regex",
+		parameters: Type.Object({
+			pattern: Type.String({ description: "Regex pattern to search" }),
+			path: Type.Optional(Type.String({ description: "Directory or file to search (default: .)" })),
+			include: Type.Optional(Type.String({ description: "File pattern to include (e.g., *.ts)" })),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { pattern, path = ".", include } = params as {
+				pattern: string;
+				path?: string;
+				include?: string;
+			};
+			try {
+				// Use grep with -n for line numbers, -r for recursive
+				let cmd = `grep -rn`;
+				if (include) {
+					cmd += ` --include="${include}"`;
+				}
+				cmd += ` "${pattern}" ${path}`;
+
+				const output = execSync(cmd, {
+					encoding: "utf-8",
+					timeout: 30000,
+					maxBuffer: 1024 * 1024,
+				});
+				return {
+					content: [{ type: "text", text: output || "(no matches)" }],
+					details: output || "(no matches)",
+				};
+			} catch (e) {
+				// grep returns exit code 1 when no matches, which throws
+				const error = e instanceof Error ? e.message : String(e);
+				if (error.includes("status 1")) {
+					return {
+						content: [{ type: "text", text: "(no matches)" }],
+						details: "(no matches)",
+					};
+				}
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
+	{
+		name: "find",
+		label: "Find Files by Criteria",
+		description: "Find files by name, type, or modification time",
+		parameters: Type.Object({
+			path: Type.Optional(Type.String({ description: "Directory to search (default: .)" })),
+			name: Type.Optional(Type.String({ description: "File name pattern (e.g., *.ts)" })),
+			type: Type.Optional(Type.String({ description: "File type: f (file), d (directory)" })),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string[]>> => {
+			const { path = ".", name, type } = params as {
+				path?: string;
+				name?: string;
+				type?: string;
+			};
+			try {
+				let cmd = `find ${path}`;
+				if (type) {
+					cmd += ` -type ${type}`;
+				}
+				if (name) {
+					cmd += ` -name "${name}"`;
+				}
+
+				const output = execSync(cmd, {
+					encoding: "utf-8",
+					timeout: 30000,
+					maxBuffer: 1024 * 1024,
+				});
+				const files = output.trim().split("\n").filter(Boolean);
+				const result = files.length > 0 ? files.join("\n") : "(no matches)";
+				return {
+					content: [{ type: "text", text: result }],
+					details: files,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: [],
+				};
+			}
+		},
+	},
+	{
+		name: "ls",
+		label: "List Directory",
+		description: "List directory contents with details",
+		parameters: Type.Object({
+			path: Type.Optional(Type.String({ description: "Directory to list (default: .)" })),
+			long: Type.Optional(Type.Boolean({ description: "Show detailed info (size, date)" })),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string[]>> => {
+			const { path = ".", long = false } = params as {
+				path?: string;
+				long?: boolean;
+			};
+			try {
+				const cmd = long ? `ls -la ${path}` : `ls -a ${path}`;
+				const output = execSync(cmd, {
+					encoding: "utf-8",
+					timeout: 10000,
+				});
+				const lines = output.trim().split("\n");
+				return {
+					content: [{ type: "text", text: output.trim() }],
+					details: lines,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: [],
+				};
+			}
+		},
+	},
 ];
 
 function createModel(config: PaimonConfig): Model<Api> {
@@ -288,7 +413,7 @@ function buildChatPrompt(config: PaimonConfig): string {
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob]
+tools: [bash, read, write, edit, glob, grep, find, ls]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -300,7 +425,10 @@ You can help users with various tasks like reading files, writing code, executin
 - read: Read a file
 - write: Write a file
 - edit: Edit a file by replacing text
-- glob: Find files by pattern
+- glob: Find files by glob pattern
+- grep: Search file contents by regex pattern
+- find: Find files by name, type, or modification time
+- ls: List directory contents
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
@@ -328,7 +456,7 @@ function buildEvolvePrompt(config: PaimonConfig): string {
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob]
+tools: [bash, read, write, edit, glob, grep, find, ls]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -340,7 +468,10 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - read: Read a file
 - write: Write a file
 - edit: Edit a file by replacing text
-- glob: Find files by pattern
+- glob: Find files by glob pattern
+- grep: Search file contents by regex pattern
+- find: Find files by name, type, or modification time
+- ls: List directory contents
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
