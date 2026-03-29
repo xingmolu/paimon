@@ -15,6 +15,7 @@ export interface PaimonConfig {
   baseUrl: string;
   skillsDir?: string;
   memoryPath?: string;
+  mode?: 'chat' | 'evolve';
 }
 
 const tools: AgentTool[] = [
