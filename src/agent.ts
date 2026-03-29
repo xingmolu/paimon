@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
 	Agent,
@@ -258,7 +258,11 @@ const tools: AgentTool[] = [
 			include: Type.Optional(Type.String({ description: "File pattern to include (e.g., *.ts)" })),
 		}),
 		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
-			const { pattern, path = ".", include } = params as {
+			const {
+				pattern,
+				path = ".",
+				include,
+			} = params as {
 				pattern: string;
 				path?: string;
 				include?: string;
@@ -306,7 +310,11 @@ const tools: AgentTool[] = [
 			type: Type.Optional(Type.String({ description: "File type: f (file), d (directory)" })),
 		}),
 		execute: async (_toolCallId, params): Promise<AgentToolResult<string[]>> => {
-			const { path = ".", name, type } = params as {
+			const {
+				path = ".",
+				name,
+				type,
+			} = params as {
 				path?: string;
 				name?: string;
 				type?: string;
@@ -413,11 +421,11 @@ export function createAgent(config: PaimonConfig): {
 			const outputs: string[] = [];
 			const startTime = Date.now();
 
-			// Timeout after 60 seconds
+			// Timeout after 180 seconds (API can be slow)
 			const timeout = setTimeout(() => {
 				const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 				reject(new Error(`Agent timeout after ${elapsed}s. No response received.`));
-			}, 60000);
+			}, 180000);
 
 			if (verbose) {
 				console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);

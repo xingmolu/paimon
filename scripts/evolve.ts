@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { execSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createAgent } from "../src/agent.js";
 
 const COLORS = {
@@ -9,10 +10,86 @@ const COLORS = {
 	green: "\x1b[32m",
 	yellow: "\x1b[33m",
 	cyan: "\x1b[36m",
+	red: "\x1b[31m",
 };
 
 const DATE = new Date().toISOString().split("T")[0];
 const MAX_ITERATIONS = 3;
+
+function verifyBuild(): boolean {
+	try {
+		execSync("npm run build", { encoding: "utf-8", stdio: "pipe", timeout: 60000 });
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function verifyTests(): boolean {
+	try {
+		execSync("npm test -- --run", { encoding: "utf-8", stdio: "pipe", timeout: 60000 });
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function writeReflection(
+	iteration: number,
+	error: string,
+	buildOk: boolean,
+	testOk: boolean,
+): void {
+	const dir = "session_plan";
+	if (!existsSync(dir)) {
+		mkdirSync(dir, { recursive: true });
+	}
+
+	const reflection = `# Reflection — Iteration ${iteration}
+
+## Status
+- Build: ${buildOk ? "PASS" : "FAIL"}
+- Tests: ${testOk ? "PASS" : "FAIL"}
+
+## Error
+${error}
+
+## Analysis
+I need to analyze why this iteration failed.
+
+## Next Steps
+1. Fix the issue identified above
+2. Re-run build and tests before committing
+
+---
+Generated at ${new Date().toISOString()}
+`;
+
+	writeFileSync(`${dir}/reflection_${iteration}.md`, reflection);
+
+	// Also update MEMORY.md with learning
+	const learning = `\n\n---
+
+### ${DATE}: Verification Before Commit
+
+**Context:** Iteration ${iteration} failed verification
+
+**Insight:** 
+- Build: ${buildOk ? "PASS" : "FAIL"}
+- Tests: ${testOk ? "PASS" : "FAIL"}
+- Error: ${error.slice(0, 200)}
+
+**Action:** Always run \`npm run build && npm test -- --run\` before committing changes. If tests fail, do not commit.
+
+`;
+
+	if (existsSync("MEMORY.md")) {
+		const memory = readFileSync("MEMORY.md", "utf-8");
+		if (!memory.includes("Verification Before Commit")) {
+			writeFileSync("MEMORY.md", memory + learning);
+		}
+	}
+}
 
 async function main() {
 	console.log(`\n${COLORS.cyan}=== Paimon Evolution ===${COLORS.reset}`);
@@ -86,7 +163,16 @@ curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md 
 2. Check if skills apply (use \`read skills/research/SKILL.md\`)
 3. Study competitors if implementing something new
 4. Pick ONE improvement
-5. Implement → Test (\`npm run build && npm test\`) → Commit
+5. Implement → Test (\`npm run build && npm test -- --run\`) → Commit
+
+## IMPORTANT: Verification Required
+Your changes will NOT be committed if:
+- Build fails
+- Tests fail
+- Agent timeout/error occurs
+
+When verification fails, a reflection is written to session_plan/reflection_N.md.
+Read it to understand what went wrong.
 
 Start now. Begin by reading ROADMAP.md and checking for open issues.`;
 
@@ -103,23 +189,56 @@ Start now. Begin by reading ROADMAP.md and checking for open issues.`;
 			mode: "evolve", // Always use evolve mode for self-evolution
 		});
 
+		let runError: string | null = null;
+		let resultText = "";
+
 		try {
-			const result = await run(prompt);
-			console.log(`\n${result}\n`);
+			resultText = await run(prompt);
+			console.log(`\n${resultText}\n`);
 		} catch (e) {
-			console.error(`Error: ${e}`);
+			runError = String(e);
+			console.error(`${COLORS.red}Error: ${e}${COLORS.reset}`);
 		}
 
-		// Commit if changes
+		// Check if changes were made
 		const status = execSync("git status --porcelain", { encoding: "utf-8" });
-		if (status.trim()) {
-			console.log("→ Committing...");
-			execSync("git add -A", { encoding: "utf-8" });
-			execSync(`git commit -m "paimon: ${DATE} iteration ${i}"`, {
-				encoding: "utf-8",
-			});
-			console.log(`${COLORS.green}  Done${COLORS.reset}\n`);
+		if (!status.trim()) {
+			console.log(`${COLORS.yellow}  No changes in iteration ${i}${COLORS.reset}\n`);
+			continue;
 		}
+
+		// Verify before committing
+		console.log("→ Verifying build and tests...");
+		const buildOk = verifyBuild();
+		const testOk = verifyTests();
+
+		console.log(`  Build: ${buildOk ? `${COLORS.green}PASS` : `${COLORS.red}FAIL`}${COLORS.reset}`);
+		console.log(
+			`  Tests: ${testOk ? `${COLORS.green}PASS` : `${COLORS.red}FAIL`}${COLORS.reset}\n`,
+		);
+
+		if (!buildOk || !testOk || runError) {
+			// Write reflection and do NOT commit
+			writeReflection(
+				i,
+				runError || (buildOk ? "" : "Build failed") || "Tests failed",
+				buildOk,
+				testOk,
+			);
+			console.log(`${COLORS.red}✗ Verification failed. Changes NOT committed.${COLORS.reset}`);
+			console.log(
+				`${COLORS.yellow}  Reflection written to session_plan/reflection_${i}.md${COLORS.reset}\n`,
+			);
+			continue;
+		}
+
+		// Commit verified changes
+		console.log("→ Committing verified changes...");
+		execSync("git add -A", { encoding: "utf-8" });
+		execSync(`git commit -m "paimon: ${DATE} iteration ${i} (verified)"`, {
+			encoding: "utf-8",
+		});
+		console.log(`${COLORS.green}  ✓ Done${COLORS.reset}\n`);
 	}
 
 	// Push
