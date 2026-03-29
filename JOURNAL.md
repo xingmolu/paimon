@@ -95,3 +95,27 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - ROADMAP Phase 3: Better planning using ROADMAP.md
 - Learning from failures
+
+---
+
+## Day 5 — Fix CLI Hang Issue (2026-03-29)
+
+**What happened:**
+- Fixed Issue #3: CLI hangs with no response after user input
+- Added 60-second timeout to `agent.run()` function
+- Added debug logging via `PAIMON_DEBUG=true` environment variable
+- Logs events, timing, and errors for troubleshooting
+
+**Why this matters:**
+- Critical bug fix: core functionality was broken
+- Users will now see timeout error instead of infinite hang
+- Debug mode helps diagnose API connectivity issues
+
+**Technical details:**
+- Modified `src/agent.ts`: Added timeout and verbose logging to run()
+- Modified `src/cli.ts`: Pass debug flag from PAIMON_DEBUG env var
+- Updated return type signature to accept optional verbose parameter
+
+**Next steps:**
+- ROADMAP Phase 3: Better planning using ROADMAP.md
+- Consider adding API health check on startup
