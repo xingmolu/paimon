@@ -1,274 +1,289 @@
+import { execSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import {
-  type Model,
-  type Api,
-} from '@mariozechner/pi-ai';
-import { Agent, type AgentTool, type AgentEvent, type AgentToolResult } from '@mariozechner/pi-agent-core';
-import { Type } from '@sinclair/typebox';
-import { readFileSync, existsSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { execSync } from 'child_process';
-import { globSync } from 'glob';
+	Agent,
+	type AgentEvent,
+	type AgentTool,
+	type AgentToolResult,
+} from "@mariozechner/pi-agent-core";
+import type { Api, Model } from "@mariozechner/pi-ai";
+import { Type } from "@sinclair/typebox";
+import { globSync } from "glob";
 
 export interface PaimonConfig {
-  apiKey: string;
-  model: string;
-  baseUrl: string;
-  skillsDir?: string;
-  memoryPath?: string;
-  mode?: 'chat' | 'evolve';
+	apiKey: string;
+	model: string;
+	baseUrl: string;
+	skillsDir?: string;
+	memoryPath?: string;
+	mode?: "chat" | "evolve";
+}
+
+interface ErrorMessage {
+	errorMessage?: string;
 }
 
 const tools: AgentTool[] = [
-  {
-    name: 'bash',
-    label: 'Execute Shell Command',
-    description: 'Execute a shell command',
-    parameters: Type.Object({
-      command: Type.String({ description: 'The shell command to execute' }),
-    }),
-    execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
-      const { command } = params as { command: string };
-      try {
-        const output = execSync(command, {
-          encoding: 'utf-8',
-          timeout: 120000,
-          maxBuffer: 10 * 1024 * 1024,
-        });
-        return {
-          content: [{ type: 'text', text: output || '(empty)' }],
-          details: output || '(empty)',
-        };
-      } catch (e) {
-        const error = e instanceof Error ? e.message : String(e);
-        return {
-          content: [{ type: 'text', text: `Error: ${error}` }],
-          details: `Error: ${error}`,
-        };
-      }
-    },
-  },
-  {
-    name: 'read',
-    label: 'Read File',
-    description: 'Read a file from the filesystem',
-    parameters: Type.Object({
-      path: Type.String({ description: 'The file path' }),
-    }),
-    execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
-      const { path } = params as { path: string };
-      try {
-        if (!existsSync(path)) {
-          return {
-            content: [{ type: 'text', text: 'Error: File not found' }],
-            details: 'Error: File not found',
-          };
-        }
-        const content = readFileSync(path, 'utf-8');
-        const numbered = content.split('\n').map((l, i) => `${i + 1}: ${l}`).join('\n');
-        return {
-          content: [{ type: 'text', text: numbered }],
-          details: numbered,
-        };
-      } catch (e) {
-        const error = e instanceof Error ? e.message : String(e);
-        return {
-          content: [{ type: 'text', text: `Error: ${error}` }],
-          details: `Error: ${error}`,
-        };
-      }
-    },
-  },
-  {
-    name: 'write',
-    label: 'Write File',
-    description: 'Write content to a file',
-    parameters: Type.Object({
-      path: Type.String({ description: 'The file path' }),
-      content: Type.String({ description: 'Content to write' }),
-    }),
-    execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
-      const { path, content } = params as { path: string; content: string };
-      try {
-        writeFileSync(path, content, 'utf-8');
-        return {
-          content: [{ type: 'text', text: 'File written successfully' }],
-          details: 'File written successfully',
-        };
-      } catch (e) {
-        const error = e instanceof Error ? e.message : String(e);
-        return {
-          content: [{ type: 'text', text: `Error: ${error}` }],
-          details: `Error: ${error}`,
-        };
-      }
-    },
-  },
-  {
-    name: 'edit',
-    label: 'Edit File',
-    description: 'Edit a file by replacing text',
-    parameters: Type.Object({
-      path: Type.String(),
-      oldText: Type.String(),
-      newText: Type.String(),
-    }),
-    execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
-      const { path, oldText, newText } = params as { path: string; oldText: string; newText: string };
-      try {
-        if (!existsSync(path)) {
-          return {
-            content: [{ type: 'text', text: 'Error: File not found' }],
-            details: 'Error: File not found',
-          };
-        }
-        const content = readFileSync(path, 'utf-8');
-        if (!content.includes(oldText)) {
-          return {
-            content: [{ type: 'text', text: 'Error: Text not found in file' }],
-            details: 'Error: Text not found in file',
-          };
-        }
-        writeFileSync(path, content.replace(oldText, newText), 'utf-8');
-        return {
-          content: [{ type: 'text', text: 'Edit applied successfully' }],
-          details: 'Edit applied successfully',
-        };
-      } catch (e) {
-        const error = e instanceof Error ? e.message : String(e);
-        return {
-          content: [{ type: 'text', text: `Error: ${error}` }],
-          details: `Error: ${error}`,
-        };
-      }
-    },
-  },
-  {
-    name: 'glob',
-    label: 'Find Files',
-    description: 'Find files matching a glob pattern',
-    parameters: Type.Object({
-      pattern: Type.String({ description: 'Glob pattern' }),
-    }),
-    execute: async (_toolCallId, params): Promise<AgentToolResult<string[]>> => {
-      const { pattern } = params as { pattern: string };
-      try {
-        const files = globSync(pattern);
-        const result = files.length > 0 ? files.join('\n') : '(no matches)';
-        return {
-          content: [{ type: 'text', text: result }],
-          details: files,
-        };
-      } catch (e) {
-        const error = e instanceof Error ? e.message : String(e);
-        return {
-          content: [{ type: 'text', text: `Error: ${error}` }],
-          details: [],
-        };
-      }
-    },
-  },
+	{
+		name: "bash",
+		label: "Execute Shell Command",
+		description: "Execute a shell command",
+		parameters: Type.Object({
+			command: Type.String({ description: "The shell command to execute" }),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { command } = params as { command: string };
+			try {
+				const output = execSync(command, {
+					encoding: "utf-8",
+					timeout: 120000,
+					maxBuffer: 10 * 1024 * 1024,
+				});
+				return {
+					content: [{ type: "text", text: output || "(empty)" }],
+					details: output || "(empty)",
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
+	{
+		name: "read",
+		label: "Read File",
+		description: "Read a file from the filesystem",
+		parameters: Type.Object({
+			path: Type.String({ description: "The file path" }),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { path } = params as { path: string };
+			try {
+				if (!existsSync(path)) {
+					return {
+						content: [{ type: "text", text: "Error: File not found" }],
+						details: "Error: File not found",
+					};
+				}
+				const content = readFileSync(path, "utf-8");
+				const numbered = content
+					.split("\n")
+					.map((l, i) => `${i + 1}: ${l}`)
+					.join("\n");
+				return {
+					content: [{ type: "text", text: numbered }],
+					details: numbered,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
+	{
+		name: "write",
+		label: "Write File",
+		description: "Write content to a file",
+		parameters: Type.Object({
+			path: Type.String({ description: "The file path" }),
+			content: Type.String({ description: "Content to write" }),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { path, content } = params as { path: string; content: string };
+			try {
+				writeFileSync(path, content, "utf-8");
+				return {
+					content: [{ type: "text", text: "File written successfully" }],
+					details: "File written successfully",
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
+	{
+		name: "edit",
+		label: "Edit File",
+		description: "Edit a file by replacing text",
+		parameters: Type.Object({
+			path: Type.String(),
+			oldText: Type.String(),
+			newText: Type.String(),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { path, oldText, newText } = params as {
+				path: string;
+				oldText: string;
+				newText: string;
+			};
+			try {
+				if (!existsSync(path)) {
+					return {
+						content: [{ type: "text", text: "Error: File not found" }],
+						details: "Error: File not found",
+					};
+				}
+				const content = readFileSync(path, "utf-8");
+				if (!content.includes(oldText)) {
+					return {
+						content: [{ type: "text", text: "Error: Text not found in file" }],
+						details: "Error: Text not found in file",
+					};
+				}
+				writeFileSync(path, content.replace(oldText, newText), "utf-8");
+				return {
+					content: [{ type: "text", text: "Edit applied successfully" }],
+					details: "Edit applied successfully",
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
+	{
+		name: "glob",
+		label: "Find Files",
+		description: "Find files matching a glob pattern",
+		parameters: Type.Object({
+			pattern: Type.String({ description: "Glob pattern" }),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string[]>> => {
+			const { pattern } = params as { pattern: string };
+			try {
+				const files = globSync(pattern);
+				const result = files.length > 0 ? files.join("\n") : "(no matches)";
+				return {
+					content: [{ type: "text", text: result }],
+					details: files,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: [],
+				};
+			}
+		},
+	},
 ];
 
 function createModel(config: PaimonConfig): Model<Api> {
-  return {
-    id: config.model,
-    name: config.model,
-    api: 'openai-completions',
-    provider: 'bailian',
-    baseUrl: config.baseUrl,
-    reasoning: false,
-    input: ['text', 'image'],
-    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 128000,
-    maxTokens: 4096,
-    headers: {
-      Authorization: `Bearer ${config.apiKey}`,
-    },
-  };
+	return {
+		id: config.model,
+		name: config.model,
+		api: "openai-completions",
+		provider: "bailian",
+		baseUrl: config.baseUrl,
+		reasoning: false,
+		input: ["text", "image"],
+		cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+		contextWindow: 128000,
+		maxTokens: 4096,
+		headers: {
+			Authorization: `Bearer ${config.apiKey}`,
+		},
+	};
 }
 
-export function createAgent(config: PaimonConfig): { agent: Agent; run: (prompt: string, verbose?: boolean) => Promise<string> } {
-  const model = createModel(config);
-  const systemPrompt = buildSystemPrompt(config);
+export function createAgent(config: PaimonConfig): {
+	agent: Agent;
+	run: (prompt: string, verbose?: boolean) => Promise<string>;
+} {
+	const model = createModel(config);
+	const systemPrompt = buildSystemPrompt(config);
 
-  const agent = new Agent();
-  agent.setModel(model);
-  agent.setSystemPrompt(systemPrompt);
-  agent.setTools(tools);
+	const agent = new Agent();
+	agent.setModel(model);
+	agent.setSystemPrompt(systemPrompt);
+	agent.setTools(tools);
 
-  // Provide API key dynamically for the custom provider
-  agent.getApiKey = () => config.apiKey;
+	// Provide API key dynamically for the custom provider
+	agent.getApiKey = () => config.apiKey;
 
-  const run = (prompt: string, verbose = false): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const outputs: string[] = [];
-      const startTime = Date.now();
-      
-      // Timeout after 60 seconds
-      const timeout = setTimeout(() => {
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        reject(new Error(`Agent timeout after ${elapsed}s. No response received.`));
-      }, 60000);
+	const run = (prompt: string, verbose = false): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const outputs: string[] = [];
+			const startTime = Date.now();
 
-      if (verbose) {
-        console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);
-        console.log(`[DEBUG] Prompt: ${prompt.slice(0, 100)}...`);
-      }
+			// Timeout after 60 seconds
+			const timeout = setTimeout(() => {
+				const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+				reject(new Error(`Agent timeout after ${elapsed}s. No response received.`));
+			}, 60000);
 
-      agent.subscribe((event: AgentEvent) => {
-        if (verbose) {
-          console.log(`[DEBUG] Event: ${event.type}`);
-        }
-        
-        if (event.type === 'message_update' || event.type === 'message_end') {
-          const content = event.message.content;
-          if (Array.isArray(content)) {
-            for (const c of content) {
-              if (c.type === 'text') {
-                outputs.push(c.text);
-              }
-            }
-          }
-        }
-        if (event.type === 'agent_end') {
-          clearTimeout(timeout);
-          if (verbose) {
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`[DEBUG] Agent completed in ${elapsed}s`);
-          }
-          resolve(outputs.join(''));
-        }
-        if (event.type === 'turn_end' && (event.message as any).errorMessage) {
-          clearTimeout(timeout);
-          reject(new Error((event.message as any).errorMessage));
-        }
-      });
+			if (verbose) {
+				console.log(`[DEBUG] Starting agent run at ${new Date().toISOString()}`);
+				console.log(`[DEBUG] Prompt: ${prompt.slice(0, 100)}...`);
+			}
 
-      agent.prompt(prompt).catch(error => {
-        clearTimeout(timeout);
-        if (verbose) {
-          console.log(`[DEBUG] Prompt error: ${error}`);
-        }
-        reject(error);
-      });
-    });
-  };
+			agent.subscribe((event: AgentEvent) => {
+				if (verbose) {
+					console.log(`[DEBUG] Event: ${event.type}`);
+				}
 
-  return { agent, run };
+				if (event.type === "message_update" || event.type === "message_end") {
+					const content = event.message.content;
+					if (Array.isArray(content)) {
+						for (const c of content) {
+							if (c.type === "text") {
+								outputs.push(c.text);
+							}
+						}
+					}
+				}
+				if (event.type === "agent_end") {
+					clearTimeout(timeout);
+					if (verbose) {
+						const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+						console.log(`[DEBUG] Agent completed in ${elapsed}s`);
+					}
+					resolve(outputs.join(""));
+				}
+				if (event.type === "turn_end" && (event.message as ErrorMessage).errorMessage) {
+					clearTimeout(timeout);
+					reject(new Error((event.message as ErrorMessage).errorMessage ?? "Unknown error"));
+				}
+			});
+
+			agent.prompt(prompt).catch((error) => {
+				clearTimeout(timeout);
+				if (verbose) {
+					console.log(`[DEBUG] Prompt error: ${error}`);
+				}
+				reject(error);
+			});
+		});
+	};
+
+	return { agent, run };
 }
 
 function buildSystemPrompt(config: PaimonConfig): string {
-  const mode = config.mode || 'chat';
-  
-  if (mode === 'evolve') {
-    return buildEvolvePrompt(config);
-  } else {
-    return buildChatPrompt(config);
-  }
+	const mode = config.mode || "chat";
+
+	if (mode === "evolve") {
+		return buildEvolvePrompt(config);
+	}
+	return buildChatPrompt(config);
 }
 
 function buildChatPrompt(config: PaimonConfig): string {
-  let prompt = `---
+	let prompt = `---
 name: paimon
 description: A helpful AI assistant
 tools: [bash, read, write, edit, glob]
@@ -297,18 +312,18 @@ You have persistent memory in MEMORY.md. Read it to recall past learnings, updat
 
 When done with a task, summarize what you accomplished.`;
 
-  // Load persistent memory
-  const memoryPath = config.memoryPath || 'MEMORY.md';
-  if (existsSync(memoryPath)) {
-    const memory = readFileSync(memoryPath, 'utf-8');
-    prompt += '\n\n## Current Memory\n\n' + memory;
-  }
+	// Load persistent memory
+	const memoryPath = config.memoryPath || "MEMORY.md";
+	if (existsSync(memoryPath)) {
+		const memory = readFileSync(memoryPath, "utf-8");
+		prompt += `\n\n## Current Memory\n\n${memory}`;
+	}
 
-  return prompt;
+	return prompt;
 }
 
 function buildEvolvePrompt(config: PaimonConfig): string {
-  let prompt = `---
+	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
 tools: [bash, read, write, edit, glob]
@@ -415,17 +430,17 @@ Before making changes, consider:
 
 When done, say "DONE" and summarize.`;
 
-  const skillsDir = config.skillsDir;
-  if (skillsDir && existsSync(join(skillsDir, 'SKILLS.md'))) {
-    prompt += '\n\n## Skills\n' + readFileSync(join(skillsDir, 'SKILLS.md'), 'utf-8');
-  }
+	const skillsDir = config.skillsDir;
+	if (skillsDir && existsSync(join(skillsDir, "SKILLS.md"))) {
+		prompt += `\n\n## Skills\n${readFileSync(join(skillsDir, "SKILLS.md"), "utf-8")}`;
+	}
 
-  // Load persistent memory
-  const memoryPath = config.memoryPath || 'MEMORY.md';
-  if (existsSync(memoryPath)) {
-    const memory = readFileSync(memoryPath, 'utf-8');
-    prompt += '\n\n## Current Memory\n\n' + memory;
-  }
+	// Load persistent memory
+	const memoryPath = config.memoryPath || "MEMORY.md";
+	if (existsSync(memoryPath)) {
+		const memory = readFileSync(memoryPath, "utf-8");
+		prompt += `\n\n## Current Memory\n\n${memory}`;
+	}
 
-  return prompt;
+	return prompt;
 }
