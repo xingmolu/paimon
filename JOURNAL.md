@@ -53,3 +53,26 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue processing (read GitHub issues, implement, close)
 - Better planning using ROADMAP.md
+
+---
+
+## Day 3 — Claude Code Best Practices (2026-03-29)
+
+**What happened:**
+- Researched Claude Code (Anthropic's CLI agent) to learn best practices
+- Studied plugin architecture: hooks, agents, skills, commands
+- Enhanced system prompt with structured frontmatter
+- Added Security Awareness section with protected paths and dangerous patterns
+- Added Workflow Stages with clear phases (Context → Task → Implement → Verify → Commit → Complete)
+- Added Best Practices section inspired by Claude Code patterns
+- Updated MEMORY.md with research learnings
+
+**Why this matters:**
+- Implements Issue #2 (Study Claude Code and adopt best practices)
+- Better structure for agent behavior
+- Security awareness prevents dangerous modifications
+- Clearer workflow improves decision-making
+
+**Next steps:**
+- Issue processing (read GitHub issues, implement, close)
+- Consider adding hooks system for pre-tool checks
