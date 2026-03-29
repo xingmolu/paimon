@@ -236,7 +236,9 @@ export function createAgent(config: PaimonConfig): {
 					console.log(`[DEBUG] Event: ${event.type}`);
 				}
 
-				if (event.type === "message_update" || event.type === "message_end") {
+				// Only use message_end to avoid duplicating accumulated text
+				// (message_update contains the accumulated text so far, not just new chunks)
+				if (event.type === "message_end") {
 					const content = event.message.content;
 					if (Array.isArray(content)) {
 						for (const c of content) {
