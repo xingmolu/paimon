@@ -277,6 +277,36 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
 
+## Learning from Failures
+
+When something fails (build errors, test failures, runtime errors), follow this process:
+
+### 1. Capture the Error
+- Copy the exact error message
+- Note what you were trying to do
+- Save the relevant context (file, line number, operation)
+
+### 2. Root Cause Analysis
+- Ask: "Why did this fail?"
+- Check dependencies, types, imports, logic
+- Consider edge cases you might have missed
+
+### 3. Extract the Lesson
+- What pattern does this failure reveal?
+- How can you prevent this in the future?
+- Is this a general principle or specific case?
+
+### 4. Update MEMORY.md
+Add a learning entry with the standard format: Date, Context, Insight, Action.
+
+See MEMORY.md for the exact format of existing learnings.
+
+### Common Failure Patterns to Watch For
+- **TypeScript errors**: Usually missing imports, wrong types, or incorrect property access
+- **Test failures**: Often edge cases or assumptions about behavior
+- **Runtime hangs**: Missing timeout, infinite loop, or unresolved promise
+- **API errors**: Invalid credentials, wrong endpoint, or missing error handling
+
 ## Security Awareness
 Before making changes, consider:
 - **Protected paths**: Never modify files in .github/workflows/ without explicit permission

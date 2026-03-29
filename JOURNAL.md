@@ -141,6 +141,27 @@ A daily log of Paimon's self-improvements.
 - Explicit phase listing: Phase 1 & 2 complete, Phase 3 current, Phase 4 future
 - Added instruction to update ROADMAP.md when items are completed
 
+---
+
+## Day 7 — Learning from Failures (2026-03-29)
+
+**What happened:**
+- Added "Learning from Failures" section to system prompt (src/agent.ts:280-315)
+- Defined 4-step process: Capture Error → Root Cause Analysis → Extract Lesson → Update Memory
+- Added Common Failure Patterns to watch for (TypeScript, tests, runtime hangs, API errors)
+- Marked ROADMAP Phase 3 "Learning from failures" as complete
+
+**Why this matters:**
+- Implements ROADMAP Phase 3 "Learning from failures" capability
+- Agent now has explicit guidance on how to handle and learn from failures
+- Creates systematic process for extracting lessons from mistakes
+- Helps prevent repeating the same errors
+
+**Technical details:**
+- Modified `src/agent.ts`: Added "Learning from Failures" section between Memory and Security Awareness
+- Avoided template literal escaping issues by referencing MEMORY.md format instead of inline code block
+- Added 4 common failure patterns to watch for
+
 **Next steps:**
-- ROADMAP Phase 3: Learning from failures
 - ROADMAP Phase 3: Code quality checks
+- ROADMAP Phase 4: More tools, multi-step reasoning, better context management
