@@ -478,7 +478,8 @@ export function createAgent(config: PaimonConfig): {
 				console.log(`[DEBUG] Context: ${status.messages} messages, ~${status.tokens} tokens`);
 			}
 
-			agent.subscribe((event: AgentEvent) => {
+			// Subscribe and store unsubscribe function to prevent memory leaks
+			const unsubscribe = agent.subscribe((event: AgentEvent) => {
 				if (verbose) {
 					console.log(`[DEBUG] Event: ${event.type}`);
 				}
@@ -497,6 +498,7 @@ export function createAgent(config: PaimonConfig): {
 				}
 				if (event.type === "agent_end") {
 					clearTimeout(timeout);
+					unsubscribe(); // Clean up listener to prevent memory leak
 
 					// Track assistant response
 					const response = outputs.join("");
@@ -510,12 +512,14 @@ export function createAgent(config: PaimonConfig): {
 				}
 				if (event.type === "turn_end" && (event.message as ErrorMessage).errorMessage) {
 					clearTimeout(timeout);
+					unsubscribe(); // Clean up listener on error
 					reject(new Error((event.message as ErrorMessage).errorMessage ?? "Unknown error"));
 				}
 			});
 
 			agent.prompt(prompt).catch((error) => {
 				clearTimeout(timeout);
+				unsubscribe(); // Clean up listener on promise rejection
 				if (verbose) {
 					console.log(`[DEBUG] Prompt error: ${error}`);
 				}
