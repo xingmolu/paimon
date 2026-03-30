@@ -797,6 +797,65 @@ checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
 
 ---
 
+## Day 26 — End-to-End Superpowers Integration (2026-03-30)
+
+**What happened:**
+- Implemented Issue #21: End-to-end superpowers integration in GitHub Actions
+- Created `src/superpowers.ts` module for installing superpowers skills from obra/superpowers
+- Modified `scripts/evolve.ts` to:
+  - Install superpowers before evolution starts
+  - Add skill matching phase (output available and matched skills before each iteration)
+  - Add skill usage audit logging to `session_plan/skill_audit.jsonl`
+- Enhanced `src/agent.ts` skill scanning to support multiple skill roots (project + superpowers)
+- Added skill matching instructions to the evolve prompt
+- Skills are now tagged with their source (project vs obra/superpowers) for clarity
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution ability
+- Superpowers skills provide structured workflows for common evolution tasks
+- Skill matching ensures the right workflow is used before task execution
+- Audit logging enables tracking of which superpowers are most valuable
+- End-to-end integration means skills work in GitHub Actions, not just locally
+
+**Technical details:**
+- Created `src/superpowers.ts`:
+  - `installSuperpowers()` - Clones obra/superpowers repo, copies MINIMUM_SKILLS to skills/superpowers
+  - `verifySuperpowers()` - Checks if skills are installed
+  - `getSuperpowersIndex()` - Returns XML format for prompt injection
+  - MINIMUM_SKILLS: using-superpowers, brainstorming, writing-plans, systematic-debugging, verification-before-completion, requesting-code-review
+- Modified `scripts/evolve.ts`:
+  - Added skill installation before evolution loop
+  - Added `matchSkills()` function for keyword-based skill matching
+  - Added `writeSkillAudit()` for JSONL audit logging
+  - Enhanced prompt with skill matching result before each iteration
+- Modified `src/agent.ts`:
+  - Enhanced `buildSkillsIndex()` to scan nested superpowers directory
+  - Added source attribute to skill XML (project vs obra/superpowers)
+  - Added skill matching instructions to evolve prompt
+
+**Superpowers Integration Flow:**
+```
+GitHub Actions starts
+  ↓
+evolve.ts installs superpowers
+  ↓
+buildSkillsIndex scans skills + superpowers
+  ↓
+Skill matching before each iteration
+  ↓
+Agent reads matched skills
+  ↓
+Task executed with skill workflow
+  ↓
+Audit logged to skill_audit.jsonl
+```
+
+**Next steps:**
+- ROADMAP Phase 5: Parallel task execution (final item)
+- Consider adding skill effectiveness metrics to MEMORY.md scorecard
+
+---
+
 ## Day 25 — Confidence-Based Scoring for Error Patterns (2026-03-30)
 
 **What happened:**

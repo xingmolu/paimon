@@ -260,12 +260,14 @@ function parseFrontmatter(content: string): { name?: string; description?: strin
  * Build a skills index from the skills directory.
  * Uses progressive disclosure: only includes name and description,
  * not full skill content. Agent loads full skill on-demand.
+ *
+ * Supports multiple skill roots: project skills + superpowers skills
  */
 function buildSkillsIndex(skillsDir: string): string {
 	if (!existsSync(skillsDir)) return "";
 
 	const entries = readdirSync(skillsDir, { withFileTypes: true });
-	const skills: Array<{ name: string; description: string; dir: string }> = [];
+	const skills: Array<{ name: string; description: string; dir: string; source?: string }> = [];
 
 	for (const entry of entries) {
 		if (entry.isDirectory()) {
@@ -273,11 +275,39 @@ function buildSkillsIndex(skillsDir: string): string {
 			if (existsSync(skillFile)) {
 				const content = readFileSync(skillFile, "utf-8");
 				const { name, description } = parseFrontmatter(content);
-				skills.push({
-					name: name || entry.name,
-					description: description || "No description",
-					dir: entry.name,
-				});
+
+				// Check if this is a superpowers skill (nested directory)
+				const isSuperpowers = entry.name === "superpowers";
+
+				if (isSuperpowers) {
+					// Scan superpowers subdirectory for skills
+					const superpowersDir = join(skillsDir, "superpowers");
+					const superpowersEntries = readdirSync(superpowersDir, { withFileTypes: true });
+
+					for (const spEntry of superpowersEntries) {
+						if (spEntry.isDirectory()) {
+							const spSkillFile = join(superpowersDir, spEntry.name, "SKILL.md");
+							if (existsSync(spSkillFile)) {
+								const spContent = readFileSync(spSkillFile, "utf-8");
+								const { name: spName, description: spDescription } = parseFrontmatter(spContent);
+								skills.push({
+									name: spName || spEntry.name,
+									description: spDescription || "No description",
+									dir: `superpowers/${spEntry.name}`,
+									source: "obra/superpowers",
+								});
+							}
+						}
+					}
+				} else {
+					// Regular project skill
+					skills.push({
+						name: name || entry.name,
+						description: description || "No description",
+						dir: entry.name,
+						source: "project",
+					});
+				}
 			}
 		}
 	}
@@ -285,14 +315,34 @@ function buildSkillsIndex(skillsDir: string): string {
 	if (skills.length === 0) return "";
 
 	// Generate XML format per Agent Skills standard
+	// Separate project skills from superpowers for clarity
 	let xml = "<skills>\n";
-	for (const skill of skills) {
+
+	// Project skills first
+	const projectSkills = skills.filter((s) => s.source === "project");
+	for (const skill of projectSkills) {
 		xml += "<skill>\n";
 		xml += `<name>${skill.name}</name>\n`;
 		xml += `<description>${skill.description}</description>\n`;
 		xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
+		xml += "<source>project</source>\n";
 		xml += "</skill>\n";
 	}
+
+	// Superpowers skills
+	const superpowersSkills = skills.filter((s) => s.source === "obra/superpowers");
+	if (superpowersSkills.length > 0) {
+		xml += "\n<!-- Superpowers skills from obra/superpowers -->\n";
+		for (const skill of superpowersSkills) {
+			xml += "<skill>\n";
+			xml += `<name>${skill.name}</name>\n`;
+			xml += `<description>${skill.description}</description>\n`;
+			xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
+			xml += "<source>obra/superpowers</source>\n";
+			xml += "</skill>\n";
+		}
+	}
+
 	xml += "</skills>";
 
 	return xml;
@@ -1936,6 +1986,21 @@ Before making changes, consider:
 
 **Do NOT just pick the first issue or ROADMAP item.** Instead, use evolution value scoring:
 
+#### Skill Matching (REQUIRED)
+Before selecting a task, check which skills apply:
+1. Review available skills in the Skills section below
+2. Identify skills that match the task type (debugging, planning, verification)
+3. Read matched skills BEFORE starting the task: \`read skills/<path>/SKILL.md\`
+4. If multiple skills match, use this priority: process skills → implementation skills
+
+Skill types and when to use them:
+- **systematic-debugging**: For fix/bug/debug tasks
+- **writing-plans**: For implement/plan/feature tasks
+- **brainstorming**: For design/explore/research tasks
+- **verification-before-completion**: Before saying DONE
+- **requesting-code-review**: After major changes
+- **using-superpowers**: General guidance on skill usage
+
 #### Task Types
 | Type | Description | Priority |
 |------|-------------|----------|
@@ -2098,7 +2163,7 @@ When done, say "DONE" and summarize.`;
 	const skillsDir = config.skillsDir || "skills";
 	const skillsIndex = buildSkillsIndex(skillsDir);
 	if (skillsIndex) {
-		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Important**: When a task matches a skill above, read it first:\n\n\`\`\`\nread skills/<name>/SKILL.md\n\`\`\`\n`;
+		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Skill Usage (REQUIRED)**:\n1. Before starting ANY task, identify which skills match\n2. Read matched skills first: \`read skills/<path>/SKILL.md\`\n3. Superpowers skills (source: obra/superpowers) provide workflows for common task types\n4. Project skills provide domain-specific guidance\n\n**Priority**: Process skills (debugging, planning) → Implementation skills\n\n`;
 	}
 
 	// Load project context from AGENTS.md / CLAUDE.md files

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { createAgent } from "../src/agent.js";
+import { MINIMUM_SKILLS, installSuperpowers, verifySuperpowers } from "../src/superpowers.js";
 
 const COLORS = {
 	reset: "\x1b[0m",
@@ -15,6 +17,100 @@ const COLORS = {
 
 const DATE = new Date().toISOString().split("T")[0];
 const MAX_ITERATIONS = 3;
+const SESSION_DIR = "session_plan";
+
+/**
+ * Skill audit logging for tracking superpowers usage
+ */
+interface SkillAuditEntry {
+	timestamp: string;
+	iteration: number;
+	task: string;
+	availableSkills: string[];
+	matchedSkills: string[];
+	usedSkills: string[];
+	result: string;
+}
+
+function writeSkillAudit(entry: SkillAuditEntry): void {
+	if (!existsSync(SESSION_DIR)) {
+		mkdirSync(SESSION_DIR, { recursive: true });
+	}
+
+	const auditPath = join(SESSION_DIR, "skill_audit.jsonl");
+	const line = `${JSON.stringify(entry)}\n`;
+	appendFileSync(auditPath, line, "utf-8");
+}
+
+/**
+ * Perform skill matching before task execution
+ * Returns the skills that match the current task
+ */
+function matchSkills(
+	taskDescription: string,
+	availableSkills: string[],
+): {
+	matchedSkills: string[];
+	reasoning: string;
+} {
+	const matchedSkills: string[] = [];
+	const reasoning: string[] = [];
+
+	// Simple keyword-based matching
+	const taskLower = taskDescription.toLowerCase();
+
+	// Match by task type keywords
+	if (taskLower.includes("fix") || taskLower.includes("bug") || taskLower.includes("debug")) {
+		matchedSkills.push("systematic-debugging");
+		reasoning.push("systematic-debugging: task involves fixing/debugging");
+	}
+
+	if (
+		taskLower.includes("plan") ||
+		taskLower.includes("implement") ||
+		taskLower.includes("feature")
+	) {
+		matchedSkills.push("writing-plans");
+		reasoning.push("writing-plans: task requires planning");
+	}
+
+	if (
+		taskLower.includes("brainstorm") ||
+		taskLower.includes("design") ||
+		taskLower.includes("explore")
+	) {
+		matchedSkills.push("brainstorming");
+		reasoning.push("brainstorming: task involves exploration/design");
+	}
+
+	if (
+		taskLower.includes("review") ||
+		taskLower.includes("verify") ||
+		taskLower.includes("complete")
+	) {
+		matchedSkills.push("verification-before-completion");
+		reasoning.push("verification-before-completion: task needs verification");
+	}
+
+	if (taskLower.includes("request review") || taskLower.includes("code review")) {
+		matchedSkills.push("requesting-code-review");
+		reasoning.push("requesting-code-review: task involves code review");
+	}
+
+	// Always suggest using-superpowers for guidance
+	if (
+		availableSkills.includes("using-superpowers") &&
+		!matchedSkills.includes("using-superpowers")
+	) {
+		matchedSkills.push("using-superpowers");
+		reasoning.push("using-superpowers: provides guidance on skill usage");
+	}
+
+	return {
+		matchedSkills,
+		reasoning: reasoning.join("; "),
+	};
+}
 
 function verifyBuild(): boolean {
 	try {
@@ -109,6 +205,26 @@ async function main() {
 	console.log(
 		`API Key found: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}\n`,
 	);
+
+	// Install superpowers before evolution
+	console.log(`${COLORS.cyan}→ Installing superpowers skills...${COLORS.reset}`);
+	const installResult = installSuperpowers({
+		targetDir: "skills/superpowers",
+		skills: MINIMUM_SKILLS,
+	});
+	if (installResult.success) {
+		console.log(`${COLORS.green}  ✓ ${installResult.message}${COLORS.reset}`);
+		console.log(
+			`${COLORS.dim}  Skills: ${installResult.installedSkills.join(", ")}${COLORS.reset}\n`,
+		);
+	} else {
+		console.log(`${COLORS.yellow}  ⚠ ${installResult.message}${COLORS.reset}`);
+		console.log(`${COLORS.dim}  Continuing without superpowers...${COLORS.reset}\n`);
+	}
+
+	// Verify installation
+	const verifyResult = verifySuperpowers({ targetDir: "skills/superpowers" });
+	console.log(`${COLORS.dim}Superpowers status: ${verifyResult.message}${COLORS.reset}\n`);
 
 	// Build
 	console.log("→ Building...");
@@ -231,6 +347,39 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 	for (let i = 1; i <= MAX_ITERATIONS; i++) {
 		console.log(`${COLORS.cyan}=== Iteration ${i}/${MAX_ITERATIONS} ===${COLORS.reset}\n`);
 
+		// Skill matching phase
+		const availableSkills = [
+			...verifyResult.skills,
+			"evolve",
+			"research",
+			"self-improve",
+			"using-superpowers",
+		];
+		const skillMatchResult = matchSkills(issues, availableSkills);
+
+		console.log(`${COLORS.cyan}→ Skill Matching${COLORS.reset}`);
+		console.log(`${COLORS.dim}  Available: ${availableSkills.join(", ")}${COLORS.reset}`);
+		console.log(
+			`${COLORS.dim}  Matched: ${skillMatchResult.matchedSkills.join(", ") || "(none)"}${COLORS.reset}`,
+		);
+		console.log(
+			`${COLORS.dim}  Reasoning: ${skillMatchResult.reasoning || "(no direct matches)"}${COLORS.reset}\n`,
+		);
+
+		// Create enhanced prompt with skill matching output
+		const skillMatchingPrompt = `
+## Skill Matching Result (Iteration ${i})
+
+**Available Skills:** ${availableSkills.join(", ")}
+
+**Matched Skills:** ${skillMatchResult.matchedSkills.join(", ") || "None directly matched"}
+
+**Reasoning:** ${skillMatchResult.reasoning || "No keyword-based matches found. Consider reading skills/using-superpowers/SKILL.md for guidance."}
+
+**Recommendation:** If matched skills exist, read them first with \`read skills/superpowers/<name>/SKILL.md\` before starting the task.
+
+`;
+
 		const { run } = createAgent({
 			apiKey,
 			model: process.env.PAIMON_MODEL || "glm-5",
@@ -244,12 +393,23 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 		let resultText = "";
 
 		try {
-			resultText = await run(prompt);
+			resultText = await run(skillMatchingPrompt + prompt);
 			console.log(`\n${resultText}\n`);
 		} catch (e) {
 			runError = String(e);
 			console.error(`${COLORS.red}Error: ${e}${COLORS.reset}`);
 		}
+
+		// Write skill audit entry
+		writeSkillAudit({
+			timestamp: new Date().toISOString(),
+			iteration: i,
+			task: issues.slice(0, 200),
+			availableSkills,
+			matchedSkills: skillMatchResult.matchedSkills,
+			usedSkills: [], // Would need agent output parsing to determine actual usage
+			result: runError ? `Error: ${runError}` : "Completed",
+		});
 
 		// Check if changes were made
 		const status = execSync("git status --porcelain", { encoding: "utf-8" });
