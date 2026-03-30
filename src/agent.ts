@@ -39,6 +39,18 @@ interface PlanState {
 // Global plan state (shared across agent runs)
 let currentPlan: PlanState | null = null;
 
+/**
+ * Assessment result for self-review
+ */
+interface AssessmentResult {
+	buildStatus: "pass" | "fail" | "unknown";
+	testStatus: "pass" | "fail" | "unknown";
+	lintStatus: "pass" | "fail" | "unknown";
+	changedFiles: string[];
+	timestamp: string;
+	recommendations: string[];
+}
+
 export interface PaimonConfig {
 	apiKey: string;
 	model: string;
@@ -724,6 +736,166 @@ const tools: AgentTool[] = [
 			}
 		},
 	},
+	{
+		name: "assess",
+		label: "Self-Assessment",
+		description:
+			"Run a self-assessment check to evaluate code changes. Checks build, tests, lint, and provides recommendations. Use this before completing a self-evolution task.",
+		parameters: Type.Object({
+			runBuild: Type.Optional(
+				Type.Boolean({ description: "Run npm run build (default: true)" }),
+			),
+			runTests: Type.Optional(
+				Type.Boolean({ description: "Run npm test (default: true)" }),
+			),
+			runLint: Type.Optional(
+				Type.Boolean({ description: "Run npm run lint (default: true)" }),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<AssessmentResult>> => {
+			const {
+				runBuild = true,
+				runTests = true,
+				runLint = true,
+			} = params as {
+				runBuild?: boolean;
+				runTests?: boolean;
+				runLint?: boolean;
+			};
+
+			const result: AssessmentResult = {
+				buildStatus: "unknown",
+				testStatus: "unknown",
+				lintStatus: "unknown",
+				changedFiles: [],
+				timestamp: new Date().toISOString(),
+				recommendations: [],
+			};
+
+			try {
+				// Get changed files
+				try {
+					const statusOutput = execSync("git status --porcelain", {
+						encoding: "utf-8",
+						timeout: 10000,
+					});
+					result.changedFiles = statusOutput
+						.trim()
+						.split("\n")
+						.filter(Boolean)
+						.map((line) => line.slice(3)); // Remove status prefix (M, A, etc.)
+				} catch {
+					// Not in a git repo or git not available
+					result.recommendations.push("Could not determine changed files - git not available");
+				}
+
+				// Run build
+				if (runBuild) {
+					try {
+						execSync("npm run build", {
+							encoding: "utf-8",
+							timeout: 120000,
+						});
+						result.buildStatus = "pass";
+					} catch (e) {
+						result.buildStatus = "fail";
+						const error = e instanceof Error ? e.message : String(e);
+						result.recommendations.push(`Build failed: ${error.slice(0, 200)}`);
+					}
+				}
+
+				// Run tests
+				if (runTests) {
+					try {
+						execSync("npm test -- --run", {
+							encoding: "utf-8",
+							timeout: 120000,
+						});
+						result.testStatus = "pass";
+					} catch (e) {
+						result.testStatus = "fail";
+						const error = e instanceof Error ? e.message : String(e);
+						result.recommendations.push(`Tests failed: ${error.slice(0, 200)}`);
+					}
+				}
+
+				// Run lint
+				if (runLint) {
+					try {
+						execSync("npm run lint", {
+							encoding: "utf-8",
+							timeout: 60000,
+						});
+						result.lintStatus = "pass";
+					} catch (e) {
+						result.lintStatus = "fail";
+						const error = e instanceof Error ? e.message : String(e);
+						result.recommendations.push(`Lint failed: ${error.slice(0, 200)}`);
+					}
+				}
+
+				// Check for dangerous patterns in changed files
+				for (const file of result.changedFiles) {
+					if (file.endsWith(".ts") || file.endsWith(".js")) {
+						try {
+							const content = readFileSync(file, "utf-8");
+							if (content.includes("eval(")) {
+								result.recommendations.push(`⚠️ Security: eval() found in ${file}`);
+							}
+							if (content.includes("exec(") && content.includes("user")) {
+								result.recommendations.push(`⚠️ Security: Potential exec() with user input in ${file}`);
+							}
+						} catch {
+							// File might not exist or be readable
+						}
+					}
+				}
+
+				// Generate summary
+				const allPassed =
+					result.buildStatus === "pass" &&
+					result.testStatus === "pass" &&
+					result.lintStatus === "pass";
+
+				const statusEmoji = {
+					pass: "✅",
+					fail: "❌",
+					unknown: "⏭️",
+				};
+
+				let output = `📊 Self-Assessment Report\n`;
+				output += `Generated: ${new Date(result.timestamp).toLocaleString()}\n`;
+				output += "─".repeat(40) + "\n";
+				output += `${statusEmoji[result.buildStatus]} Build: ${result.buildStatus}\n`;
+				output += `${statusEmoji[result.testStatus]} Tests: ${result.testStatus}\n`;
+				output += `${statusEmoji[result.lintStatus]} Lint: ${result.lintStatus}\n`;
+				output += `📄 Changed files: ${result.changedFiles.length > 0 ? result.changedFiles.join(", ") : "(none)"}\n`;
+				output += "─".repeat(40) + "\n";
+
+				if (allPassed && result.recommendations.length === 0) {
+					output += `🎉 All checks passed! Ready to commit.\n`;
+				} else if (result.recommendations.length > 0) {
+					output += `⚠️ Recommendations:\n`;
+					for (const rec of result.recommendations) {
+						output += `  - ${rec}\n`;
+					}
+				} else if (!allPassed) {
+					output += `❌ Some checks failed. Fix issues before committing.\n`;
+				}
+
+				return {
+					content: [{ type: "text", text: output }],
+					details: result,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error during assessment: ${error}` }],
+					details: result,
+				};
+			}
+		},
+	},
 ];
 
 /**
@@ -915,7 +1087,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -933,6 +1105,8 @@ You can help users with various tasks like reading files, writing code, executin
 - ls: List directory contents
 - http: Make HTTP requests to fetch web content or call APIs
 - plan: Create and manage step-by-step plans for complex tasks
+- assess: Run self-assessment checks (build, tests, lint) - use before completion
+- assess: Run self-assessment checks (build, tests, lint)
 
 ## Multi-Step Reasoning
 
@@ -980,7 +1154,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -1081,7 +1255,21 @@ Before making changes, consider:
 - Run \`npm test -- --run\` to verify all tests pass
 - Fix any issues
 
-### 5. Completion
+### 5. Self-Assessment (REQUIRED)
+Before saying DONE, use the assess tool to evaluate your changes:
+\`\`\`
+assess({})
+\`\`\`
+This will check:
+- Build passes
+- Tests pass  
+- Lint passes
+- No security issues in changed files
+- Lists changed files
+
+**Only proceed to Completion if all checks pass.**
+
+### 6. Completion
 - Say "DONE" and summarize your work
 - Update JOURNAL.md with what you did
 - Update MEMORY.md if you learned something

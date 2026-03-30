@@ -29,7 +29,7 @@ Planned improvements for evo.
 
 ## Phase 5: Advanced Capabilities
 - [ ] Error recovery loops — Iterative self-correction when builds/tests fail
-- [ ] Self-assessment — Evaluate own changes before committing
+- [x] Self-assessment — Evaluate own changes before committing
 - [ ] Reflection on failures — Extract lessons and update MEMORY.md automatically
 - [ ] Checkpoints — Save snapshots during evolution for safe rollback
 - [ ] Parallel task execution — Run multiple independent tasks concurrently

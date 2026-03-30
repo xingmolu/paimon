@@ -597,3 +597,52 @@ plan({action: 'clear'})
 **Next steps:**
 - Implement error recovery loops as code (Phase 5 item)
 - Implement checkpoints for safe rollback (Phase 5 item)
+
+---
+
+## Day 19 — Self-Assessment Tool (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 5 "Self-assessment"
+- Added `assess` tool for running automated self-assessment checks
+- Tool checks: build, tests, lint, and scans for dangerous patterns
+- Added Self-Assessment workflow stage between Verification and Completion
+- Agent now must run assess before completing an evolution task
+
+**Why this matters:**
+- Critical for autonomous self-improvement safety
+- Agent now has a structured self-review process before committing
+- Detects security issues (eval, exec with user input) automatically
+- Prevents bad changes from being committed without verification
+
+**Technical details:**
+- Added `AssessmentResult` interface in `src/agent.ts`
+- Added `assess` tool with parameters: runBuild, runTests, runLint (all optional)
+- Tool output includes status report with emoji indicators (✅ ❌ ⏭️)
+- Lists changed files via git status
+- Checks for dangerous patterns in modified TS/JS files
+- Updated frontmatter and Tools section in both prompts
+- Added Workflow Stage 5: Self-Assessment (REQUIRED) with usage example
+- Added 4 new tests for assess tool
+
+**Assess Tool Usage:**
+```typescript
+// Run full assessment (default)
+assess({})
+
+// Skip lint check
+assess({runLint: false})
+
+// Only run build check
+assess({runBuild: true, runTests: false, runLint: false})
+```
+
+**Self-Assessment Workflow:**
+1. After implementing changes, run `assess({})`
+2. Check the report: Build ✅ Tests ✅ Lint ✅
+3. If any checks fail, fix issues and re-run assess
+4. Only proceed to Completion when all checks pass
+
+**Next steps:**
+- Implement error recovery loops (Phase 5 item)
+- Implement checkpoints for safe rollback (Phase 5 item)

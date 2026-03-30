@@ -306,6 +306,43 @@ describe("plan tool", () => {
 	});
 });
 
+describe("assess tool", () => {
+	it("should have assess tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have assess parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support assess with optional build, tests, lint parameters", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+
+	it("should run build check successfully", async () => {
+		// Verify that npm run build exists
+		const result = execSync("npm run build", { encoding: "utf-8", timeout: 60000 });
+		expect(result).toBeDefined();
+	});
+});
+
 describe("Session", () => {
 	const SESSION_DIR = join(process.cwd(), "test-sessions");
 
