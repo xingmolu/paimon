@@ -32,7 +32,7 @@ Planned improvements for evo.
 - [x] Self-assessment — Evaluate own changes before committing
 - [x] Reflection on failures — Extract lessons and update MEMORY.md automatically
 - [x] Checkpoints — Save snapshots during evolution for safe rollback
-- [ ] Parallel task execution — Run multiple independent tasks concurrently
+- [x] Parallel task execution — Run multiple independent tasks concurrently
 
 ---
 

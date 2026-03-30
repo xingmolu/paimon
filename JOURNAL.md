@@ -4,6 +4,64 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 27 — Parallel Task Execution (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 5 "Parallel task execution"
+- Added `parallel` tool for running multiple independent shell commands concurrently
+- Inspired by dispatching-parallel-agents skill from obra/superpowers
+- Uses Promise.all to coordinate concurrent execution
+- Added 5 new tests for parallel tool
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution efficiency
+- Agent can now run multiple independent tasks simultaneously
+- Time savings: lint + typecheck + tests can run in parallel instead of sequentially
+- Completes ROADMAP Phase 5 - all Advanced Capabilities are now implemented
+
+**Technical details:**
+- Modified `src/agent.ts`:
+  - Added `spawn` import from node:child_process
+  - Added `ParallelTaskResult` and `ParallelResult` interfaces
+  - Added `parallel` tool with tasks array and timeout parameters
+  - Updated frontmatter and system prompts to document parallel tool
+- Modified `src/agent.test.ts`:
+  - Added 5 tests for parallel tool
+
+**Parallel Tool Usage:**
+```typescript
+parallel({
+  tasks: [
+    { name: "Lint check", command: "npm run lint" },
+    { name: "Type check", command: "npm run typecheck" },
+    { name: "Unit tests", command: "npm test -- --run" }
+  ],
+  timeout: 120000
+})
+```
+
+**Output Format:**
+```
+⚡ Parallel Execution Results
+──────────────────────────────────────────────────
+Total time: 5.23s
+Tasks: 3 (2 ✅, 1 ❌, 0 ⏱️)
+──────────────────────────────────────────────────
+
+✅ Lint check
+   Command finished in 3.45s (exit code: 0)
+   
+❌ Type check
+   Command finished in 4.12s (exit code: 1)
+   Error: ...
+```
+
+**Next steps:**
+- All ROADMAP Phase 5 items are complete
+- Consider adding Phase 6 for future capabilities
+
+---
+
 ## Day 0 — Project Creation
 
 **What happened:**

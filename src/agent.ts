@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import { setMaxListeners } from "node:events";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import http from "node:http";
@@ -85,6 +85,30 @@ interface ErrorPattern {
 	suggestion: string;
 	/** Confidence score 0-100 (higher = more confident this is a real issue) */
 	confidence: number;
+}
+
+/**
+ * Result from a parallel task execution
+ */
+interface ParallelTaskResult {
+	name: string;
+	status: "success" | "failed" | "timeout";
+	exitCode: number | null;
+	output: string;
+	error?: string;
+	duration: number;
+}
+
+/**
+ * Overall result from parallel tool
+ */
+interface ParallelResult {
+	success: boolean;
+	results: ParallelTaskResult[];
+	totalDuration: number;
+	successCount: number;
+	failedCount: number;
+	timedOutCount: number;
 }
 
 /**
@@ -1639,6 +1663,161 @@ Each learning should be:
 			}
 		},
 	},
+	{
+		name: "parallel",
+		label: "Execute Tasks in Parallel",
+		description:
+			"Run multiple independent shell commands concurrently. Use this for tasks that have no dependencies or shared state - like running lint, typecheck, and tests simultaneously. Inspired by dispatching-parallel-agents from superpowers.",
+		parameters: Type.Object({
+			tasks: Type.Array(
+				Type.Object({
+					name: Type.String({ description: "Task name for identification" }),
+					command: Type.String({ description: "Shell command to execute" }),
+				}),
+				{ description: "Array of independent tasks to run concurrently" },
+			),
+			timeout: Type.Optional(
+				Type.Number({ description: "Overall timeout in milliseconds (default: 120000)" }),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<ParallelResult>> => {
+			const { tasks, timeout = 120000 } = params as {
+				tasks: Array<{ name: string; command: string }>;
+				timeout?: number;
+			};
+
+			if (tasks.length === 0) {
+				return {
+					content: [{ type: "text", text: "Error: No tasks provided" }],
+					details: {
+						success: false,
+						results: [],
+						totalDuration: 0,
+						successCount: 0,
+						failedCount: 0,
+						timedOutCount: 0,
+					},
+				};
+			}
+
+			const startTime = Date.now();
+
+			// Execute all tasks concurrently using Promise.all
+			const taskPromises = tasks.map((task) => {
+				return new Promise<ParallelTaskResult>((resolve) => {
+					const taskStart = Date.now();
+					let output = "";
+					let errorOutput = "";
+
+					// Use spawn for better control over stdout/stderr
+					const proc = spawn(task.command, [], {
+						shell: true,
+						timeout: timeout,
+					});
+
+					proc.stdout.on("data", (data: Buffer) => {
+						output += data.toString();
+					});
+
+					proc.stderr.on("data", (data: Buffer) => {
+						errorOutput += data.toString();
+					});
+
+					proc.on("close", (code: number | null) => {
+						resolve({
+							name: task.name,
+							status: code === 0 ? "success" : "failed",
+							exitCode: code,
+							output: output.slice(0, 5000), // Limit output size
+							error: errorOutput.slice(0, 1000),
+							duration: Date.now() - taskStart,
+						});
+					});
+
+					proc.on("error", (err: Error) => {
+						resolve({
+							name: task.name,
+							status: "failed",
+							exitCode: null,
+							output: "",
+							error: err.message,
+							duration: Date.now() - taskStart,
+						});
+					});
+				});
+			});
+
+			// Wait for all tasks with overall timeout
+			let results: ParallelTaskResult[];
+			try {
+				results = await Promise.all(taskPromises);
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error executing parallel tasks: ${error}` }],
+					details: {
+						success: false,
+						results: [],
+						totalDuration: Date.now() - startTime,
+						successCount: 0,
+						failedCount: 0,
+						timedOutCount: 0,
+					},
+				};
+			}
+
+			const totalDuration = Date.now() - startTime;
+			const successCount = results.filter((r) => r.status === "success").length;
+			const failedCount = results.filter((r) => r.status === "failed").length;
+			const timedOutCount = results.filter((r) => r.status === "timeout").length;
+
+			// Format output
+			const statusEmoji = {
+				success: "✅",
+				failed: "❌",
+				timeout: "⏱️",
+			};
+
+			let output = "⚡ Parallel Execution Results\n";
+			output += `${"─".repeat(50)}\n`;
+			output += `Total time: ${(totalDuration / 1000).toFixed(2)}s\n`;
+			output += `Tasks: ${results.length} (${successCount} ✅, ${failedCount} ❌, ${timedOutCount} ⏱️)\n`;
+			output += `${"─".repeat(50)}\n\n`;
+
+			for (const result of results) {
+				output += `${statusEmoji[result.status]} ${result.name}\n`;
+				output += `   Command finished in ${(result.duration / 1000).toFixed(2)}s (exit code: ${result.exitCode})\n`;
+				if (result.output) {
+					output += `   Output: ${result.output.slice(0, 200)}${result.output.length > 200 ? "..." : ""}\n`;
+				}
+				if (result.error) {
+					output += `   Error: ${result.error}\n`;
+				}
+				output += "\n";
+			}
+
+			const allSuccess = successCount === results.length;
+			if (allSuccess) {
+				output += "🎉 All tasks completed successfully!\n";
+			} else {
+				output += `⚠️ ${failedCount + timedOutCount} tasks failed or timed out.\n`;
+			}
+
+			const result: ParallelResult = {
+				success: allSuccess,
+				results,
+				totalDuration,
+				successCount,
+				failedCount,
+				timedOutCount,
+			};
+
+			return {
+				content: [{ type: "text", text: output }],
+				details: result,
+			};
+		},
+	},
 ];
 
 /**
@@ -1830,7 +2009,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -1851,6 +2030,7 @@ You can help users with various tasks like reading files, writing code, executin
 - assess: Run self-assessment checks (build, tests, lint) - use before completion. Supports \`maxAttempts\` for error recovery loops.
 - reflect: Analyze failures and extract lessons for MEMORY.md - use after failed assessments.
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
+- parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 
 ## Multi-Step Reasoning
 
@@ -1898,7 +2078,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -1919,6 +2099,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - assess: Run self-assessment checks before completion. Use \`maxAttempts\` for error recovery.
 - reflect: Extract lessons from failures and update MEMORY.md automatically.
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
+- parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 
 ## Multi-Step Reasoning
 
