@@ -153,10 +153,10 @@ async function runOnce(
 	sessionManager.save("user", prompt);
 
 	try {
-		const result = await run(prompt, debug);
+		const result = await run(prompt, debug, (delta) => process.stdout.write(delta));
 		// Save assistant response
 		sessionManager.save("assistant", result);
-		console.log(`\n${result}\n`);
+		console.log(`\n`);
 	} catch (error) {
 		console.error(
 			`${COLORS.red}Error: ${error instanceof Error ? error.message : String(error)}${COLORS.reset}`,
@@ -221,11 +221,11 @@ async function runRepl(mode: "chat" | "evolve", sessionMode: "new" | "continue" 
 		const userMsg = sessionManager.save("user", trimmed, lastAssistantId);
 
 		try {
-			const result = await run(trimmed, debug);
+			const result = await run(trimmed, debug, (delta) => process.stdout.write(delta));
 			// Save assistant response with reference to user message
 			const assistantMsg = sessionManager.save("assistant", result, userMsg.id);
 			lastAssistantId = assistantMsg.id;
-			console.log(`\n${result}\n`);
+			console.log(`\n`);
 		} catch (error) {
 			console.error(
 				`${COLORS.red}Error: ${error instanceof Error ? error.message : String(error)}${COLORS.reset}\n`,

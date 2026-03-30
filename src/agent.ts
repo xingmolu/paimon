@@ -2339,7 +2339,7 @@ export function createAgent(
 	sessionManager?: SessionManager,
 ): {
 	agent: Agent;
-	run: (prompt: string, verbose?: boolean) => Promise<string>;
+	run: (prompt: string, verbose?: boolean, onStream?: (delta: string) => void) => Promise<string>;
 	/** Get context status for debugging */
 	getContextStatus: () => { messages: number; tokens: number; hasSummary: boolean };
 } {
@@ -2368,7 +2368,11 @@ export function createAgent(
 	// Provide API key dynamically for the custom provider
 	agent.getApiKey = () => config.apiKey;
 
-	const run = async (prompt: string, verbose = false): Promise<string> => {
+	const run = async (
+		prompt: string,
+		verbose = false,
+		onStream?: (delta: string) => void,
+	): Promise<string> => {
 		// Track user message
 		contextManager.addMessage("user", prompt);
 
@@ -2415,6 +2419,13 @@ export function createAgent(
 			const unsubscribe = agent.subscribe((event: AgentEvent) => {
 				if (verbose) {
 					console.log(`[DEBUG] Event: ${event.type}`);
+				}
+
+				if (event.type === "message_update" && onStream) {
+					const msgEvent = event.assistantMessageEvent;
+					if (msgEvent.type === "text_delta") {
+						onStream(msgEvent.delta);
+					}
 				}
 
 				// Only use message_end to avoid duplicating accumulated text
