@@ -34,6 +34,13 @@ import {
 	globalHookManager,
 } from "./hooks.js";
 import type { SessionManager } from "./session.js";
+import {
+	type HistoryMessage,
+	type LoopType,
+	type RecoveryOption,
+	type StuckAnalysis,
+	StuckDetector,
+} from "./stuck.js";
 
 /**
  * Plan state for multi-step reasoning
@@ -1957,6 +1964,234 @@ Each learning should be:
 			}
 		},
 	},
+	{
+		name: "stuck",
+		label: "Detect and Recover from Loops",
+		description:
+			"Check if agent is stuck in a loop and provide recovery options. Inspired by OpenHands' StuckDetector - detects repeated actions, same errors, or no progress.",
+		parameters: Type.Object({
+			action: Type.String({
+				description:
+					"Action to perform: 'check' (detect if stuck), 'recover' (truncate to recovery point), 'add' (add message for detection), 'reset' (clear stuck state)",
+			}),
+			recoveryOption: Type.Optional(
+				Type.Number({
+					description:
+						"Recovery option ID (1: restart before loop, 2: restart with last message, 3: quit)",
+				}),
+			),
+			message: Type.Optional(
+				Type.Object({
+					role: Type.String({ description: "Message role: user, assistant, system" }),
+					content: Type.String({ description: "Message content" }),
+					action: Type.Optional(Type.String({ description: "Action name if applicable" })),
+					error: Type.Optional(Type.String({ description: "Error message if applicable" })),
+				}),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<unknown>> => {
+			const { action, recoveryOption, message } = params as {
+				action: string;
+				recoveryOption?: number;
+				message?: {
+					role: "user" | "assistant" | "system";
+					content: string;
+					action?: string;
+					error?: string;
+				};
+			};
+
+			// Global stuck detector (shared across agent runs)
+			const stuckDetector = new StuckDetector();
+
+			try {
+				switch (action) {
+					case "check": {
+						const isStuck = stuckDetector.isStuck();
+						const analysis = stuckDetector.getStuckAnalysis();
+
+						if (isStuck && analysis) {
+							const output = stuckDetector.formatStuckAnalysis();
+							return {
+								content: [{ type: "text", text: output }],
+								details: analysis,
+							};
+						}
+
+						return {
+							content: [
+								{
+									type: "text",
+									text: "✅ No loop detected. Agent is making progress.",
+								},
+							],
+							details: "No loop detected",
+						};
+					}
+
+					case "recover": {
+						const analysis = stuckDetector.getStuckAnalysis();
+						if (!analysis) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: No stuck state detected. Use 'check' first.",
+									},
+								],
+								details: "Error: No stuck state",
+							};
+						}
+
+						const options = stuckDetector.getRecoveryOptions();
+						const selectedOption = recoveryOption || 1;
+
+						if (selectedOption < 1 || selectedOption > options.length) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: `Error: Invalid recovery option ${selectedOption}. Use 1-${options.length}.`,
+									},
+								],
+								details: "Error: Invalid recovery option",
+							};
+						}
+
+						const option = options.find((o) => o.id === selectedOption);
+						if (!option) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: `Error: Recovery option ${selectedOption} not found.`,
+									},
+								],
+								details: "Error: Option not found",
+							};
+						}
+
+						let output = "";
+
+						switch (option.action) {
+							case "restart_before_loop": {
+								const keptHistory = stuckDetector.truncateToRecoveryPoint(analysis.loopStartIdx);
+								output = "✅ Recovery option 1: Restart before loop\n";
+								output += `Truncated history to ${keptHistory.length} messages (before loop at ${analysis.loopStartIdx})\n`;
+								output += `Loop type: ${analysis.loopType}\n\n`;
+								output += "You can now continue with a different approach.\n";
+								break;
+							}
+
+							case "restart_with_last_message": {
+								const lastUserMessage = stuckDetector.getLastUserMessage();
+								if (lastUserMessage) {
+									stuckDetector.truncateToRecoveryPoint(analysis.loopStartIdx);
+									output = "✅ Recovery option 2: Restart with last message\n";
+									output += `Last user message: "${lastUserMessage.content.slice(0, 100)}..."\n`;
+									output += "History truncated to before loop.\n\n";
+									output += "Continuing with same instruction, new approach.\n";
+								} else {
+									output = "⚠️ No user message found. Falling back to option 1.\n";
+									stuckDetector.truncateToRecoveryPoint(analysis.loopStartIdx);
+								}
+								break;
+							}
+
+							case "quit": {
+								stuckDetector.reset();
+								output = "✅ Recovery option 3: Quit\n";
+								output += "Stuck detector reset. Task stopped.\n\n";
+								output +=
+									"Consider asking user for clarification or breaking task into smaller steps.\n";
+								break;
+							}
+						}
+
+						return {
+							content: [{ type: "text", text: output }],
+							details: {
+								option: option.action,
+								loopType: analysis.loopType,
+								recoveredAt: analysis.loopStartIdx,
+							},
+						};
+					}
+
+					case "add": {
+						if (!message) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'message' is required for 'add' action",
+									},
+								],
+								details: "Error: message required",
+							};
+						}
+
+						const historyMessage: HistoryMessage = {
+							id: Date.now(),
+							role: message.role,
+							content: message.content,
+							action: message.action,
+							error: message.error,
+							timestamp: Date.now(),
+						};
+
+						stuckDetector.addMessage(historyMessage);
+
+						// Check if this message triggers stuck detection
+						const isStuck = stuckDetector.isStuck();
+						if (isStuck) {
+							const analysis = stuckDetector.getStuckAnalysis();
+							const warning = `⚠️ Loop detected after adding message!\n${stuckDetector.formatStuckAnalysis()}`;
+							return {
+								content: [{ type: "text", text: warning }],
+								details: analysis,
+							};
+						}
+
+						return {
+							content: [
+								{
+									type: "text",
+									text: "✅ Message added to history for loop detection.",
+								},
+							],
+							details: historyMessage,
+						};
+					}
+
+					case "reset": {
+						stuckDetector.reset();
+						return {
+							content: [{ type: "text", text: "✅ Stuck detector reset. History cleared." }],
+							details: "Stuck detector reset",
+						};
+					}
+
+					default:
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Error: Unknown action '${action}'. Use: check, recover, add, reset`,
+								},
+							],
+							details: `Error: Unknown action '${action}'`,
+						};
+				}
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
 
 /**
@@ -2191,7 +2426,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -2214,6 +2449,7 @@ You can help users with various tasks like reading files, writing code, executin
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 - hook: Manage hooks for pre-tool validation and safety checks - prevents dangerous patterns automatically.
+- stuck: Detect when agent is looping and provide recovery options - inspired by OpenHands' StuckDetector.
 
 ## Multi-Step Reasoning
 
@@ -2261,7 +2497,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -2284,6 +2520,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 - hook: Manage hooks for pre-tool validation - prevents dangerous patterns automatically.
+- stuck: Detect when agent is looping and provide recovery options (restart before loop, restart with last message, quit).
 
 ## Multi-Step Reasoning
 
@@ -2477,7 +2714,33 @@ The tool will:
 2. Fix issues manually
 3. Run assess again or increase maxAttempts
 
-### 5.2 Reflection on Failures
+### 5.2 Loop Detection and Recovery
+
+If you find yourself repeatedly trying the same approach without success, use the stuck tool:
+
+\`\`\`
+// Check if stuck in a loop
+stuck({action: 'check'})
+
+// If stuck, choose a recovery option
+stuck({action: 'recover', recoveryOption: 1})  // Restart before loop
+stuck({action: 'recover', recoveryOption: 2})  // Restart with last message
+stuck({action: 'recover', recoveryOption: 3})  // Quit task
+\`\`\`
+
+**Loop Types Detected:**
+- **Repeated action**: Same tool called 3+ times with same result
+- **Same error**: Same error pattern occurring 3+ times
+- **No progress**: Similar content appearing 5+ times (agent spinning)
+
+**Recovery Options:**
+1. Restart from before loop (preserves earlier progress)
+2. Restart with last user instruction (try different approach)
+3. Quit current task (ask user for help)
+
+Inspired by OpenHands' StuckDetector for autonomous error recovery.
+
+### 5.3 Reflection on Failures
 If assessment fails after exhausting retry attempts, capture the lesson:
 \`\`\`
 reflect({

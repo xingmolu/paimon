@@ -42,6 +42,11 @@ Planned improvements for evo.
 - [x] plan-architecture skill — Architecture planning before implementation (inspired by Claude Code's code-architect)
 - [x] review-changes skill — Code review with confidence-based scoring (inspired by Claude Code's code-reviewer)
 
+## Phase 8: Loop Detection & Recovery (OpenHands Pattern)
+- [x] Stuck detector — Detect when agent is looping (repeated actions, same errors)
+- [x] Loop recovery — Multiple recovery options: restart before loop, restart with last instruction, quit
+- [x] Memory truncation — Truncate history to recovery points
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

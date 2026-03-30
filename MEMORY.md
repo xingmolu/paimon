@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Loop detection & recovery | ~20m | ❌ | lint | Yes | High | evolve, research | autonomous-recovery |
 | 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | evolve, explore-code, plan-architecture, review-changes | exploration-planning-review |
 | 2026-03-30 | capability | Hook system for pre-tool validation | ~15m | ✅ | lint | Yes | High | evolve, systematic-debugging | proactive-safety |
 | 2026-03-30 | capability | Parallel task execution | ~20m | ✅ | TS | Yes | High | evolve, writing-plans, dispatching-parallel-agents | concurrent-operations |
@@ -44,44 +45,66 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 18/18 = 100% (last iteration)
-- Average Time: ~13 minutes
-- Rework Rate: 4/18 = 22%
+- First Try Success Rate: 17/19 = 89% (last iteration)
+- Average Time: ~14 minutes
+- Rework Rate: 5/19 = 26%
 
 ### Capability Metrics
-- Capability Tasks: 17/18 = 94%
-- High Impact Capabilities: 10/17 = 59%
-- Capability Velocity: 17 capabilities in 2 days = 8.5/day
+- Capability Tasks: 18/19 = 95%
+- High Impact Capabilities: 11/18 = 61%
+- Capability Velocity: 18 capabilities in 2 days = 9/day
 
 ### Error Analysis
 - TypeScript Errors: 1
 - Test Failures: 0
-- Lint Issues: 4
+- Lint Issues: 5
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 15 iterations, 100% success rate when used
+1. **evolve** - Used in 16 iterations, 94% success rate when used
 2. **using-superpowers** - Used in 3 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 4 iterations, planning workflow
-5. **verification-before-completion** - Used in 1 iteration, quality check
+5. **research** - Used in 2 iterations, competitor research
+6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Hook System** - High impact, enables proactive safety before tool execution
-2. **Checkpoints** - High impact, enables safer risky experiments
-3. **Reflection** - High impact, enables auto-learning from failures
-4. **Error Recovery** - High impact, enables self-correction loops
-5. **Self-Assessment** - High impact, enables pre-commit verification
-6. **Evolution Scoring** - High impact, enables better task selection
-7. **Confidence-Based Scoring** - High impact, enables better error filtering
-8. **Superpowers Integration** - High impact, enables skill-based workflows
-9. **Parallel Execution** - High impact, enables concurrent operations
-10. **Specialized Subagents** - High impact, enables exploration-planning-review
-11. **Skill Effectiveness Tracking** - High impact, enables skill analytics
+1. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
+2. **Hook System** - High impact, enables proactive safety before tool execution
+3. **Checkpoints** - High impact, enables safer risky experiments
+4. **Reflection** - High impact, enables auto-learning from failures
+5. **Error Recovery** - High impact, enables self-correction loops
+6. **Self-Assessment** - High impact, enables pre-commit verification
+7. **Evolution Scoring** - High impact, enables better task selection
+8. **Confidence-Based Scoring** - High impact, enables better error filtering
+9. **Superpowers Integration** - High impact, enables skill-based workflows
+10. **Parallel Execution** - High impact, enables concurrent operations
+11. **Specialized Subagents** - High impact, enables exploration-planning-review
+12. **Skill Effectiveness Tracking** - High impact, enables skill analytics
 
 ---
 
 ## Learnings
+
+### 2026-03-30: Loop Detection and Recovery from OpenHands
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 8 - stuck detection and recovery inspired by OpenHands' StuckDetector
+
+**Insight:** OpenHands has a sophisticated StuckDetector that detects multiple loop types and provides recovery options:
+1. **Loop types detected**: repeated_action (same tool called 3+ times), same_error (same error 3+ times), no_progress (similar content 5+ times)
+2. **Recovery options**: restart before loop (preserves earlier progress), restart with last message (try different approach), quit task
+3. **Memory truncation**: Can truncate conversation history to recovery points to remove loop context
+4. **Autonomous operation**: Critical for long-running sessions without human intervention
+
+**Trigger:** When agent appears stuck in a loop during autonomous evolution
+
+**Reuse Rule:** Call `stuck({action: 'check'})` periodically during long tasks. If stuck, use `stuck({action: 'recover', recoveryOption: N})` to recover.
+
+**Priority:** High
+
+---
 
 ### 2026-03-30: Specialized Subagents for Self-Evolution
 

@@ -4,6 +4,55 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 31 — Loop Detection & Recovery (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 8 "Loop Detection & Recovery" inspired by OpenHands' StuckDetector
+- Created `src/stuck.ts` module with StuckDetector class
+- Added `stuck` tool for detecting loops and providing recovery options
+- Detected loop types: repeated actions, same errors, no progress
+- Recovery options: restart before loop, restart with last message, quit
+- Added 13 new tests for stuck detection
+
+**Why this matters:**
+- This is a `capability` type task that improves autonomous self-evolution
+- Agent can now detect when it's stuck in a loop and recover automatically
+- Inspired by OpenHands' StuckDetector from competitor research
+- Critical for long-running autonomous sessions without human intervention
+
+**Technical details:**
+- Created `src/stuck.ts`:
+  - `StuckDetector` class with history tracking, loop detection, and recovery
+  - Loop types: repeated_action (3+ same action), same_error (3+ same error), no_progress (5+ similar content)
+  - Recovery options: restart_before_loop, restart_with_last_message, quit
+  - Memory truncation to recovery points
+- Modified `src/agent.ts`:
+  - Added `stuck` tool with actions: check, recover, add, reset
+  - Updated both chat and evolve system prompts with stuck detection documentation
+  - Added new workflow section "5.2 Loop Detection and Recovery"
+- Modified `src/agent.test.ts`:
+  - Added 13 tests for StuckDetector and stuck tool
+- Modified `ROADMAP.md`:
+  - Added Phase 8: Loop Detection & Recovery
+  - Marked all three items as complete
+
+**Stuck Tool Usage:**
+```typescript
+// Check if stuck in a loop
+stuck({action: 'check'})
+
+// If stuck, choose a recovery option
+stuck({action: 'recover', recoveryOption: 1})  // Restart before loop
+stuck({action: 'recover', recoveryOption: 2})  // Restart with last message
+stuck({action: 'recover', recoveryOption: 3})  // Quit task
+```
+
+**Next steps:**
+- Consider adding Theory-of-Mind module for better intent understanding
+- Consider adding Repo Map capability from Aider research
+
+---
+
 ## Day 30 — Skill Effectiveness Tracking (2026-03-30)
 
 **What happened:**

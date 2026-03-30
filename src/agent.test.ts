@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync 
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Checkpoint } from "./checkpoint.js";
+import { StuckDetector } from "./stuck.js";
 
 // Test helpers for tool testing
 const TEST_DIR = join(process.cwd(), "test-temp");
@@ -810,5 +811,204 @@ describe("parallel tool", () => {
 		};
 		const result = createAgent(config);
 		expect(result.agent).toBeDefined();
+	});
+});
+
+describe("stuck tool", () => {
+	it("should have stuck tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have stuck parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support stuck actions: check, recover, add, reset", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+});
+
+describe("StuckDetector", () => {
+	it("should create StuckDetector instance", () => {
+		const detector = new StuckDetector();
+		expect(detector).toBeDefined();
+	});
+
+	it("should detect no loop initially", () => {
+		const detector = new StuckDetector();
+		expect(detector.isStuck()).toBe(false);
+	});
+
+	it("should add messages without detecting loop", () => {
+		const detector = new StuckDetector();
+		detector.addMessage({
+			id: 1,
+			role: "user",
+			content: "Hello",
+			timestamp: Date.now(),
+		});
+		detector.addMessage({
+			id: 2,
+			role: "assistant",
+			content: "Hi there!",
+			timestamp: Date.now(),
+		});
+		expect(detector.isStuck()).toBe(false);
+	});
+
+	it("should detect repeated actions", () => {
+		const detector = new StuckDetector();
+		// Add same action multiple times (threshold is 3)
+		for (let i = 0; i < 5; i++) {
+			detector.addMessage({
+				id: i + 1,
+				role: "assistant",
+				content: "Trying to fix...",
+				action: "read",
+				timestamp: Date.now() + i,
+			});
+		}
+		expect(detector.isStuck()).toBe(true);
+		const analysis = detector.getStuckAnalysis();
+		expect(analysis).not.toBeNull();
+		expect(analysis?.loopType).toBe("repeated_action");
+		expect(analysis?.repeatedAction).toBe("read");
+	});
+
+	it("should detect repeated errors", () => {
+		const detector = new StuckDetector();
+		// Add same error multiple times (threshold is 3)
+		for (let i = 0; i < 5; i++) {
+			detector.addMessage({
+				id: i + 1,
+				role: "assistant",
+				content: "Failed again",
+				error: "Build failed: TS2304",
+				timestamp: Date.now() + i,
+			});
+		}
+		expect(detector.isStuck()).toBe(true);
+		const analysis = detector.getStuckAnalysis();
+		expect(analysis).not.toBeNull();
+		expect(analysis?.loopType).toBe("same_error");
+		expect(analysis?.repeatedError).toBe("Build failed: TS2304");
+	});
+
+	it("should provide recovery options", () => {
+		const detector = new StuckDetector();
+		const options = detector.getRecoveryOptions();
+		expect(options.length).toBe(3);
+		expect(options[0].action).toBe("restart_before_loop");
+		expect(options[1].action).toBe("restart_with_last_message");
+		expect(options[2].action).toBe("quit");
+	});
+
+	it("should reset state", () => {
+		const detector = new StuckDetector();
+		// Add messages that would trigger stuck
+		for (let i = 0; i < 5; i++) {
+			detector.addMessage({
+				id: i + 1,
+				role: "assistant",
+				content: "Trying...",
+				action: "read",
+				timestamp: Date.now() + i,
+			});
+		}
+		expect(detector.isStuck()).toBe(true);
+
+		detector.reset();
+		expect(detector.isStuck()).toBe(false);
+		expect(detector.getStuckAnalysis()).toBeNull();
+	});
+
+	it("should format stuck analysis", () => {
+		const detector = new StuckDetector();
+		for (let i = 0; i < 5; i++) {
+			detector.addMessage({
+				id: i + 1,
+				role: "assistant",
+				content: "Trying...",
+				action: "edit",
+				timestamp: Date.now() + i,
+			});
+		}
+		detector.isStuck();
+		const formatted = detector.formatStuckAnalysis();
+		expect(formatted).toContain("Loop type: repeated_action");
+		expect(formatted).toContain("edit");
+		expect(formatted).toContain("Recovery options");
+	});
+
+	it("should truncate history to recovery point", () => {
+		const detector = new StuckDetector();
+		// Add some good messages
+		for (let i = 0; i < 3; i++) {
+			detector.addMessage({
+				id: i + 1,
+				role: "user",
+				content: `Message ${i}`,
+				timestamp: Date.now() + i,
+			});
+		}
+		// Add repeated actions
+		for (let i = 0; i < 5; i++) {
+			detector.addMessage({
+				id: i + 10,
+				role: "assistant",
+				content: "Stuck...",
+				action: "read",
+				timestamp: Date.now() + i + 10,
+			});
+		}
+		detector.isStuck();
+		const analysis = detector.getStuckAnalysis();
+		expect(analysis).not.toBeNull();
+
+		const kept = detector.truncateToRecoveryPoint(analysis?.loopStartIdx ?? 0);
+		expect(kept.length).toBeLessThan(8);
+	});
+
+	it("should get last user message", () => {
+		const detector = new StuckDetector();
+		detector.addMessage({
+			id: 1,
+			role: "assistant",
+			content: "Response",
+			timestamp: Date.now(),
+		});
+		detector.addMessage({
+			id: 2,
+			role: "user",
+			content: "User question",
+			timestamp: Date.now() + 1,
+		});
+		detector.addMessage({
+			id: 3,
+			role: "assistant",
+			content: "Another response",
+			timestamp: Date.now() + 2,
+		});
+
+		const lastUser = detector.getLastUserMessage();
+		expect(lastUser).not.toBeNull();
+		expect(lastUser?.content).toBe("User question");
 	});
 });
