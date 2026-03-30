@@ -115,13 +115,23 @@ If build or tests fail:
 
 ### 7. Scorecard Update (REQUIRED)
 
-After each evolution iteration, update the scorecard in MEMORY.md:
+After each evolution iteration, update the scorecard in MEMORY.md with enhanced metrics:
 
 ```
-| Date | Task Type | Task Description | First Try Success | Rework Needed? | Evolution Impact |
-|------|-----------|-----------------|-------------------|----------------|------------------|
-| YYYY-MM-DD | capability/reliability/feature | Brief description | ✅/❌ | Yes/No | High/Medium/Low |
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
+| YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | enabled-capability |
 ```
+
+**Time Estimation:** Use "~N minutes" format (e.g., ~5m, ~15m, ~30m)
+**Errors:** none, TS (TypeScript), test, lint, runtime
+**Enables:** List what future capabilities this enables (comma-separated)
+
+Also update the Metrics section:
+- First Try Success Rate: X/Y = Z%
+- Average Time: ~N minutes
+- Capability Velocity: X capabilities per day
+- Error Analysis: Count of each error type
 
 ### 8. Completion
 - Update JOURNAL.md with what was done (include task type)

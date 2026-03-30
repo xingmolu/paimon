@@ -797,6 +797,58 @@ checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
 
 ---
 
+## Day 24 — Enhanced Evolution Scorecard Metrics (2026-03-30)
+
+**What happened:**
+- Enhanced Evolution Scorecard with additional metrics for better evolution tracking
+- Added new columns: Time (estimation), Errors (error type), Enables (dependency tracking)
+- Added detailed Metrics section: Quality metrics, Capability metrics, Error analysis, Top capabilities
+- Updated skills/evolve/SKILL.md with enhanced scorecard format and guidance
+- Updated src/agent.ts evolve prompt with new scorecard format
+- Updated scripts/evolve.ts with enhanced scorecard instructions
+
+**Why this matters:**
+- This is a `capability` type task that improves meta-cognition for task selection
+- Better metrics enable better feedback loops for evolution value scoring
+- Time tracking helps identify efficiency improvements
+- Error type distribution helps focus prevention efforts
+- "Enables" column shows dependency chains between capabilities
+- Top capabilities ranking helps identify most impactful improvements
+
+**Technical details:**
+- Modified MEMORY.md:
+  - Enhanced Scorecard columns: Date, Task Type, Task Description, Time, First Try, Errors, Rework?, Impact, Enables
+  - Added Metrics section with Quality metrics, Capability metrics, Error analysis, Top capabilities
+  - Added all previous iterations with enhanced data
+- Modified skills/evolve/SKILL.md:
+  - Updated Scorecard Update section (7) with enhanced format
+  - Added guidance on Time estimation (~Nm format), Errors classification, Enables field
+- Modified src/agent.ts:
+  - Updated Completion section (6) with enhanced scorecard format
+  - Added Time, Errors, Enables column definitions
+- Modified scripts/evolve.ts:
+  - Updated Scorecard Update section with enhanced format
+  - Added column definitions and examples
+
+**Scorecard Enhancement:**
+| Column | Purpose | Values |
+|--------|---------|--------|
+| Time | Efficiency tracking | ~Nm (minutes estimate) |
+| Errors | Failure analysis | none, TS, test, lint, runtime |
+| Enables | Dependency tracking | List of enabled capabilities |
+
+**New Metrics Section:**
+- First Try Success Rate: percentage
+- Average Time: minutes
+- Capability Velocity: capabilities per day
+- Error Analysis: count by type
+- Top Capabilities: ranked by impact
+
+**Next steps:**
+- ROADMAP Phase 5: Parallel task execution (final item)
+
+---
+
 ## Day 23 — Evolution Value Scoring for Task Selection (2026-03-30)
 
 **What happened:**

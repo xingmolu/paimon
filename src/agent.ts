@@ -1995,12 +1995,15 @@ This will:
 ### 6. Completion
 - Say "DONE" and summarize your work (include task type: capability/reliability/feature)
 - Update JOURNAL.md with what you did
-- Update MEMORY.md Evolution Scorecard:
+- Update MEMORY.md Evolution Scorecard with enhanced metrics:
   \`\`\`
-  | Date | Task Type | Task Description | First Try Success | Rework Needed? | Evolution Impact |
-  |------|-----------|-----------------|-------------------|----------------|------------------|
-  | YYYY-MM-DD | capability/reliability/feature | Brief description | ✅/❌ | Yes/No | High/Medium/Low |
+  | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
+  |------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
+  | YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | enabled-capability |
   \`\`\`
+  **Time:** Estimate in minutes (e.g., ~10m, ~20m)
+  **Errors:** none, TS (TypeScript), test, lint, runtime
+  **Enables:** What future capabilities this enables
 - Add new learning to MEMORY.md if something was discovered
 - Close completed GitHub issues: \`gh issue close <number> --comment "Completed"\`
 - If you completed a ROADMAP item, mark it done with \`edit\` (change \`- [ ]\` to \`- [x]\`)
