@@ -1,0 +1,437 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+
+/**
+ * Hook system for intercepting and validating tool calls
+ *
+ * Inspired by Claude Code's hook system:
+ * - PreToolUse: Check parameters before tool execution
+ * - SessionStart: Run at session initialization
+ * - Stop: Intercept exit attempts (used for Ralph Wiggum pattern)
+ */
+
+/**
+ * Hook types supported by the system
+ */
+export type HookType = "PreToolUse" | "SessionStart" | "Stop";
+
+/**
+ * Result from executing a hook
+ */
+export interface HookResult {
+	/** Whether to allow the action to proceed */
+	allow: boolean;
+	/** Warning message to show (if allow=true but there's a concern) */
+	warning?: string;
+	/** Block message (if allow=false) */
+	block?: string;
+	/** Additional context about the hook execution */
+	context?: string;
+}
+
+/**
+ * Hook definition
+ */
+export interface Hook {
+	/** Unique identifier for the hook */
+	id: string;
+	/** Type of hook */
+	type: HookType;
+	/** Human-readable name */
+	name: string;
+	/** Description of what the hook does */
+	description: string;
+	/** Whether the hook is enabled */
+	enabled: boolean;
+	/** Priority (higher = runs first) */
+	priority: number;
+	/** Hook handler function */
+	handler: (context: HookContext) => HookResult | Promise<HookResult>;
+}
+
+/**
+ * Context passed to hook handlers
+ */
+export interface HookContext {
+	/** Tool name being called (for PreToolUse) */
+	tool?: string;
+	/** Tool parameters (for PreToolUse) */
+	params?: Record<string, unknown>;
+	/** Session metadata (for SessionStart) */
+	session?: {
+		mode: "chat" | "evolve";
+		project: string;
+		timestamp: string;
+	};
+	/** Stop reason (for Stop hooks) */
+	reason?: string;
+}
+
+/**
+ * Hook configuration stored in ~/.paimon/hooks.json
+ */
+export interface HooksConfig {
+	/** Registered hooks */
+	hooks: Hook[];
+	/** Global settings */
+	settings: {
+		/** Enable/disable all hooks */
+		enabled: boolean;
+		/** Default behavior when no hooks match */
+		defaultBehavior: "allow" | "block";
+	};
+}
+
+/**
+ * Default security hooks for dangerous patterns
+ */
+const DEFAULT_SECURITY_HOOKS: Hook[] = [
+	{
+		id: "security-bash-dangerous",
+		type: "PreToolUse",
+		name: "Block Dangerous Bash Commands",
+		description: "Prevents execution of potentially dangerous shell commands",
+		enabled: true,
+		priority: 100,
+		handler: (context: HookContext): HookResult => {
+			if (context.tool !== "bash" || !context.params?.command) {
+				return { allow: true };
+			}
+
+			const command = String(context.params.command);
+
+			// Dangerous patterns to block
+			const dangerousPatterns = [
+				/\brm\s+-rf\s+\/\b/, // rm -rf /
+				/\brm\s+-rf\s+\//, // rm -rf /anything
+				/\bchmod\s+777\b/, // chmod 777 (too permissive)
+				/\bmkfs\b/, // mkfs (format filesystem)
+				/\bdd\s+.*of=\/dev\b/, // dd writing to device
+				/\b>\s*\/dev\/sda\b/, // redirect to disk device
+				/\bcurl\s+.*\|\s*bash\b/, // curl | bash (blind execution)
+				/\bwget\s+.*\|\s*bash\b/, // wget | bash
+				/\beval\s*\(/, // eval() in shell
+				/\bsudo\s+rm\b/, // sudo rm
+			];
+
+			for (const pattern of dangerousPatterns) {
+				if (pattern.test(command)) {
+					return {
+						allow: false,
+						block:
+							"Dangerous command detected: The command matches a dangerous pattern. If you really need to run this, explain why and the user can manually approve.",
+						context: `Pattern: ${pattern.source}`,
+					};
+				}
+			}
+
+			// Warning patterns (allow but warn)
+			const warningPatterns = [
+				/\bsudo\b/, // sudo commands
+				/\brm\s+-rf\b/, // rm -rf (even on non-root paths)
+				/\bgit\s+push\s+--force\b/, // force push
+				/\bgit\s+reset\s+--hard\b/, // hard reset
+				/\bnpm\s+publish\b/, // npm publish
+				/\bdocker\s+rm\b/, // docker rm
+			];
+
+			for (const pattern of warningPatterns) {
+				if (pattern.test(command)) {
+					return {
+						allow: true,
+						warning:
+							"Caution: This command may have significant effects. Consider reviewing it carefully.",
+						context: `Pattern: ${pattern.source}`,
+					};
+				}
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "security-write-workflows",
+		type: "PreToolUse",
+		name: "Block Workflow Modifications",
+		description: "Prevents modification of .github/workflows/ files without explicit permission",
+		enabled: true,
+		priority: 90,
+		handler: (context: HookContext): HookResult => {
+			if ((context.tool !== "write" && context.tool !== "edit") || !context.params?.path) {
+				return { allow: true };
+			}
+
+			const path = String(context.params.path);
+
+			if (path.includes(".github/workflows/") || path.includes(".github\\workflows\\")) {
+				return {
+					allow: false,
+					block:
+						"Protected path: Files in .github/workflows/ are protected and cannot be modified without explicit user permission.",
+					context: `Path: ${path}`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "security-code-dangerous",
+		type: "PreToolUse",
+		name: "Warn on Dangerous Code Patterns",
+		description:
+			"Warns when writing potentially dangerous code patterns (eval, exec with user input)",
+		enabled: true,
+		priority: 80,
+		handler: (context: HookContext): HookResult => {
+			if ((context.tool !== "write" && context.tool !== "edit") || !context.params?.content) {
+				return { allow: true };
+			}
+
+			const content = String(context.params.content);
+
+			// Check for dangerous code patterns
+			const dangerousPatterns = [
+				{
+					pattern: /\beval\s*\(/g,
+					message: "eval() can execute arbitrary code - avoid using it with user input",
+				},
+				{
+					pattern: /exec\s*\([^)]*\.\s*user/gi,
+					message: "exec() with user input can be a security vulnerability - sanitize inputs",
+				},
+				{
+					pattern: /execSync\s*\([^)]*\.\s*user/gi,
+					message: "execSync() with user input can be a security vulnerability",
+				},
+				{
+					pattern: /child_process.*user/gi,
+					message: "Using child_process with user input is dangerous - consider sanitization",
+				},
+			];
+
+			const warnings: string[] = [];
+			for (const { pattern, message } of dangerousPatterns) {
+				if (pattern.test(content)) {
+					warnings.push(message);
+				}
+			}
+
+			if (warnings.length > 0) {
+				return {
+					allow: true,
+					warning: `Security patterns detected:\n${warnings.map((w) => `  - ${w}`).join("\n")}`,
+					context: `File: ${context.params?.path || "unknown"}`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+];
+
+/**
+ * Hook Manager - manages registration, execution, and storage of hooks
+ */
+export class HookManager {
+	private configPath: string;
+	private config: HooksConfig;
+
+	constructor(configPath?: string) {
+		// Default to ~/.paimon/hooks.json
+		this.configPath = configPath || join(homedir(), ".paimon", "hooks.json");
+		this.config = this.loadConfig();
+	}
+
+	/**
+	 * Load hooks configuration from file
+	 */
+	private loadConfig(): HooksConfig {
+		if (existsSync(this.configPath)) {
+			try {
+				const content = readFileSync(this.configPath, "utf-8");
+				return JSON.parse(content);
+			} catch {
+				// Invalid config, use defaults
+			}
+		}
+
+		// Create default config
+		return {
+			hooks: DEFAULT_SECURITY_HOOKS,
+			settings: {
+				enabled: true,
+				defaultBehavior: "allow",
+			},
+		};
+	}
+
+	/**
+	 * Save hooks configuration to file
+	 */
+	private saveConfig(): void {
+		const dir = join(homedir(), ".paimon");
+		if (!existsSync(dir)) {
+			mkdirSync(dir, { recursive: true });
+		}
+		writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), "utf-8");
+	}
+
+	/**
+	 * Check if hooks are globally enabled
+	 */
+	isEnabled(): boolean {
+		return this.config.settings.enabled;
+	}
+
+	/**
+	 * Enable or disable hooks globally
+	 */
+	setEnabled(enabled: boolean): void {
+		this.config.settings.enabled = enabled;
+		this.saveConfig();
+	}
+
+	/**
+	 * Get all registered hooks
+	 */
+	getHooks(type?: HookType): Hook[] {
+		const hooks = this.config.hooks.filter((h) => h.enabled);
+		if (type) {
+			return hooks.filter((h) => h.type === type);
+		}
+		return hooks;
+	}
+
+	/**
+	 * Register a new hook
+	 */
+	registerHook(hook: Hook): void {
+		// Check if hook already exists
+		const existing = this.config.hooks.find((h) => h.id === hook.id);
+		if (existing) {
+			// Update existing hook
+			Object.assign(existing, hook);
+		} else {
+			// Add new hook
+			this.config.hooks.push(hook);
+		}
+		this.saveConfig();
+	}
+
+	/**
+	 * Remove a hook by ID
+	 */
+	removeHook(hookId: string): boolean {
+		const index = this.config.hooks.findIndex((h) => h.id === hookId);
+		if (index >= 0) {
+			this.config.hooks.splice(index, 1);
+			this.saveConfig();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Enable or disable a specific hook
+	 */
+	setHookEnabled(hookId: string, enabled: boolean): boolean {
+		const hook = this.config.hooks.find((h) => h.id === hookId);
+		if (hook) {
+			hook.enabled = enabled;
+			this.saveConfig();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Execute hooks for a given context
+	 * Returns the combined result from all matching hooks
+	 */
+	async executeHooks(type: HookType, context: HookContext): Promise<HookResult> {
+		if (!this.isEnabled()) {
+			return { allow: true };
+		}
+
+		const hooks = this.getHooks(type).sort((a, b) => b.priority - a.priority);
+
+		// Execute each hook in priority order
+		for (const hook of hooks) {
+			try {
+				const result = await hook.handler(context);
+
+				// If a hook blocks, return immediately
+				if (!result.allow) {
+					return result;
+				}
+
+				// If a hook warns, accumulate warnings
+				if (result.warning) {
+					// Return first warning (highest priority)
+					return {
+						allow: true,
+						warning: result.warning,
+						context: result.context,
+					};
+				}
+			} catch (error) {
+				// Hook execution failed, log but continue
+				console.error(`Hook ${hook.id} failed:`, error);
+			}
+		}
+
+		// All hooks passed
+		return { allow: true };
+	}
+
+	/**
+	 * Format hooks list for display
+	 */
+	formatHooksList(): string {
+		const hooks = this.config.hooks;
+		if (hooks.length === 0) {
+			return "No hooks registered.";
+		}
+
+		let output = "📋 Registered Hooks\n";
+		output += `${"─".repeat(50)}\n`;
+		output += `Global: ${this.config.settings.enabled ? "✅ Enabled" : "❌ Disabled"}\n`;
+		output += `${"─".repeat(50)}\n\n`;
+
+		for (const hook of hooks) {
+			const statusEmoji = hook.enabled ? "✅" : "❌";
+			output += `${statusEmoji} [${hook.priority}] ${hook.name}\n`;
+			output += `   Type: ${hook.type}\n`;
+			output += `   ID: ${hook.id}\n`;
+			output += `   ${hook.description}\n\n`;
+		}
+
+		return output;
+	}
+
+	/**
+	 * Format a hook execution result for display
+	 */
+	formatHookResult(result: HookResult): string {
+		if (result.allow && !result.warning) {
+			return "✅ Hook check passed";
+		}
+
+		if (result.allow && result.warning) {
+			return `⚠️ Warning: ${result.warning}\n${result.context || ""}`;
+		}
+
+		if (!result.allow && result.block) {
+			return `🚫 Blocked: ${result.block}\n${result.context || ""}`;
+		}
+
+		return "Hook result unclear";
+	}
+}
+
+/**
+ * Global hook manager instance
+ */
+export const globalHookManager = new HookManager();

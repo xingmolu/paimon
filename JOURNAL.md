@@ -4,6 +4,68 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 28 — Hook System for Pre-Tool Validation (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 6 (new) "Hook system for pre-tool validation"
+- Created `src/hooks.ts` module with HookManager class
+- Added `hook` tool for managing hooks (list, enable, disable, status, toggle)
+- Implemented PreToolUse hook type with 3 default security hooks:
+  - Block dangerous bash commands (rm -rf /, curl | bash, etc.)
+  - Block modifications to .github/workflows/ files
+  - Warn on dangerous code patterns (eval, exec with user input)
+- Tool execution now wrapped with hook checks via `createWrappedTools()`
+- Updated both chat and evolve system prompts to document hook tool
+
+**Why this matters:**
+- This is a `capability` type task that improves safety and error prevention
+- Prevents dangerous actions before they happen (proactive vs reactive)
+- Inspired by Claude Code's hooks system (PreToolUse, SessionStart, Stop)
+- Agent can manage hooks dynamically via the hook tool
+- Better security by default - blocks dangerous patterns automatically
+
+**Technical details:**
+- Created `src/hooks.ts`:
+  - `HookManager` class with register, execute, enable/disable methods
+  - `Hook` interface with id, type, name, description, priority, handler
+  - `HookResult` interface with allow, warning, block, context fields
+  - 3 default security hooks for dangerous patterns
+  - Hooks stored in `~/.paimon/hooks.json`
+- Modified `src/agent.ts`:
+  - Added `hook` tool for hook management
+  - Added `createWrappedTools()` to wrap all tools with PreToolUse hooks
+  - Updated `createAgent()` to use wrapped tools
+  - Updated frontmatter and system prompts
+- All 72 tests pass
+
+**Hook Tool Usage:**
+```typescript
+// List all hooks
+hook({action: 'list'})
+
+// Show hook status
+hook({action: 'status'})
+
+// Disable a specific hook
+hook({action: 'disable', hookId: 'security-bash-dangerous'})
+
+// Toggle hooks globally
+hook({action: 'toggle'})
+```
+
+**Default Security Hooks:**
+| Hook ID | Priority | Description |
+|---------|----------|-------------|
+| security-bash-dangerous | 100 | Blocks dangerous shell commands |
+| security-write-workflows | 90 | Blocks .github/workflows/ modifications |
+| security-code-dangerous | 80 | Warns on eval/exec patterns |
+
+**Next steps:**
+- Consider adding SessionStart and Stop hooks
+- Add ROADMAP Phase 6 for future capability improvements
+
+---
+
 ## Day 27 — Parallel Task Execution (2026-03-30)
 
 **What happened:**

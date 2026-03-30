@@ -34,6 +34,9 @@ Planned improvements for evo.
 - [x] Checkpoints — Save snapshots during evolution for safe rollback
 - [x] Parallel task execution — Run multiple independent tasks concurrently
 
+## Phase 6: Safety & Validation
+- [x] Hook system for pre-tool validation — Inspired by Claude Code's PreToolUse hooks
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

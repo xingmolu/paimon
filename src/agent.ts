@@ -26,6 +26,13 @@ import {
 } from "./checkpoint.js";
 import { type CompactionConfig, ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
+import {
+	type HookContext,
+	type HookManager,
+	type HookResult,
+	type HookType,
+	globalHookManager,
+} from "./hooks.js";
 import type { SessionManager } from "./session.js";
 
 /**
@@ -1818,7 +1825,181 @@ Each learning should be:
 			};
 		},
 	},
+	{
+		name: "hook",
+		label: "Manage Hooks",
+		description:
+			"Create, list, enable, or disable hooks for pre-tool validation and safety checks. Hooks intercept tool calls before execution to prevent dangerous patterns.",
+		parameters: Type.Object({
+			action: Type.String({
+				description:
+					"Action to perform: 'list' (show all hooks), 'enable' (enable hook), 'disable' (disable hook), 'status' (show global status), 'toggle' (toggle global hooks)",
+			}),
+			hookId: Type.Optional(
+				Type.String({
+					description: "Hook ID for enable/disable actions",
+				}),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { action, hookId } = params as {
+				action: string;
+				hookId?: string;
+			};
+
+			try {
+				switch (action) {
+					case "list": {
+						const output = globalHookManager.formatHooksList();
+						return {
+							content: [{ type: "text", text: output }],
+							details: output,
+						};
+					}
+
+					case "enable": {
+						if (!hookId) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'hookId' is required for 'enable' action",
+									},
+								],
+								details: "Error: hookId required",
+							};
+						}
+						const success = globalHookManager.setHookEnabled(hookId, true);
+						if (success) {
+							return {
+								content: [{ type: "text", text: `✅ Hook '${hookId}' enabled` }],
+								details: `Hook ${hookId} enabled`,
+							};
+						}
+						return {
+							content: [{ type: "text", text: `❌ Hook '${hookId}' not found` }],
+							details: `Hook ${hookId} not found`,
+						};
+					}
+
+					case "disable": {
+						if (!hookId) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'hookId' is required for 'disable' action",
+									},
+								],
+								details: "Error: hookId required",
+							};
+						}
+						const success = globalHookManager.setHookEnabled(hookId, false);
+						if (success) {
+							return {
+								content: [{ type: "text", text: `✅ Hook '${hookId}' disabled` }],
+								details: `Hook ${hookId} disabled`,
+							};
+						}
+						return {
+							content: [{ type: "text", text: `❌ Hook '${hookId}' not found` }],
+							details: `Hook ${hookId} not found`,
+						};
+					}
+
+					case "status": {
+						const enabled = globalHookManager.isEnabled();
+						const hooks = globalHookManager.getHooks();
+						const enabledHooks = hooks.filter((h) => h.enabled).length;
+						const statusText = `Global: ${enabled ? "enabled" : "disabled"}, Total: ${hooks.length}, Enabled: ${enabledHooks}`;
+						return {
+							content: [
+								{
+									type: "text",
+									text: `🪝 Hooks Status\n${"─".repeat(40)}\nGlobal: ${enabled ? "✅ Enabled" : "❌ Disabled"}\nTotal hooks: ${hooks.length}\nEnabled: ${enabledHooks}\nDisabled: ${hooks.length - enabledHooks}`,
+								},
+							],
+							details: statusText,
+						};
+					}
+
+					case "toggle": {
+						const current = globalHookManager.isEnabled();
+						globalHookManager.setEnabled(!current);
+						return {
+							content: [
+								{
+									type: "text",
+									text: `✅ Hooks ${!current ? "enabled" : "disabled"} globally`,
+								},
+							],
+							details: `Hooks toggled from ${current} to ${!current}`,
+						};
+					}
+
+					default:
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Error: Unknown action '${action}'. Use: list, enable, disable, status, toggle`,
+								},
+							],
+							details: `Error: Unknown action '${action}'`,
+						};
+				}
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
+
+/**
+ * Create wrapped tools with PreToolUse hooks
+ * Each tool's execute function is wrapped to check hooks before execution
+ */
+function createWrappedTools(hookManager: HookManager): AgentTool[] {
+	return tools.map((tool) => ({
+		...tool,
+		execute: async (toolCallId: string, params: unknown): Promise<AgentToolResult<unknown>> => {
+			// Execute PreToolUse hooks
+			const hookContext: HookContext = {
+				tool: tool.name,
+				params: params as Record<string, unknown>,
+			};
+
+			const hookResult = await hookManager.executeHooks("PreToolUse", hookContext);
+
+			// If hook blocks, return block message instead of executing tool
+			if (!hookResult.allow) {
+				const blockMessage = `🚫 Hook blocked this action:\n${hookResult.block || "Unknown reason"}\n${hookResult.context || ""}`;
+				return {
+					content: [{ type: "text", text: blockMessage }],
+					details: { blocked: true, hookResult },
+				};
+			}
+
+			// If hook warns, add warning to output
+			if (hookResult.warning) {
+				// Execute the tool normally, but we'll add warning to output
+				const result = await tool.execute(toolCallId, params);
+				const warningPrefix = `⚠️ ${hookResult.warning}\n\n`;
+				if (result.content?.[0] && result.content[0].type === "text") {
+					result.content[0].text = warningPrefix + result.content[0].text;
+				}
+				return result;
+			}
+
+			// No hook intervention, execute normally
+			return tool.execute(toolCallId, params);
+		},
+	}));
+}
 
 /**
  * Format a plan for display
@@ -1891,7 +2072,8 @@ export function createAgent(
 	const agent = new Agent();
 	agent.setModel(model);
 	agent.setSystemPrompt(systemPrompt);
-	agent.setTools(tools);
+	// Use wrapped tools with PreToolUse hooks for safety
+	agent.setTools(createWrappedTools(globalHookManager));
 
 	// Provide API key dynamically for the custom provider
 	agent.getApiKey = () => config.apiKey;
@@ -2009,7 +2191,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -2031,6 +2213,7 @@ You can help users with various tasks like reading files, writing code, executin
 - reflect: Analyze failures and extract lessons for MEMORY.md - use after failed assessments.
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
+- hook: Manage hooks for pre-tool validation and safety checks - prevents dangerous patterns automatically.
 
 ## Multi-Step Reasoning
 
@@ -2078,7 +2261,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -2100,6 +2283,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - reflect: Extract lessons from failures and update MEMORY.md automatically.
 - checkpoint: Save and restore snapshots for safe rollback during risky changes.
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
+- hook: Manage hooks for pre-tool validation - prevents dangerous patterns automatically.
 
 ## Multi-Step Reasoning
 
