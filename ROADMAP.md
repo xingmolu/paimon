@@ -31,7 +31,7 @@ Planned improvements for evo.
 - [x] Error recovery loops — Iterative self-correction when builds/tests fail
 - [x] Self-assessment — Evaluate own changes before committing
 - [x] Reflection on failures — Extract lessons and update MEMORY.md automatically
-- [ ] Checkpoints — Save snapshots during evolution for safe rollback
+- [x] Checkpoints — Save snapshots during evolution for safe rollback
 - [ ] Parallel task execution — Run multiple independent tasks concurrently
 
 ---

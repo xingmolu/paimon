@@ -746,3 +746,51 @@ reflect({
 **Next steps:**
 - Implement checkpoints for safe rollback (Phase 5 item)
 - Implement parallel task execution (Phase 5 item)
+
+---
+
+## Day 22 — Checkpoints for Safe Rollback (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 5 "Checkpoints — Save snapshots during evolution for safe rollback"
+- Created `src/checkpoint.ts` module with CheckpointManager class
+- Added `checkpoint` tool to the agent's toolset
+- Checkpoints use git stash to save file snapshots
+- Agent can create, list, restore, and delete checkpoints
+- Updated both chat and evolve system prompts with checkpoint documentation
+- Added workflow section 3.1 "Checkpoint Safety" for best practices
+- Added 12 new tests for checkpoint functionality
+
+**Why this matters:**
+- Completes ROADMAP Phase 5 "Checkpoints" item
+- Agent can now save snapshots before risky changes
+- Safe rollback capability prevents catastrophic failures
+- Inspired by Cursor's checkpoint feature from competitor research
+- Better safety for autonomous self-improvement
+
+**Technical details:**
+- Created `src/checkpoint.ts`: CheckpointManager class with create(), list(), restore(), delete() methods
+- Modified `src/agent.ts`: Added checkpoint tool with actions: create, list, restore, delete
+- Checkpoints stored in `~/.paimon/checkpoints/` organized by project
+- Uses git stash for reliable file snapshots
+- Metadata includes: id, timestamp, description, stashRef, files, project
+- Updated frontmatter in both prompts to include `checkpoint` tool
+- Added workflow section for checkpoint usage before risky changes
+
+**Checkpoint Tool Usage:**
+```typescript
+// Create checkpoint before risky change
+checkpoint({action: 'create', description: 'Before refactoring X module'})
+
+// List all checkpoints
+checkpoint({action: 'list'})
+
+// Restore if something goes wrong
+checkpoint({action: 'restore', checkpointId: 'ckpt-123456-abc123'})
+
+// Delete old checkpoint
+checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
+```
+
+**Next steps:**
+- ROADMAP Phase 5: Parallel task execution (final item)

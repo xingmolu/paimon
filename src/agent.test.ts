@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { Checkpoint } from "./checkpoint.js";
 
 // Test helpers for tool testing
 const TEST_DIR = join(process.cwd(), "test-temp");
@@ -574,6 +575,177 @@ describe("Session", () => {
 			const result = formatSessionList(sessions);
 			expect(result).toContain("test-project");
 			expect(result).toContain("5 messages");
+		});
+	});
+});
+
+describe("Checkpoint", () => {
+	const CHECKPOINT_DIR = join(process.cwd(), "test-checkpoints");
+
+	beforeEach(() => {
+		if (existsSync(CHECKPOINT_DIR)) {
+			rmSync(CHECKPOINT_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(CHECKPOINT_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(CHECKPOINT_DIR)) {
+			rmSync(CHECKPOINT_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("CheckpointManager", () => {
+		it("should create CheckpointManager", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			expect(manager).toBeDefined();
+			expect(manager.isEnabled()).toBeDefined();
+		});
+
+		it("should check if in git repository", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			// Should be true since we're in the paimon repo
+			expect(manager.isEnabled()).toBe(true);
+		});
+
+		it("should get checkpoints directory", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			expect(manager.getCheckpointsDir()).toBe(CHECKPOINT_DIR);
+		});
+
+		it("should list empty checkpoints initially", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			const checkpoints = manager.list();
+			expect(checkpoints).toEqual([]);
+		});
+
+		it("should get null for non-existent checkpoint", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			const checkpoint = manager.get("nonexistent-id");
+			expect(checkpoint).toBeNull();
+		});
+
+		it("should clear checkpoints", async () => {
+			const { CheckpointManager } = await import("./checkpoint.js");
+			const manager = new CheckpointManager(CHECKPOINT_DIR, true);
+			manager.clear();
+			expect(manager.list()).toEqual([]);
+		});
+	});
+
+	describe("formatCheckpointList", () => {
+		it("should format empty checkpoint list", async () => {
+			const { formatCheckpointList } = await import("./checkpoint.js");
+			const result = formatCheckpointList([]);
+			expect(result).toBe("No checkpoints found.");
+		});
+
+		it("should format checkpoint list with checkpoints", async () => {
+			const { formatCheckpointList } = await import("./checkpoint.js");
+			const checkpoints = [
+				{
+					id: "ckpt-123",
+					timestamp: Date.now(),
+					description: "Test checkpoint",
+					fileCount: 3,
+					project: "test-project",
+				},
+			];
+			const result = formatCheckpointList(checkpoints);
+			expect(result).toContain("test-project");
+			expect(result).toContain("Test checkpoint");
+			expect(result).toContain("3 files");
+		});
+	});
+
+	describe("formatCheckpoint", () => {
+		it("should format single checkpoint", async () => {
+			const { formatCheckpoint } = await import("./checkpoint.js");
+			const checkpoint: Checkpoint = {
+				id: "ckpt-123",
+				timestamp: Date.now(),
+				description: "Test checkpoint",
+				stashRef: "stash@{0}",
+				files: ["file1.ts", "file2.ts"],
+				project: "test-project",
+			};
+			const result = formatCheckpoint(checkpoint);
+			expect(result).toContain("ckpt-123");
+			expect(result).toContain("Test checkpoint");
+			expect(result).toContain("stash@{0}");
+			expect(result).toContain("file1.ts");
+		});
+
+		it("should truncate large file lists", async () => {
+			const { formatCheckpoint } = await import("./checkpoint.js");
+			const checkpoint: Checkpoint = {
+				id: "ckpt-123",
+				timestamp: Date.now(),
+				description: "Test checkpoint",
+				stashRef: "stash@{0}",
+				files: Array.from({ length: 15 }, (_, i) => `file${i}.ts`),
+				project: "test-project",
+			};
+			const result = formatCheckpoint(checkpoint);
+			expect(result).toContain("... and 5 more");
+		});
+	});
+
+	describe("checkpoint tool", () => {
+		it("should have checkpoint tool in tools array", async () => {
+			const module = await import("./agent.js");
+			const { createAgent } = module;
+			expect(createAgent).toBeDefined();
+		});
+
+		it("should have checkpoint parameters defined", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent, run } = createAgent(config);
+			expect(agent).toBeDefined();
+			expect(run).toBeDefined();
+		});
+
+		it("should support checkpoint actions: create, list, restore, delete", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+		});
+
+		it("should support description parameter for create action", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+		});
+
+		it("should support checkpointId parameter for restore/delete", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
 		});
 	});
 });

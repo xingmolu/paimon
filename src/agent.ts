@@ -17,6 +17,13 @@ import {
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
 import { globSync } from "glob";
+import {
+	type Checkpoint,
+	type CheckpointInfo,
+	CheckpointManager,
+	formatCheckpoint,
+	formatCheckpointList,
+} from "./checkpoint.js";
 import { type CompactionConfig, ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
 import type { SessionManager } from "./session.js";
@@ -38,6 +45,9 @@ interface PlanState {
 
 // Global plan state (shared across agent runs)
 let currentPlan: PlanState | null = null;
+
+// Global checkpoint manager (shared across agent runs)
+const checkpointManager = new CheckpointManager();
 
 /**
  * Assessment result for self-review
@@ -1326,6 +1336,187 @@ Each learning should be:
 			};
 		},
 	},
+	{
+		name: "checkpoint",
+		label: "Manage Checkpoints",
+		description:
+			"Create, list, or restore checkpoints for safe rollback during evolution. Use this before risky changes to save a snapshot you can restore if something goes wrong.",
+		parameters: Type.Object({
+			action: Type.String({
+				description:
+					"Action to perform: 'create' (save snapshot), 'list' (show checkpoints), 'restore' (rollback to checkpoint), 'delete' (remove checkpoint)",
+			}),
+			description: Type.Optional(
+				Type.String({
+					description: "Description for the checkpoint (for 'create' action)",
+				}),
+			),
+			checkpointId: Type.Optional(
+				Type.String({
+					description: "Checkpoint ID to restore or delete (for 'restore' and 'delete' actions)",
+				}),
+			),
+		}),
+		execute: async (
+			_toolCallId,
+			params,
+		): Promise<AgentToolResult<Checkpoint | CheckpointInfo[] | string>> => {
+			const { action, description, checkpointId } = params as {
+				action: string;
+				description?: string;
+				checkpointId?: string;
+			};
+
+			try {
+				// Check if checkpoints are enabled
+				if (!checkpointManager.isEnabled()) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: "⚠️ Checkpoints require a git repository. Current directory is not in a git repo.",
+							},
+						],
+						details: "Checkpoints disabled - not in git repo",
+					};
+				}
+
+				switch (action) {
+					case "create": {
+						if (!description) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'description' is required for 'create' action",
+									},
+								],
+								details: "Error: description required",
+							};
+						}
+						const checkpoint = checkpointManager.create(description);
+						if (!checkpoint) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "⚠️ No changes to checkpoint. Make some changes first.",
+									},
+								],
+								details: "No changes to checkpoint",
+							};
+						}
+						const output = formatCheckpoint(checkpoint);
+						return {
+							content: [
+								{
+									type: "text",
+									text: `✅ Checkpoint created:\n\n${output}\n\nUse \`checkpoint({action: 'restore', checkpointId: '${checkpoint.id}'})\` to rollback.`,
+								},
+							],
+							details: checkpoint,
+						};
+					}
+
+					case "list": {
+						const checkpoints = checkpointManager.list();
+						const output = formatCheckpointList(checkpoints);
+						return {
+							content: [{ type: "text", text: output }],
+							details: checkpoints,
+						};
+					}
+
+					case "restore": {
+						if (!checkpointId) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'checkpointId' is required for 'restore' action. Use 'list' to see available checkpoints.",
+									},
+								],
+								details: "Error: checkpointId required",
+							};
+						}
+						const success = checkpointManager.restore(checkpointId);
+						if (success) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: `✅ Restored to checkpoint ${checkpointId}. Files have been restored from stash.`,
+									},
+								],
+								details: `Restored checkpoint ${checkpointId}`,
+							};
+						}
+						return {
+							content: [
+								{
+									type: "text",
+									text: `❌ Failed to restore checkpoint ${checkpointId}. The stash may have been dropped or conflicts occurred.`,
+								},
+							],
+							details: `Failed to restore checkpoint ${checkpointId}`,
+						};
+					}
+
+					case "delete": {
+						if (!checkpointId) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'checkpointId' is required for 'delete' action. Use 'list' to see available checkpoints.",
+									},
+								],
+								details: "Error: checkpointId required",
+							};
+						}
+						const success = checkpointManager.delete(checkpointId);
+						if (success) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: `✅ Deleted checkpoint ${checkpointId}.`,
+									},
+								],
+								details: `Deleted checkpoint ${checkpointId}`,
+							};
+						}
+						return {
+							content: [
+								{
+									type: "text",
+									text: `❌ Failed to delete checkpoint ${checkpointId}. It may not exist.`,
+								},
+							],
+							details: `Failed to delete checkpoint ${checkpointId}`,
+						};
+					}
+
+					default:
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Error: Unknown action '${action}'. Use: create, list, restore, delete`,
+								},
+							],
+							details: `Error: Unknown action '${action}'`,
+						};
+				}
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
 
 /**
@@ -1517,7 +1708,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -1537,6 +1728,7 @@ You can help users with various tasks like reading files, writing code, executin
 - plan: Create and manage step-by-step plans for complex tasks
 - assess: Run self-assessment checks (build, tests, lint) - use before completion. Supports \`maxAttempts\` for error recovery loops.
 - reflect: Analyze failures and extract lessons for MEMORY.md - use after failed assessments.
+- checkpoint: Save and restore snapshots for safe rollback during risky changes.
 
 ## Multi-Step Reasoning
 
@@ -1584,7 +1776,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -1604,6 +1796,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - plan: Create and manage step-by-step plans for complex tasks
 - assess: Run self-assessment checks before completion. Use \`maxAttempts\` for error recovery.
 - reflect: Extract lessons from failures and update MEMORY.md automatically.
+- checkpoint: Save and restore snapshots for safe rollback during risky changes.
 
 ## Multi-Step Reasoning
 
@@ -1681,6 +1874,35 @@ Before making changes, consider:
 - Use \`edit\` for surgical changes (preferred)
 - Use \`write\` for new files only
 - Keep changes minimal and focused
+- **Create checkpoint before risky changes**:
+  \`\`\`
+  checkpoint({action: 'create', description: 'Before refactoring X module'})
+  \`\`\`
+  This saves a snapshot you can restore if something goes wrong.
+
+### 3.1 Checkpoint Safety
+For complex or risky changes, create checkpoints at key milestones:
+
+1. **Before major refactoring** - Save state before restructuring code
+2. **Before deleting code** - Preserve files you might need later
+3. **After completing a component** - Mark stable points for rollback
+
+\`\`\`
+// Create checkpoint
+checkpoint({action: 'create', description: 'Stable state before adding feature X'})
+
+// List checkpoints
+checkpoint({action: 'list'})
+
+// Restore if something goes wrong
+checkpoint({action: 'restore', checkpointId: 'ckpt-123456-abc123'})
+\`\`\`
+
+**Checkpoint Workflow:**
+1. Create checkpoint before making changes
+2. Implement your feature
+3. Run assessment - if it fails, restore checkpoint and try again
+4. Delete checkpoint after successful commit
 
 ### 4. Verification
 - Run \`npm run build\` to check TypeScript compilation
