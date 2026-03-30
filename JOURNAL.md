@@ -519,3 +519,40 @@ plan({action: 'clear'})
 **Next steps:**
 - ROADMAP Phase 4 is now complete
 - Consider Phase 5: Advanced capabilities (reflection, self-assessment, error recovery loops)
+
+---
+
+## Day 17 — Fix Superpowers Skill for Paimon (2026-03-30)
+
+**What happened:**
+- Fixed Issue #19: Study Claude Code skill installation and fix superpowers
+- Researched Claude Code's plugin system from their GitHub repository
+- Discovered key differences between Claude Code and Paimon's skill loading:
+  - Claude Code: Uses "Skill" tool for skill activation, plugin.json metadata
+  - Gemini CLI: Uses "activate_skill" tool
+  - Paimon: Uses `read skills/<name>/SKILL.md` via the `read` tool
+- Rewrote `skills/using-superpowers/SKILL.md` to work with Paimon's toolset
+
+**Why this matters:**
+- Skills must be adapted to each platform's tooling system
+- Claude Code's skill format is not universal - requires platform adaptation
+- Paimon uses progressive skill loading (names/descriptions in prompt, full content loaded on-demand)
+- The skill now properly instructs agents to use `read skills/<name>/SKILL.md`
+
+**Technical details:**
+- Researched Claude Code plugins/README.md for skill installation mechanism
+- Claude Code plugin structure: `.claude-plugin/plugin.json`, commands/, agents/, skills/, hooks/
+- Paimon's simpler approach: skills directory scanned by `buildSkillsIndex()` in src/agent.ts
+- Removed references to Claude Code's "Skill" tool and Gemini's "activate_skill"
+- Updated skill loading flow to show Paimon's `read` tool approach
+- Kept core principles (Red Flags table, Skill Priority, Skill Types)
+
+**Claude Code Skill Installation (research findings):**
+- Skills are stored in `skills/<name>/SKILL.md` with YAML frontmatter
+- Claude Code uses `/plugin` command to install from marketplaces
+- Configuration in `.claude/settings.json` or `.claude-plugin/plugin.json`
+- Skills can have hooks (PreToolUse, SessionStart, Stop) for behavior modification
+- Plugin structure includes: commands (slash commands), agents (specialized), skills, hooks, MCP servers
+
+**Next steps:**
+- Continue ROADMAP Phase 5 planning
