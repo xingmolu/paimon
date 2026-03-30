@@ -37,6 +37,11 @@ Planned improvements for evo.
 ## Phase 6: Safety & Validation
 - [x] Hook system for pre-tool validation — Inspired by Claude Code's PreToolUse hooks
 
+## Phase 7: Specialized Agents
+- [x] explore-code skill — Deep codebase exploration before making changes (inspired by Claude Code's code-explorer)
+- [x] plan-architecture skill — Architecture planning before implementation (inspired by Claude Code's code-architect)
+- [x] review-changes skill — Code review with confidence-based scoring (inspired by Claude Code's code-reviewer)
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

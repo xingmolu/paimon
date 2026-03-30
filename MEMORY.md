@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
+| 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | exploration-planning-review |
 | 2026-03-30 | capability | Hook system for pre-tool validation | ~15m | ✅ | lint | Yes | High | proactive-safety |
 | 2026-03-30 | capability | Parallel task execution | ~20m | ✅ | TS | Yes | High | concurrent-operations |
 | 2026-03-30 | capability | End-to-end superpowers integration | ~25m | ✅ | lint | Yes | High | skill-workflows |
@@ -42,19 +43,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Confidence-based scoring for assess | ~10m | ✅ | none | No | High | better-error-filtering |
 
 ### Quality Metrics
-- First Try Success Rate: 14/16 = 88%
+- First Try Success Rate: 14/17 = 82%
 - Average Time: ~13 minutes
-- Rework Rate: 3/16 = 19%
+- Rework Rate: 4/17 = 24%
 
 ### Capability Metrics
-- Capability Tasks: 15/16 = 94%
-- High Impact Capabilities: 8/15 = 53%
-- Capability Velocity: 15 capabilities in 2 days = 7.5/day
+- Capability Tasks: 16/17 = 94%
+- High Impact Capabilities: 9/16 = 56%
+- Capability Velocity: 16 capabilities in 2 days = 8/day
 
 ### Error Analysis
 - TypeScript Errors: 1
 - Test Failures: 0
-- Lint Issues: 2
+- Lint Issues: 4
 - Runtime Errors: 0
 
 ### Top Capabilities (by Impact)
@@ -67,10 +68,32 @@ Track effectiveness of recent improvements:
 7. **Confidence-Based Scoring** - High impact, enables better error filtering
 8. **Superpowers Integration** - High impact, enables skill-based workflows
 9. **Parallel Execution** - High impact, enables concurrent operations
+10. **Specialized Subagents** - High impact, enables exploration-planning-review
 
 ---
 
 ## Learnings
+
+### 2026-03-30: Specialized Subagents for Self-Evolution
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 7 - specialized skills for exploration, planning, and review
+
+**Insight:** Specialized subagents (explore-code, plan-architecture, review-changes) improve self-evolution quality by providing dedicated roles for each phase:
+1. **explore-code** - Deep codebase exploration before changes reduces blind edits
+2. **plan-architecture** - Architecture planning before coding reduces rework
+3. **review-changes** - Code review with confidence scoring catches bugs early
+4. Each skill should be invoked at specific workflow stages (Context → Planning → Assessment)
+5. Confidence-based scoring (≥80 threshold) filters false positives from real issues
+
+**Trigger:** When making non-trivial code changes requiring multiple files
+
+**Reuse Rule:** Always invoke explore-code before complex changes, plan-architecture before implementation, review-changes before assess.
+
+**Priority:** High
+
+---
 
 ### 2026-03-30: Hook System for Pre-Tool Validation
 

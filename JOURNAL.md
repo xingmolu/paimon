@@ -4,6 +4,54 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 29 — Specialized Subagents for Self-Evolution (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 7 "Specialized Agents"
+- Created three new skills inspired by Claude Code's feature-dev plugin:
+  - `explore-code` — Deep codebase exploration before making changes (inspired by code-explorer)
+  - `plan-architecture` — Architecture planning before implementation (inspired by code-architect)
+  - `review-changes` — Code review with confidence-based scoring (inspired by code-reviewer)
+- Updated ROADMAP.md with Phase 7
+- Fixed lint issues in superpowers skills (helper.js, server.cjs)
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution quality
+- Better exploration reduces blind edits and missed dependencies
+- Architecture planning reduces rework from poor design choices
+- Code review catches bugs and security issues before committing
+- Follows proven patterns from Claude Code's specialized agents
+
+**Technical details:**
+- Created `skills/explore-code/SKILL.md`:
+  - Four-step exploration process (Entry, Flow, Architecture, Patterns)
+  - Output format with file:line references
+  - Integration with self-evolution workflow
+- Created `skills/plan-architecture/SKILL.md`:
+  - Four-step planning process (Patterns, Decision, Blueprint, Sequence)
+  - Implementation blueprint format
+  - Integration with plan tool for tracking
+- Created `skills/review-changes/SKILL.md`:
+  - Confidence-based scoring (0-100, ≥80 threshold)
+  - Four review areas (Bugs, Security, Quality, Guidelines)
+  - Self-review checklist
+- Modified ROADMAP.md:
+  - Added Phase 7: Specialized Agents
+  - Marked all three skills as complete
+
+**Skill Integration:**
+| Skill | When to Use | Phase |
+|-------|-------------|-------|
+| explore-code | Before non-trivial changes | Context Gathering |
+| plan-architecture | After exploration, before coding | Implementation |
+| review-changes | After implementation, before assess | Self-Assessment |
+
+**Next steps:**
+- Continue improving specialized agent capabilities
+- Consider adding more specialized skills as needed
+
+---
+
 ## Day 28 — Hook System for Pre-Tool Validation (2026-03-30)
 
 **What happened:**
