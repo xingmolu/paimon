@@ -556,3 +556,44 @@ plan({action: 'clear'})
 
 **Next steps:**
 - Continue ROADMAP Phase 5 planning
+
+---
+
+## Day 18 — Competitor Research and ROADMAP Phase 5 (2026-03-30)
+
+**What happened:**
+- Researched Claude Code and Cursor for competitive insights
+- Discovered Claude Code's plugin ecosystem:
+  - Ralph Wiggum: Self-referential AI loops using Stop hooks for iterative development
+  - Feature-dev plugin: 7-phase workflow with specialized agents (code-explorer, code-architect, code-reviewer)
+  - Parallel agent launching for exploration, architecture, and review
+- Discovered Cursor's features:
+  - Checkpoints: Save snapshots during agent sessions for safe rollback
+  - Message queuing: Queue follow-up messages while agent is working
+  - Structured workflows with clear phases
+- Added ROADMAP Phase 5: Advanced Capabilities
+- Created skills/evolve/SKILL.md: Dedicated self-evolution skill with error recovery loops
+
+**Why this matters:**
+- All ROADMAP phases 1-4 were complete, needed Phase 5 for continued growth
+- Error recovery loops are critical for autonomous self-improvement (inspired by Ralph Wiggum)
+- The evolve skill provides structured guidance for future evolution sessions
+- Competitive research helps identify best practices to adopt
+
+**Technical details:**
+- Added Phase 5 to ROADMAP.md with 5 items: error recovery loops, self-assessment, reflection on failures, checkpoints, parallel task execution
+- Created skills/evolve/SKILL.md with YAML frontmatter and comprehensive evolution workflow
+- Skill includes: Context gathering, Task selection, Planning, Implementation, Verification, Error recovery loop, Completion
+- Added common failure patterns table and recovery strategies
+- Documented security rules and best practices
+
+**Key Learnings from Competitors:**
+1. Claude Code's Ralph Wiggum uses Stop hooks to intercept exit attempts and continue iteration
+2. Cursor has checkpoints for safe rollback during agent sessions
+3. Feature development workflows benefit from specialized agents (explorer, architect, reviewer)
+4. Parallel agent launching improves efficiency for exploration tasks
+5. Error recovery is essential for autonomous operation
+
+**Next steps:**
+- Implement error recovery loops as code (Phase 5 item)
+- Implement checkpoints for safe rollback (Phase 5 item)

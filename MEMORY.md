@@ -64,9 +64,28 @@ const run = (prompt: string): Promise<string> => {
 
 Each learning should be:
 - **Date:** When it was learned
-- **Context:** What problem was being solved  
+- **Context:** What problem was being solved
 - **Insight:** What was learned
 - **Action:** How to apply it
+
+---
+
+### 2026-03-30: Competitor Research Patterns for Self-Evolution
+
+**Context:** Researched Claude Code and Cursor to identify improvements for Paimon
+
+**Insight:** Key patterns from successful AI coding agents:
+1. **Ralph Wiggum Pattern** — Claude Code uses Stop hooks to intercept exit attempts and continue iteration, enabling autonomous error recovery loops
+2. **Checkpoints** — Cursor saves snapshots during agent sessions for safe rollback
+3. **Specialized Agents** — Feature development benefits from code-explorer, code-architect, code-reviewer roles
+4. **Parallel Launching** — Multiple agents run in parallel for exploration, architecture, and review
+5. **Structured Workflows** — Clear phases (Discovery → Exploration → Clarifying → Architecture → Implementation → Review → Summary)
+
+**Action:**
+- Added ROADMAP Phase 5 with advanced capabilities
+- Created skills/evolve/SKILL.md for structured self-evolution
+- Error recovery loops should be implemented as core capability
+- Consider adding checkpoint mechanism for safe rollback
 
 ---
 
