@@ -1,9 +1,9 @@
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { setMaxListeners } from "node:events";
-import https from "node:https";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import http from "node:http";
+import https from "node:https";
+import { join } from "node:path";
 
 // Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
 setMaxListeners(100);
@@ -49,6 +49,114 @@ interface AssessmentResult {
 	changedFiles: string[];
 	timestamp: string;
 	recommendations: string[];
+	attempts: number;
+	errorPatterns?: ErrorPattern[];
+}
+
+/**
+ * Extracted error pattern from build/test output
+ */
+interface ErrorPattern {
+	type: "typescript" | "test" | "lint" | "runtime";
+	file?: string;
+	line?: number;
+	message: string;
+	suggestion: string;
+}
+
+/**
+ * Extract common error patterns from build/test output
+ */
+function extractErrorPatterns(output: string): ErrorPattern[] {
+	const patterns: ErrorPattern[] = [];
+
+	// TypeScript errors: "src/file.ts(10,5): error TS1234: message"
+	const tsErrorRegex = /([^\s(]+)\((\d+),(\d+)\):\s*error\s+(TS\d+):\s*(.+)/g;
+	for (const match of output.matchAll(tsErrorRegex)) {
+		patterns.push({
+			type: "typescript",
+			file: match[1],
+			line: Number.parseInt(match[2], 10),
+			message: `TS${match[4]}: ${match[5]}`,
+			suggestion: getSuggestionForTsError(match[4], match[5]),
+		});
+	}
+
+	// Test failures: "FAIL src/file.test.ts > test name"
+	const testFailRegex = /FAIL\s+([^\s>]+)\s*>\s*(.+)/g;
+	for (const match of output.matchAll(testFailRegex)) {
+		patterns.push({
+			type: "test",
+			file: match[1],
+			message: `Test failed: ${match[2]}`,
+			suggestion: "Check test assertions and ensure the code matches expected behavior",
+		});
+	}
+
+	// Assertion errors: "AssertionError: expected X to equal Y"
+	const assertRegex = /AssertionError:\s*(.+)/g;
+	for (const match of output.matchAll(assertRegex)) {
+		patterns.push({
+			type: "test",
+			message: match[1],
+			suggestion: "Review the assertion and fix the expected or actual value",
+		});
+	}
+
+	// Lint errors: "src/file.ts:10:5: error message"
+	const lintErrorRegex = /([^\s:]+):(\d+):(\d+):\s*(.+)/g;
+	for (const match of output.matchAll(lintErrorRegex)) {
+		if (match[1].endsWith(".ts") || match[1].endsWith(".js")) {
+			patterns.push({
+				type: "lint",
+				file: match[1],
+				line: Number.parseInt(match[2], 10),
+				message: match[4],
+				suggestion: "Run `npm run lint -- --fix` to auto-fix or manually correct the issue",
+			});
+		}
+	}
+
+	// Cannot find module errors
+	const moduleRegex = /Cannot find module ['"]([^'"]+)['"]/g;
+	for (const match of output.matchAll(moduleRegex)) {
+		patterns.push({
+			type: "typescript",
+			message: `Cannot find module '${match[1]}'`,
+			suggestion: `Install the module with 'npm install ${match[1]}' or check the import path`,
+		});
+	}
+
+	// Type 'X' is not assignable to type 'Y'
+	const typeRegex = /Type '([^']+)' is not assignable to type '([^']+)'/g;
+	for (const match of output.matchAll(typeRegex)) {
+		patterns.push({
+			type: "typescript",
+			message: `Type '${match[1]}' is not assignable to type '${match[2]}'`,
+			suggestion: "Add type conversion or fix the type definition",
+		});
+	}
+
+	return patterns;
+}
+
+/**
+ * Get suggestion for TypeScript error code
+ */
+function getSuggestionForTsError(code: string, _message: string): string {
+	const suggestions: Record<string, string> = {
+		TS2304: "The variable or module is not defined. Check imports and spelling.",
+		TS2322: "Type mismatch. Check the expected type and provide the correct value.",
+		TS2339:
+			"Property does not exist on type. Check if the property name is correct or add type declaration.",
+		TS2345: "Argument type is incorrect. Check function signature and argument types.",
+		TS2769: "No overload matches this call. Check function arguments and types.",
+		TS18048: "Variable may be undefined. Add null check or type guard.",
+		TS2531: "Object is possibly null. Add null check before accessing property.",
+		TS2341: "Property is private. Use a public accessor or change visibility.",
+		TS2307: "Cannot find module. Check if the module is installed and import path is correct.",
+	};
+	return suggestions[code] || "Review the TypeScript error and fix accordingly.";
 }
 
 export interface PaimonConfig {
@@ -742,14 +850,14 @@ const tools: AgentTool[] = [
 		description:
 			"Run a self-assessment check to evaluate code changes. Checks build, tests, lint, and provides recommendations. Use this before completing a self-evolution task.",
 		parameters: Type.Object({
-			runBuild: Type.Optional(
-				Type.Boolean({ description: "Run npm run build (default: true)" }),
-			),
-			runTests: Type.Optional(
-				Type.Boolean({ description: "Run npm test (default: true)" }),
-			),
-			runLint: Type.Optional(
-				Type.Boolean({ description: "Run npm run lint (default: true)" }),
+			runBuild: Type.Optional(Type.Boolean({ description: "Run npm run build (default: true)" })),
+			runTests: Type.Optional(Type.Boolean({ description: "Run npm test (default: true)" })),
+			runLint: Type.Optional(Type.Boolean({ description: "Run npm run lint (default: true)" })),
+			maxAttempts: Type.Optional(
+				Type.Number({
+					description:
+						"Maximum retry attempts for error recovery (default: 1, no retries). Use higher values to enable automatic retry loops.",
+				}),
 			),
 		}),
 		execute: async (_toolCallId, params): Promise<AgentToolResult<AssessmentResult>> => {
@@ -757,10 +865,12 @@ const tools: AgentTool[] = [
 				runBuild = true,
 				runTests = true,
 				runLint = true,
+				maxAttempts = 1,
 			} = params as {
 				runBuild?: boolean;
 				runTests?: boolean;
 				runLint?: boolean;
+				maxAttempts?: number;
 			};
 
 			const result: AssessmentResult = {
@@ -770,130 +880,217 @@ const tools: AgentTool[] = [
 				changedFiles: [],
 				timestamp: new Date().toISOString(),
 				recommendations: [],
+				attempts: 0,
+				errorPatterns: [],
 			};
 
-			try {
-				// Get changed files
+			// Error recovery loop - retry up to maxAttempts times
+			for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+				result.attempts = attempt;
+
 				try {
-					const statusOutput = execSync("git status --porcelain", {
-						encoding: "utf-8",
-						timeout: 10000,
-					});
-					result.changedFiles = statusOutput
-						.trim()
-						.split("\n")
-						.filter(Boolean)
-						.map((line) => line.slice(3)); // Remove status prefix (M, A, etc.)
-				} catch {
-					// Not in a git repo or git not available
-					result.recommendations.push("Could not determine changed files - git not available");
-				}
-
-				// Run build
-				if (runBuild) {
-					try {
-						execSync("npm run build", {
-							encoding: "utf-8",
-							timeout: 120000,
-						});
-						result.buildStatus = "pass";
-					} catch (e) {
-						result.buildStatus = "fail";
-						const error = e instanceof Error ? e.message : String(e);
-						result.recommendations.push(`Build failed: ${error.slice(0, 200)}`);
-					}
-				}
-
-				// Run tests
-				if (runTests) {
-					try {
-						execSync("npm test -- --run", {
-							encoding: "utf-8",
-							timeout: 120000,
-						});
-						result.testStatus = "pass";
-					} catch (e) {
-						result.testStatus = "fail";
-						const error = e instanceof Error ? e.message : String(e);
-						result.recommendations.push(`Tests failed: ${error.slice(0, 200)}`);
-					}
-				}
-
-				// Run lint
-				if (runLint) {
-					try {
-						execSync("npm run lint", {
-							encoding: "utf-8",
-							timeout: 60000,
-						});
-						result.lintStatus = "pass";
-					} catch (e) {
-						result.lintStatus = "fail";
-						const error = e instanceof Error ? e.message : String(e);
-						result.recommendations.push(`Lint failed: ${error.slice(0, 200)}`);
-					}
-				}
-
-				// Check for dangerous patterns in changed files
-				for (const file of result.changedFiles) {
-					if (file.endsWith(".ts") || file.endsWith(".js")) {
+					// Get changed files (only on first attempt)
+					if (attempt === 1) {
 						try {
-							const content = readFileSync(file, "utf-8");
-							if (content.includes("eval(")) {
-								result.recommendations.push(`⚠️ Security: eval() found in ${file}`);
-							}
-							if (content.includes("exec(") && content.includes("user")) {
-								result.recommendations.push(`⚠️ Security: Potential exec() with user input in ${file}`);
-							}
+							const statusOutput = execSync("git status --porcelain", {
+								encoding: "utf-8",
+								timeout: 10000,
+							});
+							result.changedFiles = statusOutput
+								.trim()
+								.split("\n")
+								.filter(Boolean)
+								.map((line) => line.slice(3)); // Remove status prefix (M, A, etc.)
 						} catch {
-							// File might not exist or be readable
+							result.recommendations.push("Could not determine changed files - git not available");
 						}
 					}
+
+					// Run build
+					if (runBuild && result.buildStatus !== "pass") {
+						try {
+							const buildOutput = execSync("npm run build", {
+								encoding: "utf-8",
+								timeout: 120000,
+							});
+							result.buildStatus = "pass";
+							// Extract any warnings from successful build
+							const patterns = extractErrorPatterns(buildOutput);
+							for (const p of patterns) {
+								if (p.message.toLowerCase().includes("warning")) {
+									result.recommendations.push(`⚠️ Warning: ${p.message} (${p.file || "unknown"})`);
+								}
+							}
+						} catch (e) {
+							result.buildStatus = "fail";
+							const output = e instanceof Error ? e.message : String(e);
+							result.recommendations.push(
+								`Build failed (attempt ${attempt}): ${output.slice(0, 500)}`,
+							);
+							// Extract error patterns for actionable suggestions
+							const patterns = extractErrorPatterns(output);
+							result.errorPatterns = patterns;
+							for (const pattern of patterns.slice(0, 5)) {
+								result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
+							}
+						}
+					}
+
+					// Run tests
+					if (runTests && result.testStatus !== "pass") {
+						try {
+							const testOutput = execSync("npm test -- --run", {
+								encoding: "utf-8",
+								timeout: 120000,
+							});
+							result.testStatus = "pass";
+						} catch (e) {
+							result.testStatus = "fail";
+							const output = e instanceof Error ? e.message : String(e);
+							result.recommendations.push(
+								`Tests failed (attempt ${attempt}): ${output.slice(0, 500)}`,
+							);
+							// Extract test failure patterns
+							const patterns = extractErrorPatterns(output);
+							for (const pattern of patterns.slice(0, 5)) {
+								if (pattern.type === "test") {
+									result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
+								}
+							}
+							// Merge error patterns
+							result.errorPatterns = [...(result.errorPatterns || []), ...patterns];
+						}
+					}
+
+					// Run lint
+					if (runLint && result.lintStatus !== "pass") {
+						try {
+							execSync("npm run lint", {
+								encoding: "utf-8",
+								timeout: 60000,
+							});
+							result.lintStatus = "pass";
+						} catch (e) {
+							result.lintStatus = "fail";
+							const output = e instanceof Error ? e.message : String(e);
+							result.recommendations.push(
+								`Lint failed (attempt ${attempt}): ${output.slice(0, 500)}`,
+							);
+							// Try auto-fix with --fix flag if this is a retry
+							if (attempt > 1) {
+								try {
+									execSync("npm run lint -- --fix", {
+										encoding: "utf-8",
+										timeout: 60000,
+									});
+									result.lintStatus = "pass";
+									result.recommendations.push("✅ Auto-fixed lint issues");
+								} catch {
+									// Auto-fix didn't work, manual fix needed
+									const patterns = extractErrorPatterns(output);
+									for (const pattern of patterns.slice(0, 3)) {
+										result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
+									}
+								}
+							}
+						}
+					}
+
+					// Check for dangerous patterns in changed files
+					for (const file of result.changedFiles) {
+						if (file.endsWith(".ts") || file.endsWith(".js")) {
+							try {
+								const content = readFileSync(file, "utf-8");
+								if (content.includes("eval(")) {
+									result.recommendations.push(`⚠️ Security: eval() found in ${file}`);
+								}
+								if (content.includes("exec(") && content.includes("user")) {
+									result.recommendations.push(
+										`⚠️ Security: Potential exec() with user input in ${file}`,
+									);
+								}
+							} catch {
+								// File might not exist or be readable
+							}
+						}
+					}
+
+					// Check if all passed - if so, we can exit the retry loop
+					const allPassed =
+						(!runBuild || result.buildStatus === "pass") &&
+						(!runTests || result.testStatus === "pass") &&
+						(!runLint || result.lintStatus === "pass");
+
+					if (allPassed) {
+						break; // Success, no need to retry
+					}
+
+					// If we have retries remaining, wait briefly before next attempt
+					if (attempt < maxAttempts && !allPassed) {
+						result.recommendations.push(`🔄 Retrying... (${attempt}/${maxAttempts} attempts used)`);
+						// Brief pause before retry (100ms)
+						await new Promise((resolve) => setTimeout(resolve, 100));
+					}
+				} catch (e) {
+					const error = e instanceof Error ? e.message : String(e);
+					result.recommendations.push(`Error during assessment attempt ${attempt}: ${error}`);
 				}
+			}
 
-				// Generate summary
-				const allPassed =
-					result.buildStatus === "pass" &&
-					result.testStatus === "pass" &&
-					result.lintStatus === "pass";
+			// Generate summary
+			const allPassed =
+				(!runBuild || result.buildStatus === "pass") &&
+				(!runTests || result.testStatus === "pass") &&
+				(!runLint || result.lintStatus === "pass");
 
-				const statusEmoji = {
-					pass: "✅",
-					fail: "❌",
-					unknown: "⏭️",
-				};
+			const statusEmoji = {
+				pass: "✅",
+				fail: "❌",
+				unknown: "⏭️",
+			};
 
-				let output = `📊 Self-Assessment Report\n`;
-				output += `Generated: ${new Date(result.timestamp).toLocaleString()}\n`;
-				output += "─".repeat(40) + "\n";
-				output += `${statusEmoji[result.buildStatus]} Build: ${result.buildStatus}\n`;
-				output += `${statusEmoji[result.testStatus]} Tests: ${result.testStatus}\n`;
-				output += `${statusEmoji[result.lintStatus]} Lint: ${result.lintStatus}\n`;
-				output += `📄 Changed files: ${result.changedFiles.length > 0 ? result.changedFiles.join(", ") : "(none)"}\n`;
-				output += "─".repeat(40) + "\n";
+			let output = "📊 Self-Assessment Report\n";
+			output += `Generated: ${new Date(result.timestamp).toLocaleString()}\n`;
+			if (result.attempts > 1) {
+				output += `Attempts: ${result.attempts}/${maxAttempts}\n`;
+			}
+			output += `${"─".repeat(40)}\n`;
+			output += `${statusEmoji[result.buildStatus]} Build: ${result.buildStatus}\n`;
+			output += `${statusEmoji[result.testStatus]} Tests: ${result.testStatus}\n`;
+			output += `${statusEmoji[result.lintStatus]} Lint: ${result.lintStatus}\n`;
+			output += `📄 Changed files: ${result.changedFiles.length > 0 ? result.changedFiles.join(", ") : "(none)"}\n`;
+			output += `${"─".repeat(40)}\n`;
 
-				if (allPassed && result.recommendations.length === 0) {
-					output += `🎉 All checks passed! Ready to commit.\n`;
-				} else if (result.recommendations.length > 0) {
-					output += `⚠️ Recommendations:\n`;
-					for (const rec of result.recommendations) {
+			if (allPassed && result.recommendations.filter((r) => !r.includes("Retrying")).length === 0) {
+				output += "🎉 All checks passed! Ready to commit.\n";
+			} else if (result.recommendations.length > 0) {
+				// Filter out retry messages for final summary
+				const filteredRecs = result.recommendations.filter((r) => !r.includes("Retrying"));
+				if (filteredRecs.length > 0) {
+					output += "⚠️ Recommendations:\n";
+					for (const rec of filteredRecs) {
 						output += `  - ${rec}\n`;
 					}
-				} else if (!allPassed) {
-					output += `❌ Some checks failed. Fix issues before committing.\n`;
 				}
-
-				return {
-					content: [{ type: "text", text: output }],
-					details: result,
-				};
-			} catch (e) {
-				const error = e instanceof Error ? e.message : String(e);
-				return {
-					content: [{ type: "text", text: `Error during assessment: ${error}` }],
-					details: result,
-				};
+			} else if (!allPassed) {
+				output += `❌ Some checks failed after ${result.attempts} attempts. Fix issues before committing.\n`;
 			}
+
+			// Show error patterns if available
+			if (result.errorPatterns && result.errorPatterns.length > 0) {
+				output += "\n📋 Error Patterns Detected:\n";
+				for (const pattern of result.errorPatterns.slice(0, 5)) {
+					output += `  • [${pattern.type}] ${pattern.message}\n`;
+					if (pattern.file) {
+						output += `    File: ${pattern.file}:${pattern.line || "?"}\n`;
+					}
+				}
+			}
+
+			return {
+				content: [{ type: "text", text: output }],
+				details: result,
+			};
 		},
 	},
 ];
@@ -910,7 +1107,7 @@ function formatPlan(plan: PlanState): string {
 	};
 
 	let output = `📋 Plan (created ${new Date(plan.createdAt).toLocaleString()})\n`;
-	output += "─".repeat(40) + "\n";
+	output += `${"─".repeat(40)}\n`;
 	for (const step of plan.steps) {
 		const emoji = statusEmoji[step.status] || "⬜";
 		const current = step.id === plan.currentStep ? " → " : "   ";
@@ -1105,8 +1302,7 @@ You can help users with various tasks like reading files, writing code, executin
 - ls: List directory contents
 - http: Make HTTP requests to fetch web content or call APIs
 - plan: Create and manage step-by-step plans for complex tasks
-- assess: Run self-assessment checks (build, tests, lint) - use before completion
-- assess: Run self-assessment checks (build, tests, lint)
+- assess: Run self-assessment checks (build, tests, lint) - use before completion. Supports \`maxAttempts\` for error recovery loops.
 
 ## Multi-Step Reasoning
 
@@ -1268,6 +1464,23 @@ This will check:
 - Lists changed files
 
 **Only proceed to Completion if all checks pass.**
+
+### 5.1 Error Recovery Loop
+For complex changes, enable automatic retry loops:
+\`\`\`
+assess({maxAttempts: 5})  // Retry up to 5 times with error recovery
+\`\`\`
+
+The tool will:
+- Extract error patterns from failures (TypeScript errors, test failures, lint issues)
+- Provide actionable suggestions for each error
+- Auto-fix lint issues on retry attempts
+- Track attempts and progress
+
+**Maximum 5 attempts recommended.** If still failing after retries:
+1. Read the specific error patterns
+2. Fix issues manually
+3. Run assess again or increase maxAttempts
 
 ### 6. Completion
 - Say "DONE" and summarize your work

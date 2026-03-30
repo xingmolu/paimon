@@ -646,3 +646,57 @@ assess({runBuild: true, runTests: false, runLint: false})
 **Next steps:**
 - Implement error recovery loops (Phase 5 item)
 - Implement checkpoints for safe rollback (Phase 5 item)
+
+---
+
+## Day 20 — Error Recovery Loops (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 5 "Error recovery loops"
+- Enhanced the `assess` tool with automatic retry capability:
+  - Added `maxAttempts` parameter for retry loops (default: 1, no retries)
+  - Added `extractErrorPatterns()` function to parse build/test/lint errors
+  - Added `ErrorPattern` interface with actionable suggestions
+  - Added `getSuggestionForTsError()` for TypeScript error code suggestions
+- The tool now:
+  - Extracts error patterns from failures (TypeScript, test, lint)
+  - Provides actionable suggestions for each detected error
+  - Auto-fixes lint issues on retry attempts (`npm run lint -- --fix`)
+  - Tracks attempt count and progress
+- Updated system prompt with "5.1 Error Recovery Loop" section
+
+**Why this matters:**
+- Implements the Ralph Wiggum pattern from Claude Code competitor research
+- Agent can now automatically retry failed builds/tests with helpful context
+- Error pattern extraction accelerates debugging with actionable suggestions
+- Auto-fix for lint issues reduces manual intervention
+- Critical capability for autonomous self-improvement
+
+**Technical details:**
+- Modified `src/agent.ts`:
+  - Added `ErrorPattern` interface (type, file, line, message, suggestion)
+  - Added `extractErrorPatterns()` function with regex patterns for TS errors, test failures, lint issues
+  - Added `getSuggestionForTsError()` lookup table for common TS error codes
+  - Modified `assess` tool execute function with retry loop (for attempt 1..maxAttempts)
+  - Changed `AssessmentResult.attempts` from optional to required (initialized to 0)
+- Updated system prompts with "5.1 Error Recovery Loop" guidance
+- All 45 tests pass
+
+**Error Recovery Loop Usage:**
+```typescript
+// Single attempt (default)
+assess({})  // Run once, report results
+
+// Automatic retry with error recovery
+assess({maxAttempts: 5})  // Retry up to 5 times
+```
+
+**Error Pattern Detection:**
+- TypeScript errors (TS codes, type mismatches, missing modules)
+- Test failures (FAIL markers, AssertionError messages)
+- Lint issues (file:line:col format)
+- Module not found errors
+
+**Next steps:**
+- Implement reflection on failures (Phase 5 item)
+- Implement checkpoints for safe rollback (Phase 5 item)

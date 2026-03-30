@@ -28,7 +28,7 @@ Planned improvements for evo.
 - [x] Session persistence and resume — Issue #11
 
 ## Phase 5: Advanced Capabilities
-- [ ] Error recovery loops — Iterative self-correction when builds/tests fail
+- [x] Error recovery loops — Iterative self-correction when builds/tests fail
 - [x] Self-assessment — Evaluate own changes before committing
 - [ ] Reflection on failures — Extract lessons and update MEMORY.md automatically
 - [ ] Checkpoints — Save snapshots during evolution for safe rollback

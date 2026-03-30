@@ -6,17 +6,17 @@
  * a unique ID and optional parentId for branching.
  */
 
+import { execSync } from "node:child_process";
 import {
+	appendFileSync,
 	existsSync,
 	mkdirSync,
 	readFileSync,
-	appendFileSync,
 	readdirSync,
 	writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { join, dirname, basename } from "node:path";
-import { execSync } from "node:child_process";
+import { basename, dirname, join } from "node:path";
 
 /**
  * A message in the session history.
@@ -86,7 +86,7 @@ export class SessionManager {
 	private projectName: string;
 	private enabled: boolean;
 
-	constructor(baseDir: string = join(homedir(), ".paimon", "sessions"), enabled: boolean = true) {
+	constructor(baseDir: string = join(homedir(), ".paimon", "sessions"), enabled = true) {
 		this.sessionDir = baseDir;
 		this.projectName = getProjectName();
 		this.enabled = enabled;
@@ -192,7 +192,7 @@ export class SessionManager {
 
 		if (this.currentFile && this.enabled) {
 			this.ensureDir(dirname(this.currentFile));
-			appendFileSync(this.currentFile, JSON.stringify(message) + "\n", "utf-8");
+			appendFileSync(this.currentFile, `${JSON.stringify(message)}\n`, "utf-8");
 		}
 
 		return message;
