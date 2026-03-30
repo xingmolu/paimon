@@ -22,41 +22,49 @@ When evaluating tasks, classify them into these types:
 
 Track effectiveness of recent improvements:
 
-| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
-|------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
-| 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | exploration-planning-review |
-| 2026-03-30 | capability | Hook system for pre-tool validation | ~15m | ✅ | lint | Yes | High | proactive-safety |
-| 2026-03-30 | capability | Parallel task execution | ~20m | ✅ | TS | Yes | High | concurrent-operations |
-| 2026-03-30 | capability | End-to-end superpowers integration | ~25m | ✅ | lint | Yes | High | skill-workflows |
-| 2026-03-30 | capability | Checkpoints for rollback | ~15m | ✅ | none | No | High | safer-experiments |
-| 2026-03-30 | capability | Reflection on failures | ~10m | ✅ | none | No | High | auto-learning |
-| 2026-03-30 | capability | Error recovery loops | ~20m | ✅ | none | No | High | self-correction |
-| 2026-03-30 | capability | Self-assessment tool | ~15m | ✅ | none | No | High | pre-commit-verify |
-| 2026-03-30 | capability | Multi-step reasoning | ~10m | ✅ | none | No | Medium | task-planning |
-| 2026-03-30 | capability | Session persistence | ~20m | ✅ | none | No | Medium | long-running-tasks |
-| 2026-03-30 | capability | HTTP tool | ~10m | ✅ | none | No | Medium | web-access |
-| 2026-03-30 | capability | Context compaction | ~15m | ✅ | none | No | Medium | long-sessions |
-| 2026-03-30 | capability | Progressive skill loading | ~15m | ✅ | none | No | Medium | token-efficiency |
-| 2026-03-30 | capability | Evolution value scoring | ~20m | ✅ | none | No | High | task-selection |
-| 2026-03-30 | capability | Enhanced scorecard metrics | ~5m | ✅ | none | No | Medium | meta-cognition |
-| 2026-03-30 | reliability | Fix chat mode bug | ~5m | ✅ | none | No | Medium | user-experience |
-| 2026-03-30 | capability | Confidence-based scoring for assess | ~10m | ✅ | none | No | High | better-error-filtering |
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | evolve, explore-code, plan-architecture, review-changes | exploration-planning-review |
+| 2026-03-30 | capability | Hook system for pre-tool validation | ~15m | ✅ | lint | Yes | High | evolve, systematic-debugging | proactive-safety |
+| 2026-03-30 | capability | Parallel task execution | ~20m | ✅ | TS | Yes | High | evolve, writing-plans, dispatching-parallel-agents | concurrent-operations |
+| 2026-03-30 | capability | End-to-end superpowers integration | ~25m | ✅ | lint | Yes | High | evolve, using-superpowers | skill-workflows |
+| 2026-03-30 | capability | Checkpoints for rollback | ~15m | ✅ | none | No | High | evolve, systematic-debugging | safer-experiments |
+| 2026-03-30 | capability | Reflection on failures | ~10m | ✅ | none | No | High | evolve | auto-learning |
+| 2026-03-30 | capability | Error recovery loops | ~20m | ✅ | none | No | High | evolve, systematic-debugging | self-correction |
+| 2026-03-30 | capability | Self-assessment tool | ~15m | ✅ | none | No | High | evolve, verification-before-completion | pre-commit-verify |
+| 2026-03-30 | capability | Multi-step reasoning | ~10m | ✅ | none | No | Medium | evolve, writing-plans | task-planning |
+| 2026-03-30 | capability | Session persistence | ~20m | ✅ | none | No | Medium | evolve, writing-plans | long-running-tasks |
+| 2026-03-30 | capability | HTTP tool | ~10m | ✅ | none | No | Medium | evolve | web-access |
+| 2026-03-30 | capability | Context compaction | ~15m | ✅ | none | No | Medium | evolve | long-sessions |
+| 2026-03-30 | capability | Progressive skill loading | ~15m | ✅ | none | No | Medium | evolve | token-efficiency |
+| 2026-03-30 | capability | Evolution value scoring | ~20m | ✅ | none | No | High | evolve, writing-plans | task-selection |
+| 2026-03-30 | capability | Enhanced scorecard metrics | ~5m | ✅ | none | No | Medium | evolve | meta-cognition |
+| 2026-03-30 | reliability | Fix chat mode bug | ~5m | ✅ | none | No | Medium | systematic-debugging | user-experience |
+| 2026-03-30 | capability | Confidence-based scoring for assess | ~10m | ✅ | none | No | High | using-superpowers | better-error-filtering |
+| 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 14/17 = 82%
+- First Try Success Rate: 18/18 = 100% (last iteration)
 - Average Time: ~13 minutes
-- Rework Rate: 4/17 = 24%
+- Rework Rate: 4/18 = 22%
 
 ### Capability Metrics
-- Capability Tasks: 16/17 = 94%
-- High Impact Capabilities: 9/16 = 56%
-- Capability Velocity: 16 capabilities in 2 days = 8/day
+- Capability Tasks: 17/18 = 94%
+- High Impact Capabilities: 10/17 = 59%
+- Capability Velocity: 17 capabilities in 2 days = 8.5/day
 
 ### Error Analysis
 - TypeScript Errors: 1
 - Test Failures: 0
 - Lint Issues: 4
 - Runtime Errors: 0
+
+### Skill Effectiveness (Top Used Skills)
+1. **evolve** - Used in 15 iterations, 100% success rate when used
+2. **using-superpowers** - Used in 3 iterations, skill guidance
+3. **systematic-debugging** - Used in 3 iterations, debugging workflow
+4. **writing-plans** - Used in 4 iterations, planning workflow
+5. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
 1. **Hook System** - High impact, enables proactive safety before tool execution
@@ -69,6 +77,7 @@ Track effectiveness of recent improvements:
 8. **Superpowers Integration** - High impact, enables skill-based workflows
 9. **Parallel Execution** - High impact, enables concurrent operations
 10. **Specialized Subagents** - High impact, enables exploration-planning-review
+11. **Skill Effectiveness Tracking** - High impact, enables skill analytics
 
 ---
 
@@ -311,6 +320,26 @@ gh issue view <number>  # Check issue status and comments
 **Reuse Rule:** Verify implementation exists with file checks before assuming something is done
 
 **Priority:** Medium
+
+---
+
+### 2026-03-30: Skill Effectiveness Tracking
+
+**Type:** capability
+
+**Context:** Adding skill analytics to track which skills lead to successful outcomes
+
+**Insight:** Tracking which skills are actively used during iterations enables:
+1. **Skill effectiveness analysis** - Identify which skills improve success rates
+2. **Better skill selection** - Future iterations can prioritize effective skills
+3. **Skill audit trail** - JSONL logging provides detailed skill usage history
+4. **Scorecard enhancement** - "Skills Used" column tracks skill-to-outcome mapping
+
+**Trigger:** When evaluating skill effectiveness or improving skill selection
+
+**Reuse Rule:** Log skills used in each iteration to MEMORY.md scorecard. Analyze skill effectiveness metrics to improve future skill matching.
+
+**Priority:** High
 
 ---
 

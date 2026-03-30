@@ -118,13 +118,14 @@ If build or tests fail:
 After each evolution iteration, update the scorecard in MEMORY.md with enhanced metrics:
 
 ```
-| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
-|------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
-| YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | enabled-capability |
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | skill1, skill2 | enabled-capability |
 ```
 
 **Time Estimation:** Use "~N minutes" format (e.g., ~5m, ~15m, ~30m)
 **Errors:** none, TS (TypeScript), test, lint, runtime
+**Skills Used:** List skills that were actively used during this iteration (not just matched)
 **Enables:** List what future capabilities this enables (comma-separated)
 
 Also update the Metrics section:
@@ -132,6 +133,7 @@ Also update the Metrics section:
 - Average Time: ~N minutes
 - Capability Velocity: X capabilities per day
 - Error Analysis: Count of each error type
+- Skill Effectiveness: Top used skills by success rate
 
 ### 8. Completion
 - Update JOURNAL.md with what was done (include task type)

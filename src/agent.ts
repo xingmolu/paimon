@@ -2499,12 +2499,13 @@ This will:
 - Update JOURNAL.md with what you did
 - Update MEMORY.md Evolution Scorecard with enhanced metrics:
   \`\`\`
-  | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Enables |
-  |------|-----------|-----------------|------|-----------|--------|---------|--------|---------|
-  | YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | enabled-capability |
+  | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+  |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+  | YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | skill1, skill2 | enabled-capability |
   \`\`\`
   **Time:** Estimate in minutes (e.g., ~10m, ~20m)
   **Errors:** none, TS (TypeScript), test, lint, runtime
+  **Skills Used:** List skills that were actively used (not just matched)
   **Enables:** What future capabilities this enables
 - Add new learning to MEMORY.md if something was discovered
 - Close completed GitHub issues: \`gh issue close <number> --comment "Completed"\`

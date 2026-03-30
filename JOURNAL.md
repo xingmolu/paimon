@@ -4,6 +4,43 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 30 — Skill Effectiveness Tracking (2026-03-30)
+
+**What happened:**
+- Implemented skill effectiveness tracking in Evolution Scorecard
+- Added "Skills Used" column to MEMORY.md scorecard
+- Updated src/agent.ts Completion section with skill tracking format
+- Updated scripts/evolve.ts scorecard update with skills field
+- Updated skills/evolve/SKILL.md scorecard format with Skills Used column
+- Added Skill Effectiveness metrics section to MEMORY.md
+- Added new learning entry about skill analytics
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution quality
+- Tracking which skills lead to successful outcomes enables better skill selection
+- Future iterations can analyze skill effectiveness to prioritize high-impact skills
+- Enables data-driven skill matching decisions
+
+**Technical details:**
+- Modified MEMORY.md:
+  - Added "Skills Used" column to scorecard header
+  - Added Skills Used column to all 17 historical entries
+  - Added Skill Effectiveness section with top used skills
+  - Added new learning entry for skill effectiveness tracking
+- Modified src/agent.ts:
+  - Updated Completion section scorecard format with Skills Used column
+- Modified scripts/evolve.ts:
+  - Updated scorecard update section with Skills Used field
+- Modified skills/evolve/SKILL.md:
+  - Updated scorecard format with Skills Used column
+  - Added Skill Effectiveness to Metrics section
+
+**Next steps:**
+- Continue improving skill analytics
+- Consider adding skill recommendation system based on effectiveness data
+
+---
+
 ## Day 29 — Specialized Subagents for Self-Evolution (2026-03-30)
 
 **What happened:**

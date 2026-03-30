@@ -327,10 +327,11 @@ Reason: Highest-scoring capability task.
 ## Scorecard Update (REQUIRED)
 After each iteration, add a row to MEMORY.md's Evolution Scorecard:
 \`\`\`
-| ${DATE} | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | enabled-capability |
+| ${DATE} | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | skill1, skill2 | enabled-capability |
 \`\`\`
 **Time:** Estimate minutes (e.g., ~10m)
 **Errors:** none, TS, test, lint, runtime
+**Skills Used:** List skills that were actively used during this iteration
 **Enables:** What future capabilities this task enables
 
 ## IMPORTANT
