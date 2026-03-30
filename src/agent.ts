@@ -2,6 +2,8 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { setMaxListeners } from "node:events";
+import https from "node:https";
+import http from "node:http";
 
 // Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
 setMaxListeners(100);
@@ -388,6 +390,104 @@ const tools: AgentTool[] = [
 			}
 		},
 	},
+	{
+		name: "http",
+		label: "HTTP Request",
+		description: "Make HTTP requests to fetch web content or call APIs",
+		parameters: Type.Object({
+			url: Type.String({ description: "The URL to request" }),
+			method: Type.Optional(Type.String({ description: "HTTP method (GET, POST, etc). Default: GET" })),
+			headers: Type.Optional(Type.Record(Type.String(), Type.String(), { description: "HTTP headers as key-value pairs" })),
+			body: Type.Optional(Type.String({ description: "Request body (for POST, PUT, PATCH)" })),
+			timeout: Type.Optional(Type.Number({ description: "Timeout in milliseconds. Default: 30000" })),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const {
+				url,
+				method = "GET",
+				headers = {},
+				body,
+				timeout = 30000,
+			} = params as {
+				url: string;
+				method?: string;
+				headers?: Record<string, string>;
+				body?: string;
+				timeout?: number;
+			};
+
+			return new Promise((resolve) => {
+				try {
+					const urlObj = new URL(url);
+					const isHttps = urlObj.protocol === "https:";
+					const client = isHttps ? https : http;
+
+					const options: http.RequestOptions = {
+						hostname: urlObj.hostname,
+						port: urlObj.port || (isHttps ? 443 : 80),
+						path: urlObj.pathname + urlObj.search,
+						method: method.toUpperCase(),
+						headers: {
+							"User-Agent": "Paimon-Agent/1.0",
+							...headers,
+						},
+						timeout,
+					};
+
+					const req = client.request(options, (res) => {
+						let data = "";
+						res.on("data", (chunk) => {
+							data += chunk;
+						});
+						res.on("end", () => {
+							// Try to parse as JSON for pretty printing
+							try {
+								const json = JSON.parse(data);
+								const result = `Status: ${res.statusCode}\nHeaders: ${JSON.stringify(res.headers, null, 2)}\n\n${JSON.stringify(json, null, 2)}`;
+								resolve({
+									content: [{ type: "text", text: result }],
+									details: result,
+								});
+							} catch {
+								// Not JSON, return as text
+								const result = `Status: ${res.statusCode}\nHeaders: ${JSON.stringify(res.headers, null, 2)}\n\n${data}`;
+								resolve({
+									content: [{ type: "text", text: result }],
+									details: result,
+								});
+							}
+						});
+					});
+
+					req.on("error", (error) => {
+						resolve({
+							content: [{ type: "text", text: `Error: ${error.message}` }],
+							details: `Error: ${error.message}`,
+						});
+					});
+
+					req.on("timeout", () => {
+						req.destroy();
+						resolve({
+							content: [{ type: "text", text: `Error: Request timed out after ${timeout}ms` }],
+							details: `Error: Request timed out after ${timeout}ms`,
+						});
+					});
+
+					if (body) {
+						req.write(body);
+					}
+					req.end();
+				} catch (e) {
+					const error = e instanceof Error ? e.message : String(e);
+					resolve({
+						content: [{ type: "text", text: `Error: ${error}` }],
+						details: `Error: ${error}`,
+					});
+				}
+			});
+		},
+	},
 ];
 
 function createModel(config: PaimonConfig): Model<Api> {
@@ -548,7 +648,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls]
+tools: [bash, read, write, edit, glob, grep, find, ls, http]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -564,6 +664,7 @@ You can help users with various tasks like reading files, writing code, executin
 - grep: Search file contents by regex pattern
 - find: Find files by name, type, or modification time
 - ls: List directory contents
+- http: Make HTTP requests to fetch web content or call APIs
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
@@ -597,7 +698,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls]
+tools: [bash, read, write, edit, glob, grep, find, ls, http]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -613,6 +714,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - grep: Search file contents by regex pattern
 - find: Find files by name, type, or modification time
 - ls: List directory contents
+- http: Make HTTP requests to fetch web content or call APIs
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.

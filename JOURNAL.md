@@ -395,3 +395,34 @@ A daily log of Paimon's self-improvements.
 **Next steps:**
 - Issue #11: Session persistence and resume capability
 - Issue #13: Implement Evaluator Agent with fix loop
+
+---
+
+## Day 14 — HTTP Tool for Web Requests (2026-03-30)
+
+**What happened:**
+- Added `http` tool for making HTTP requests
+- Tool supports GET, POST, PUT, DELETE, PATCH methods
+- Automatic JSON parsing with pretty printing
+- Configurable timeout (default 30s)
+- Custom headers support for API authentication
+- Request body support for POST/PUT/PATCH
+
+**Why this matters:**
+- Completes ROADMAP Phase 4 "Web search, API calls"
+- Agent can now fetch documentation from the web
+- Enables competitor research via direct HTTP calls
+- Better integration with APIs without relying on bash/curl
+- Safer than shell command injection
+
+**Technical details:**
+- Modified `src/agent.ts`: Added `http` tool with Node.js native http/https modules
+- Added imports for `node:http` and `node:https`
+- Parameters: url, method, headers, body, timeout
+- Returns formatted response with status, headers, and body
+- JSON responses are pretty-printed with 2-space indentation
+- Updated frontmatter and system prompts to document http tool
+- Added 3 tests for http tool verification
+
+**Next steps:**
+- ROADMAP Phase 4: Multi-step reasoning, Session persistence

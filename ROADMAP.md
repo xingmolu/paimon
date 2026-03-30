@@ -22,7 +22,7 @@ Planned improvements for evo.
 - [x] More tools (grep, find, ls for code search) — Issue #8
 - [x] Progressive skill loading — Issue #7
 - [x] Context file loading (AGENTS.md, CLAUDE.md) — Issue #10
-- [ ] Web search, API calls
+- [x] Web search, API calls — Added http tool
 - [ ] Multi-step reasoning
 - [x] Context compaction for long sessions — Issue #9
 - [ ] Session persistence and resume — Issue #11
