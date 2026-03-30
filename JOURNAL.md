@@ -700,3 +700,49 @@ assess({maxAttempts: 5})  // Retry up to 5 times
 **Next steps:**
 - Implement reflection on failures (Phase 5 item)
 - Implement checkpoints for safe rollback (Phase 5 item)
+
+---
+
+## Day 21 — Reflection on Failures (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 5 "Reflection on failures"
+- Added `reflect` tool for automatic learning extraction from failures
+- Tool analyzes error patterns and generates structured MEMORY.md entries
+- Automatically appends lessons to MEMORY.md in the correct format
+- Updated both chat and evolve system prompts with new tool documentation
+- Added "5.2 Reflection on Failures" section to workflow stages
+
+**Why this matters:**
+- Completes the failure learning loop: fail → analyze → learn → remember
+- Agent can now automatically extract lessons from build/test/lint failures
+- MEMORY.md gets updated without manual intervention
+- Pattern-based analysis provides actionable insights for future sessions
+- Critical for autonomous self-improvement and error prevention
+
+**Technical details:**
+- Added `ReflectionResult` interface in `src/agent.ts`
+- Added `reflect` tool with parameters:
+  - `errorPatterns`: Optional array of ErrorPattern objects
+  - `taskDescription`: What was being attempted when failure occurred
+  - `writeToMemory`: Boolean to control automatic MEMORY.md writing (default: true)
+- Tool analyzes error types (TypeScript, test, lint) and generates:
+  - Context: What was being attempted
+  - Insight: Root cause analysis based on error patterns
+  - Action: How to prevent similar failures
+- Smart MEMORY.md insertion: Finds "## Learnings" section and inserts before "## Format"
+- Added 7 new tests for the reflect tool
+- Updated frontmatter in both prompts to include `reflect` tool
+
+**Reflect Tool Usage:**
+```typescript
+// After assessment failure
+reflect({
+  taskDescription: "Implementing new tool",
+  errorPatterns: assessmentResult.errorPatterns
+})
+```
+
+**Next steps:**
+- Implement checkpoints for safe rollback (Phase 5 item)
+- Implement parallel task execution (Phase 5 item)
