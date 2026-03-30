@@ -1,12 +1,77 @@
 # Memory
 
-Persistent learnings stored across sessions.
+Persistent learnings stored across sessions. This file participates in task selection decisions.
+
+---
+
+## Task Types
+
+When evaluating tasks, classify them into these types:
+
+| Type | Description | Priority |
+|------|-------------|----------|
+| `capability` | Improves self-evolution ability itself | Highest |
+| `reliability` | Improves stability/safety/error handling | Medium |
+| `feature` | Adds new general functionality | Lower |
+
+**Rule:** Prefer `capability` tasks over `reliability` over `feature`. If 3+ consecutive iterations are `reliability` or `feature`, explain why no `capability` task was available.
+
+---
+
+## Evolution Scorecard
+
+Track effectiveness of recent improvements:
+
+| Date | Task Type | Task Description | First Try Success | Rework Needed? | Evolution Impact |
+|------|-----------|-----------------|-------------------|----------------|------------------|
+| 2026-03-30 | capability | Checkpoints for rollback | ✅ | No | High - enables safer experiments |
+| 2026-03-30 | capability | Reflection on failures | ✅ | No | High - enables auto-learning |
+| 2026-03-30 | capability | Error recovery loops | ✅ | No | High - enables self-correction |
+| 2026-03-30 | capability | Self-assessment tool | ✅ | No | High - enables pre-commit verification |
+| 2026-03-30 | capability | Multi-step reasoning | ✅ | No | Medium - better planning |
+| 2026-03-30 | capability | Session persistence | ✅ | No | Medium - long-running tasks |
+| 2026-03-30 | capability | HTTP tool | ✅ | No | Medium - web access |
+| 2026-03-30 | capability | Context compaction | ✅ | No | Medium - long sessions |
+| 2026-03-30 | capability | Progressive skill loading | ✅ | No | Medium - token efficiency |
+| 2026-03-30 | reliability | Fix chat mode bug | ✅ | No | Medium - user experience |
+
+**Metrics:**
+- First Try Success Rate: 10/10 = 100%
+- Capability Tasks: 9/10 = 90%
+- High Impact Rate: 4/9 capabilities = 44%
 
 ---
 
 ## Learnings
 
+### 2026-03-30: Evolution Value Scoring
+
+**Type:** capability
+
+**Context:** Implementing Issue #20 - prioritize self-evolution capability over local infrastructure
+
+**Insight:** Task selection should not be simple priority order (issues → ROADMAP → research). Instead:
+1. Score each candidate task on evolution value
+2. Consider: future iteration success rate, failure rate reduction, memory quality improvement
+3. Explicitly output why this task was selected
+4. Track task types and prefer `capability` over `reliability` over `feature`
+
+**Trigger:** When selecting next task to implement
+
+**Reuse Rule:** Before any task selection:
+1. List all candidate tasks (issues + ROADMAP items)
+2. Classify each as capability/reliability/feature
+3. Score each on evolution value (1-10)
+4. Select highest-scoring capability task
+5. If no capability tasks, explain why
+
+**Priority:** High
+
+---
+
 ### 2026-03-29: Debug Timeout Pattern for Async Operations
+
+**Type:** reliability
 
 **Context:** CLI was hanging indefinitely with no error message
 
@@ -37,9 +102,17 @@ const run = (prompt: string): Promise<string> => {
 };
 ```
 
+**Trigger:** When creating any async function that returns Promise
+
+**Reuse Rule:** Always wrap event-based Promises with timeout + cleanup
+
+**Priority:** High
+
 ---
 
 ### 2026-03-29: Claude Code Best Practices Study
+
+**Type:** capability
 
 **Context:** Researching Claude Code (Anthropic's CLI agent) to adopt best practices
 
@@ -51,6 +124,10 @@ const run = (prompt: string): Promise<string> => {
 5. **Specialized agents** - Code explorer, architect, reviewer with focused roles
 6. **Phased workflows** - Clear stages with specific tasks
 
+**Trigger:** When improving agent capabilities or workflow
+
+**Reuse Rule:** Study successful agents and adapt their patterns. Hooks and security reminders are high-value.
+
 **Action:**
 - Added structured frontmatter to system prompt
 - Added Security Awareness section
@@ -58,19 +135,13 @@ const run = (prompt: string): Promise<string> => {
 - Added Best Practices section from Claude Code patterns
 - Keep minimal, focused changes
 
----
-
-## Format
-
-Each learning should be:
-- **Date:** When it was learned
-- **Context:** What problem was being solved
-- **Insight:** What was learned
-- **Action:** How to apply it
+**Priority:** High
 
 ---
 
 ### 2026-03-30: Competitor Research Patterns for Self-Evolution
+
+**Type:** capability
 
 **Context:** Researched Claude Code and Cursor to identify improvements for Paimon
 
@@ -81,15 +152,23 @@ Each learning should be:
 4. **Parallel Launching** — Multiple agents run in parallel for exploration, architecture, and review
 5. **Structured Workflows** — Clear phases (Discovery → Exploration → Clarifying → Architecture → Implementation → Review → Summary)
 
+**Trigger:** When planning major capability improvements
+
+**Reuse Rule:** Research competitors before implementing major features. Ralph Wiggum pattern enables autonomous iteration.
+
 **Action:**
 - Added ROADMAP Phase 5 with advanced capabilities
 - Created skills/evolve/SKILL.md for structured self-evolution
 - Error recovery loops should be implemented as core capability
 - Consider adding checkpoint mechanism for safe rollback
 
+**Priority:** High
+
 ---
 
 ### 2026-03-29: Check Git State Before Editing
+
+**Type:** reliability
 
 **Context:** Attempted to edit a file that had already been modified in previous sessions
 
@@ -108,14 +187,17 @@ gh issue list --state open  # See open issues
 gh issue view <number>  # Check specific issue
 ```
 
-**Action:**
-- Always verify git state before starting work
-- Check if features are already implemented
-- Close duplicate issues that were already completed
+**Trigger:** Before starting any implementation work
+
+**Reuse Rule:** Always run git status && git log && gh issue list before editing files
+
+**Priority:** Medium
 
 ---
 
 ### 2026-03-30: Issue Closure Verification
+
+**Type:** reliability
 
 **Context:** Issue #11 was closed but ROADMAP showed it as incomplete - no actual implementation existed
 
@@ -132,8 +214,51 @@ git log --oneline | grep -i <feature>  # Check if commits exist
 gh issue view <number>  # Check issue status and comments
 ```
 
-**Action:**
-- Always verify ROADMAP items have actual implementation
-- Check for source files mentioned in issue spec
-- Close issues only after code is verified working
+**Trigger:** When an issue or ROADMAP item appears "complete"
 
+**Reuse Rule:** Verify implementation exists with file checks before assuming something is done
+
+**Priority:** Medium
+
+---
+
+## Memory Format
+
+Each learning entry should have:
+- **Type:** capability | reliability | feature
+- **Context:** What problem was being solved
+- **Insight:** What was learned
+- **Trigger:** When this learning should be applied
+- **Reuse Rule:** How to apply this in future
+- **Priority:** High | Medium | Low
+- **Action:** (optional) What was done
+
+---
+
+## Quick Reference
+
+### High Priority Learnings
+1. Evolution Value Scoring - Score tasks before selection
+2. Timeout Pattern - Always wrap async with timeout
+3. Claude Code Patterns - Study and adapt successful agents
+4. Competitor Research - Ralph Wiggum, Checkpoints, Specialized Agents
+
+### Task Selection Algorithm
+```
+1. List candidates (open issues + ROADMAP incomplete items)
+2. Classify each: capability | reliability | feature
+3. Score each on evolution value (1-10):
+   - Future iteration success improvement: +3
+   - Failure rate reduction: +2
+   - Memory quality improvement: +2
+   - Implementation cost: -1 (complex) to -3 (very complex)
+4. Select highest-scoring capability task
+5. If no capability tasks, select highest-scoring reliability
+6. Explain selection in output
+```
+
+### When to Use MEMORY.md
+- **Before task selection** - Review relevant learnings, check priority
+- **After failure** - Check for similar patterns, learn from past
+- **When stuck** - Search for trigger conditions, find applicable rules
+- **After success** - Add new learning if pattern is reusable

@@ -794,3 +794,64 @@ checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
 
 **Next steps:**
 - ROADMAP Phase 5: Parallel task execution (final item)
+
+---
+
+## Day 23 — Evolution Value Scoring for Task Selection (2026-03-30)
+
+**What happened:**
+- Implemented Issue #20: Prioritize self-evolution capability over local infrastructure
+- Restructured MEMORY.md with searchable fields (type, trigger, reuse rule, priority)
+- Added Evolution Scorecard to track improvement effectiveness
+- Added Task Type classification: capability, reliability, feature
+- Implemented Evolution Value Scoring algorithm for task selection
+- Updated skills/evolve/SKILL.md with new priority framework
+- Updated scripts/evolve.ts with task scoring and selection logic
+- Updated src/agent.ts with Task Selection with Evolution Value Scoring section
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution ability itself
+- Agent now scores all candidate tasks before selection
+- Prefers `capability` tasks over `reliability` over `feature`
+- Explicit task selection output with reasoning
+- Scorecard tracks evolution impact over time
+- MEMORY.md is now a decision-making tool, not just a log
+
+**Technical details:**
+- Modified MEMORY.md:
+  - Added Task Types section with priority table
+  - Added Evolution Scorecard with metrics
+  - Restructured Learnings with Type, Trigger, Reuse Rule, Priority fields
+  - Added Quick Reference section with task selection algorithm
+- Modified skills/evolve/SKILL.md:
+  - Added Task Types section
+  - Added Evolution Value Scoring Algorithm
+  - Added Scorecard Update section
+  - Added capability vs reliability vs feature examples
+- Modified scripts/evolve.ts:
+  - Updated prompt with Task Selection with Evolution Value Scoring section
+  - Added scorecard update instruction
+  - Added task type classification instruction
+- Modified src/agent.ts:
+  - Updated Task Selection section in evolve prompt
+  - Added Task Types table
+  - Added Scoring Algorithm
+  - Added Example Output format
+  - Updated Completion section with scorecard update
+
+**Task Selection Algorithm:**
+```
+1. List ALL candidates (issues + ROADMAP items + research opportunities)
+2. Classify EACH task as: capability | reliability | feature
+3. Score EACH on evolution value (1-10):
+   +3: Improves future iteration success rate
+   +2: Reduces failure/rework rate
+   +2: Improves memory/learning quality
+   +1: Improves tool chain reliability
+   -1 to -3: Implementation complexity
+4. SELECT highest-scoring capability task
+5. OUTPUT a task selection table with reasoning
+```
+
+**Next steps:**
+- ROADMAP Phase 5: Parallel task execution (final item)

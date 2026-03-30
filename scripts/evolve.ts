@@ -67,10 +67,12 @@ Generated at ${new Date().toISOString()}
 
 	writeFileSync(`${dir}/reflection_${iteration}.md`, reflection);
 
-	// Also update MEMORY.md with learning
+	// Also update MEMORY.md with learning (using new structured format)
 	const learning = `\n\n---
 
 ### ${DATE}: Verification Before Commit
+
+**Type:** reliability
 
 **Context:** Iteration ${iteration} failed verification
 
@@ -79,7 +81,11 @@ Generated at ${new Date().toISOString()}
 - Tests: ${testOk ? "PASS" : "FAIL"}
 - Error: ${error.slice(0, 200)}
 
-**Action:** Always run \`npm run build && npm test -- --run\` before committing changes. If tests fail, do not commit.
+**Trigger:** Before committing any changes
+
+**Reuse Rule:** Always run \`npm run build && npm test -- --run\` before committing. Use assess({}) tool for verification.
+
+**Priority:** High
 
 `;
 
@@ -130,6 +136,7 @@ Date: ${DATE}
 - \`research\` — Search web, study other agents (Claude Code, Codex, Cursor, etc.)
 - \`self-improve\` — Guidelines for self-improvement
 - \`using-superpowers\` — How to use skills effectively
+- \`evolve\` — Self-evolution workflow with evolution value scoring (READ THIS FIRST)
 
 ## Your Code
 - Use \`glob src/**/*.ts\` to find source files
@@ -153,26 +160,69 @@ curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md 
 - Do NOT modify this evolution script
 - Make minimal, focused changes
 
-## Task Priority
-1. **Open Issues** — If any, implement the most important one
-2. **ROADMAP.md** — Pick the next uncompleted item
-3. **Competitor Research** — Learn from others and adapt good ideas
+## Task Selection with Evolution Value Scoring (REQUIRED)
+
+**Do NOT just pick the first issue or ROADMAP item.** Instead:
+
+### Step 1: List ALL candidate tasks
+- Open GitHub issues (from above)
+- ROADMAP incomplete items (read ROADMAP.md)
+- Competitor research opportunities
+
+### Step 2: Classify EACH task
+- \`capability\` — Improves self-evolution ability itself (HIGHEST PRIORITY)
+- \`reliability\` — Improves stability/safety/error handling (MEDIUM)
+- \`feature\` — Adds new general functionality (LOWER)
+
+### Step 3: Score EACH task on evolution value (1-10)
+Scoring factors:
+- +3: Improves future iteration success rate
+- +2: Reduces failure/rework rate
+- +2: Improves memory/learning quality
+- +1: Improves tool chain reliability
+- -1 to -3: Implementation complexity
+
+### Step 4: SELECT highest-scoring capability task
+If no capability tasks available, select highest-scoring reliability task.
+
+### Step 5: OUTPUT your task selection
+Show a table with all candidates, their type, score, and reasoning. Then explain why you selected the task.
+
+Example output format:
+\`\`\`
+## Task Selection
+
+| Task | Type | Score | Reasoning |
+|------|------|-------|-----------|
+| Issue #20: Evolution scoring | capability | 9 | Directly improves task selection |
+| ROADMAP: Parallel execution | capability | 7 | Improves efficiency |
+
+Selected: Issue #20 (score 9)
+Reason: Highest-scoring capability task.
+\`\`\`
 
 ## Process
-1. Read IDENTITY.md, JOURNAL.md, ROADMAP.md
-2. Check if skills apply (use \`read skills/research/SKILL.md\`)
-3. Study competitors if implementing something new
-4. Pick ONE improvement
-5. Implement → Test (\`npm run build && npm test -- --run\`) → Say "DONE"
+1. Read skills/evolve/SKILL.md for detailed workflow
+2. Read IDENTITY.md, JOURNAL.md, MEMORY.md, ROADMAP.md
+3. Score all candidate tasks and select the best one
+4. Implement → Test (\`npm run build && npm test -- --run\`) → Say "DONE"
+5. Update MEMORY.md scorecard with this iteration's result
+
+## Scorecard Update (REQUIRED)
+After each iteration, add a row to MEMORY.md's Evolution Scorecard:
+\`\`\`
+| ${DATE} | capability/reliability/feature | Brief description | ✅/❌ | Yes/No | High/Medium/Low |
+\`\`\`
 
 ## IMPORTANT
 - Do NOT run git commit or git push - the script handles this
 - Just say "DONE" when complete
 - Changes will NOT be committed if build/tests fail
+- Always score tasks before selecting — prefer capability tasks
 
 When verification fails, a reflection is written to session_plan/reflection_N.md.
 
-Start now. Begin by reading ROADMAP.md and checking for open issues.`;
+Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, then score and select a task.`;
 
 	// Run iterations
 	for (let i = 1; i <= MAX_ITERATIONS; i++) {

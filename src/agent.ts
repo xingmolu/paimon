@@ -1860,15 +1860,50 @@ Before making changes, consider:
 - Read ROADMAP.md to see what's planned
 - Use \`git status\` and \`git log --oneline -5\` to understand current state
 
-### 2. Task Selection
+### 2. Task Selection with Evolution Value Scoring (REQUIRED)
+
+**Do NOT just pick the first issue or ROADMAP item.** Instead, use evolution value scoring:
+
+#### Task Types
+| Type | Description | Priority |
+|------|-------------|----------|
+| \`capability\` | Improves self-evolution ability itself | Highest |
+| \`reliability\` | Improves stability/safety/error handling | Medium |
+| \`feature\` | Adds new general functionality | Lower |
+
+**Rule:** Prefer \`capability\` > \`reliability\` > \`feature\`. If 3+ consecutive iterations are not \`capability\`, explain why.
+
+#### Scoring Algorithm
+1. List ALL candidates (issues + ROADMAP items + research opportunities)
+2. Classify EACH task as: capability | reliability | feature
+3. Score EACH on evolution value (1-10):
+   +3: Improves future iteration success rate
+   +2: Reduces failure/rework rate
+   +2: Improves memory/learning quality
+   +1: Improves tool chain reliability
+   -1 to -3: Implementation complexity
+4. SELECT highest-scoring capability task
+5. OUTPUT a task selection table with reasoning
+
+#### Example Output
+\`\`\`
+## Task Selection
+
+| Task | Type | Score | Reasoning |
+|------|------|-------|-----------|
+| Issue #20: Evolution scoring | capability | 9 | Directly improves task selection |
+| ROADMAP: Parallel execution | capability | 7 | Improves efficiency |
+
+Selected: Issue #20 (score 9)
+Reason: Highest-scoring capability task that improves evolution ability.
+\`\`\`
+
 - Check GitHub issues: \`gh issue list --state open\`
-- **If issues exist**: Pick the highest priority issue
-- **If no issues**: Use ROADMAP.md to pick next incomplete item from current phase
-  - Phase 1: Foundation (completed)
-  - Phase 2: Self-Improvement (completed)
-  - Phase 3: Intelligence (current) - Better planning, Learning from failures, Code quality
-  - Phase 4: Growth (future) - More tools, Multi-step reasoning, Context management
-- Document your plan before implementing
+- Read ROADMAP.md for incomplete items
+- Use MEMORY.md scorecard to learn from recent iterations
+- Score all candidates, select highest-scoring capability task
+- If no capability tasks available, select highest-scoring reliability
+- Explain your selection rationale
 
 ### 3. Implementation
 - Use \`edit\` for surgical changes (preferred)
@@ -1958,9 +1993,15 @@ This will:
 **Always reflect after failures** - every error is a learning opportunity.
 
 ### 6. Completion
-- Say "DONE" and summarize your work
+- Say "DONE" and summarize your work (include task type: capability/reliability/feature)
 - Update JOURNAL.md with what you did
-- Update MEMORY.md if you learned something
+- Update MEMORY.md Evolution Scorecard:
+  \`\`\`
+  | Date | Task Type | Task Description | First Try Success | Rework Needed? | Evolution Impact |
+  |------|-----------|-----------------|-------------------|----------------|------------------|
+  | YYYY-MM-DD | capability/reliability/feature | Brief description | ✅/❌ | Yes/No | High/Medium/Low |
+  \`\`\`
+- Add new learning to MEMORY.md if something was discovered
 - Close completed GitHub issues: \`gh issue close <number> --comment "Completed"\`
 - If you completed a ROADMAP item, mark it done with \`edit\` (change \`- [ ]\` to \`- [x]\`)
 
