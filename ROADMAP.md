@@ -23,7 +23,7 @@ Planned improvements for evo.
 - [x] Progressive skill loading — Issue #7
 - [x] Context file loading (AGENTS.md, CLAUDE.md) — Issue #10
 - [x] Web search, API calls — Added http tool
-- [ ] Multi-step reasoning
+- [x] Multi-step reasoning — Added plan tool for step-by-step task execution
 - [x] Context compaction for long sessions — Issue #9
 - [x] Session persistence and resume — Issue #11
 

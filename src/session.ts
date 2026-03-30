@@ -6,7 +6,14 @@
  * a unique ID and optional parentId for branching.
  */
 
-import { existsSync, mkdirSync, readFileSync, appendFileSync, readdirSync, writeFileSync } from "node:fs";
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	appendFileSync,
+	readdirSync,
+	writeFileSync,
+} from "node:fs";
 import { homedir } from "node:os";
 import { join, dirname, basename } from "node:path";
 import { execSync } from "node:child_process";
@@ -94,7 +101,7 @@ export class SessionManager {
 		const date = new Date().toISOString().split("T")[0];
 		const timestamp = Date.now();
 		const projectDir = join(this.sessionDir, "projects", this.projectName);
-		
+
 		this.ensureDir(projectDir);
 		this.currentFile = join(projectDir, `${date}-session-${timestamp}.jsonl`);
 		this.messages = [];
@@ -168,7 +175,11 @@ export class SessionManager {
 	/**
 	 * Save a message to the current session.
 	 */
-	save(role: "user" | "assistant" | "toolResult", content: string, parentId?: string): SessionMessage {
+	save(
+		role: "user" | "assistant" | "toolResult",
+		content: string,
+		parentId?: string,
+	): SessionMessage {
 		const message: SessionMessage = {
 			id: generateId(),
 			role,

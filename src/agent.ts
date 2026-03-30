@@ -12,6 +12,7 @@ import {
 	type AgentEvent,
 	type AgentTool,
 	type AgentToolResult,
+	type ThinkingLevel,
 } from "@mariozechner/pi-agent-core";
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
@@ -19,6 +20,24 @@ import { globSync } from "glob";
 import { type CompactionConfig, ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
 import type { SessionManager } from "./session.js";
+
+/**
+ * Plan state for multi-step reasoning
+ */
+interface PlanState {
+	steps: Array<{
+		id: number;
+		description: string;
+		status: "pending" | "in_progress" | "completed" | "skipped";
+		notes?: string;
+	}>;
+	currentStep: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+// Global plan state (shared across agent runs)
+let currentPlan: PlanState | null = null;
 
 export interface PaimonConfig {
 	apiKey: string;
@@ -397,10 +416,18 @@ const tools: AgentTool[] = [
 		description: "Make HTTP requests to fetch web content or call APIs",
 		parameters: Type.Object({
 			url: Type.String({ description: "The URL to request" }),
-			method: Type.Optional(Type.String({ description: "HTTP method (GET, POST, etc). Default: GET" })),
-			headers: Type.Optional(Type.Record(Type.String(), Type.String(), { description: "HTTP headers as key-value pairs" })),
+			method: Type.Optional(
+				Type.String({ description: "HTTP method (GET, POST, etc). Default: GET" }),
+			),
+			headers: Type.Optional(
+				Type.Record(Type.String(), Type.String(), {
+					description: "HTTP headers as key-value pairs",
+				}),
+			),
 			body: Type.Optional(Type.String({ description: "Request body (for POST, PUT, PATCH)" })),
-			timeout: Type.Optional(Type.Number({ description: "Timeout in milliseconds. Default: 30000" })),
+			timeout: Type.Optional(
+				Type.Number({ description: "Timeout in milliseconds. Default: 30000" }),
+			),
 		}),
 		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
 			const {
@@ -489,7 +516,240 @@ const tools: AgentTool[] = [
 			});
 		},
 	},
+	{
+		name: "plan",
+		label: "Manage Execution Plan",
+		description:
+			"Create, update, or view a step-by-step plan for complex tasks. Use this to break down multi-step tasks into manageable steps.",
+		parameters: Type.Object({
+			action: Type.String({
+				description:
+					"Action to perform: 'create' (new plan), 'update' (modify step), 'progress' (mark step status), 'show' (display current plan), 'clear' (remove plan)",
+			}),
+			steps: Type.Optional(
+				Type.Array(
+					Type.String({
+						description: "List of step descriptions (for 'create' action)",
+					}),
+				),
+			),
+			stepId: Type.Optional(
+				Type.Number({
+					description: "Step ID to update (for 'update' or 'progress' actions)",
+				}),
+			),
+			status: Type.Optional(
+				Type.String({
+					description:
+						"New status for step: 'pending', 'in_progress', 'completed', 'skipped' (for 'progress' action)",
+				}),
+			),
+			notes: Type.Optional(
+				Type.String({
+					description: "Notes to add to a step (for 'update' action)",
+				}),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<PlanState | string>> => {
+			const { action, steps, stepId, status, notes } = params as {
+				action: string;
+				steps?: string[];
+				stepId?: number;
+				status?: string;
+				notes?: string;
+			};
+
+			try {
+				switch (action) {
+					case "create": {
+						if (!steps || steps.length === 0) {
+							return {
+								content: [
+									{ type: "text", text: "Error: 'steps' array is required for 'create' action" },
+								],
+								details: "Error: 'steps' array is required for 'create' action",
+							};
+						}
+						const now = new Date().toISOString();
+						currentPlan = {
+							steps: steps.map((desc, i) => ({
+								id: i + 1,
+								description: desc,
+								status: "pending" as const,
+							})),
+							currentStep: 1,
+							createdAt: now,
+							updatedAt: now,
+						};
+						const result = formatPlan(currentPlan);
+						return {
+							content: [{ type: "text", text: `Plan created:\n\n${result}` }],
+							details: currentPlan,
+						};
+					}
+
+					case "update": {
+						if (!currentPlan) {
+							return {
+								content: [{ type: "text", text: "Error: No active plan. Use 'create' first." }],
+								details: "Error: No active plan",
+							};
+						}
+						if (stepId === undefined) {
+							return {
+								content: [
+									{ type: "text", text: "Error: 'stepId' is required for 'update' action" },
+								],
+								details: "Error: 'stepId' is required",
+							};
+						}
+						const step = currentPlan.steps.find((s) => s.id === stepId);
+						if (!step) {
+							return {
+								content: [{ type: "text", text: `Error: Step ${stepId} not found` }],
+								details: `Error: Step ${stepId} not found`,
+							};
+						}
+						if (notes) step.notes = notes;
+						currentPlan.updatedAt = new Date().toISOString();
+						const result = formatPlan(currentPlan);
+						return {
+							content: [{ type: "text", text: `Step ${stepId} updated:\n\n${result}` }],
+							details: currentPlan,
+						};
+					}
+
+					case "progress": {
+						if (!currentPlan) {
+							return {
+								content: [{ type: "text", text: "Error: No active plan. Use 'create' first." }],
+								details: "Error: No active plan",
+							};
+						}
+						if (stepId === undefined || !status) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'stepId' and 'status' are required for 'progress' action",
+									},
+								],
+								details: "Error: 'stepId' and 'status' are required",
+							};
+						}
+						const validStatuses = ["pending", "in_progress", "completed", "skipped"];
+						if (!validStatuses.includes(status)) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: `Error: Invalid status '${status}'. Use: ${validStatuses.join(", ")}`,
+									},
+								],
+								details: `Error: Invalid status '${status}'`,
+							};
+						}
+						const step = currentPlan.steps.find((s) => s.id === stepId);
+						if (!step) {
+							return {
+								content: [{ type: "text", text: `Error: Step ${stepId} not found` }],
+								details: `Error: Step ${stepId} not found`,
+							};
+						}
+						step.status = status as PlanState["steps"][0]["status"];
+						// Update current step pointer
+						const nextPending = currentPlan.steps.find((s) => s.status === "pending");
+						currentPlan.currentStep = nextPending ? nextPending.id : currentPlan.steps.length;
+						currentPlan.updatedAt = new Date().toISOString();
+						const result = formatPlan(currentPlan);
+						const completedCount = currentPlan.steps.filter((s) => s.status === "completed").length;
+						const totalCount = currentPlan.steps.length;
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Step ${stepId} marked as ${status}:\n\n${result}\n\nProgress: ${completedCount}/${totalCount} steps completed`,
+								},
+							],
+							details: currentPlan,
+						};
+					}
+
+					case "show": {
+						if (!currentPlan) {
+							return {
+								content: [{ type: "text", text: "No active plan. Use 'create' to make one." }],
+								details: "No active plan",
+							};
+						}
+						const result = formatPlan(currentPlan);
+						const completedCount = currentPlan.steps.filter((s) => s.status === "completed").length;
+						const totalCount = currentPlan.steps.length;
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Current plan:\n\n${result}\n\nProgress: ${completedCount}/${totalCount} steps completed`,
+								},
+							],
+							details: currentPlan,
+						};
+					}
+
+					case "clear": {
+						currentPlan = null;
+						return {
+							content: [{ type: "text", text: "Plan cleared." }],
+							details: "Plan cleared",
+						};
+					}
+
+					default:
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Error: Unknown action '${action}'. Use: create, update, progress, show, clear`,
+								},
+							],
+							details: `Error: Unknown action '${action}'`,
+						};
+				}
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
+
+/**
+ * Format a plan for display
+ */
+function formatPlan(plan: PlanState): string {
+	const statusEmoji: Record<string, string> = {
+		pending: "⬜",
+		in_progress: "🔄",
+		completed: "✅",
+		skipped: "⏭️",
+	};
+
+	let output = `📋 Plan (created ${new Date(plan.createdAt).toLocaleString()})\n`;
+	output += "─".repeat(40) + "\n";
+	for (const step of plan.steps) {
+		const emoji = statusEmoji[step.status] || "⬜";
+		const current = step.id === plan.currentStep ? " → " : "   ";
+		output += `${current}${emoji} ${step.id}. ${step.description}\n`;
+		if (step.notes) {
+			output += `${current}   📝 ${step.notes}\n`;
+		}
+	}
+	output += "─".repeat(40);
+	return output;
+}
 
 function createModel(config: PaimonConfig): Model<Api> {
 	return {
@@ -509,7 +769,10 @@ function createModel(config: PaimonConfig): Model<Api> {
 	};
 }
 
-export function createAgent(config: PaimonConfig, sessionManager?: SessionManager): {
+export function createAgent(
+	config: PaimonConfig,
+	sessionManager?: SessionManager,
+): {
 	agent: Agent;
 	run: (prompt: string, verbose?: boolean) => Promise<string>;
 	/** Get context status for debugging */
@@ -652,7 +915,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -669,6 +932,20 @@ You can help users with various tasks like reading files, writing code, executin
 - find: Find files by name, type, or modification time
 - ls: List directory contents
 - http: Make HTTP requests to fetch web content or call APIs
+- plan: Create and manage step-by-step plans for complex tasks
+
+## Multi-Step Reasoning
+
+For complex tasks, use the plan tool to:
+1. **Create a plan** - Break down the task into numbered steps
+2. **Work through steps** - Mark each step as 'in_progress' then 'completed'
+3. **Track progress** - Use 'show' to see current status
+4. **Adjust if needed** - Update or skip steps as circumstances change
+
+Example workflow:
+- \`plan({action: 'create', steps: ['Analyze requirements', 'Implement feature', 'Test changes']})\`
+- \`plan({action: 'progress', stepId: 1, status: 'in_progress'})\`
+- After completing: \`plan({action: 'progress', stepId: 1, status: 'completed'})\`
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
@@ -676,6 +953,7 @@ You have persistent memory in MEMORY.md. Read it to recall past learnings, updat
 ${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Guidelines
 - Be helpful, concise, and accurate
 - Use tools when needed to complete tasks
+- For complex tasks, create a plan first using the plan tool
 - Explain what you're doing when using tools
 - If something fails, explain the error and suggest solutions
 - Ask for clarification if the request is unclear
@@ -702,7 +980,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -719,6 +997,20 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - find: Find files by name, type, or modification time
 - ls: List directory contents
 - http: Make HTTP requests to fetch web content or call APIs
+- plan: Create and manage step-by-step plans for complex tasks
+
+## Multi-Step Reasoning
+
+For complex evolution tasks, use the plan tool to:
+1. **Create a plan** - Break down the evolution task into numbered steps
+2. **Work through steps** - Mark each step as 'in_progress' then 'completed'
+3. **Track progress** - Use 'show' to see current status
+4. **Adjust if needed** - Update or skip steps based on verification results
+
+Example evolution workflow:
+- \`plan({action: 'create', steps: ['Read ROADMAP', 'Check issues', 'Implement feature', 'Run tests', 'Update JOURNAL']})\`
+- \`plan({action: 'progress', stepId: 3, status: 'in_progress'})\`
+- After tests pass: \`plan({action: 'progress', stepId: 4, status: 'completed'})\`
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.

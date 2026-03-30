@@ -471,3 +471,51 @@ npm run dev -- --no-session
 
 **Next steps:**
 - ROADMAP Phase 4: Multi-step reasoning (final item)
+
+---
+
+## Day 16 — Multi-Step Reasoning (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 4 "Multi-step reasoning"
+- Added `plan` tool for creating and managing step-by-step execution plans
+- Tool supports 5 actions: create, update, progress, show, clear
+- Plan state tracks step status (pending, in_progress, completed, skipped)
+- Updated both chat and evolve system prompts with Multi-Step Reasoning section
+- Added 3 new tests for plan tool
+
+**Why this matters:**
+- Completes ROADMAP Phase 4 - all Growth items are now complete
+- Agent can now break down complex tasks into tracked steps
+- Visual progress tracking with emoji status indicators
+- Better planning and execution for multi-step tasks
+- Evolution tasks can be tracked systematically
+
+**Technical details:**
+- Added `PlanState` interface in `src/agent.ts`: steps with id, description, status, notes
+- Added `plan` tool: action-based API for plan management
+- Added `formatPlan()` helper: visual display with emoji status (⬜ 🔄 ✅ ⏭️)
+- Modified system prompts: Added Multi-Step Reasoning section with usage examples
+- Global plan state shared across agent runs in session
+
+**Plan Tool Usage:**
+```typescript
+// Create a plan
+plan({action: 'create', steps: ['Analyze requirements', 'Implement', 'Test']})
+
+// Mark step as in progress
+plan({action: 'progress', stepId: 1, status: 'in_progress'})
+
+// Mark step as completed
+plan({action: 'progress', stepId: 1, status: 'completed'})
+
+// Show current plan
+plan({action: 'show'})
+
+// Clear plan
+plan({action: 'clear'})
+```
+
+**Next steps:**
+- ROADMAP Phase 4 is now complete
+- Consider Phase 5: Advanced capabilities (reflection, self-assessment, error recovery loops)

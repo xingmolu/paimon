@@ -99,7 +99,9 @@ async function main() {
 		const sessionManager = new SessionManager();
 		const sessions = sessionManager.list();
 		console.log(formatSessionList(sessions));
-		console.log(`\n${COLORS.dim}Use --continue or -c to resume the latest session.${COLORS.reset}\n`);
+		console.log(
+			`\n${COLORS.dim}Use --continue or -c to resume the latest session.${COLORS.reset}\n`,
+		);
 		return;
 	}
 
@@ -124,7 +126,11 @@ async function main() {
 	await runRepl(options.mode, options.session);
 }
 
-async function runOnce(prompt: string, mode: "chat" | "evolve", sessionMode: "new" | "continue" | "none") {
+async function runOnce(
+	prompt: string,
+	mode: "chat" | "evolve",
+	sessionMode: "new" | "continue" | "none",
+) {
 	const config = getConfig(mode);
 	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
 	const { run } = createAgent(config, sessionManager);
@@ -134,7 +140,9 @@ async function runOnce(prompt: string, mode: "chat" | "evolve", sessionMode: "ne
 	console.log(`${COLORS.dim}  model: ${config.model}${COLORS.reset}`);
 	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
 	if (sessionMode === "continue" && sessionManager.continue()) {
-		console.log(`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`);
+		console.log(
+			`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`,
+		);
 	} else if (sessionMode !== "none") {
 		sessionManager.new();
 		console.log(`${COLORS.dim}  session: ${sessionManager.getSessionFile()}${COLORS.reset}`);
@@ -169,8 +177,12 @@ async function runRepl(mode: "chat" | "evolve", sessionMode: "new" | "continue" 
 
 	// Handle session
 	if (sessionMode === "continue" && sessionManager.continue()) {
-		console.log(`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`);
-		console.log(`${COLORS.dim}  messages: ${sessionManager.getMessages().length} from previous session${COLORS.reset}`);
+		console.log(
+			`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`,
+		);
+		console.log(
+			`${COLORS.dim}  messages: ${sessionManager.getMessages().length} from previous session${COLORS.reset}`,
+		);
 	} else if (sessionMode !== "none") {
 		sessionManager.new();
 		console.log(`${COLORS.dim}  session: ${sessionManager.getSessionFile()}${COLORS.reset}`);
