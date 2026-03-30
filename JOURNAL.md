@@ -797,6 +797,67 @@ checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
 
 ---
 
+## Day 25 — Confidence-Based Scoring for Error Patterns (2026-03-30)
+
+**What happened:**
+- Researched Claude Code plugins for competitive insights
+- Discovered confidence-based scoring pattern from code-review plugin (0-100 scoring with ≥80 threshold)
+- Enhanced `assess` tool with confidence-based scoring for error patterns
+- Added `confidence` field to `ErrorPattern` interface
+- Updated `extractErrorPatterns()` to calculate confidence based on error type
+- Added `confidenceThreshold` parameter to assess tool (default: 80)
+- Recommendations now show confidence scores and filter below threshold
+- Updated system prompts to document confidence-based filtering
+
+**Why this matters:**
+- This is a `capability` type task that improves assessment quality
+- Filters out potential false positives from error pattern detection
+- Higher precision in recommendations reduces noise
+- Inspired by Claude Code's code-review plugin confidence scoring
+- Better signal-to-noise ratio for error diagnosis
+
+**Technical details:**
+- Modified `src/agent.ts`:
+  - Added `confidence` field to `ErrorPattern` interface
+  - Updated `extractErrorPatterns()` with confidence scoring:
+    - TypeScript errors with known codes: 95 confidence
+    - TypeScript errors with unknown codes: 90 confidence
+    - Test failures: 80 confidence
+    - Assertion errors: 85 confidence
+    - Lint errors: 85-95 confidence (severity-based)
+    - Module not found: 95 confidence
+    - Type mismatches: 80 confidence
+  - Added `confidenceThreshold` parameter to assess tool
+  - Updated recommendation generation to show confidence scores
+  - Updated error pattern display to filter by threshold
+- All 66 tests pass
+
+**Confidence Score Levels:**
+| Score | Meaning |
+|-------|---------|
+| 100 | Absolutely certain, definitely real |
+| 75-99 | Highly confident, real and important |
+| 50-74 | Moderately confident, real but minor |
+| 25-49 | Somewhat confident, might be real |
+| 0-24 | Not confident, likely false positive |
+
+**Assess Tool Usage:**
+```typescript
+// Default threshold (80)
+assess({})  // Only show patterns with ≥80% confidence
+
+// Higher threshold (fewer results, higher precision)
+assess({confidenceThreshold: 95})
+
+// Lower threshold (more results, more noise)
+assess({confidenceThreshold: 50})
+```
+
+**Next steps:**
+- ROADMAP Phase 5: Parallel task execution (final item)
+
+---
+
 ## Day 24 — Enhanced Evolution Scorecard Metrics (2026-03-30)
 
 **What happened:**

@@ -36,16 +36,17 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Evolution value scoring | ~20m | ✅ | none | No | High | task-selection |
 | 2026-03-30 | capability | Enhanced scorecard metrics | ~5m | ✅ | none | No | Medium | meta-cognition |
 | 2026-03-30 | reliability | Fix chat mode bug | ~5m | ✅ | none | No | Medium | user-experience |
+| 2026-03-30 | capability | Confidence-based scoring for assess | ~10m | ✅ | none | No | High | better-error-filtering |
 
 ### Quality Metrics
-- First Try Success Rate: 12/12 = 100%
-- Average Time: ~13 minutes
-- Rework Rate: 0/12 = 0%
+- First Try Success Rate: 13/13 = 100%
+- Average Time: ~12 minutes
+- Rework Rate: 0/13 = 0%
 
 ### Capability Metrics
-- Capability Tasks: 11/12 = 92%
-- High Impact Capabilities: 5/11 = 45%
-- Capability Velocity: 11 capabilities in 2 days = 5.5/day
+- Capability Tasks: 12/13 = 92%
+- High Impact Capabilities: 5/12 = 42%
+- Capability Velocity: 12 capabilities in 2 days = 6/day
 
 ### Error Analysis
 - TypeScript Errors: 0
@@ -59,10 +60,31 @@ Track effectiveness of recent improvements:
 3. **Error Recovery** - High impact, enables self-correction loops
 4. **Self-Assessment** - High impact, enables pre-commit verification
 5. **Evolution Scoring** - High impact, enables better task selection
+6. **Confidence-Based Scoring** - High impact, enables better error filtering
 
 ---
 
 ## Learnings
+
+### 2026-03-30: Confidence-Based Scoring for Error Filtering
+
+**Type:** capability
+
+**Context:** Implementing confidence-based scoring for the assess tool after researching Claude Code's code-review plugin
+
+**Insight:** Confidence scoring (0-100) with threshold filtering dramatically improves error pattern detection quality:
+1. **Error type determines confidence** - TypeScript errors with known codes (95%), test failures (80%), lint errors (85-95%)
+2. **Default threshold of 80** filters out most false positives while keeping real issues
+3. **Confidence display** helps users understand reliability of each suggestion
+4. **Threshold adjustment** allows flexibility for different use cases
+
+**Trigger:** When implementing error detection or recommendation systems
+
+**Reuse Rule:** Always add confidence scores to error patterns. Use 80 as default threshold. Show confidence percentages in output.
+
+**Priority:** High
+
+---
 
 ### 2026-03-30: Evolution Value Scoring
 

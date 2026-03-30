@@ -83,27 +83,52 @@ interface ErrorPattern {
 	line?: number;
 	message: string;
 	suggestion: string;
+	/** Confidence score 0-100 (higher = more confident this is a real issue) */
+	confidence: number;
 }
 
 /**
  * Extract common error patterns from build/test output
+ * Each pattern includes a confidence score (0-100):
+ * - 100: Absolutely certain, definitely real
+ * - 75-99: Highly confident, real and important
+ * - 50-74: Moderately confident, real but minor
+ * - 25-49: Somewhat confident, might be real
+ * - 0-24: Not confident, likely false positive
  */
 function extractErrorPatterns(output: string): ErrorPattern[] {
 	const patterns: ErrorPattern[] = [];
 
 	// TypeScript errors: "src/file.ts(10,5): error TS1234: message"
+	// High confidence (90-100) because error codes are definitive
 	const tsErrorRegex = /([^\s(]+)\((\d+),(\d+)\):\s*error\s+(TS\d+):\s*(.+)/g;
 	for (const match of output.matchAll(tsErrorRegex)) {
+		const tsCode = match[4];
+		// Known error codes get higher confidence
+		const knownCodes = [
+			"TS2304",
+			"TS2322",
+			"TS2339",
+			"TS2345",
+			"TS2769",
+			"TS18048",
+			"TS2531",
+			"TS2341",
+			"TS2307",
+		];
+		const confidence = knownCodes.includes(tsCode) ? 95 : 90;
 		patterns.push({
 			type: "typescript",
 			file: match[1],
 			line: Number.parseInt(match[2], 10),
-			message: `TS${match[4]}: ${match[5]}`,
-			suggestion: getSuggestionForTsError(match[4], match[5]),
+			message: `TS${tsCode}: ${match[5]}`,
+			suggestion: getSuggestionForTsError(tsCode, match[5]),
+			confidence,
 		});
 	}
 
 	// Test failures: "FAIL src/file.test.ts > test name"
+	// Medium-high confidence (80) - test names might be misleading
 	const testFailRegex = /FAIL\s+([^\s>]+)\s*>\s*(.+)/g;
 	for (const match of output.matchAll(testFailRegex)) {
 		patterns.push({
@@ -111,50 +136,61 @@ function extractErrorPatterns(output: string): ErrorPattern[] {
 			file: match[1],
 			message: `Test failed: ${match[2]}`,
 			suggestion: "Check test assertions and ensure the code matches expected behavior",
+			confidence: 80,
 		});
 	}
 
 	// Assertion errors: "AssertionError: expected X to equal Y"
+	// High confidence (85) because assertion failures are definitive
 	const assertRegex = /AssertionError:\s*(.+)/g;
 	for (const match of output.matchAll(assertRegex)) {
 		patterns.push({
 			type: "test",
 			message: match[1],
 			suggestion: "Review the assertion and fix the expected or actual value",
+			confidence: 85,
 		});
 	}
 
 	// Lint errors: "src/file.ts:10:5: error message"
+	// High confidence (85-95) - lint rules are deterministic
 	const lintErrorRegex = /([^\s:]+):(\d+):(\d+):\s*(.+)/g;
 	for (const match of output.matchAll(lintErrorRegex)) {
 		if (match[1].endsWith(".ts") || match[1].endsWith(".js")) {
+			// Severity-based confidence: "error" is higher than "warning"
+			const severity = match[4].toLowerCase().includes("error") ? 95 : 85;
 			patterns.push({
 				type: "lint",
 				file: match[1],
 				line: Number.parseInt(match[2], 10),
 				message: match[4],
 				suggestion: "Run `npm run lint -- --fix` to auto-fix or manually correct the issue",
+				confidence: severity,
 			});
 		}
 	}
 
 	// Cannot find module errors
+	// Very high confidence (95) - module resolution is definitive
 	const moduleRegex = /Cannot find module ['"]([^'"]+)['"]/g;
 	for (const match of output.matchAll(moduleRegex)) {
 		patterns.push({
 			type: "typescript",
 			message: `Cannot find module '${match[1]}'`,
 			suggestion: `Install the module with 'npm install ${match[1]}' or check the import path`,
+			confidence: 95,
 		});
 	}
 
 	// Type 'X' is not assignable to type 'Y'
+	// High confidence (80) - type mismatches are usually real issues
 	const typeRegex = /Type '([^']+)' is not assignable to type '([^']+)'/g;
 	for (const match of output.matchAll(typeRegex)) {
 		patterns.push({
 			type: "typescript",
 			message: `Type '${match[1]}' is not assignable to type '${match[2]}'`,
 			suggestion: "Add type conversion or fix the type definition",
+			confidence: 80,
 		});
 	}
 
@@ -880,6 +916,12 @@ const tools: AgentTool[] = [
 						"Maximum retry attempts for error recovery (default: 1, no retries). Use higher values to enable automatic retry loops.",
 				}),
 			),
+			confidenceThreshold: Type.Optional(
+				Type.Number({
+					description:
+						"Minimum confidence score (0-100) for recommendations to be shown (default: 80). Higher values filter out more potential false positives.",
+				}),
+			),
 		}),
 		execute: async (_toolCallId, params): Promise<AgentToolResult<AssessmentResult>> => {
 			const {
@@ -887,11 +929,13 @@ const tools: AgentTool[] = [
 				runTests = true,
 				runLint = true,
 				maxAttempts = 1,
+				confidenceThreshold = 80,
 			} = params as {
 				runBuild?: boolean;
 				runTests?: boolean;
 				runLint?: boolean;
 				maxAttempts?: number;
+				confidenceThreshold?: number;
 			};
 
 			const result: AssessmentResult = {
@@ -951,8 +995,12 @@ const tools: AgentTool[] = [
 							// Extract error patterns for actionable suggestions
 							const patterns = extractErrorPatterns(output);
 							result.errorPatterns = patterns;
-							for (const pattern of patterns.slice(0, 5)) {
-								result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
+							// Filter by confidence threshold
+							const highConfPatterns = patterns.filter((p) => p.confidence >= confidenceThreshold);
+							for (const pattern of highConfPatterns.slice(0, 5)) {
+								result.recommendations.push(
+									`💡 Fix (${pattern.confidence}%): ${pattern.suggestion}`,
+								);
 							}
 						}
 					}
@@ -973,12 +1021,16 @@ const tools: AgentTool[] = [
 							);
 							// Extract test failure patterns
 							const patterns = extractErrorPatterns(output);
-							for (const pattern of patterns.slice(0, 5)) {
-								if (pattern.type === "test") {
-									result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
-								}
+							// Filter test patterns by confidence threshold
+							const highConfPatterns = patterns.filter(
+								(p) => p.type === "test" && p.confidence >= confidenceThreshold,
+							);
+							for (const pattern of highConfPatterns.slice(0, 5)) {
+								result.recommendations.push(
+									`💡 Fix (${pattern.confidence}%): ${pattern.suggestion}`,
+								);
 							}
-							// Merge error patterns
+							// Merge error patterns (all types, for display later)
 							result.errorPatterns = [...(result.errorPatterns || []), ...patterns];
 						}
 					}
@@ -1009,8 +1061,14 @@ const tools: AgentTool[] = [
 								} catch {
 									// Auto-fix didn't work, manual fix needed
 									const patterns = extractErrorPatterns(output);
-									for (const pattern of patterns.slice(0, 3)) {
-										result.recommendations.push(`💡 Fix: ${pattern.suggestion}`);
+									// Filter by confidence threshold
+									const highConfPatterns = patterns.filter(
+										(p) => p.confidence >= confidenceThreshold,
+									);
+									for (const pattern of highConfPatterns.slice(0, 3)) {
+										result.recommendations.push(
+											`💡 Fix (${pattern.confidence}%): ${pattern.suggestion}`,
+										);
 									}
 								}
 							}
@@ -1097,14 +1155,28 @@ const tools: AgentTool[] = [
 				output += `❌ Some checks failed after ${result.attempts} attempts. Fix issues before committing.\n`;
 			}
 
-			// Show error patterns if available
+			// Show error patterns if available (filtered by confidence threshold)
 			if (result.errorPatterns && result.errorPatterns.length > 0) {
-				output += "\n📋 Error Patterns Detected:\n";
-				for (const pattern of result.errorPatterns.slice(0, 5)) {
-					output += `  • [${pattern.type}] ${pattern.message}\n`;
-					if (pattern.file) {
-						output += `    File: ${pattern.file}:${pattern.line || "?"}\n`;
+				// Filter by confidence threshold
+				const highConfidencePatterns = result.errorPatterns.filter(
+					(p) => p.confidence >= confidenceThreshold,
+				);
+				const filteredOut = result.errorPatterns.length - highConfidencePatterns.length;
+
+				if (highConfidencePatterns.length > 0) {
+					output += `\n📋 Error Patterns Detected (confidence ≥ ${confidenceThreshold}%):\n`;
+					for (const pattern of highConfidencePatterns.slice(0, 5)) {
+						output += `  • [${pattern.confidence}%] [${pattern.type}] ${pattern.message}\n`;
+						if (pattern.file) {
+							output += `    File: ${pattern.file}:${pattern.line || "?"}\n`;
+						}
 					}
+					if (filteredOut > 0) {
+						output += `\n  (${filteredOut} low-confidence patterns filtered out)\n`;
+					}
+				} else if (result.errorPatterns.length > 0) {
+					output += `\n📋 ${result.errorPatterns.length} error patterns detected, but all below confidence threshold (${confidenceThreshold}%).\n`;
+					output += "  Consider lowering confidenceThreshold to see more patterns.\n";
 				}
 			}
 
