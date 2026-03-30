@@ -33,6 +33,7 @@ import {
 	type HookType,
 	globalHookManager,
 } from "./hooks.js";
+import { RepoMap, generateRepoMap } from "./repomap.js";
 import type { SessionManager } from "./session.js";
 import {
 	type HistoryMessage,
@@ -2192,6 +2193,60 @@ Each learning should be:
 			}
 		},
 	},
+	{
+		name: "repomap",
+		label: "Generate Repo Map",
+		description:
+			"Generate a structured map of the codebase showing definitions (functions, classes, interfaces) organized by file. Inspired by Aider's RepoMap - helps understand codebase structure without reading every file.",
+		parameters: Type.Object({
+			root: Type.Optional(Type.String({ description: "Root directory to scan (default: .)" })),
+			maxTokens: Type.Optional(
+				Type.Number({ description: "Maximum tokens for the map output (default: 2048)" }),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<string>> => {
+			const { root = ".", maxTokens = 2048 } = params as {
+				root?: string;
+				maxTokens?: number;
+			};
+
+			try {
+				const repoMap = new RepoMap({ root, maxTokens });
+				const map = repoMap.generate();
+
+				const defCount = repoMap.getAllDefinitions().length;
+				const fileScores = repoMap.getFileScores();
+				const topFiles = [...fileScores.entries()]
+					.sort((a, b) => b[1] - a[1])
+					.slice(0, 5)
+					.map(([f, s]) => `${f} (${s})`);
+
+				let output = "🗺️ Repo Map\n";
+				output += `${"─".repeat(50)}\n`;
+				output += `Definitions: ${defCount}\n`;
+				output += `Files: ${fileScores.size}\n`;
+				output += `Token budget: ${maxTokens}\n`;
+				output += `${"─".repeat(50)}\n\n`;
+				output += "Top files by importance:\n";
+				for (const f of topFiles) {
+					output += `  • ${f}\n`;
+				}
+				output += `\n${"─".repeat(50)}\n\n`;
+				output += map;
+
+				return {
+					content: [{ type: "text", text: output }],
+					details: output,
+				};
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
 
 /**
@@ -2426,7 +2481,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -2450,6 +2505,7 @@ You can help users with various tasks like reading files, writing code, executin
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 - hook: Manage hooks for pre-tool validation and safety checks - prevents dangerous patterns automatically.
 - stuck: Detect when agent is looping and provide recovery options - inspired by OpenHands' StuckDetector.
+- repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
 
 ## Multi-Step Reasoning
 
@@ -2521,6 +2577,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
 - hook: Manage hooks for pre-tool validation - prevents dangerous patterns automatically.
 - stuck: Detect when agent is looping and provide recovery options (restart before loop, restart with last message, quit).
+- repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
 
 ## Multi-Step Reasoning
 

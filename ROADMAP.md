@@ -47,6 +47,13 @@ Planned improvements for evo.
 - [x] Loop recovery — Multiple recovery options: restart before loop, restart with last instruction, quit
 - [x] Memory truncation — Truncate history to recovery points
 
+## Phase 9: Repo Map (Aider Pattern)
+- [x] RepoMap module — Generate structured map of codebase definitions
+- [x] repomap tool — Tool for generating repo maps with token budget
+- [x] Definition extraction — Extract functions, classes, interfaces, types from TypeScript/JavaScript
+- [x] File importance scoring — PageRank-like algorithm for ranking files by importance
+- [x] Token budget management — Fit map within context limits
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

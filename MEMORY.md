@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Repo Map (Aider Pattern) | ~25m | ❌ | lint | Yes | High | evolve, research | codebase-understanding |
 | 2026-03-30 | capability | Loop detection & recovery | ~20m | ❌ | lint | Yes | High | evolve, research | autonomous-recovery |
 | 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | evolve, explore-code, plan-architecture, review-changes | exploration-planning-review |
 | 2026-03-30 | capability | Hook system for pre-tool validation | ~15m | ✅ | lint | Yes | High | evolve, systematic-debugging | proactive-safety |
@@ -45,42 +46,43 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 17/19 = 89% (last iteration)
-- Average Time: ~14 minutes
-- Rework Rate: 5/19 = 26%
+- First Try Success Rate: 15/20 = 75% (last iteration)
+- Average Time: ~15 minutes
+- Rework Rate: 7/20 = 35%
 
 ### Capability Metrics
-- Capability Tasks: 18/19 = 95%
-- High Impact Capabilities: 11/18 = 61%
-- Capability Velocity: 18 capabilities in 2 days = 9/day
+- Capability Tasks: 19/20 = 95%
+- High Impact Capabilities: 12/19 = 63%
+- Capability Velocity: 19 capabilities in 2 days = 9.5/day
 
 ### Error Analysis
 - TypeScript Errors: 1
 - Test Failures: 0
-- Lint Issues: 5
+- Lint Issues: 6
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 16 iterations, 94% success rate when used
+1. **evolve** - Used in 17 iterations, 94% success rate when used
 2. **using-superpowers** - Used in 3 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 4 iterations, planning workflow
-5. **research** - Used in 2 iterations, competitor research
+5. **research** - Used in 3 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
-2. **Hook System** - High impact, enables proactive safety before tool execution
-3. **Checkpoints** - High impact, enables safer risky experiments
-4. **Reflection** - High impact, enables auto-learning from failures
-5. **Error Recovery** - High impact, enables self-correction loops
-6. **Self-Assessment** - High impact, enables pre-commit verification
-7. **Evolution Scoring** - High impact, enables better task selection
-8. **Confidence-Based Scoring** - High impact, enables better error filtering
-9. **Superpowers Integration** - High impact, enables skill-based workflows
-10. **Parallel Execution** - High impact, enables concurrent operations
-11. **Specialized Subagents** - High impact, enables exploration-planning-review
-12. **Skill Effectiveness Tracking** - High impact, enables skill analytics
+1. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
+2. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
+3. **Hook System** - High impact, enables proactive safety before tool execution
+4. **Checkpoints** - High impact, enables safer risky experiments
+5. **Reflection** - High impact, enables auto-learning from failures
+6. **Error Recovery** - High impact, enables self-correction loops
+7. **Self-Assessment** - High impact, enables pre-commit verification
+8. **Evolution Scoring** - High impact, enables better task selection
+9. **Confidence-Based Scoring** - High impact, enables better error filtering
+10. **Superpowers Integration** - High impact, enables skill-based workflows
+11. **Parallel Execution** - High impact, enables concurrent operations
+12. **Specialized Subagents** - High impact, enables exploration-planning-review
+13. **Skill Effectiveness Tracking** - High impact, enables skill analytics
 
 ---
 
@@ -361,6 +363,27 @@ gh issue view <number>  # Check issue status and comments
 **Trigger:** When evaluating skill effectiveness or improving skill selection
 
 **Reuse Rule:** Log skills used in each iteration to MEMORY.md scorecard. Analyze skill effectiveness metrics to improve future skill matching.
+
+**Priority:** High
+
+---
+
+### 2026-03-30: Repo Map for Codebase Understanding
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 9 - Repo Map inspired by Aider's RepoMap
+
+**Insight:** Aider's RepoMap provides a structured view of codebase definitions without reading every file:
+1. **Definition extraction** - Regex-based parsing for functions, classes, interfaces, types
+2. **File importance scoring** - PageRank-like algorithm prioritizes important files
+3. **Token budget management** - Fits map within context limits with truncation
+4. **Import reference tracking** - Shows dependencies between files
+5. **Simpler than tree-sitter** - Regex parsing is sufficient for TypeScript/JavaScript
+
+**Trigger:** When needing to understand codebase structure quickly
+
+**Reuse Rule:** Use `repomap({})` before complex evolution tasks. Generate map at session start for context.
 
 **Priority:** High
 

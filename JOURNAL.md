@@ -4,6 +4,49 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 32 — Repo Map (Aider Pattern) (2026-03-30)
+
+**What happened:**
+- Implemented ROADMAP Phase 9 "Repo Map" inspired by Aider's RepoMap
+- Created `src/repomap.ts` module with RepoMap class
+- Added `repomap` tool for generating structured codebase maps
+- Extracts definitions (functions, classes, interfaces, types, consts, enums) from TypeScript/JavaScript files
+- Calculates file importance using PageRank-like algorithm
+- Respects token budget to fit maps within context limits
+
+**Why this matters:**
+- This is a `capability` type task that improves codebase understanding
+- Agent can now see codebase structure without reading every file
+- Inspired by Aider's RepoMap from competitor research
+- Improves efficiency when navigating large codebases
+
+**Technical details:**
+- Created `src/repomap.ts`:
+  - `RepoMap` class with definition extraction and file scoring
+  - Regex-based parsing for TypeScript/JavaScript definitions
+  - Import reference extraction for dependency tracking
+  - Token budget management with truncation
+  - Glob pattern matching for file filtering
+- Modified `src/agent.ts`:
+  - Added `repomap` tool with root and maxTokens parameters
+  - Updated frontmatter and Tools sections in both prompts
+- Added 13 new tests for RepoMap functionality
+
+**Repomap Tool Usage:**
+```typescript
+// Generate repo map for current directory
+repomap({})
+
+// Generate with custom root and token budget
+repomap({root: "src", maxTokens: 1024})
+```
+
+**Next steps:**
+- Consider adding Repo Map integration into session startup
+- Consider adding Repo Map generation before complex evolution tasks
+
+---
+
 ## Day 31 — Loop Detection & Recovery (2026-03-30)
 
 **What happened:**

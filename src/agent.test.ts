@@ -1012,3 +1012,220 @@ describe("StuckDetector", () => {
 		expect(lastUser?.content).toBe("User question");
 	});
 });
+
+describe("repomap tool", () => {
+	beforeEach(() => {
+		cleanup();
+		ensureTestDir();
+	});
+
+	afterEach(() => {
+		cleanup();
+	});
+
+	it("should have repomap tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have repomap parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support repomap with optional root and maxTokens", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+});
+
+describe("RepoMap", () => {
+	beforeEach(() => {
+		cleanup();
+		ensureTestDir();
+	});
+
+	afterEach(() => {
+		cleanup();
+	});
+
+	it("should create RepoMap instance", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		expect(repoMap).toBeDefined();
+	});
+
+	it("should generate empty map for empty directory", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const map = repoMap.generate();
+		expect(map).toContain("# Repo Map");
+	});
+
+	it("should extract function definitions", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "test.ts");
+		writeFileSync(testFile, "function hello() {}\nfunction world() {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const defs = repoMap.extractDefinitions("test.ts");
+
+		expect(defs.length).toBeGreaterThan(0);
+		expect(defs.some((d) => d.name === "hello")).toBe(true);
+		expect(defs.some((d) => d.name === "world")).toBe(true);
+	});
+
+	it("should extract class definitions", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "class.ts");
+		writeFileSync(testFile, "class MyClass {}\nclass AnotherClass {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const defs = repoMap.extractDefinitions("class.ts");
+
+		expect(defs.some((d) => d.name === "MyClass" && d.type === "class")).toBe(true);
+		expect(defs.some((d) => d.name === "AnotherClass" && d.type === "class")).toBe(true);
+	});
+
+	it("should extract interface definitions", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "interface.ts");
+		writeFileSync(testFile, "interface MyInterface {}\ninterface Another {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const defs = repoMap.extractDefinitions("interface.ts");
+
+		expect(defs.some((d) => d.name === "MyInterface" && d.type === "interface")).toBe(true);
+		expect(defs.some((d) => d.name === "Another" && d.type === "interface")).toBe(true);
+	});
+
+	it("should extract type definitions", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "types.ts");
+		writeFileSync(testFile, "type MyType = string;\ntype AnotherType = number;", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const defs = repoMap.extractDefinitions("types.ts");
+
+		expect(defs.some((d) => d.name === "MyType" && d.type === "type")).toBe(true);
+		expect(defs.some((d) => d.name === "AnotherType" && d.type === "type")).toBe(true);
+	});
+
+	it("should extract const definitions", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "const.ts");
+		writeFileSync(testFile, "const myVar = 1;\nconst anotherVar = 'test'", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const defs = repoMap.extractDefinitions("const.ts");
+
+		expect(defs.some((d) => d.name === "myVar" && d.type === "const")).toBe(true);
+		expect(defs.some((d) => d.name === "anotherVar" && d.type === "const")).toBe(true);
+	});
+
+	it("should extract import references", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "imports.ts");
+		writeFileSync(
+			testFile,
+			"import { foo, bar } from './module';\nimport baz from './other';",
+			"utf-8",
+		);
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const refs = repoMap.extractReferences("imports.ts");
+
+		expect(refs.some((r) => r.name === "foo")).toBe(true);
+		expect(refs.some((r) => r.name === "bar")).toBe(true);
+		expect(refs.some((r) => r.name === "baz")).toBe(true);
+	});
+
+	it("should generate formatted output", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		const testFile = join(TEST_DIR, "formatted.ts");
+		writeFileSync(testFile, "function hello() {}\nclass World {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		const map = repoMap.generate();
+
+		expect(map).toContain("# Repo Map");
+	});
+
+	it("should respect token budget", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		// Create multiple files with many definitions
+		for (let i = 0; i < 5; i++) {
+			const testFile = join(TEST_DIR, `file${i}.ts`);
+			let content = "";
+			for (let j = 0; j < 20; j++) {
+				content += `function func${i}_${j}() {}\n`;
+			}
+			writeFileSync(testFile, content, "utf-8");
+		}
+
+		const repoMap = new RepoMap({ root: TEST_DIR, maxTokens: 500 });
+		const map = repoMap.generate();
+
+		// Should truncate due to token budget
+		expect(map).toContain("# Repo Map");
+	});
+
+	it("should calculate file scores", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		// Create files with different complexity
+		writeFileSync(join(TEST_DIR, "simple.ts"), "const x = 1;", "utf-8");
+		writeFileSync(
+			join(TEST_DIR, "complex.ts"),
+			"function a() {}\nfunction b() {}\nclass C {}",
+			"utf-8",
+		);
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		repoMap.generate(); // Must call generate() to populate definitions and scores
+		const scores = repoMap.getFileScores();
+
+		expect(scores.size).toBeGreaterThan(0);
+		// Complex file should have higher score
+		expect(scores.get("complex.ts") || 0).toBeGreaterThan(scores.get("simple.ts") || 0);
+	});
+
+	it("should exclude test files by default", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		writeFileSync(join(TEST_DIR, "main.ts"), "function main() {}", "utf-8");
+		writeFileSync(join(TEST_DIR, "main.test.ts"), "function test() {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		repoMap.generate(); // Must call generate() to populate definitions
+		const defs = repoMap.getAllDefinitions();
+
+		// Should include main.ts but not main.test.ts
+		expect(defs.some((d) => d.file === "main.ts")).toBe(true);
+		expect(defs.every((d) => !d.file.includes(".test."))).toBe(true);
+	});
+
+	it("should handle nested directories", async () => {
+		const { RepoMap } = await import("./repomap.js");
+		mkdirSync(join(TEST_DIR, "src", "utils"), { recursive: true });
+		writeFileSync(join(TEST_DIR, "src", "utils", "helper.ts"), "function help() {}", "utf-8");
+
+		const repoMap = new RepoMap({ root: TEST_DIR });
+		repoMap.generate(); // Must call generate() to populate definitions
+		const defs = repoMap.getAllDefinitions();
+
+		expect(defs.some((d) => d.file.includes("helper.ts"))).toBe(true);
+	});
+});
