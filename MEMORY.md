@@ -96,14 +96,25 @@ gh issue view <number>  # Check specific issue
 
 ---
 
-### 2026-03-29: Verification Before Commit
+### 2026-03-30: Issue Closure Verification
 
-**Context:** Iteration 1 failed verification
+**Context:** Issue #11 was closed but ROADMAP showed it as incomplete - no actual implementation existed
 
-**Insight:** 
-- Build: FAIL
-- Tests: PASS
-- Error: Error: Agent timeout after 180.0s. No response received.
+**Insight:** When checking issues:
+1. **Verify implementation exists** - Check for files mentioned in issue spec
+2. **Don't trust issue state alone** - ROADMAP may show incomplete items
+3. **Re-implement if needed** - Just because issue is closed doesn't mean it's done
 
-**Action:** Always run `npm run build && npm test -- --run` before committing changes. If tests fail, do not commit.
+**Pattern:**
+```bash
+# Before working on "completed" ROADMAP items
+ls src/  # Check if implementation files exist
+git log --oneline | grep -i <feature>  # Check if commits exist
+gh issue view <number>  # Check issue status and comments
+```
+
+**Action:**
+- Always verify ROADMAP items have actual implementation
+- Check for source files mentioned in issue spec
+- Close issues only after code is verified working
 

@@ -3,6 +3,7 @@ import "dotenv/config";
 import { existsSync, readFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { type PaimonConfig, createAgent } from "./agent.js";
+import { SessionManager, formatSessionList } from "./session.js";
 
 const COLORS = {
 	reset: "\x1b[0m",
@@ -11,6 +12,7 @@ const COLORS = {
 	green: "\x1b[32m",
 	cyan: "\x1b[36m",
 	red: "\x1b[31m",
+	yellow: "\x1b[33m",
 };
 
 function printBanner() {
@@ -19,62 +21,133 @@ function printBanner() {
 	);
 }
 
-async function main() {
-	const args = process.argv.slice(2);
+interface CliOptions {
+	mode: "chat" | "evolve";
+	session: "new" | "continue" | "resume" | "none";
+	file?: string;
+	prompt?: string;
+}
+
+function parseArgs(args: string[]): CliOptions {
+	const options: CliOptions = {
+		mode: "chat",
+		session: "new",
+	};
 
 	// Check for --mode argument or PAIMON_MODE env var
 	const modeIndex = args.indexOf("--mode");
-	let mode: "chat" | "evolve" = "chat";
-
 	if (modeIndex !== -1 && args[modeIndex + 1]) {
 		const modeArg = args[modeIndex + 1];
 		if (modeArg === "chat" || modeArg === "evolve") {
-			mode = modeArg;
+			options.mode = modeArg;
 		} else {
 			console.error(
 				`${COLORS.red}Error: Invalid mode "${modeArg}". Use "chat" or "evolve".${COLORS.reset}`,
 			);
 			process.exit(1);
 		}
-		// Remove --mode and its value from args
 		args.splice(modeIndex, 2);
 	} else if (process.env.PAIMON_MODE === "evolve") {
-		mode = "evolve";
+		options.mode = "evolve";
+	}
+
+	// Check for session flags
+	if (args.includes("--continue") || args.includes("-c")) {
+		options.session = "continue";
+		// Remove the flag
+		const idx = args.indexOf("--continue");
+		if (idx !== -1) args.splice(idx, 1);
+		const shortIdx = args.indexOf("-c");
+		if (shortIdx !== -1) args.splice(shortIdx, 1);
+	}
+
+	if (args.includes("--resume") || args.includes("-r")) {
+		options.session = "resume";
+		// Remove the flag
+		const idx = args.indexOf("--resume");
+		if (idx !== -1) args.splice(idx, 1);
+		const shortIdx = args.indexOf("-r");
+		if (shortIdx !== -1) args.splice(shortIdx, 1);
+	}
+
+	if (args.includes("--no-session")) {
+		options.session = "none";
+		args.splice(args.indexOf("--no-session"), 1);
 	}
 
 	// Check for --file
 	const fileIndex = args.indexOf("--file");
 	if (fileIndex !== -1 && args[fileIndex + 1]) {
-		const filePath = args[fileIndex + 1];
-		if (!existsSync(filePath)) {
-			console.error(`${COLORS.red}Error: File not found: ${filePath}${COLORS.reset}`);
-			process.exit(1);
-		}
-		const prompt = readFileSync(filePath, "utf-8");
-		await runOnce(prompt, mode);
-		return;
+		options.file = args[fileIndex + 1];
+		args.splice(fileIndex, 2);
 	}
 
-	// Direct prompt
+	// Remaining args as prompt
 	if (args.length > 0 && !args[0].startsWith("--")) {
-		await runOnce(args.join(" "), mode);
-		return;
+		options.prompt = args.join(" ");
 	}
 
-	// REPL
-	await runRepl(mode);
+	return options;
 }
 
-async function runOnce(prompt: string, mode: "chat" | "evolve" = "chat") {
+async function main() {
+	const args = process.argv.slice(2);
+	const options = parseArgs(args);
+
+	// Handle session resume
+	if (options.session === "resume") {
+		const sessionManager = new SessionManager();
+		const sessions = sessionManager.list();
+		console.log(formatSessionList(sessions));
+		console.log(`\n${COLORS.dim}Use --continue or -c to resume the latest session.${COLORS.reset}\n`);
+		return;
+	}
+
+	// Run with file prompt
+	if (options.file) {
+		if (!existsSync(options.file)) {
+			console.error(`${COLORS.red}Error: File not found: ${options.file}${COLORS.reset}`);
+			process.exit(1);
+		}
+		const prompt = readFileSync(options.file, "utf-8");
+		await runOnce(prompt, options.mode, options.session);
+		return;
+	}
+
+	// Run with direct prompt
+	if (options.prompt) {
+		await runOnce(options.prompt, options.mode, options.session);
+		return;
+	}
+
+	// REPL mode
+	await runRepl(options.mode, options.session);
+}
+
+async function runOnce(prompt: string, mode: "chat" | "evolve", sessionMode: "new" | "continue" | "none") {
 	const config = getConfig(mode);
-	const { run } = createAgent(config);
+	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
+	const { run } = createAgent(config, sessionManager);
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
 
 	printBanner();
-	console.log(`${COLORS.dim}  model: ${config.model}${COLORS.reset}\n`);
+	console.log(`${COLORS.dim}  model: ${config.model}${COLORS.reset}`);
+	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
+	if (sessionMode === "continue" && sessionManager.continue()) {
+		console.log(`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`);
+	} else if (sessionMode !== "none") {
+		sessionManager.new();
+		console.log(`${COLORS.dim}  session: ${sessionManager.getSessionFile()}${COLORS.reset}`);
+	}
+	console.log();
+
+	// Save user message
+	sessionManager.save("user", prompt);
 
 	try {
 		const result = await run(prompt, debug);
+		// Save assistant response
+		sessionManager.save("assistant", result);
 		console.log(`\n${result}\n`);
 	} catch (error) {
 		console.error(
@@ -84,14 +157,25 @@ async function runOnce(prompt: string, mode: "chat" | "evolve" = "chat") {
 	}
 }
 
-async function runRepl(mode: "chat" | "evolve" = "chat") {
+async function runRepl(mode: "chat" | "evolve", sessionMode: "new" | "continue" | "none") {
 	const config = getConfig(mode);
-	const { agent, run } = createAgent(config);
+	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
+	const { agent, run } = createAgent(config, sessionManager);
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
 
 	printBanner();
 	console.log(`${COLORS.dim}  model: ${config.model}`);
 	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
+
+	// Handle session
+	if (sessionMode === "continue" && sessionManager.continue()) {
+		console.log(`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`);
+		console.log(`${COLORS.dim}  messages: ${sessionManager.getMessages().length} from previous session${COLORS.reset}`);
+	} else if (sessionMode !== "none") {
+		sessionManager.new();
+		console.log(`${COLORS.dim}  session: ${sessionManager.getSessionFile()}${COLORS.reset}`);
+	}
+
 	if (debug) {
 		console.log(`${COLORS.dim}  debug: enabled${COLORS.reset}\n`);
 	} else {
@@ -100,6 +184,15 @@ async function runRepl(mode: "chat" | "evolve" = "chat") {
 
 	const rl = createInterface({ input: process.stdin, output: process.stdout });
 	const prompt = (q: string): Promise<string> => new Promise((r) => rl.question(q, r));
+
+	// Load previous messages into context
+	const previousMessages = sessionManager.getMessages();
+	let lastAssistantId: string | undefined;
+	for (const msg of previousMessages) {
+		if (msg.role === "assistant") {
+			lastAssistantId = msg.id;
+		}
+	}
 
 	while (true) {
 		const input = await prompt(`${COLORS.bold}${COLORS.green}> ${COLORS.reset}`);
@@ -112,8 +205,14 @@ async function runRepl(mode: "chat" | "evolve" = "chat") {
 			break;
 		}
 
+		// Save user message
+		const userMsg = sessionManager.save("user", trimmed, lastAssistantId);
+
 		try {
 			const result = await run(trimmed, debug);
+			// Save assistant response with reference to user message
+			const assistantMsg = sessionManager.save("assistant", result, userMsg.id);
+			lastAssistantId = assistantMsg.id;
 			console.log(`\n${result}\n`);
 		} catch (error) {
 			console.error(

@@ -25,7 +25,7 @@ Planned improvements for evo.
 - [x] Web search, API calls — Added http tool
 - [ ] Multi-step reasoning
 - [x] Context compaction for long sessions — Issue #9
-- [ ] Session persistence and resume — Issue #11
+- [x] Session persistence and resume — Issue #11
 
 ---
 

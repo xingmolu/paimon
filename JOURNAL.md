@@ -426,3 +426,48 @@ A daily log of Paimon's self-improvements.
 
 **Next steps:**
 - ROADMAP Phase 4: Multi-step reasoning, Session persistence
+
+---
+
+## Day 15 — Session Persistence and Resume (2026-03-30)
+
+**What happened:**
+- Implemented Issue #11: Session persistence and resume capability
+- Created `src/session.ts` module with SessionManager class
+- Added CLI flags: `--continue` (-c), `--resume` (-r), `--no-session`
+- Sessions stored as JSONL files in `~/.paimon/sessions/`
+- Organized by project (git repository name)
+- Added 10 new tests for session functionality
+
+**Why this matters:**
+- Agent can now resume interrupted conversations
+- Long-running tasks can be continued across sessions
+- Sessions organized per-project for better context separation
+- Messages have tree structure (parentId) for branching capability
+
+**Technical details:**
+- Created `src/session.ts`: SessionManager with new(), continue(), resume(), save() methods
+- Modified `src/cli.ts`: Added session flags and integrated session management
+- Modified `src/agent.ts`: Added optional SessionManager parameter to createAgent
+- JSONL format: Each line is a JSON message with id, role, content, parentId, timestamp
+- Auto-detects project name from git root or current directory
+
+**CLI Usage:**
+```bash
+# Start new session (default)
+npm run dev
+
+# Continue latest session
+npm run dev -- -c
+npm run dev -- --continue
+
+# List previous sessions
+npm run dev -- -r
+npm run dev -- --resume
+
+# No session (ephemeral)
+npm run dev -- --no-session
+```
+
+**Next steps:**
+- ROADMAP Phase 4: Multi-step reasoning (final item)

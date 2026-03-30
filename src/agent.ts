@@ -18,6 +18,7 @@ import { Type } from "@sinclair/typebox";
 import { globSync } from "glob";
 import { type CompactionConfig, ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
+import type { SessionManager } from "./session.js";
 
 export interface PaimonConfig {
 	apiKey: string;
@@ -508,13 +509,16 @@ function createModel(config: PaimonConfig): Model<Api> {
 	};
 }
 
-export function createAgent(config: PaimonConfig): {
+export function createAgent(config: PaimonConfig, sessionManager?: SessionManager): {
 	agent: Agent;
 	run: (prompt: string, verbose?: boolean) => Promise<string>;
 	/** Get context status for debugging */
 	getContextStatus: () => { messages: number; tokens: number; hasSummary: boolean };
 } {
 	const model = createModel(config);
+	// Session manager is stored for potential future use
+	// Currently, session saving is handled in cli.ts
+	void sessionManager;
 
 	// Create context manager for tracking conversation length
 	const compactionEnabled = config.compaction !== false;

@@ -274,3 +274,145 @@ describe("Agent", () => {
 		expect(typeof run).toBe("function");
 	});
 });
+
+describe("Session", () => {
+	const SESSION_DIR = join(process.cwd(), "test-sessions");
+
+	beforeEach(() => {
+		if (existsSync(SESSION_DIR)) {
+			rmSync(SESSION_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(SESSION_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(SESSION_DIR)) {
+			rmSync(SESSION_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("SessionManager", () => {
+		it("should create a new session", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			manager.new();
+
+			expect(manager.hasActiveSession()).toBe(true);
+			expect(manager.getSessionFile()).toBeDefined();
+		});
+
+		it("should save and retrieve messages", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			manager.new();
+
+			const userMsg = manager.save("user", "Hello");
+			const assistantMsg = manager.save("assistant", "Hi there!", userMsg.id);
+
+			const messages = manager.getMessages();
+			expect(messages.length).toBe(2);
+			expect(messages[0].role).toBe("user");
+			expect(messages[0].content).toBe("Hello");
+			expect(messages[1].parentId).toBe(userMsg.id);
+		});
+
+		it("should continue a session", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager1 = new SessionManager(SESSION_DIR, true);
+			manager1.new();
+			manager1.save("user", "First message");
+			manager1.save("assistant", "First response");
+
+			// Create another manager and continue
+			const manager2 = new SessionManager(SESSION_DIR, true);
+			const success = manager2.continue();
+
+			expect(success).toBe(true);
+			expect(manager2.getMessages().length).toBe(2);
+		});
+
+		it("should return false when no session to continue", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			const success = manager.continue();
+
+			expect(success).toBe(false);
+		});
+
+		it("should list sessions", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			manager.new();
+			manager.save("user", "Test");
+
+			const sessions = manager.list();
+			expect(sessions.length).toBe(1);
+			expect(sessions[0].messageCount).toBe(1);
+		});
+
+		it("should disable session when enabled is false", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, false);
+			manager.new();
+
+			// Should not create session file
+			expect(manager.hasActiveSession()).toBe(false);
+			expect(manager.getSessionFile()).toBeNull();
+		});
+
+		it("should persist messages to JSONL file", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			manager.new();
+			manager.save("user", "Hello");
+			manager.save("assistant", "Response");
+
+			const sessionFile = manager.getSessionFile();
+			expect(sessionFile).toBeDefined();
+			expect(existsSync(sessionFile!)).toBe(true);
+
+			const content = readFileSync(sessionFile!, "utf-8");
+			const lines = content.trim().split("\n");
+			expect(lines.length).toBe(2);
+
+			const msg1 = JSON.parse(lines[0]);
+			expect(msg1.role).toBe("user");
+			expect(msg1.content).toBe("Hello");
+		});
+
+		it("should clear session", async () => {
+			const { SessionManager } = await import("./session.js");
+			const manager = new SessionManager(SESSION_DIR, true);
+			manager.new();
+			manager.save("user", "Test");
+
+			manager.clear();
+			expect(manager.hasActiveSession()).toBe(false);
+			expect(manager.getMessages().length).toBe(0);
+		});
+	});
+
+	describe("formatSessionList", () => {
+		it("should format empty session list", async () => {
+			const { formatSessionList } = await import("./session.js");
+			const result = formatSessionList([]);
+			expect(result).toBe("No sessions found.");
+		});
+
+		it("should format session list with sessions", async () => {
+			const { formatSessionList } = await import("./session.js");
+			const sessions = [
+				{
+					path: "/test/session.jsonl",
+					project: "test-project",
+					date: "2026-03-30",
+					messageCount: 5,
+					lastModified: new Date(),
+				},
+			];
+			const result = formatSessionList(sessions);
+			expect(result).toContain("test-project");
+			expect(result).toContain("5 messages");
+		});
+	});
+});
