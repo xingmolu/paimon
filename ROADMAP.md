@@ -77,7 +77,7 @@ Planned improvements for evo.
 - [x] Create src/tools/index.ts to re-export tools
 - [x] Extract meta tools (plan, assess, reflect, checkpoint, parallel, hook) to separate files
 - [x] Extract module tools (stuck, repomap, tom) to separate files
-- [ ] Update agent.ts to use extracted tools (remove inline definitions)
+- [x] Update agent.ts to use extracted tools (remove inline definitions)
 - [ ] Extract createWrappedTools to src/wrap.ts
 - [ ] Extract buildSystemPrompt to src/prompt.ts
 - [ ] Slim down src/agent.ts to under 300 lines
