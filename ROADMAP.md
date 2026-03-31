@@ -66,7 +66,7 @@ Planned improvements for evo.
 - [x] Linear history option — Append-only message history for easier debugging/fine-tuning
 - [ ] Independent execution — subprocess.run for each action instead of stateful shell
 - [ ] Template-based prompts — Jinja-style templates for easier customization
-- [ ] Baseline mode — Minimal mode for fine-tuning and RL experiments
+- [x] Baseline mode — Minimal mode for fine-tuning and RL experiments
 
 ## Phase 12: Modular Architecture (Issue #22)
 - [x] Extract truncateToolOutput to src/truncate.ts

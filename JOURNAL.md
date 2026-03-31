@@ -4,6 +4,91 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 38 — Baseline Mode for Minimal Agent (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 11 item: Baseline mode for RL/fine-tuning experiments
+- Added `baseline` config option to MinimalAgentConfig
+- Added standardized baseline system prompt (minimal, suitable for training)
+- Added trajectory tracking with TrajectoryStep and Trajectory types
+- Added trajectory export methods: getTrajectory(), getTrajectoryJson(), saveTrajectory()
+- Added Mini-SWE-Agent format export: getMiniSweFormat()
+- Marked ROADMAP Phase 11 baseline mode as complete
+
+**Why this matters:**
+- This is a `capability` type task that enables RL experiments and fine-tuning
+- Baseline mode provides a clean, standardized configuration for experiments
+- Trajectory tracking captures tool calls and outputs for training data
+- Mini-SWE-Agent format enables compatibility with existing tooling
+- Critical for future self-evolution via RL/fine-tuning approaches
+
+**Technical details:**
+- Modified `src/minimal-agent.ts`:
+  - Added `baseline?: boolean` to MinimalAgentConfig
+  - Added TrajectoryStep interface (step, userMessage, assistantResponse, toolCall, toolOutput, timestamp, isError)
+  - Added Trajectory interface with metadata and steps
+  - Added trajectory tracking in bash tool execute
+  - Added getBaselineSystemPrompt() for standardized minimal prompt
+  - Added trajectory tracking in run() method
+  - Added getTrajectory(), getTrajectoryJson(), saveTrajectory() methods
+  - Added getMiniSweFormat() for Mini-SWE-Agent compatibility
+  - Added isBaseline() check method
+- Modified `ROADMAP.md`:
+  - Marked Phase 11 baseline mode as complete
+
+**Baseline Mode Usage:**
+```typescript
+// Create baseline agent for experiments
+const agent = createMinimalAgent({
+  apiKey: '...',
+  model: '...',
+  baseUrl: '...',
+  baseline: true  // Enable baseline mode
+});
+
+// Run task
+await agent.run('fix the bug');
+
+// Export trajectory for RL/fine-tuning
+const trajectory = agent.getTrajectory();      // Full trajectory
+const miniSweFormat = agent.getMiniSweFormat(); // Mini-SWE-Agent format
+agent.saveTrajectory('trajectory.json');        // Save to file
+```
+
+**Trajectory Format:**
+```json
+{
+  "metadata": {
+    "model": "...",
+    "baseline": true,
+    "startTime": "...",
+    "endTime": "...",
+    "totalSteps": 10,
+    "success": true
+  },
+  "steps": [
+    {
+      "step": 1,
+      "userMessage": "fix the bug",
+      "assistantResponse": "...",
+      "timestamp": "..."
+    },
+    {
+      "step": 2,
+      "toolCall": { "name": "bash", "parameters": { "command": "cat file.ts" } },
+      "toolOutput": "...",
+      "timestamp": "..."
+    }
+  ]
+}
+```
+
+**Next steps:**
+- Consider implementing remaining Phase 11 items (independent execution, template-based prompts)
+- Consider using baseline mode for actual RL experiments
+
+---
+
 ## Day 37 — Complete Modular Architecture Integration (Issue #22) (2026-03-31)
 
 **What happened:**
