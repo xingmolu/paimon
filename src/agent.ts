@@ -1,9 +1,8 @@
 import { execSync, spawn } from "node:child_process";
 import { setMaxListeners } from "node:events";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import http from "node:http";
 import https from "node:https";
-import { join } from "node:path";
 
 // Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
 setMaxListeners(100);
@@ -24,8 +23,9 @@ import {
 	formatCheckpoint,
 	formatCheckpointList,
 } from "./checkpoint.js";
-import { type CompactionConfig, ContextManager } from "./compaction.js";
+import { ContextManager } from "./compaction.js";
 import { loadContextFiles } from "./context.js";
+import { extractErrorPatterns } from "./errors.js";
 import {
 	type HookContext,
 	type HookManager,
@@ -35,6 +35,7 @@ import {
 } from "./hooks.js";
 import { RepoMap, generateRepoMap } from "./repomap.js";
 import type { SessionManager } from "./session.js";
+import { buildSkillsIndex } from "./skills.js";
 import {
 	type HistoryMessage,
 	type LoopType,
@@ -49,350 +50,25 @@ import {
 	formatConsultation,
 	formatStats,
 } from "./tom.js";
+import type {
+	AssessmentResult,
+	ErrorMessage,
+	ErrorPattern,
+	PaimonConfig,
+	ParallelResult,
+	ParallelTaskResult,
+	PlanState,
+	ReflectionResult,
+} from "./types.js";
 
-/**
- * Plan state for multi-step reasoning
- */
-interface PlanState {
-	steps: Array<{
-		id: number;
-		description: string;
-		status: "pending" | "in_progress" | "completed" | "skipped";
-		notes?: string;
-	}>;
-	currentStep: number;
-	createdAt: string;
-	updatedAt: string;
-}
+// Re-export PaimonConfig for backward compatibility
+export type { PaimonConfig } from "./types.js";
 
 // Global plan state (shared across agent runs)
 let currentPlan: PlanState | null = null;
 
 // Global checkpoint manager (shared across agent runs)
 const checkpointManager = new CheckpointManager();
-
-/**
- * Assessment result for self-review
- */
-interface AssessmentResult {
-	buildStatus: "pass" | "fail" | "unknown";
-	testStatus: "pass" | "fail" | "unknown";
-	lintStatus: "pass" | "fail" | "unknown";
-	changedFiles: string[];
-	timestamp: string;
-	recommendations: string[];
-	attempts: number;
-	errorPatterns?: ErrorPattern[];
-}
-
-/**
- * Reflection result for learning from failures
- */
-interface ReflectionResult {
-	context: string;
-	insight: string;
-	action: string;
-	formattedEntry: string;
-	writtenToMemory: boolean;
-}
-
-/**
- * Extracted error pattern from build/test output
- */
-interface ErrorPattern {
-	type: "typescript" | "test" | "lint" | "runtime";
-	file?: string;
-	line?: number;
-	message: string;
-	suggestion: string;
-	/** Confidence score 0-100 (higher = more confident this is a real issue) */
-	confidence: number;
-}
-
-/**
- * Result from a parallel task execution
- */
-interface ParallelTaskResult {
-	name: string;
-	status: "success" | "failed" | "timeout";
-	exitCode: number | null;
-	output: string;
-	error?: string;
-	duration: number;
-}
-
-/**
- * Overall result from parallel tool
- */
-interface ParallelResult {
-	success: boolean;
-	results: ParallelTaskResult[];
-	totalDuration: number;
-	successCount: number;
-	failedCount: number;
-	timedOutCount: number;
-}
-
-/**
- * Extract common error patterns from build/test output
- * Each pattern includes a confidence score (0-100):
- * - 100: Absolutely certain, definitely real
- * - 75-99: Highly confident, real and important
- * - 50-74: Moderately confident, real but minor
- * - 25-49: Somewhat confident, might be real
- * - 0-24: Not confident, likely false positive
- */
-function extractErrorPatterns(output: string): ErrorPattern[] {
-	const patterns: ErrorPattern[] = [];
-
-	// TypeScript errors: "src/file.ts(10,5): error TS1234: message"
-	// High confidence (90-100) because error codes are definitive
-	const tsErrorRegex = /([^\s(]+)\((\d+),(\d+)\):\s*error\s+(TS\d+):\s*(.+)/g;
-	for (const match of output.matchAll(tsErrorRegex)) {
-		const tsCode = match[4];
-		// Known error codes get higher confidence
-		const knownCodes = [
-			"TS2304",
-			"TS2322",
-			"TS2339",
-			"TS2345",
-			"TS2769",
-			"TS18048",
-			"TS2531",
-			"TS2341",
-			"TS2307",
-		];
-		const confidence = knownCodes.includes(tsCode) ? 95 : 90;
-		patterns.push({
-			type: "typescript",
-			file: match[1],
-			line: Number.parseInt(match[2], 10),
-			message: `TS${tsCode}: ${match[5]}`,
-			suggestion: getSuggestionForTsError(tsCode, match[5]),
-			confidence,
-		});
-	}
-
-	// Test failures: "FAIL src/file.test.ts > test name"
-	// Medium-high confidence (80) - test names might be misleading
-	const testFailRegex = /FAIL\s+([^\s>]+)\s*>\s*(.+)/g;
-	for (const match of output.matchAll(testFailRegex)) {
-		patterns.push({
-			type: "test",
-			file: match[1],
-			message: `Test failed: ${match[2]}`,
-			suggestion: "Check test assertions and ensure the code matches expected behavior",
-			confidence: 80,
-		});
-	}
-
-	// Assertion errors: "AssertionError: expected X to equal Y"
-	// High confidence (85) because assertion failures are definitive
-	const assertRegex = /AssertionError:\s*(.+)/g;
-	for (const match of output.matchAll(assertRegex)) {
-		patterns.push({
-			type: "test",
-			message: match[1],
-			suggestion: "Review the assertion and fix the expected or actual value",
-			confidence: 85,
-		});
-	}
-
-	// Lint errors: "src/file.ts:10:5: error message"
-	// High confidence (85-95) - lint rules are deterministic
-	const lintErrorRegex = /([^\s:]+):(\d+):(\d+):\s*(.+)/g;
-	for (const match of output.matchAll(lintErrorRegex)) {
-		if (match[1].endsWith(".ts") || match[1].endsWith(".js")) {
-			// Severity-based confidence: "error" is higher than "warning"
-			const severity = match[4].toLowerCase().includes("error") ? 95 : 85;
-			patterns.push({
-				type: "lint",
-				file: match[1],
-				line: Number.parseInt(match[2], 10),
-				message: match[4],
-				suggestion: "Run `npm run lint -- --fix` to auto-fix or manually correct the issue",
-				confidence: severity,
-			});
-		}
-	}
-
-	// Cannot find module errors
-	// Very high confidence (95) - module resolution is definitive
-	const moduleRegex = /Cannot find module ['"]([^'"]+)['"]/g;
-	for (const match of output.matchAll(moduleRegex)) {
-		patterns.push({
-			type: "typescript",
-			message: `Cannot find module '${match[1]}'`,
-			suggestion: `Install the module with 'npm install ${match[1]}' or check the import path`,
-			confidence: 95,
-		});
-	}
-
-	// Type 'X' is not assignable to type 'Y'
-	// High confidence (80) - type mismatches are usually real issues
-	const typeRegex = /Type '([^']+)' is not assignable to type '([^']+)'/g;
-	for (const match of output.matchAll(typeRegex)) {
-		patterns.push({
-			type: "typescript",
-			message: `Type '${match[1]}' is not assignable to type '${match[2]}'`,
-			suggestion: "Add type conversion or fix the type definition",
-			confidence: 80,
-		});
-	}
-
-	return patterns;
-}
-
-/**
- * Get suggestion for TypeScript error code
- */
-function getSuggestionForTsError(code: string, _message: string): string {
-	const suggestions: Record<string, string> = {
-		TS2304: "The variable or module is not defined. Check imports and spelling.",
-		TS2322: "Type mismatch. Check the expected type and provide the correct value.",
-		TS2339:
-			"Property does not exist on type. Check if the property name is correct or add type declaration.",
-		TS2345: "Argument type is incorrect. Check function signature and argument types.",
-		TS2769: "No overload matches this call. Check function arguments and types.",
-		TS18048: "Variable may be undefined. Add null check or type guard.",
-		TS2531: "Object is possibly null. Add null check before accessing property.",
-		TS2341: "Property is private. Use a public accessor or change visibility.",
-		TS2307: "Cannot find module. Check if the module is installed and import path is correct.",
-	};
-	return suggestions[code] || "Review the TypeScript error and fix accordingly.";
-}
-
-export interface PaimonConfig {
-	apiKey: string;
-	model: string;
-	baseUrl: string;
-	skillsDir?: string;
-	memoryPath?: string;
-	mode?: "chat" | "evolve";
-	/** Enable context compaction for long sessions */
-	compaction?: Partial<CompactionConfig> | false;
-}
-
-interface ErrorMessage {
-	errorMessage?: string;
-}
-
-/**
- * Parse YAML frontmatter from a SKILL.md file
- */
-function parseFrontmatter(content: string): { name?: string; description?: string } {
-	let name: string | undefined;
-	let description: string | undefined;
-
-	let inFrontmatter = false;
-	for (const line of content.split("\n")) {
-		if (line === "---") {
-			inFrontmatter = !inFrontmatter;
-			continue;
-		}
-		if (inFrontmatter) {
-			if (line.startsWith("name:")) {
-				name = line.slice(5).trim();
-			} else if (line.startsWith("description:")) {
-				description = line.slice(12).trim();
-			}
-		}
-	}
-
-	return { name, description };
-}
-
-/**
- * Build a skills index from the skills directory.
- * Uses progressive disclosure: only includes name and description,
- * not full skill content. Agent loads full skill on-demand.
- *
- * Supports multiple skill roots: project skills + superpowers skills
- */
-function buildSkillsIndex(skillsDir: string): string {
-	if (!existsSync(skillsDir)) return "";
-
-	const entries = readdirSync(skillsDir, { withFileTypes: true });
-	const skills: Array<{ name: string; description: string; dir: string; source?: string }> = [];
-
-	for (const entry of entries) {
-		if (entry.isDirectory()) {
-			const skillFile = join(skillsDir, entry.name, "SKILL.md");
-			if (existsSync(skillFile)) {
-				const content = readFileSync(skillFile, "utf-8");
-				const { name, description } = parseFrontmatter(content);
-
-				// Check if this is a superpowers skill (nested directory)
-				const isSuperpowers = entry.name === "superpowers";
-
-				if (isSuperpowers) {
-					// Scan superpowers subdirectory for skills
-					const superpowersDir = join(skillsDir, "superpowers");
-					const superpowersEntries = readdirSync(superpowersDir, { withFileTypes: true });
-
-					for (const spEntry of superpowersEntries) {
-						if (spEntry.isDirectory()) {
-							const spSkillFile = join(superpowersDir, spEntry.name, "SKILL.md");
-							if (existsSync(spSkillFile)) {
-								const spContent = readFileSync(spSkillFile, "utf-8");
-								const { name: spName, description: spDescription } = parseFrontmatter(spContent);
-								skills.push({
-									name: spName || spEntry.name,
-									description: spDescription || "No description",
-									dir: `superpowers/${spEntry.name}`,
-									source: "obra/superpowers",
-								});
-							}
-						}
-					}
-				} else {
-					// Regular project skill
-					skills.push({
-						name: name || entry.name,
-						description: description || "No description",
-						dir: entry.name,
-						source: "project",
-					});
-				}
-			}
-		}
-	}
-
-	if (skills.length === 0) return "";
-
-	// Generate XML format per Agent Skills standard
-	// Separate project skills from superpowers for clarity
-	let xml = "<skills>\n";
-
-	// Project skills first
-	const projectSkills = skills.filter((s) => s.source === "project");
-	for (const skill of projectSkills) {
-		xml += "<skill>\n";
-		xml += `<name>${skill.name}</name>\n`;
-		xml += `<description>${skill.description}</description>\n`;
-		xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
-		xml += "<source>project</source>\n";
-		xml += "</skill>\n";
-	}
-
-	// Superpowers skills
-	const superpowersSkills = skills.filter((s) => s.source === "obra/superpowers");
-	if (superpowersSkills.length > 0) {
-		xml += "\n<!-- Superpowers skills from obra/superpowers -->\n";
-		for (const skill of superpowersSkills) {
-			xml += "<skill>\n";
-			xml += `<name>${skill.name}</name>\n`;
-			xml += `<description>${skill.description}</description>\n`;
-			xml += `<path>skills/${skill.dir}/SKILL.md</path>\n`;
-			xml += "<source>obra/superpowers</source>\n";
-			xml += "</skill>\n";
-		}
-	}
-
-	xml += "</skills>";
-
-	return xml;
-}
 
 const tools: AgentTool[] = [
 	{
