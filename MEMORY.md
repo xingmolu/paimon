@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Fix Singularity git log format bug - Enable self-awareness tracking | ~5m | ✅ | none | No | Medium | evolve | self-awareness-tracking |
 | 2026-03-31 | capability | Evolution Pattern Mining - Mine successful patterns from session history for task recommendations | ~15m | ✅ | lint (fixed) | No | High | evolve, plan-architecture | task-selection-intelligence |
 | 2026-03-31 | capability | Error Pattern Learning - Learn from error patterns across sessions for automatic solutions | ~15m | ✅ | lint (fixed) | No | High | evolve | error-recovery |
 | 2026-03-31 | capability | Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories | ~15m | ✅ | lint (fixed) | No | High | evolve, research | debugging-fine-tuning |
@@ -63,14 +64,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 29/36 = 81% (last iteration)
+- First Try Success Rate: 30/37 = 81%
 - Average Time: ~14 minutes
-- Rework Rate: 8/36 = 22%
+- Rework Rate: 8/37 = 22%
 
 ### Capability Metrics
-- Capability Tasks: 35/36 = 97%
-- High Impact Capabilities: 27/35 = 77%
-- Capability Velocity: 35 capabilities in 2 days = 17.5/day
+- Capability Tasks: 36/37 = 97%
+- High Impact Capabilities: 27/36 = 75%
+- Capability Velocity: 36 capabilities in 2 days = 18/day
 
 ### Error Analysis
 - TypeScript Errors: 2

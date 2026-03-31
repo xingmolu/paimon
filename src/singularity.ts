@@ -289,8 +289,8 @@ export class SingularityTracker {
 
 		// Get commit history with authors
 		const maxCommits = this.config.maxCommits || 1000;
-		const logFormat = "--format=%H %an";
-		let logCommand = `git log ${logFormat} -n ${maxCommits}`;
+		// Note: Format must be quoted as single argument to avoid git parsing %an as revision
+		let logCommand = `git log --format="%H %an" -n ${maxCommits}`;
 
 		// Add file pattern filter if specified
 		if (this.config.filePatterns && this.config.filePatterns.length > 0) {
