@@ -63,7 +63,7 @@ Planned improvements for evo.
 
 ## Phase 11: Minimal Agent Mode (Mini-SWE-Agent Pattern)
 - [x] Minimal agent mode — Optional simpler agent with only bash tool (inspired by Mini-SWE-Agent)
-- [ ] Linear history option — Append-only message history for easier debugging/fine-tuning
+- [x] Linear history option — Append-only message history for easier debugging/fine-tuning
 - [ ] Independent execution — subprocess.run for each action instead of stateful shell
 - [ ] Template-based prompts — Jinja-style templates for easier customization
 - [ ] Baseline mode — Minimal mode for fine-tuning and RL experiments

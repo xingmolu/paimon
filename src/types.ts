@@ -83,6 +83,15 @@ export interface ParallelResult {
 }
 
 /**
+ * Message in linear history (for debugging/fine-tuning)
+ */
+export interface LinearMessage {
+	role: "user" | "assistant" | "system";
+	content: string;
+	timestamp?: string;
+}
+
+/**
  * Paimon agent configuration
  */
 export interface PaimonConfig {
@@ -94,6 +103,8 @@ export interface PaimonConfig {
 	mode?: "chat" | "evolve";
 	/** Enable context compaction for long sessions */
 	compaction?: Partial<CompactionConfig> | false;
+	/** Enable linear message history for debugging/fine-tuning (Mini-SWE-Agent pattern) */
+	linearHistory?: boolean;
 }
 
 /**

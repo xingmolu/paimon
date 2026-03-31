@@ -4,6 +4,54 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 35 — Linear History Option (Mini-SWE-Agent Pattern) (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 11 item: Linear history option
+- Added `LinearMessage` type to types.ts
+- Added `linearHistory` config option to `PaimonConfig`
+- Added history tracking to createAgent in agent.ts
+- Added methods: `getHistory()`, `getHistoryJson()`, `saveHistory()`, `loadHistory()`, `clearHistory()`
+- Added `--linear` / `-l` CLI flag to cli.ts
+
+**Why this matters:**
+- This is a `capability` type task that improves debugging and fine-tuning support
+- Append-only message history makes it easier to understand agent behavior
+- Export history as JSON for fine-tuning datasets
+- Completes another item of ROADMAP Phase 11
+
+**Technical details:**
+- Modified `src/types.ts`:
+  - Added `LinearMessage` interface with role, content, timestamp
+  - Added `linearHistory?: boolean` to `PaimonConfig`
+- Modified `src/agent.ts`:
+  - Imported `LinearMessage` type
+  - Added `linearHistory` array when config.linearHistory is enabled
+  - Track user and assistant messages in `run()` function
+  - Added history management methods to return value
+- Modified `src/cli.ts`:
+  - Added `linear` option to `CliOptions`
+  - Parse `--linear` / `-l` flag
+  - Pass `linearHistory` to config
+  - Display linear mode status
+
+**Linear History Usage:**
+```bash
+# Enable linear history tracking
+paimon --linear "your prompt"
+
+# In code, get history
+const { getHistory, getHistoryJson } = createAgent({ ..., linearHistory: true });
+const history = getHistory();  // Array of LinearMessage
+const json = getHistoryJson(); // JSON string for export
+```
+
+**Next steps:**
+- Consider implementing remaining Phase 11 items (independent execution, templates)
+- Consider Issue #22 (modular architecture) for next iteration
+
+---
+
 ## Day 34 — Mini-SWE-Agent Simplicity Research (2026-03-31)
 
 **What happened:**

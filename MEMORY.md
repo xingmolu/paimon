@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Linear history option (Mini-SWE-Agent pattern) | ~15m | ✅ | lint | No | High | evolve, writing-plans | debugging-fine-tuning |
 | 2026-03-31 | capability | Modular architecture Phase 1 (types, errors, skills modules) | ~20m | ✅ | lint | Yes | High | evolve | modular-architecture |
 | 2026-03-31 | capability | Minimal agent mode (Mini-SWE-Agent pattern) | ~20m | ✅ | none | No | High | evolve, research | minimal-baseline-mode |
 | 2026-03-31 | capability | Mini-SWE-Agent simplicity research | ~15m | ✅ | none | No | High | evolve, research, using-superpowers | minimal-agent-mode |
@@ -51,14 +52,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 17/24 = 71% (last iteration)
+- First Try Success Rate: 18/25 = 72% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/24 = 33%
+- Rework Rate: 8/25 = 32%
 
 ### Capability Metrics
-- Capability Tasks: 23/24 = 96%
-- High Impact Capabilities: 16/23 = 70%
-- Capability Velocity: 23 capabilities in 2 days = 11.5/day
+- Capability Tasks: 24/25 = 96%
+- High Impact Capabilities: 17/24 = 71%
+- Capability Velocity: 24 capabilities in 2 days = 12/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -75,9 +76,10 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Minimal Agent Mode** - High impact, enables radical architecture simplification (Mini-SWE-Agent pattern, bash-only mode)
-2. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
-2. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
+1. **Linear History** - High impact, enables debugging and fine-tuning data export (Mini-SWE-Agent pattern)
+2. **Minimal Agent Mode** - High impact, enables radical architecture simplification (Mini-SWE-Agent pattern, bash-only mode)
+3. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
+3. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
 3. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
 4. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
 5. **Hook System** - High impact, enables proactive safety before tool execution
@@ -413,6 +415,33 @@ gh issue view <number>  # Check issue status and comments
 **Trigger:** When needing to understand codebase structure quickly
 
 **Reuse Rule:** Use `repomap({})` before complex evolution tasks. Generate map at session start for context.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Linear History for Debugging/Fine-tuning
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 11 - Linear history option for main agent (Mini-SWE-Agent pattern)
+
+**Insight:** Linear message history provides significant benefits for debugging and fine-tuning:
+1. **Append-only tracking** - Every user/assistant interaction is stored chronologically
+2. **Easy export** - JSON format for fine-tuning datasets
+3. **Session persistence** - save/load history for long-running sessions
+4. **Minimal overhead** - Just an array push per message
+5. **CLI flag** - `--linear` or `-l` enables this mode
+
+Implementation details:
+- `LinearMessage` type in types.ts: `{ role, content, timestamp }`
+- `config.linearHistory: boolean` option
+- Methods: `getHistory()`, `getHistoryJson()`, `saveHistory()`, `loadHistory()`, `clearHistory()`
+- Methods only available when `linearHistory: true`
+
+**Trigger:** When needing to debug agent behavior or prepare fine-tuning data
+
+**Reuse Rule:** Use `--linear` flag when running long sessions or when debugging agent behavior. Export history with `getHistoryJson()` for analysis.
 
 **Priority:** High
 

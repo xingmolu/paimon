@@ -54,6 +54,7 @@ import type {
 	AssessmentResult,
 	ErrorMessage,
 	ErrorPattern,
+	LinearMessage,
 	PaimonConfig,
 	ParallelResult,
 	ParallelTaskResult,
@@ -2183,6 +2184,16 @@ export function createAgent(
 	run: (prompt: string, verbose?: boolean, onStream?: (delta: string) => void) => Promise<string>;
 	/** Get context status for debugging */
 	getContextStatus: () => { messages: number; tokens: number; hasSummary: boolean };
+	/** Get linear message history (for debugging/fine-tuning) - only when linearHistory is enabled */
+	getHistory?: () => LinearMessage[];
+	/** Get history as JSON string - only when linearHistory is enabled */
+	getHistoryJson?: () => string;
+	/** Save history to file - only when linearHistory is enabled */
+	saveHistory?: (path: string) => void;
+	/** Load history from file - only when linearHistory is enabled */
+	loadHistory?: (path: string) => void;
+	/** Clear history (keep system message) - only when linearHistory is enabled */
+	clearHistory?: () => void;
 } {
 	const model = createModel(config);
 	// Session manager is stored for potential future use
@@ -2197,10 +2208,23 @@ export function createAgent(
 	contextManager.setModel(model);
 	contextManager.setApiKeyGetter(() => config.apiKey);
 
+	// Linear message history for debugging/fine-tuning (Mini-SWE-Agent pattern)
+	const linearHistoryEnabled = config.linearHistory === true;
+	const linearHistory: LinearMessage[] = [];
+
 	let estimatedToolOutputTokens = 0;
 
 	// Initial system prompt without compaction summary
 	const systemPrompt = buildSystemPrompt(config, null);
+
+	// Add system message to linear history if enabled
+	if (linearHistoryEnabled) {
+		linearHistory.push({
+			role: "system",
+			content: systemPrompt,
+			timestamp: new Date().toISOString(),
+		});
+	}
 
 	const agent = new Agent();
 	agent.setModel(model);
@@ -2222,6 +2246,11 @@ export function createAgent(
 	): Promise<string> => {
 		// Track user message
 		contextManager.addMessage("user", prompt);
+
+		// Add user message to linear history if enabled
+		if (linearHistoryEnabled) {
+			linearHistory.push({ role: "user", content: prompt, timestamp: new Date().toISOString() });
+		}
 
 		// Check if compaction is needed (include tool output estimates)
 		const contextStatus = contextManager.getStatus();
@@ -2298,6 +2327,15 @@ export function createAgent(
 					const response = outputs.join("");
 					contextManager.addMessage("assistant", response);
 
+					// Add assistant message to linear history if enabled
+					if (linearHistoryEnabled) {
+						linearHistory.push({
+							role: "assistant",
+							content: response,
+							timestamp: new Date().toISOString(),
+						});
+					}
+
 					if (verbose) {
 						const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 						console.log(`[DEBUG] Agent completed in ${elapsed}s`);
@@ -2326,6 +2364,35 @@ export function createAgent(
 		agent,
 		run,
 		getContextStatus: () => contextManager.getStatus(),
+		// Linear history methods - only available when linearHistory is enabled
+		...(linearHistoryEnabled && {
+			getHistory: () => [...linearHistory],
+			getHistoryJson: () => JSON.stringify(linearHistory, null, 2),
+			saveHistory: (path: string) => {
+				writeFileSync(path, JSON.stringify(linearHistory, null, 2), "utf-8");
+			},
+			loadHistory: (path: string) => {
+				if (existsSync(path)) {
+					const data = readFileSync(path, "utf-8");
+					const loaded = JSON.parse(data) as LinearMessage[];
+					linearHistory.length = 0;
+					linearHistory.push(...loaded);
+					// Re-set system prompt from loaded history
+					const systemMsg = loaded.find((m) => m.role === "system");
+					if (systemMsg) {
+						agent.setSystemPrompt(systemMsg.content);
+					}
+				}
+			},
+			clearHistory: () => {
+				// Keep system message, clear user/assistant messages
+				const systemMsg = linearHistory.find((m) => m.role === "system");
+				linearHistory.length = 0;
+				if (systemMsg) {
+					linearHistory.push(systemMsg);
+				}
+			},
+		}),
 	};
 }
 

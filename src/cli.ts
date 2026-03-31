@@ -28,6 +28,7 @@ interface CliOptions {
 	file?: string;
 	prompt?: string;
 	minimal?: boolean;
+	linear?: boolean;
 }
 
 function parseArgs(args: string[]): CliOptions {
@@ -85,6 +86,14 @@ function parseArgs(args: string[]): CliOptions {
 		if (shortIdx !== -1) args.splice(shortIdx, 1);
 	}
 
+	// Check for --linear flag (linear history for debugging/fine-tuning)
+	if (args.includes("--linear") || args.includes("-l")) {
+		options.linear = true;
+		args.splice(args.indexOf("--linear"), 1);
+		const shortIdx = args.indexOf("-l");
+		if (shortIdx !== -1) args.splice(shortIdx, 1);
+	}
+
 	// Check for --file
 	const fileIndex = args.indexOf("--file");
 	if (fileIndex !== -1 && args[fileIndex + 1]) {
@@ -122,18 +131,18 @@ async function main() {
 			process.exit(1);
 		}
 		const prompt = readFileSync(options.file, "utf-8");
-		await runOnce(prompt, options.mode, options.session, options.minimal);
+		await runOnce(prompt, options.mode, options.session, options.minimal, options.linear);
 		return;
 	}
 
 	// Run with direct prompt
 	if (options.prompt) {
-		await runOnce(options.prompt, options.mode, options.session, options.minimal);
+		await runOnce(options.prompt, options.mode, options.session, options.minimal, options.linear);
 		return;
 	}
 
 	// REPL mode
-	await runRepl(options.mode, options.session, options.minimal);
+	await runRepl(options.mode, options.session, options.minimal, options.linear);
 }
 
 async function runOnce(
@@ -141,8 +150,13 @@ async function runOnce(
 	mode: "chat" | "evolve",
 	sessionMode: "new" | "continue" | "none",
 	minimal?: boolean,
+	linear?: boolean,
 ) {
 	const config = getConfig(mode);
+	// Enable linear history if requested
+	if (linear) {
+		config.linearHistory = true;
+	}
 	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
 
@@ -152,6 +166,11 @@ async function runOnce(
 	if (minimal) {
 		console.log(
 			`${COLORS.dim}  minimal: enabled (bash-only mode, Mini-SWE-Agent pattern)${COLORS.reset}`,
+		);
+	}
+	if (linear) {
+		console.log(
+			`${COLORS.dim}  linear: enabled (append-only history for debugging/fine-tuning)${COLORS.reset}`,
 		);
 	}
 	if (sessionMode === "continue" && sessionManager.continue()) {
@@ -198,8 +217,13 @@ async function runRepl(
 	mode: "chat" | "evolve",
 	sessionMode: "new" | "continue" | "none",
 	minimal?: boolean,
+	linear?: boolean,
 ) {
 	const config = getConfig(mode);
+	// Enable linear history if requested
+	if (linear) {
+		config.linearHistory = true;
+	}
 	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
 
@@ -225,6 +249,11 @@ async function runRepl(
 	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
 	if (minimal) {
 		console.log(`${COLORS.dim}  minimal: enabled (bash-only mode)${COLORS.reset}`);
+	}
+	if (linear) {
+		console.log(
+			`${COLORS.dim}  linear: enabled (append-only history for debugging/fine-tuning)${COLORS.reset}`,
+		);
 	}
 
 	// Handle session
