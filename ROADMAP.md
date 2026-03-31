@@ -90,6 +90,13 @@ Planned improvements for evo.
 - [x] File-level analysis — Analyze individual files for bot vs human authorship
 - [x] Author breakdown — Track contributions by each author
 
+## Phase 14: RAG Context Enrichment (PR-Agent Pattern)
+- [x] RagModule — Keyword-based semantic search over past sessions, learnings, and reflections
+- [x] rag tool — Tool for searching and enriching context before tasks
+- [x] TF-IDF scoring — Term frequency-inverse document frequency for relevance ranking
+- [x] Inverted index — Efficient keyword search with term frequencies
+- [x] Context enrichment — Get relevant past context for new tasks
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

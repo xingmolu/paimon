@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings | ~20m | ✅ | lint (fixed) | No | High | evolve, research | context-reuse |
 | 2026-03-31 | capability | Self-authorship tracking (Aider Singularity pattern, 88% metric inspiration) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | self-awareness |
 | 2026-03-31 | capability | Template-based prompts (Mini-SWE-Agent pattern, Jinja-style {{ var }} syntax) | ~12m | ✅ | lint (fixed) | No | High | evolve | prompt-customization |
 | 2026-03-31 | capability | Baseline mode for minimal agent (RL/fine-tuning experiments) | ~10m | ✅ | lint | No | High | evolve | rl-experiments |
@@ -59,14 +60,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 25/32 = 78% (last iteration)
+- First Try Success Rate: 26/33 = 79% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/32 = 25%
+- Rework Rate: 8/33 = 24%
 
 ### Capability Metrics
-- Capability Tasks: 31/32 = 97%
-- High Impact Capabilities: 23/31 = 74%
-- Capability Velocity: 31 capabilities in 2 days = 15.5/day
+- Capability Tasks: 32/33 = 97%
+- High Impact Capabilities: 24/32 = 75%
+- Capability Velocity: 32 capabilities in 2 days = 16/day
 
 ### Error Analysis
 - TypeScript Errors: 2

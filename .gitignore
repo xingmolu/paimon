@@ -29,3 +29,9 @@ memory/
 
 # Coverage
 coverage/
+
+# Test directories
+test-rag/
+test-temp/
+test-sessions/
+test-checkpoints/

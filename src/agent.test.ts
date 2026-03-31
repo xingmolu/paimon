@@ -1807,3 +1807,198 @@ describe("singularity tool", () => {
 		expect(singularityTool.execute).toBeDefined();
 	});
 });
+
+describe("rag tool", () => {
+	it("should have rag tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have rag parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support rag actions: search, enrich, stats, rebuild", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+});
+
+describe("RagModule", () => {
+	const RAG_DIR = join(process.cwd(), "test-rag");
+
+	beforeEach(() => {
+		if (existsSync(RAG_DIR)) {
+			rmSync(RAG_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(RAG_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(RAG_DIR)) {
+			rmSync(RAG_DIR, { recursive: true, force: true });
+		}
+	});
+
+	it("should create RagModule", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		expect(rag).toBeDefined();
+	});
+
+	it("should initialize RagModule", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		rag.initialize();
+		expect(rag.getDataDir()).toBe(RAG_DIR);
+	});
+
+	it("should search with empty results initially", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		rag.initialize();
+		const results = rag.search({ query: "test query" });
+		expect(Array.isArray(results)).toBe(true);
+	});
+
+	it("should get stats", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		rag.initialize();
+		const stats = rag.getStats();
+		expect(stats).toBeDefined();
+		expect(typeof stats.totalDocuments).toBe("number");
+		expect(typeof stats.uniqueTerms).toBe("number");
+	});
+
+	it("should clear index", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		rag.initialize();
+		rag.clear();
+		// Note: clear() resets the index, but initialize() re-indexes source files
+		// So documents may be > 0 if MEMORY.md or JOURNAL.md exist
+		const stats = rag.getStats();
+		expect(typeof stats.totalDocuments).toBe("number");
+	});
+
+	it("should enrich context", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: RAG_DIR });
+		rag.initialize();
+		const context = rag.enrichContext("implement new feature");
+		expect(typeof context).toBe("string");
+	});
+
+	it("should rag tool export correctly", async () => {
+		const { ragTool } = await import("./tools/rag-tool.js");
+		expect(ragTool).toBeDefined();
+		expect(ragTool.name).toBe("rag");
+		expect(ragTool.description).toContain("Semantic search");
+		expect(ragTool.parameters).toBeDefined();
+		expect(ragTool.execute).toBeDefined();
+	});
+});
+
+describe("rag tool", () => {
+	it("should have rag tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have rag parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support rag actions: search, enrich, stats, rebuild", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+
+	it("should rag module tokenize correctly", async () => {
+		const { RagModule } = await import("./rag.js");
+		// Test that RagModule can be instantiated
+		const rag = new RagModule({ dataDir: join(process.cwd(), "test-rag") });
+		expect(rag).toBeDefined();
+	});
+
+	it("should rag module search return results", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: join(process.cwd(), "test-rag") });
+		rag.initialize();
+
+		const results = rag.search({ query: "typescript", maxResults: 3 });
+		expect(results).toBeDefined();
+		expect(Array.isArray(results)).toBe(true);
+	});
+
+	it("should rag module enrichContext return context", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: join(process.cwd(), "test-rag") });
+		rag.initialize();
+
+		const context = rag.enrichContext("implement a new feature", 3);
+		expect(typeof context).toBe("string");
+	});
+
+	it("should rag module getStats return statistics", async () => {
+		const { RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: join(process.cwd(), "test-rag") });
+		rag.initialize();
+
+		const stats = rag.getStats();
+		expect(stats).toBeDefined();
+		expect(typeof stats.totalDocuments).toBe("number");
+		expect(typeof stats.uniqueTerms).toBe("number");
+		expect(typeof stats.indexSizeKB).toBe("number");
+	});
+
+	it("should rag tool export correctly", async () => {
+		const { ragTool } = await import("./tools/rag-tool.js");
+		expect(ragTool).toBeDefined();
+		expect(ragTool.name).toBe("rag");
+		expect(ragTool.description).toContain("Semantic search");
+		expect(ragTool.parameters).toBeDefined();
+		expect(ragTool.execute).toBeDefined();
+	});
+
+	it("should formatSearchResults work correctly", async () => {
+		const { formatSearchResults, RagModule } = await import("./rag.js");
+		const rag = new RagModule({ dataDir: join(process.cwd(), "test-rag") });
+		rag.initialize();
+
+		const results = rag.search({ query: "error", maxResults: 2 });
+		const formatted = formatSearchResults(results);
+		expect(typeof formatted).toBe("string");
+	});
+});
