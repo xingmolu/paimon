@@ -13,21 +13,39 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 
 // Import extracted tool modules
+import { assessTool } from "./assess-tool.js";
+import { checkpointTool } from "./checkpoint-tool.js";
 import { fileTools } from "./file-tools.js";
+import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
+import { parallelTool } from "./parallel-tool.js";
+import { planTool } from "./plan-tool.js";
+import { reflectTool } from "./reflect-tool.js";
+import { repomapTool } from "./repomap-tool.js";
 import { searchTools } from "./search-tools.js";
+import { stuckTool } from "./stuck-tool.js";
+import { tomTool } from "./tom-tool.js";
 
-// Note: The following tools are still defined in agent.ts and will be progressively migrated:
-// - plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom
-// These are imported via the buildTools function below
+// Meta tools that have been extracted
+export const metaTools: AgentTool[] = [
+	planTool,
+	assessTool,
+	reflectTool,
+	checkpointTool,
+	parallelTool,
+	hookTool,
+	stuckTool,
+	repomapTool,
+	tomTool,
+];
 
 /**
  * Build complete tool array for the agent
+ * All tools are now extracted to modules
  *
- * @param metaTools - Meta tools from agent.ts (plan, assess, reflect, etc.)
  * @returns Combined array of all tools
  */
-export function buildTools(metaTools: AgentTool[]): AgentTool[] {
+export function buildTools(): AgentTool[] {
 	return [...fileTools, ...searchTools, httpTool, ...metaTools];
 }
 
@@ -49,5 +67,14 @@ export function buildToolsDescription(tools: AgentTool[]): string {
 
 // Re-export individual tools for direct access
 export { fileTools, searchTools, httpTool };
+export { assessTool } from "./assess-tool.js";
+export { checkpointTool } from "./checkpoint-tool.js";
 export { bashTool, readTool, writeTool, editTool } from "./file-tools.js";
 export { globTool, grepTool, findTool, lsTool } from "./search-tools.js";
+export { hookTool } from "./hook-tool.js";
+export { parallelTool } from "./parallel-tool.js";
+export { planTool, getCurrentPlan, setCurrentPlan } from "./plan-tool.js";
+export { reflectTool } from "./reflect-tool.js";
+export { repomapTool } from "./repomap-tool.js";
+export { stuckTool } from "./stuck-tool.js";
+export { tomTool } from "./tom-tool.js";

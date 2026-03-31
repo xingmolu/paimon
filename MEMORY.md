@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Extract meta tools to separate files (plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom) | ~15m | ✅ | none | No | High | evolve, plan-architecture | modular-tools |
 | 2026-03-31 | capability | Modular architecture Phase 12 foundation (truncate, file-tools, search-tools, http-tool modules) | ~25m | ✅ | lint | No | Medium | evolve, plan-architecture | modular-architecture-phase-12 |
 | 2026-03-31 | capability | Linear history option (Mini-SWE-Agent pattern) | ~15m | ✅ | lint | No | High | evolve, writing-plans | debugging-fine-tuning |
 | 2026-03-31 | capability | Modular architecture Phase 1 (types, errors, skills modules) | ~20m | ✅ | lint | Yes | High | evolve | modular-architecture |
@@ -53,14 +54,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 19/26 = 73% (last iteration)
+- First Try Success Rate: 20/27 = 74% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/26 = 31%
+- Rework Rate: 8/27 = 30%
 
 ### Capability Metrics
-- Capability Tasks: 25/26 = 96%
-- High Impact Capabilities: 17/25 = 68%
-- Capability Velocity: 25 capabilities in 2 days = 12.5/day
+- Capability Tasks: 26/27 = 96%
+- High Impact Capabilities: 18/26 = 69%
+- Capability Velocity: 26 capabilities in 2 days = 13/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -77,6 +78,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Modular Tools Extraction** - High impact, enables codebase maintainability and faster iteration
 1. **Linear History** - High impact, enables debugging and fine-tuning data export (Mini-SWE-Agent pattern)
 2. **Minimal Agent Mode** - High impact, enables radical architecture simplification (Mini-SWE-Agent pattern, bash-only mode)
 3. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
