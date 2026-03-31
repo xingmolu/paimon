@@ -4,6 +4,62 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 36 — Modular Architecture Foundation (Issue #22) (2026-03-31)
+
+**What happened:**
+- Implemented Issue #22 Phase 1: Created modular architecture foundation
+- Created `src/truncate.ts` - Utility for truncating tool output (20 lines)
+- Created `src/tools/` directory with tool modules:
+  - `file-tools.ts` - bash, read, write, edit tools (158 lines)
+  - `search-tools.ts` - glob, grep, find, ls tools (186 lines)
+  - `http-tool.ts` - http tool (117 lines)
+  - `index.ts` - Tool registry and exports (57 lines)
+- Total extracted: 538 lines into separate modules
+- All 115 tests pass with modular architecture
+- Added ROADMAP Phase 12: Modular Architecture
+
+**Why this matters:**
+- This is a `capability` type task that enables sustainable codebase growth
+- Reduces context bloat by separating tools into focused modules
+- Each tool file is easier to understand in isolation
+- Preserves all existing functionality (backward compatible)
+- Foundation for completing full agent.ts extraction in future iterations
+
+**Technical details:**
+- Created `src/truncate.ts`:
+  - `MAX_TOOL_OUTPUT_CHARS` constant (30000)
+  - `truncateToolOutput()` function for safe output truncation
+- Created `src/tools/file-tools.ts`:
+  - `bashTool`, `readTool`, `writeTool`, `editTool` exports
+  - `fileTools` array for easy import
+- Created `src/tools/search-tools.ts`:
+  - `globTool`, `grepTool`, `findTool`, `lsTool` exports
+  - `searchTools` array for easy import
+- Created `src/tools/http-tool.ts`:
+  - `httpTool` export for HTTP requests
+- Created `src/tools/index.ts`:
+  - `buildTools()` to combine extracted + meta tools
+  - `buildToolsDescription()` for system prompts
+- Modified `src/agent.ts`:
+  - Added imports for extracted modules
+  - Updated to use new modules (foundation laid, full extraction in progress)
+- Modified `ROADMAP.md`:
+  - Added Phase 12: Modular Architecture
+  - Marked first 6 items complete
+
+**Current state:**
+- agent.ts: 2587 lines (still has inline tools, extraction in progress)
+- tools/ modules: 538 lines extracted
+- Tests: All 115 pass
+- Build: Passing
+
+**Next steps:**
+- Continue extracting meta tools (plan, assess, reflect, etc.) to separate modules
+- Replace inline tool definitions in agent.ts with imports
+- Complete extraction to achieve <300 line agent.ts goal
+
+---
+
 ## Day 35 — Linear History Option (Mini-SWE-Agent Pattern) (2026-03-31)
 
 **What happened:**

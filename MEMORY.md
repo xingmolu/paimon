@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Modular architecture Phase 12 foundation (truncate, file-tools, search-tools, http-tool modules) | ~25m | ✅ | lint | No | Medium | evolve, plan-architecture | modular-architecture-phase-12 |
 | 2026-03-31 | capability | Linear history option (Mini-SWE-Agent pattern) | ~15m | ✅ | lint | No | High | evolve, writing-plans | debugging-fine-tuning |
 | 2026-03-31 | capability | Modular architecture Phase 1 (types, errors, skills modules) | ~20m | ✅ | lint | Yes | High | evolve | modular-architecture |
 | 2026-03-31 | capability | Minimal agent mode (Mini-SWE-Agent pattern) | ~20m | ✅ | none | No | High | evolve, research | minimal-baseline-mode |
@@ -52,14 +53,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 18/25 = 72% (last iteration)
+- First Try Success Rate: 19/26 = 73% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/25 = 32%
+- Rework Rate: 8/26 = 31%
 
 ### Capability Metrics
-- Capability Tasks: 24/25 = 96%
-- High Impact Capabilities: 17/24 = 71%
-- Capability Velocity: 24 capabilities in 2 days = 12/day
+- Capability Tasks: 25/26 = 96%
+- High Impact Capabilities: 17/25 = 68%
+- Capability Velocity: 25 capabilities in 2 days = 12.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -415,6 +416,34 @@ gh issue view <number>  # Check issue status and comments
 **Trigger:** When needing to understand codebase structure quickly
 
 **Reuse Rule:** Use `repomap({})` before complex evolution tasks. Generate map at session start for context.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Modular Architecture Foundation
+
+**Type:** capability
+
+**Context:** Implementing Issue #22 - Split agent.ts into modular architecture
+
+**Insight:** Extracting tools to separate modules provides clear benefits:
+1. **Reduced context bloat** - Each tool file is smaller and easier to understand
+2. **Better organization** - Tools grouped by category (file, search, http)
+3. **Incremental extraction** - Can extract tools progressively without breaking changes
+4. **Preserved functionality** - All tests pass with extracted modules
+
+Implementation details:
+- `src/truncate.ts` - Utility for truncating tool output (20 lines)
+- `src/tools/file-tools.ts` - bash, read, write, edit tools (158 lines)
+- `src/tools/search-tools.ts` - glob, grep, find, ls tools (186 lines)
+- `src/tools/http-tool.ts` - http tool (117 lines)
+- `src/tools/index.ts` - Tool registry and re-exports (57 lines)
+- Total extracted: 538 lines (from agent.ts which is still 2587 lines with inline tools)
+
+**Trigger:** When agent.ts grows too large and causes context overflow
+
+**Reuse Rule:** Create tools in separate modules, import via tools/index.ts. Extract utilities first (truncate), then file tools, then search tools, then meta tools.
 
 **Priority:** High
 

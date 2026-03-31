@@ -68,6 +68,19 @@ Planned improvements for evo.
 - [ ] Template-based prompts — Jinja-style templates for easier customization
 - [ ] Baseline mode — Minimal mode for fine-tuning and RL experiments
 
+## Phase 12: Modular Architecture (Issue #22)
+- [x] Extract truncateToolOutput to src/truncate.ts
+- [x] Create src/tools/ directory structure
+- [x] Extract file tools (bash, read, write, edit) to src/tools/file-tools.ts
+- [x] Extract search tools (glob, grep, find, ls) to src/tools/search-tools.ts
+- [x] Extract http tool to src/tools/http-tool.ts
+- [x] Create src/tools/index.ts to re-export tools
+- [ ] Extract meta tools (plan, assess, reflect, parallel, hook) to separate files
+- [ ] Extract createWrappedTools to src/wrap.ts
+- [ ] Extract buildSystemPrompt to src/prompt.ts
+- [ ] Slim down src/agent.ts to under 300 lines
+- [ ] All tests pass with modular architecture
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
