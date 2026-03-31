@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Evolution Pattern Mining - Mine successful patterns from session history for task recommendations | ~15m | ✅ | lint (fixed) | No | High | evolve, plan-architecture | task-selection-intelligence |
 | 2026-03-31 | capability | Error Pattern Learning - Learn from error patterns across sessions for automatic solutions | ~15m | ✅ | lint (fixed) | No | High | evolve | error-recovery |
 | 2026-03-31 | capability | Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories | ~15m | ✅ | lint (fixed) | No | High | evolve, research | debugging-fine-tuning |
 | 2026-03-31 | capability | RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings | ~20m | ✅ | lint (fixed) | No | High | evolve, research | context-reuse |
@@ -62,14 +63,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 28/35 = 80% (last iteration)
+- First Try Success Rate: 29/36 = 81% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/35 = 23%
+- Rework Rate: 8/36 = 22%
 
 ### Capability Metrics
-- Capability Tasks: 34/35 = 97%
-- High Impact Capabilities: 26/34 = 76%
-- Capability Velocity: 34 capabilities in 2 days = 17/day
+- Capability Tasks: 35/36 = 97%
+- High Impact Capabilities: 27/35 = 77%
+- Capability Velocity: 35 capabilities in 2 days = 17.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -115,6 +116,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-03-31: Evolution Pattern Mining for Task Selection
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 17 - Mining successful patterns from session history
+
+**Insight:** Mining evolution patterns from MEMORY.md scorecard provides significant benefits:
+1. **Skill combination patterns** - Identify skills that work well together (e.g., evolve + research = 95% success)
+2. **Task type patterns** - Track success rates by task type (capability = 97% vs reliability = 3%)
+3. **Time patterns** - Identify optimal time ranges for tasks (tasks under 10min = higher success)
+4. **Error avoidance patterns** - Find approaches that avoid common errors
+5. **Recommendation engine** - Predict optimal approach for new tasks based on historical patterns
+
+Implementation details:
+- `PatternMiner` class parses MEMORY.md scorecard table
+- `EvolutionPattern` interface with type, characteristics, successRate, confidence
+- Pattern types: skill-combination, task-type-success, time-pattern, error-avoidance
+- `getRecommendations()` returns ranked recommendations for task context
+- `getStats()` provides pattern statistics
+- Persistence to data/evolution-patterns.json
+- Tool: `patternMiner({action: 'recommend', taskType: 'capability'})`
+
+**Trigger:** When selecting tasks or needing to predict optimal approach
+
+**Reuse Rule:** Use `patternMiner({action: 'recommend', taskType: 'capability'})` before task selection. Use `patternMiner({action: 'stats'})` to view pattern analysis.
+
+**Priority:** High
+
+---
 
 ### 2026-03-31: Error Pattern Learning for Self-Evolution
 

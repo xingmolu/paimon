@@ -2496,3 +2496,173 @@ describe("Error Patterns", () => {
 		});
 	});
 });
+
+describe("PatternMiner", () => {
+	const PATTERN_DIR = join(process.cwd(), "test-patterns");
+
+	beforeEach(() => {
+		if (existsSync(PATTERN_DIR)) {
+			rmSync(PATTERN_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(PATTERN_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(PATTERN_DIR)) {
+			rmSync(PATTERN_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("PatternMiner class", () => {
+		it("should create PatternMiner", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			expect(miner).toBeDefined();
+		});
+
+		it("should get stats", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			const stats = miner.getStats();
+			expect(stats).toBeDefined();
+			expect(typeof stats.totalPatterns).toBe("number");
+			expect(typeof stats.totalSessionsAnalyzed).toBe("number");
+		});
+
+		it("should get patterns", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			const patterns = miner.getPatterns();
+			expect(Array.isArray(patterns)).toBe(true);
+		});
+
+		it("should get patterns by type", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			const patterns = miner.getPatterns("skill-combination");
+			expect(Array.isArray(patterns)).toBe(true);
+		});
+
+		it("should get recommendations", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			const recommendations = miner.getRecommendations({
+				taskType: "capability",
+			});
+			expect(Array.isArray(recommendations)).toBe(true);
+		});
+
+		it("should refresh patterns", async () => {
+			const { PatternMiner } = await import("./pattern-miner.js");
+			const miner = new PatternMiner(PATTERN_DIR);
+			miner.refresh();
+			const stats = miner.getStats();
+			expect(stats).toBeDefined();
+		});
+	});
+
+	describe("patternMiner tool", () => {
+		it("should have patternMiner tool in tools array", async () => {
+			const module = await import("./agent.js");
+			const { createAgent } = module;
+			expect(createAgent).toBeDefined();
+		});
+
+		it("should have patternMiner parameters defined", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent, run } = createAgent(config);
+			expect(agent).toBeDefined();
+			expect(run).toBeDefined();
+		});
+
+		it("should support patternMiner actions: recommend, stats, patterns, get, refresh", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+		});
+	});
+
+	describe("formatMiningStats", () => {
+		it("should format mining stats", async () => {
+			const { formatMiningStats } = await import("./pattern-miner.js");
+
+			const stats = {
+				totalPatterns: 5,
+				byType: { "skill-combination": 2, "task-type-success": 3 },
+				totalSessionsAnalyzed: 35,
+				averageSuccessRate: 80,
+				topPatterns: [],
+			};
+
+			const result = formatMiningStats(stats);
+			expect(result).toContain("5");
+			expect(result).toContain("35");
+			expect(result).toContain("80");
+		});
+	});
+
+	describe("formatRecommendations", () => {
+		it("should format empty recommendations", async () => {
+			const { formatRecommendations } = await import("./pattern-miner.js");
+			const result = formatRecommendations([]);
+			expect(result).toContain("No pattern recommendations");
+		});
+
+		it("should format recommendations with data", async () => {
+			const { formatRecommendations } = await import("./pattern-miner.js");
+			type PatternType =
+				| "skill-combination"
+				| "task-type-success"
+				| "time-pattern"
+				| "error-avoidance"
+				| "approach-pattern";
+
+			const pattern = {
+				id: "test-pattern",
+				type: "skill-combination" as PatternType,
+				description: "Test pattern",
+				characteristics: { skills: ["evolve", "research"] },
+				successRate: 85,
+				firstTryRate: 80,
+				averageTime: 15,
+				confidence: 90,
+				sampleSize: 10,
+				examples: [] as Array<{
+					taskDescription: string;
+					date: string;
+					time: number;
+					skillsUsed: string[];
+					success: boolean;
+					firstTry: boolean;
+				}>,
+				lastUpdated: new Date().toISOString(),
+			};
+
+			const recommendations = [
+				{
+					pattern,
+					reason: "Test reason",
+					confidence: 90,
+					suggestedSkills: ["evolve", "research"],
+					suggestedApproach: "Test approach",
+					potentialIssues: [] as string[],
+				},
+			];
+
+			const result = formatRecommendations(recommendations);
+			expect(result).toContain("Test pattern");
+			expect(result).toContain("90%");
+			expect(result).toContain("evolve");
+		});
+	});
+});

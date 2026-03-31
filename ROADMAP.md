@@ -111,6 +111,14 @@ Planned improvements for evo.
 - [x] Solution suggestions — Confidence-based solution recommendations
 - [x] Pattern persistence — Save learned patterns to data/error-patterns.json
 
+## Phase 17: Evolution Pattern Mining
+- [x] PatternMiner module — Mine successful patterns from session history
+- [x] patternMiner tool — Tool for pattern recommendations and analysis
+- [x] Skill combination patterns — Identify skills that work well together
+- [x] Task type patterns — Track success rates by task type
+- [x] Time patterns — Identify optimal time ranges for tasks
+- [x] Error avoidance patterns — Find approaches that avoid errors
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
