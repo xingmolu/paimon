@@ -1469,3 +1469,228 @@ describe("formatStats", () => {
 		expect(formatted).toContain("evolve");
 	});
 });
+
+describe("Template System", () => {
+	beforeEach(() => {
+		cleanup();
+		ensureTestDir();
+	});
+
+	afterEach(() => {
+		cleanup();
+	});
+
+	describe("renderTemplate", () => {
+		it("should substitute variables", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Hello {{ name }}!";
+			const result = renderTemplate(template, { name: "World" });
+			expect(result).toBe("Hello World!");
+		});
+
+		it("should handle multiple variables", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "{{ greeting }} {{ name }} from {{ location }}";
+			const result = renderTemplate(template, {
+				greeting: "Hello",
+				name: "Agent",
+				location: "Seattle",
+			});
+			expect(result).toBe("Hello Agent from Seattle");
+		});
+
+		it("should use default value with pipe syntax", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Model: {{ model|unknown }}";
+			const result = renderTemplate(template, {});
+			expect(result).toBe("Model: unknown");
+		});
+
+		it("should use default value with colon syntax", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Timeout: {{ timeout:120000 }}ms";
+			const result = renderTemplate(template, {});
+			expect(result).toBe("Timeout: 120000ms");
+		});
+
+		it("should override default value", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Model: {{ model|unknown }}";
+			const result = renderTemplate(template, { model: "gpt-4" });
+			expect(result).toBe("Model: gpt-4");
+		});
+
+		it("should keep placeholder when no default", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Value: {{ undefined_var }}";
+			const result = renderTemplate(template, {});
+			expect(result).toBe("Value: {{ undefined_var }}");
+		});
+
+		it("should handle whitespace in placeholders", async () => {
+			const { renderTemplate } = await import("./templates.js");
+			const template = "Hello {{   name   }}!";
+			const result = renderTemplate(template, { name: "World" });
+			expect(result).toBe("Hello World!");
+		});
+	});
+
+	describe("Template Manager", () => {
+		it("should create TemplateManager with default templates", async () => {
+			const { TemplateManager } = await import("./templates.js");
+			const manager = new TemplateManager();
+			expect(manager).toBeDefined();
+			expect(manager.list()).toContain("minimal");
+			expect(manager.list()).toContain("baseline");
+			expect(manager.list()).toContain("full");
+		});
+
+		it("should get registered template", async () => {
+			const { TemplateManager } = await import("./templates.js");
+			const manager = new TemplateManager();
+			const template = manager.get("minimal");
+			expect(template).toBeDefined();
+			expect(template).toContain("{{ agent_name }}");
+		});
+
+		it("should render registered template", async () => {
+			const { TemplateManager } = await import("./templates.js");
+			const manager = new TemplateManager();
+			const result = manager.render("minimal", {
+				agent_name: "test-agent",
+				model: "test-model",
+			});
+			expect(result).toContain("test-agent");
+			expect(result).toContain("test-model");
+		});
+
+		it("should register custom template", async () => {
+			const { TemplateManager } = await import("./templates.js");
+			const manager = new TemplateManager();
+			manager.register("custom", "Custom {{ name }} template");
+			expect(manager.list()).toContain("custom");
+			expect(manager.get("custom")).toBe("Custom {{ name }} template");
+		});
+
+		it("should throw for missing template", async () => {
+			const { TemplateManager } = await import("./templates.js");
+			const manager = new TemplateManager();
+			expect(() => manager.render("nonexistent", {})).toThrow("Template not found");
+		});
+	});
+
+	describe("Default Templates", () => {
+		it("should have minimal template with frontmatter", async () => {
+			const { getDefaultMinimalTemplate } = await import("./templates.js");
+			const template = getDefaultMinimalTemplate();
+			expect(template).toContain("---");
+			expect(template).toContain("name: {{ agent_name }}");
+			expect(template).toContain("tools: [bash]");
+		});
+
+		it("should have baseline template", async () => {
+			const { getBaselineTemplate, renderTemplate } = await import("./templates.js");
+			const template = getBaselineTemplate();
+			expect(template).toContain("{{ agent_name }}");
+			expect(template).toContain("RL experiments");
+			// When rendered with baseline defaults, contains baseline-agent
+			const rendered = renderTemplate(template, { agent_name: "baseline-agent" });
+			expect(rendered).toContain("baseline-agent");
+		});
+
+		it("should have full agent template", async () => {
+			const { getFullAgentTemplate } = await import("./templates.js");
+			const template = getFullAgentTemplate();
+			expect(template).toContain("{{ agent_name }}");
+			expect(template).toContain("{{ model }}");
+		});
+	});
+
+	describe("Template File Loading", () => {
+		it("should load template from file", async () => {
+			const { loadTemplateFile } = await import("./templates.js");
+			const templateFile = join(TEST_DIR, "test-template.txt");
+			writeFileSync(templateFile, "Hello {{ name }}!", "utf-8");
+
+			const template = loadTemplateFile(templateFile);
+			expect(template).toBe("Hello {{ name }}!");
+		});
+
+		it("should throw for missing file", async () => {
+			const { loadTemplateFile } = await import("./templates.js");
+			expect(() => loadTemplateFile(join(TEST_DIR, "nonexistent.txt"))).toThrow(
+				"Template file not found",
+			);
+		});
+
+		it("should render template from file", async () => {
+			const { renderTemplateFile } = await import("./templates.js");
+			const templateFile = join(TEST_DIR, "test-template.txt");
+			writeFileSync(templateFile, "Hello {{ name }}!", "utf-8");
+
+			const result = renderTemplateFile(templateFile, { name: "World" });
+			expect(result).toBe("Hello World!");
+		});
+	});
+});
+
+describe("Minimal Agent with Templates", () => {
+	it("should create minimal agent with default template", async () => {
+		const { createMinimalAgent } = await import("./minimal-agent.js");
+		const agent = createMinimalAgent({
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		});
+		expect(agent).toBeDefined();
+		expect(agent.isBaseline()).toBe(false);
+	});
+
+	it("should create minimal agent with baseline template", async () => {
+		const { createMinimalAgent } = await import("./minimal-agent.js");
+		const agent = createMinimalAgent({
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+			baseline: true,
+		});
+		expect(agent).toBeDefined();
+		expect(agent.isBaseline()).toBe(true);
+	});
+
+	it("should create minimal agent with custom template", async () => {
+		const { createMinimalAgent } = await import("./minimal-agent.js");
+		const agent = createMinimalAgent({
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+			template: {
+				template: "Custom {{ agent_name }} prompt",
+				isFile: false,
+				variables: { agent_name: "my-agent" },
+			},
+		});
+		expect(agent).toBeDefined();
+	});
+
+	it("should create minimal agent with template file", async () => {
+		cleanup();
+		ensureTestDir();
+		const templateFile = join(TEST_DIR, "custom-template.txt");
+		writeFileSync(templateFile, "Custom {{ agent_name }} prompt for {{ model }}", "utf-8");
+
+		const { createMinimalAgent } = await import("./minimal-agent.js");
+		const agent = createMinimalAgent({
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+			template: {
+				template: templateFile,
+				isFile: true,
+				variables: { agent_name: "file-agent" },
+			},
+		});
+		expect(agent).toBeDefined();
+		cleanup();
+	});
+});

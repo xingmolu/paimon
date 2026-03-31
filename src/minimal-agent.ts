@@ -22,6 +22,12 @@ import {
 } from "@mariozechner/pi-agent-core";
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
+import {
+	type TemplateConfig,
+	getBaselineTemplate,
+	getDefaultMinimalTemplate,
+	renderTemplate,
+} from "./templates.js";
 
 /**
  * Minimal agent configuration
@@ -35,6 +41,8 @@ export interface MinimalAgentConfig {
 	timeout?: number;
 	/** Baseline mode - clean, standardized configuration for RL/fine-tuning experiments */
 	baseline?: boolean;
+	/** Template configuration (Jinja-style templates for customization) */
+	template?: TemplateConfig;
 }
 
 /**
@@ -185,10 +193,8 @@ export class MinimalAgent {
 		this.agent.setTools([this.bashTool]);
 		this.agent.getApiKey = () => this.config.apiKey;
 
-		// Set system prompt (use baseline if config.baseline, else default)
-		const systemPrompt = config.baseline
-			? this.getBaselineSystemPrompt()
-			: config.systemPrompt || this.getDefaultSystemPrompt();
+		// Set system prompt (use template if provided, baseline if config.baseline, else default)
+		const systemPrompt = this.buildSystemPrompt();
 		this.agent.setSystemPrompt(systemPrompt);
 		this.messages.push({ role: "system", content: systemPrompt });
 
@@ -221,65 +227,65 @@ export class MinimalAgent {
 	}
 
 	/**
-	 * Default system prompt for minimal agent
+	 * Build system prompt from template or defaults
 	 */
-	private getDefaultSystemPrompt(): string {
-		return `---
-name: minimal-agent
-description: A simple AI agent that solves problems using only shell commands
-tools: [bash]
----
+	private buildSystemPrompt(): string {
+		// If custom systemPrompt provided, use it directly
+		if (this.config.systemPrompt) {
+			return this.config.systemPrompt;
+		}
 
-You are a minimal AI agent that solves problems using only bash commands.
+		// Template variables
+		const variables = {
+			agent_name: this.config.baseline ? "baseline-agent" : "minimal-agent",
+			agent_description: "A simple AI agent that solves problems using only shell commands",
+			max_iterations: String(this.config.maxIterations ?? 50),
+			timeout: String(this.config.timeout ?? 120000),
+			model: this.config.model,
+		};
 
-## Available Commands
-You have access to a single tool: bash. Use it for ALL operations:
-- Read files: \`cat filename\` or \`head -n filename\`
-- Write files: \`echo 'content' > filename\` or \`cat > filename << 'EOF'\\ncontent\\nEOF\`
-- Edit files: \`sed -i 's/old/new/g' filename\`
-- Search files: \`grep -r 'pattern' .\` or \`find . -name '*.ts'\`
-- List files: \`ls -la\` or \`find . -type f\`
-- Run tests: \`npm test\` or \`npm run build\`
-- Check git: \`git status\` or \`git log\`
+		// If template config provided, use it
+		if (this.config.template) {
+			if (this.config.template.isFile) {
+				return renderTemplate(readFileSync(this.config.template.template, "utf-8"), {
+					...variables,
+					...this.config.template.variables,
+				});
+			}
+			return renderTemplate(this.config.template.template, {
+				...variables,
+				...this.config.template.variables,
+			});
+		}
 
-## Workflow
-1. Understand the task
-2. Explore the codebase with shell commands
-3. Make changes using sed/echo/cat
-4. Verify with npm run build && npm test
-5. Report results
-
-## Rules
-- One command at a time
-- Always verify changes before claiming completion
-- Report errors clearly
-- Keep changes minimal
-
-When done, say "DONE" and summarize what you accomplished.`;
+		// Use baseline or default template
+		const template = this.config.baseline ? getBaselineTemplate() : getDefaultMinimalTemplate();
+		return renderTemplate(template, variables);
 	}
 
 	/**
-	 * Baseline system prompt for RL/fine-tuning experiments
-	 * (Standardized, minimal, suitable for training data)
+	 * Default system prompt for minimal agent (legacy method)
+	 * @deprecated Use buildSystemPrompt() instead
+	 */
+	private getDefaultSystemPrompt(): string {
+		return renderTemplate(getDefaultMinimalTemplate(), {
+			agent_name: "minimal-agent",
+			agent_description: "A simple AI agent that solves problems using only shell commands",
+			max_iterations: String(this.config.maxIterations ?? 50),
+			timeout: String(this.config.timeout ?? 120000),
+			model: this.config.model,
+		});
+	}
+
+	/**
+	 * Baseline system prompt for RL/fine-tuning experiments (legacy method)
+	 * @deprecated Use buildSystemPrompt() instead
 	 */
 	private getBaselineSystemPrompt(): string {
-		return `---
-name: baseline-agent
-description: Minimal agent for RL experiments
-tools: [bash]
----
-
-You are a baseline AI agent. Solve problems using bash commands.
-
-## Tool
-Use bash for: cat (read), echo (write), sed (edit), grep (search), ls (list).
-
-## Rules
-1. Explore first
-2. Make minimal changes
-3. Verify with npm run build && npm test
-
-When complete, say "DONE".`;
+		return renderTemplate(getBaselineTemplate(), {
+			agent_name: "baseline-agent",
+			model: this.config.model,
+		});
 	}
 
 	/**

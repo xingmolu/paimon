@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Template-based prompts (Mini-SWE-Agent pattern, Jinja-style {{ var }} syntax) | ~12m | ✅ | lint (fixed) | No | High | evolve | prompt-customization |
 | 2026-03-31 | capability | Baseline mode for minimal agent (RL/fine-tuning experiments) | ~10m | ✅ | lint | No | High | evolve | rl-experiments |
 | 2026-03-31 | capability | Complete Issue #22 Phase 12 (extract wrap.ts, prompt.ts, slim agent.ts to 260 lines) | ~10m | ✅ | none | No | High | evolve | modular-architecture-complete |
 | 2026-03-31 | capability | Complete modular architecture integration (replace inline tools with buildTools()) | ~15m | ✅ | none | No | High | evolve, plan-architecture | maintainable-codebase |
@@ -57,14 +58,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 23/30 = 77% (last iteration)
+- First Try Success Rate: 24/31 = 77% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/30 = 27%
+- Rework Rate: 8/31 = 26%
 
 ### Capability Metrics
-- Capability Tasks: 29/30 = 97%
-- High Impact Capabilities: 21/29 = 72%
-- Capability Velocity: 29 capabilities in 2 days = 14.5/day
+- Capability Tasks: 30/31 = 97%
+- High Impact Capabilities: 22/30 = 73%
+- Capability Velocity: 30 capabilities in 2 days = 15/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -81,6 +82,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Template-Based Prompts** - High impact, enables Jinja-style prompt customization (Mini-SWE-Agent pattern)
 1. **Baseline Mode** - High impact, enables RL experiments and fine-tuning (Mini-SWE-Agent pattern)
 1. **Modular Architecture Complete** - High impact, agent.ts reduced to 260 lines (from 502), fully modular with wrap.ts and prompt.ts extracted
 1. **Modular Architecture Integration** - High impact, reduces agent.ts by 80%, single source of truth for tools
