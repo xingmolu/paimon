@@ -24,6 +24,8 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | reliability | Lint fix for biome.json (ignore superpowers) | ~5m | ✅ | none | No | Medium | evolve | enables-commits |
+| 2026-03-30 | capability | Theory-of-Mind Module (ToM-SWE) | ~25m | ❌ | TS | Yes | High | evolve, research | user-intent-understanding |
 | 2026-03-30 | capability | Repo Map (Aider Pattern) | ~25m | ❌ | lint | Yes | High | evolve, research | codebase-understanding |
 | 2026-03-30 | capability | Loop detection & recovery | ~20m | ❌ | lint | Yes | High | evolve, research | autonomous-recovery |
 | 2026-03-30 | capability | Specialized subagents for self-evolution | ~15m | ❌ | lint | Yes | High | evolve, explore-code, plan-architecture, review-changes | exploration-planning-review |
@@ -46,47 +48,69 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 15/20 = 75% (last iteration)
-- Average Time: ~15 minutes
-- Rework Rate: 7/20 = 35%
+- First Try Success Rate: 15/22 = 68% (last iteration)
+- Average Time: ~14 minutes
+- Rework Rate: 8/22 = 36%
 
 ### Capability Metrics
-- Capability Tasks: 19/20 = 95%
-- High Impact Capabilities: 12/19 = 63%
-- Capability Velocity: 19 capabilities in 2 days = 9.5/day
+- Capability Tasks: 21/22 = 95%
+- High Impact Capabilities: 14/21 = 67%
+- Capability Velocity: 21 capabilities in 2 days = 10.5/day
 
 ### Error Analysis
-- TypeScript Errors: 1
+- TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 6
+- Lint Issues: 7
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 17 iterations, 94% success rate when used
+1. **evolve** - Used in 19 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 3 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
-4. **writing-plans** - Used in 4 iterations, planning workflow
-5. **research** - Used in 3 iterations, competitor research
+4. **writing-plans** - Used in 5 iterations, planning workflow
+5. **research** - Used in 5 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
-2. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
-3. **Hook System** - High impact, enables proactive safety before tool execution
-4. **Checkpoints** - High impact, enables safer risky experiments
-5. **Reflection** - High impact, enables auto-learning from failures
-6. **Error Recovery** - High impact, enables self-correction loops
-7. **Self-Assessment** - High impact, enables pre-commit verification
-8. **Evolution Scoring** - High impact, enables better task selection
-9. **Confidence-Based Scoring** - High impact, enables better error filtering
-10. **Superpowers Integration** - High impact, enables skill-based workflows
-11. **Parallel Execution** - High impact, enables concurrent operations
-12. **Specialized Subagents** - High impact, enables exploration-planning-review
-13. **Skill Effectiveness Tracking** - High impact, enables skill analytics
+1. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
+2. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
+3. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
+4. **Hook System** - High impact, enables proactive safety before tool execution
+5. **Checkpoints** - High impact, enables safer risky experiments
+6. **Reflection** - High impact, enables auto-learning from failures
+7. **Error Recovery** - High impact, enables self-correction loops
+8. **Self-Assessment** - High impact, enables pre-commit verification
+9. **Evolution Scoring** - High impact, enables better task selection
+10. **Confidence-Based Scoring** - High impact, enables better error filtering
+11. **Superpowers Integration** - High impact, enables skill-based workflows
+12. **Parallel Execution** - High impact, enables concurrent operations
+13. **Specialized Subagents** - High impact, enables exploration-planning-review
+14. **Skill Effectiveness Tracking** - High impact, enables skill analytics
 
 ---
 
 ## Learnings
+
+### 2026-03-30: Theory-of-Mind Module from OpenHands ToM-SWE
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 10 - Theory-of-Mind module inspired by OpenHands' ToM-SWE package
+
+**Insight:** OpenHands' ToM-SWE package provides personalized user understanding through:
+1. **Three-Tier Memory**: Cleaned sessions → Session analyses → User profiles
+2. **Agent Consultation**: Personalized guidance based on user preferences and working styles
+3. **Session Analysis**: Extract insights from past sessions to improve future iterations
+4. **Preference Tracking**: Track skills that work, common errors, and average iteration times
+5. **Confidence Scoring**: Calculate confidence based on analysis depth
+
+**Trigger:** When needing to understand user intent or provide personalized guidance during self-evolution
+
+**Reuse Rule:** Use `tom({action: 'consult'})` before complex tasks to get personalized recommendations. Use `tom({action: 'analyze', sessionData: {...}})` after each iteration to build user profile.
+
+**Priority:** High
+
+---
 
 ### 2026-03-30: Loop Detection and Recovery from OpenHands
 
@@ -429,3 +453,23 @@ Each learning entry should have:
 - **After failure** - Check for similar patterns, learn from past
 - **When stuck** - Search for trigger conditions, find applicable rules
 - **After success** - Add new learning if pattern is reusable
+
+---
+
+### 2026-03-30: Verification Before Commit
+
+**Type:** reliability
+
+**Context:** Iteration 1 failed verification
+
+**Insight:** 
+- Build: PASS
+- Tests: PASS
+- Error: Error: 400 <400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 202745]
+
+**Trigger:** Before committing any changes
+
+**Reuse Rule:** Always run `npm run build && npm test -- --run` before committing. Use assess({}) tool for verification.
+
+**Priority:** High
+

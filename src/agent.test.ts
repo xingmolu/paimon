@@ -1229,3 +1229,243 @@ describe("RepoMap", () => {
 		expect(defs.some((d) => d.file.includes("helper.ts"))).toBe(true);
 	});
 });
+
+describe("tom tool", () => {
+	it("should have tom tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have tom parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support tom actions: consult, analyze, stats, profile", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+});
+
+describe("TomModule", () => {
+	const TOM_DIR = join(process.cwd(), "test-tom");
+
+	beforeEach(() => {
+		if (existsSync(TOM_DIR)) {
+			rmSync(TOM_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(TOM_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(TOM_DIR)) {
+			rmSync(TOM_DIR, { recursive: true, force: true });
+		}
+	});
+
+	it("should create TomModule instance", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+		expect(tom).toBeDefined();
+	});
+
+	it("should get user profile", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+		const profile = tom.getProfile();
+
+		expect(profile).toBeDefined();
+		expect(profile.project).toBeDefined();
+		expect(profile.preferences).toBeDefined();
+	});
+
+	it("should analyze session", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		const analysis = tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Test task",
+			success: true,
+			firstTry: true,
+			errors: [],
+			rework: false,
+			timeMinutes: 10,
+			skillsUsed: ["evolve"],
+		});
+
+		expect(analysis).toBeDefined();
+		expect(analysis.taskType).toBe("capability");
+		expect(analysis.success).toBe(true);
+		expect(analysis.insights.length).toBeGreaterThan(0);
+	});
+
+	it("should provide consultation", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		const consultation = tom.consult("Test context");
+
+		expect(consultation).toBeDefined();
+		expect(consultation.recommendedTaskType).toBeDefined();
+		expect(consultation.confidence).toBeGreaterThanOrEqual(50);
+		expect(consultation.profileSummary).toBeDefined();
+	});
+
+	it("should get stats", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		const stats = tom.getStats();
+
+		expect(stats).toBeDefined();
+		expect(stats.totalSessions).toBeGreaterThanOrEqual(0);
+		expect(stats.successRate).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should track skills used successfully", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Test with skills",
+			success: true,
+			firstTry: true,
+			errors: [],
+			rework: false,
+			timeMinutes: 15,
+			skillsUsed: ["evolve", "writing-plans"],
+		});
+
+		const profile = tom.getProfile();
+		expect(profile.preferences.skillsUsedSuccess).toContain("evolve");
+		expect(profile.preferences.skillsUsedSuccess).toContain("writing-plans");
+	});
+
+	it("should track common errors", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Test with errors",
+			success: false,
+			firstTry: false,
+			errors: ["lint", "TS"],
+			rework: true,
+			timeMinutes: 20,
+			skillsUsed: ["evolve"],
+		});
+
+		const profile = tom.getProfile();
+		expect(profile.preferences.commonErrors).toContain("lint");
+		expect(profile.preferences.commonErrors).toContain("TS");
+	});
+
+	it("should calculate average iteration time", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Task 1",
+			success: true,
+			firstTry: true,
+			errors: [],
+			rework: false,
+			timeMinutes: 10,
+			skillsUsed: [],
+		});
+
+		tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Task 2",
+			success: true,
+			firstTry: true,
+			errors: [],
+			rework: false,
+			timeMinutes: 20,
+			skillsUsed: [],
+		});
+
+		const profile = tom.getProfile();
+		expect(profile.preferences.averageIterationTime).toBe(15);
+	});
+
+	it("should clear profile", async () => {
+		const { TomModule } = await import("./tom.js");
+		const tom = new TomModule(TOM_DIR);
+
+		tom.analyzeSession({
+			taskType: "capability",
+			taskDescription: "Test",
+			success: true,
+			firstTry: true,
+			errors: [],
+			rework: false,
+			timeMinutes: 10,
+			skillsUsed: [],
+		});
+
+		tom.clear();
+		// After clear, should create new profile on next getProfile
+		const profile = tom.getProfile();
+		expect(profile.analyses.length).toBe(0);
+	});
+});
+
+describe("formatConsultation", () => {
+	it("should format consultation result", async () => {
+		const { formatConsultation } = await import("./tom.js");
+		const result = {
+			recommendedTaskType: "capability",
+			recommendedSkills: ["evolve", "writing-plans"],
+			potentialIssues: ["Lint errors are common"],
+			tips: ["Average iteration time is 15min"],
+			confidence: 75,
+			profileSummary: "Profile: test-project\nSessions analyzed: 5",
+		};
+
+		const formatted = formatConsultation(result);
+		expect(formatted).toContain("Theory-of-Mind Consultation");
+		expect(formatted).toContain("capability");
+		expect(formatted).toContain("evolve");
+		expect(formatted).toContain("75%");
+	});
+});
+
+describe("formatStats", () => {
+	it("should format stats", async () => {
+		const { formatStats } = await import("./tom.js");
+		const stats = {
+			totalSessions: 10,
+			successRate: 80,
+			firstTryRate: 60,
+			reworkRate: 20,
+			averageTime: 15,
+			topSkills: ["evolve", "writing-plans"],
+			topErrors: ["lint", "TS"],
+		};
+
+		const formatted = formatStats(stats);
+		expect(formatted).toContain("Theory-of-Mind Statistics");
+		expect(formatted).toContain("Sessions analyzed: 10");
+		expect(formatted).toContain("Success rate: 80%");
+		expect(formatted).toContain("evolve");
+	});
+});

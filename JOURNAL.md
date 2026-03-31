@@ -4,6 +4,73 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 33 — Theory-of-Mind Module (ToM-SWE) + Lint Fix (2026-03-30)
+
+**What happened:**
+- Completed ROADMAP Phase 10 "Theory-of-Mind (OpenHands ToM-SWE Pattern)"
+- Created `src/tom.ts` module with TomModule class
+- Added `tom` tool for personalized guidance based on user profile and session history
+- Three-Tier Memory: sessions → analyses → profiles
+- Agent consultation for personalized recommendations
+- Session analysis for extracting insights from past iterations
+- Fixed lint issues in biome.json to ignore skills/superpowers directory
+- Fixed formatting issues in src/tom.ts, src/cli.ts, scripts/evolve.ts, src/agent.ts
+
+**Why this matters:**
+- This is a `capability` type task that improves user intent understanding
+- Agent can now provide personalized guidance based on past session patterns
+- Inspired by OpenHands' ToM-SWE package from competitor research
+- Reduces rework rate by understanding user preferences
+- All ROADMAP phases (1-10) are now complete
+
+**Technical details:**
+- Created `src/tom.ts`:
+  - `TomModule` class with consult(), analyzeSession(), getStats(), getProfile() methods
+  - `UserProfile` interface with preferences, analyses, and working styles
+  - `SessionAnalysis` interface for extracting insights from iterations
+  - `ConsultationResult` interface for personalized recommendations
+  - Confidence scoring based on profile depth
+  - Preferences tracking: skillsUsedSuccess, skillsUsedFailure, commonErrors
+- Modified `src/agent.ts`:
+  - Added `tom` tool with actions: consult, analyze, stats, profile
+  - Updated frontmatter to include tom in tools list
+  - Updated both chat and evolve system prompts
+- Modified `biome.json`:
+  - Added skills/superpowers/** to ignore list (external files from obra/superpowers)
+- Fixed formatting in multiple files using biome check --write --unsafe
+- Added 12 new tests for tom tool functionality
+
+**Tom Tool Usage:**
+```typescript
+// Get personalized consultation before task
+tom({action: 'consult', currentContext: 'implementing new feature'})
+
+// Analyze completed session
+tom({action: 'analyze', sessionData: {
+  taskType: 'capability',
+  taskDescription: '...',
+  success: true,
+  firstTry: false,
+  errors: ['lint'],
+  rework: true,
+  timeMinutes: 15,
+  skillsUsed: ['evolve', 'using-superpowers']
+}})
+
+// Get statistics
+tom({action: 'stats'})
+
+// Get user profile
+tom({action: 'profile'})
+```
+
+**Next steps:**
+- All ROADMAP phases are complete (Phase 1-10)
+- Consider researching new capabilities from other competitors (Devin, Cognition AI)
+- Consider adding Phase 11 with new capabilities
+
+---
+
 ## Day 32 — Repo Map (Aider Pattern) (2026-03-30)
 
 **What happened:**

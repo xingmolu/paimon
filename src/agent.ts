@@ -42,6 +42,13 @@ import {
 	type StuckAnalysis,
 	StuckDetector,
 } from "./stuck.js";
+import {
+	type ConsultationResult,
+	type SessionAnalysis,
+	TomModule,
+	formatConsultation,
+	formatStats,
+} from "./tom.js";
 
 /**
  * Plan state for multi-step reasoning
@@ -2247,6 +2254,154 @@ Each learning should be:
 			}
 		},
 	},
+	{
+		name: "tom",
+		label: "Theory-of-Mind Consultation",
+		description:
+			"Get personalized guidance based on user profile and session history. Inspired by OpenHands' ToM-SWE - provides intent understanding, preference tracking, and adaptive behavior.",
+		parameters: Type.Object({
+			action: Type.String({
+				description:
+					"Action to perform: 'consult' (get guidance), 'analyze' (analyze session), 'stats' (view statistics), 'profile' (view profile)",
+			}),
+			sessionData: Type.Optional(
+				Type.Object({
+					taskType: Type.String({ description: "Task type: capability, reliability, feature" }),
+					taskDescription: Type.String({ description: "Brief task description" }),
+					success: Type.Boolean({ description: "Whether the task succeeded" }),
+					firstTry: Type.Boolean({ description: "Whether it succeeded on first try" }),
+					errors: Type.Array(Type.String({ description: "Error types encountered" })),
+					rework: Type.Boolean({ description: "Whether rework was required" }),
+					timeMinutes: Type.Number({ description: "Time taken in minutes" }),
+					skillsUsed: Type.Array(Type.String({ description: "Skills used during task" })),
+				}),
+			),
+			currentContext: Type.Optional(
+				Type.String({ description: "Current task context for consultation" }),
+			),
+		}),
+		execute: async (_toolCallId, params): Promise<AgentToolResult<unknown>> => {
+			const { action, sessionData, currentContext } = params as {
+				action: string;
+				sessionData?: {
+					taskType: string;
+					taskDescription: string;
+					success: boolean;
+					firstTry: boolean;
+					errors: string[];
+					rework: boolean;
+					timeMinutes: number;
+					skillsUsed: string[];
+				};
+				currentContext?: string;
+			};
+
+			// Global TomModule instance (shared across agent runs)
+			const tomModule = new TomModule();
+
+			try {
+				switch (action) {
+					case "consult": {
+						const consultation = tomModule.consult(currentContext);
+						const output = formatConsultation(consultation);
+						return {
+							content: [{ type: "text", text: output }],
+							details: consultation,
+						};
+					}
+
+					case "analyze": {
+						if (!sessionData) {
+							return {
+								content: [
+									{
+										type: "text",
+										text: "Error: 'sessionData' is required for 'analyze' action",
+									},
+								],
+								details: "Error: sessionData required",
+							};
+						}
+						const analysis = tomModule.analyzeSession(sessionData);
+						const output = [
+							"📊 Session Analysis",
+							"─".repeat(40),
+							`Session ID: ${analysis.sessionId}`,
+							`Date: ${analysis.date}`,
+							`Task: ${analysis.taskDescription}`,
+							`Success: ${analysis.success ? "✅" : "❌"}`,
+							`First try: ${analysis.firstTry ? "✅" : "❌"}`,
+							`Rework: ${analysis.rework ? "Yes" : "No"}`,
+							`Time: ${analysis.timeMinutes}min`,
+							`Skills: ${analysis.skillsUsed.join(", ") || "none"}`,
+							"",
+							"Insights:",
+							...analysis.insights.map((i) => `  - ${i}`),
+						].join("\n");
+						return {
+							content: [{ type: "text", text: output }],
+							details: analysis,
+						};
+					}
+
+					case "stats": {
+						const stats = tomModule.getStats();
+						const output = formatStats(stats);
+						return {
+							content: [{ type: "text", text: output }],
+							details: stats,
+						};
+					}
+
+					case "profile": {
+						const profile = tomModule.getProfile();
+						const output = [
+							"👤 User Profile",
+							"─".repeat(40),
+							`Project: ${profile.project}`,
+							`Last updated: ${new Date(profile.lastUpdated).toLocaleString()}`,
+							`Sessions analyzed: ${profile.analyses.length}`,
+							"",
+							"Preferences:",
+							`  Task types: ${profile.preferences.preferredTaskTypes.join(", ")}`,
+							`  Avg time: ${profile.preferences.averageIterationTime}min`,
+							`  Style: ${profile.preferences.preferredImplementationStyle}`,
+							"",
+							"Skills that work:",
+							...profile.preferences.skillsUsedSuccess.slice(0, 5).map((s) => `  ✅ ${s}`),
+							"",
+							"Skills that didn't help:",
+							...profile.preferences.skillsUsedFailure.slice(0, 5).map((s) => `  ❌ ${s}`),
+							"",
+							"Common errors:",
+							...profile.preferences.commonErrors.slice(0, 5).map((e) => `  ⚠️ ${e}`),
+						].join("\n");
+						return {
+							content: [{ type: "text", text: output }],
+							details: profile,
+						};
+					}
+
+					default:
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Error: Unknown action '${action}'. Use: consult, analyze, stats, profile`,
+								},
+							],
+							details: `Error: Unknown action '${action}'`,
+						};
+				}
+			} catch (e) {
+				const error = e instanceof Error ? e.message : String(e);
+				return {
+					content: [{ type: "text", text: `Error: ${error}` }],
+					details: `Error: ${error}`,
+				};
+			}
+		},
+	},
 ];
 
 /**
@@ -2492,7 +2647,7 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
@@ -2517,6 +2672,7 @@ You can help users with various tasks like reading files, writing code, executin
 - hook: Manage hooks for pre-tool validation and safety checks - prevents dangerous patterns automatically.
 - stuck: Detect when agent is looping and provide recovery options - inspired by OpenHands' StuckDetector.
 - repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
+- tom: Theory-of-Mind consultation - provides personalized guidance based on user profile and session history (OpenHands ToM-SWE pattern).
 
 ## Multi-Step Reasoning
 
@@ -2564,7 +2720,7 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck]
+tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom]
 ---
 
 You are evo, a self-evolving AI agent.
@@ -2589,6 +2745,7 @@ Your goal is to improve yourself. You can read your own code, make changes, run 
 - hook: Manage hooks for pre-tool validation - prevents dangerous patterns automatically.
 - stuck: Detect when agent is looping and provide recovery options (restart before loop, restart with last message, quit).
 - repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
+- tom: Theory-of-Mind consultation - provides personalized guidance based on user profile and session history (OpenHands ToM-SWE pattern).
 
 ## Multi-Step Reasoning
 

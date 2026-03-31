@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { execSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import {
+	appendFileSync,
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { createAgent } from "../src/agent.js";
 
@@ -212,7 +219,9 @@ async function main() {
 				.filter((e) => e.isDirectory())
 				.map((e) => e.name)
 		: [];
-	console.log(`${COLORS.dim}Superpowers: ${superpowersSkills.length} skills loaded${COLORS.reset}\n`);
+	console.log(
+		`${COLORS.dim}Superpowers: ${superpowersSkills.length} skills loaded${COLORS.reset}\n`,
+	);
 
 	// Build
 	console.log("→ Building...");

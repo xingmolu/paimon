@@ -27,6 +27,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["dist/**", "node_modules/**", "*.md", "scripts/evolve.sh"]
+		"ignore": ["dist/**", "node_modules/**", "*.md", "scripts/evolve.sh", "skills/superpowers/**"]
 	}
 }

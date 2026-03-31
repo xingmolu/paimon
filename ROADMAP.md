@@ -54,6 +54,13 @@ Planned improvements for evo.
 - [x] File importance scoring — PageRank-like algorithm for ranking files by importance
 - [x] Token budget management — Fit map within context limits
 
+## Phase 10: Theory-of-Mind (OpenHands ToM-SWE Pattern)
+- [x] TomModule — Three-Tier Memory system (sessions → analyses → profiles)
+- [x] tom tool — Consultation for personalized guidance based on user understanding
+- [x] User profile tracking — Track evolution preferences, working styles, and patterns
+- [x] Intent understanding — Reduce rework rate by understanding user intent better
+- [x] Session analysis — Extract insights from past evolution sessions
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
