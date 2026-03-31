@@ -4,6 +4,93 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 43 — Error Pattern Learning (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 16: Error Pattern Learning
+- Created `src/error-patterns.ts` module with ErrorPatternLearner class
+- Created `src/tools/error-patterns-tool.ts` for error pattern matching and suggestions
+- Added errorPatterns tool to metaTools array and agent tools
+- Added 20 new tests for error pattern functionality
+- Inspired by OpenHands' error recovery and Claude Code's pattern recognition
+
+**Why this matters:**
+- This is a `capability` type task that improves self-evolution error handling
+- Agent can now learn from error patterns across sessions
+- Pattern matching finds known solutions for common errors
+- Automatic solution suggestions with confidence scoring
+- Critical for reducing error recovery time
+
+**Technical details:**
+- Created `src/error-patterns.ts`:
+  - `ErrorPatternLearner` class for learning and matching error patterns
+  - `ErrorPattern` interface with type, pattern, solution, confidence
+  - `ErrorMatch` interface for pattern match results
+  - `PatternStats` interface for statistics
+  - Default patterns for TypeScript, test, lint, and runtime errors
+  - `detectErrorType()` - Classify error by type
+  - `learnFromError()` - Learn new pattern from error
+  - `matchError()` - Match error against known patterns
+  - `getSuggestions()` - Get solution suggestions
+  - `addPattern()` - Add custom pattern
+  - `updateSolution()` - Update solution for pattern
+  - Persistence to data/error-patterns.json
+- Created `src/tools/error-patterns-tool.ts`:
+  - `errorPatterns` tool with actions: match, learn, suggest, stats, patterns, add, update, clear
+  - `match` - Find pattern for error
+  - `learn` - Add new pattern from error
+  - `suggest` - Get solution suggestions
+  - `stats` - View pattern statistics
+  - `patterns` - List all patterns
+  - `add` - Add custom pattern
+  - `update` - Update solution for pattern
+  - `clear` - Clear learned patterns
+- Modified `src/tools/index.ts`:
+  - Added errorPatternsTool to metaTools array
+  - Added re-export for errorPatternsTool
+- Modified `src/prompt.ts`:
+  - Added errorPatterns tool to workflow documentation
+  - Added tip about using errorPatterns for error matching
+- Modified `ROADMAP.md`:
+  - Added Phase 16: Error Pattern Learning
+  - Marked all 5 items complete
+
+**Error Patterns Tool Usage:**
+```typescript
+// Match error against known patterns
+errorPatterns({action: 'match', error: "Property 'foo' does not exist on type 'Bar'"})
+
+// Get solution suggestions
+errorPatterns({action: 'suggest', error: "Cannot find name 'myVar'"})
+
+// Learn from new error
+errorPatterns({action: 'learn', error: "New error pattern", solution: "How to fix it"})
+
+// View pattern statistics
+errorPatterns({action: 'stats'})
+
+// List all patterns
+errorPatterns({action: 'patterns', type: 'typescript'})
+```
+
+**Default Error Patterns:**
+| Type | Pattern | Solution |
+|------|---------|----------|
+| TypeScript | Property does not exist on type | Add property or use optional chaining |
+| TypeScript | Type is not assignable | Use 'as' assertion or fix source type |
+| TypeScript | Cannot find name | Add import statement or define variable |
+| Test | AssertionError | Check expected vs actual values |
+| Test | Timeout exceeded | Increase timeout or fix async operation |
+| Lint | Unused variable | Remove or prefix with underscore |
+| Runtime | Cannot read property of undefined | Add null check or use optional chaining |
+
+**Next steps:**
+- All ROADMAP phases 1-16 are complete
+- Consider using errorPatterns for faster error recovery
+- Consider adding more patterns from common error scenarios
+
+---
+
 ## Day 42 — Trajectory Viewer Tool (Mini-SWE-Agent Pattern) (2026-03-31)
 
 **What happened:**

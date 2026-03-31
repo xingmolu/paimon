@@ -104,6 +104,13 @@ Planned improvements for evo.
 - [x] Trajectory analysis — Pattern analysis (success rate, error rate, tool usage)
 - [x] Mini-SWE-Agent format — Export compatibility with Mini-SWE-Agent trajectory format
 
+## Phase 16: Error Pattern Learning
+- [x] ErrorPatternLearner module — Learn from error patterns across sessions
+- [x] errorPatterns tool — Tool for pattern matching and suggestions
+- [x] Pattern generalization — Extract regex patterns from error messages
+- [x] Solution suggestions — Confidence-based solution recommendations
+- [x] Pattern persistence — Save learned patterns to data/error-patterns.json
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -222,7 +222,8 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - When stuck in a loop, use \`stuck({action: 'check'})\` then \`stuck({action: 'recover', recoveryOption: N})\`
 - On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons
 - Before modifying code, check self-authorship with \`singularity({action: 'check', file: 'path'})\` - be more confident with bot-authored code
-- Before starting a complex task, search for relevant past context with \`rag({action: 'search', query: 'task description'})\` - reduces rework by finding similar solutions`;
+- Before starting a complex task, search for relevant past context with \`rag({action: 'search', query: 'task description'})\` - reduces rework by finding similar solutions
+- When encountering errors, use \`errorPatterns({action: 'match', error: 'error message'})\` to find known solutions from past sessions`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";

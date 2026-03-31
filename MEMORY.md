@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Error Pattern Learning - Learn from error patterns across sessions for automatic solutions | ~15m | ✅ | lint (fixed) | No | High | evolve | error-recovery |
 | 2026-03-31 | capability | Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories | ~15m | ✅ | lint (fixed) | No | High | evolve, research | debugging-fine-tuning |
 | 2026-03-31 | capability | RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings | ~20m | ✅ | lint (fixed) | No | High | evolve, research | context-reuse |
 | 2026-03-31 | capability | Self-authorship tracking (Aider Singularity pattern, 88% metric inspiration) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | self-awareness |
@@ -61,19 +62,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 27/34 = 79% (last iteration)
+- First Try Success Rate: 28/35 = 80% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/34 = 24%
+- Rework Rate: 8/35 = 23%
 
 ### Capability Metrics
-- Capability Tasks: 33/34 = 97%
-- High Impact Capabilities: 25/33 = 76%
-- Capability Velocity: 33 capabilities in 2 days = 16.5/day
+- Capability Tasks: 34/35 = 97%
+- High Impact Capabilities: 26/34 = 76%
+- Capability Velocity: 34 capabilities in 2 days = 17/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 9
+- Lint Issues: 10
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
@@ -85,6 +86,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Error Pattern Learning** - High impact, learns from error patterns across sessions for automatic solutions (OpenHands/Claude Code pattern)
 1. **Trajectory Viewer** - High impact, enables debugging and fine-tuning via trajectory analysis (Mini-SWE-Agent pattern)
 1. **Self-Authorship Tracking** - High impact, enables self-awareness for evolution decisions (Aider 88% Singularity pattern)
 1. **Template-Based Prompts** - High impact, enables Jinja-style prompt customization (Mini-SWE-Agent pattern)
@@ -113,6 +115,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-03-31: Error Pattern Learning for Self-Evolution
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 16 - Error pattern learning for automatic solutions
+
+**Insight:** Learning from error patterns across sessions provides significant benefits:
+1. **Pattern recognition** - Regex-based matching finds known error patterns
+2. **Solution suggestions** - Confidence-based recommendations for fixing errors
+3. **Cross-session learning** - Patterns persist to data/error-patterns.json
+4. **Error classification** - Automatic detection of TypeScript, test, lint, runtime errors
+5. **Incremental improvement** - Confidence increases with each occurrence
+
+Implementation details:
+- `ErrorPattern` interface with type, pattern, description, solution, confidence, occurrences
+- Default patterns for common TypeScript, test, lint, runtime errors
+- `detectErrorType()` classifies error by category
+- `learnFromError()` extracts and generalizes patterns
+- `matchError()` finds known solutions
+- `getSuggestions()` returns ranked solutions
+- Persistence to data/error-patterns.json
+
+**Trigger:** When encountering errors during self-evolution
+
+**Reuse Rule:** Use `errorPatterns({action: 'match', error: 'message'})` to find solutions. Use `errorPatterns({action: 'learn', error: 'message', solution: 'fix'})` to learn new patterns.
+
+**Priority:** High
+
+---
 
 ### 2026-03-30: Theory-of-Mind Module from OpenHands ToM-SWE
 

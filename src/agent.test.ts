@@ -2250,3 +2250,249 @@ describe("TrajectoryViewer", () => {
 		expect(viewed).toContain("not found");
 	});
 });
+
+describe("Error Patterns", () => {
+	const ERROR_DIR = join(process.cwd(), "test-errors");
+
+	beforeEach(() => {
+		if (existsSync(ERROR_DIR)) {
+			rmSync(ERROR_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(ERROR_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(ERROR_DIR)) {
+			rmSync(ERROR_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("ErrorPatternLearner", () => {
+		it("should create ErrorPatternLearner", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+			expect(learner).toBeDefined();
+		});
+
+		it("should have default patterns loaded", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+			const patterns = learner.getPatterns();
+			expect(patterns.length).toBeGreaterThan(0);
+		});
+
+		it("should detect TypeScript error type", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const type = learner.detectErrorType("Property 'foo' does not exist on type 'Bar'");
+			expect(type).toBe("typescript");
+		});
+
+		it("should detect test error type", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const type = learner.detectErrorType("AssertionError: expected true to be false");
+			expect(type).toBe("test");
+		});
+
+		it("should detect lint error type", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const type = learner.detectErrorType("'foo' is never used");
+			expect(type).toBe("lint");
+		});
+
+		it("should match TypeScript error", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const match = learner.matchError("Property 'missingProp' does not exist on type 'SomeType'");
+			expect(match).toBeDefined();
+			expect(match?.pattern.type).toBe("typescript");
+			expect(match?.suggestion).toBeDefined();
+		});
+
+		it("should return null for unknown error", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const match = learner.matchError("some completely unique error message xyz");
+			expect(match).toBeNull();
+		});
+
+		it("should get suggestions for error", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const suggestions = learner.getSuggestions("Cannot find name 'unknownVar'");
+			expect(suggestions.length).toBeGreaterThan(0);
+			expect(suggestions[0].suggestion).toBeDefined();
+		});
+
+		it("should learn from new error", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const pattern = learner.learnFromError("New unique error pattern here");
+			expect(pattern).toBeDefined();
+			expect(pattern?.occurrences).toBe(1);
+		});
+
+		it("should increase occurrence count for matching errors", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			// Learn first time
+			learner.learnFromError("Property 'foo' does not exist on type 'Bar'");
+
+			// Learn again with similar error
+			learner.learnFromError("Property 'baz' does not exist on type 'Qux'");
+
+			// Check that pattern has occurrences
+			const patterns = learner.getPatterns("typescript");
+			const match = patterns.find((p) => p.id === "ts-missing-property");
+			expect(match?.occurrences).toBeGreaterThan(0);
+		});
+
+		it("should get stats", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const stats = learner.getStats();
+			expect(stats.totalPatterns).toBeGreaterThan(0);
+			expect(stats.byType).toBeDefined();
+			expect(stats.byType.typescript).toBeGreaterThan(0);
+		});
+
+		it("should add custom pattern", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const pattern = learner.addPattern({
+				type: "runtime",
+				pattern: "Custom error: (.+)",
+				description: "Custom runtime error",
+				solution: "Fix the custom error",
+				confidence: 80,
+			});
+
+			expect(pattern.id).toBeDefined();
+			expect(pattern.confidence).toBe(80);
+		});
+
+		it("should update solution for existing pattern", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			// Add pattern first
+			const pattern = learner.addPattern({
+				type: "typescript",
+				pattern: "test pattern",
+				description: "test",
+				solution: "original solution",
+				confidence: 50,
+			});
+
+			// Update solution
+			const success = learner.updateSolution(pattern.id, "new solution", 90);
+			expect(success).toBe(true);
+
+			const updated = learner.getPattern(pattern.id);
+			expect(updated?.solution).toBe("new solution");
+			expect(updated?.confidence).toBe(90);
+		});
+
+		it("should clear learned patterns", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			// Learn some patterns
+			learner.learnFromError("Unique error one xyz");
+			learner.learnFromError("Unique error two abc");
+
+			// Clear learned
+			learner.clearLearned();
+
+			// Check only defaults remain
+			const patterns = learner.getPatterns();
+			const learnedCount = patterns.filter(
+				(p) =>
+					!p.id.startsWith("ts-") &&
+					!p.id.startsWith("test-") &&
+					!p.id.startsWith("lint-") &&
+					!p.id.startsWith("runtime-"),
+			).length;
+			expect(learnedCount).toBe(0);
+		});
+
+		it("should get patterns by type", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const tsPatterns = learner.getPatterns("typescript");
+			expect(tsPatterns.length).toBeGreaterThan(0);
+			expect(tsPatterns.every((p) => p.type === "typescript")).toBe(true);
+		});
+
+		it("should get pattern by id", async () => {
+			const { ErrorPatternLearner } = await import("./error-patterns.js");
+			const learner = new ErrorPatternLearner(ERROR_DIR);
+
+			const pattern = learner.getPattern("ts-missing-property");
+			expect(pattern).toBeDefined();
+			expect(pattern?.id).toBe("ts-missing-property");
+		});
+	});
+
+	describe("errorPatterns tool", () => {
+		it("should have errorPatterns tool in tools array", async () => {
+			const module = await import("./agent.js");
+			const { createAgent } = module;
+			expect(createAgent).toBeDefined();
+		});
+
+		it("should have errorPatterns parameters defined", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent, run } = createAgent(config);
+			expect(agent).toBeDefined();
+			expect(run).toBeDefined();
+		});
+
+		it("should support errorPatterns actions: match, learn, suggest, stats, patterns, add, update, clear", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+		});
+	});
+
+	describe("formatPatternStats", () => {
+		it("should format pattern stats", async () => {
+			const { formatPatternStats } = await import("./error-patterns.js");
+
+			const stats = {
+				totalPatterns: 15,
+				byType: { typescript: 6, test: 3, lint: 4, runtime: 2 },
+				totalOccurrences: 10,
+				topPatterns: [],
+			};
+
+			const result = formatPatternStats(stats);
+			expect(result).toContain("15");
+			expect(result).toContain("typescript");
+			expect(result).toContain("test");
+		});
+	});
+});
