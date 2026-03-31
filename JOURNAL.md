@@ -4,6 +4,72 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 42 — Trajectory Viewer Tool (Mini-SWE-Agent Pattern) (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 15: Trajectory Viewer Tool
+- Created `src/trajectory.ts` module with TrajectoryViewer class
+- Created `src/tools/trajectory-tool.ts` for viewing and analyzing trajectories
+- Added trajectory tool to metaTools array and agent tools
+- Added 10 new tests for trajectory viewer functionality
+- Inspired by Mini-SWE-Agent's trajectory browser (74% on SWE-bench verified)
+
+**Why this matters:**
+- This is a `capability` type task that improves debugging and fine-tuning
+- Agent can now view and analyze past execution trajectories
+- Pattern analysis identifies success rates, error rates, tool usage
+- Mini-SWE-Agent format export enables compatibility with existing tooling
+- Critical for preparing fine-tuning datasets and debugging agent behavior
+
+**Technical details:**
+- Created `src/trajectory.ts`:
+  - `TrajectoryViewer` class for viewing and analyzing trajectories
+  - `Trajectory` interface matching MinimalAgent's trajectory structure
+  - `TrajectoryListing` interface with metadata preview
+  - `TrajectoryAnalysis` interface for pattern analysis
+  - `listTrajectories()` - List saved trajectories from data directory
+  - `loadTrajectory()` - Load specific trajectory from file
+  - `viewTrajectory()` - View trajectory in summary/steps/full format
+  - `analyzeTrajectories()` - Analyze patterns (success rate, error rate, tool usage)
+  - `exportTrajectory()` - Export in json/mini-swe/markdown format
+  - `toMiniSweFormat()` - Convert to Mini-SWE-Agent compatible format
+  - `getStats()` - Get directory statistics
+- Created `src/tools/trajectory-tool.ts`:
+  - `trajectory` tool with actions: list, view, analyze, stats, export
+  - `list` - List all saved trajectories with metadata preview
+  - `view` - View trajectory in summary/steps/full format
+  - `analyze` - Analyze trajectory patterns (success/error rates, tool usage)
+  - `stats` - Get trajectory directory statistics
+  - `export` - Export trajectory in various formats
+- Modified `src/tools/index.ts`:
+  - Added trajectoryTool to metaTools array
+  - Added re-export for trajectoryTool
+- Modified `ROADMAP.md`:
+  - Added Phase 15: Trajectory Viewer (Mini-SWE-Agent Pattern)
+  - Marked all 5 items complete
+
+**Trajectory Tool Usage:**
+```typescript
+// List saved trajectories
+trajectory({action: 'list'})
+
+// View trajectory details
+trajectory({action: 'view', name: 'traj.json', format: 'steps'})
+
+// Analyze trajectory patterns
+trajectory({action: 'analyze'})
+
+// Export in Mini-SWE-Agent format
+trajectory({action: 'export', name: 'traj.json', format: 'mini-swe'})
+```
+
+**Next steps:**
+- All ROADMAP phases 1-15 are complete
+- Consider using trajectory viewer for debugging complex evolution tasks
+- Consider using trajectory analysis for fine-tuning data preparation
+
+---
+
 ## Day 41 — RAG Context Enrichment (PR-Agent Pattern) (2026-03-31)
 
 **What happened:**

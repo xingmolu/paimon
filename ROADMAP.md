@@ -97,6 +97,13 @@ Planned improvements for evo.
 - [x] Inverted index — Efficient keyword search with term frequencies
 - [x] Context enrichment — Get relevant past context for new tasks
 
+## Phase 15: Trajectory Viewer (Mini-SWE-Agent Pattern)
+- [x] TrajectoryViewer module — View and analyze agent execution trajectories
+- [x] trajectory tool — Tool for trajectory viewing and analysis
+- [x] Trajectory listing — List saved trajectories with metadata preview
+- [x] Trajectory analysis — Pattern analysis (success rate, error rate, tool usage)
+- [x] Mini-SWE-Agent format — Export compatibility with Mini-SWE-Agent trajectory format
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

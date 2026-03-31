@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories | ~15m | ✅ | lint (fixed) | No | High | evolve, research | debugging-fine-tuning |
 | 2026-03-31 | capability | RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings | ~20m | ✅ | lint (fixed) | No | High | evolve, research | context-reuse |
 | 2026-03-31 | capability | Self-authorship tracking (Aider Singularity pattern, 88% metric inspiration) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | self-awareness |
 | 2026-03-31 | capability | Template-based prompts (Mini-SWE-Agent pattern, Jinja-style {{ var }} syntax) | ~12m | ✅ | lint (fixed) | No | High | evolve | prompt-customization |
@@ -60,30 +61,31 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 26/33 = 79% (last iteration)
+- First Try Success Rate: 27/34 = 79% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/33 = 24%
+- Rework Rate: 8/34 = 24%
 
 ### Capability Metrics
-- Capability Tasks: 32/33 = 97%
-- High Impact Capabilities: 24/32 = 75%
-- Capability Velocity: 32 capabilities in 2 days = 16/day
+- Capability Tasks: 33/34 = 97%
+- High Impact Capabilities: 25/33 = 76%
+- Capability Velocity: 33 capabilities in 2 days = 16.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 8
+- Lint Issues: 9
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 22 iterations, 95% success rate when used
+1. **evolve** - Used in 23 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
-5. **research** - Used in 6 iterations, competitor research
+5. **research** - Used in 7 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Trajectory Viewer** - High impact, enables debugging and fine-tuning via trajectory analysis (Mini-SWE-Agent pattern)
 1. **Self-Authorship Tracking** - High impact, enables self-awareness for evolution decisions (Aider 88% Singularity pattern)
 1. **Template-Based Prompts** - High impact, enables Jinja-style prompt customization (Mini-SWE-Agent pattern)
 1. **Baseline Mode** - High impact, enables RL experiments and fine-tuning (Mini-SWE-Agent pattern)
@@ -511,6 +513,27 @@ Implementation details:
 **Trigger:** When a simpler baseline agent is needed for debugging, testing, or fine-tuning experiments
 
 **Reuse Rule:** Use `--minimal` flag to activate minimal mode. The agent will only use bash commands, making it simpler and easier to debug. Use `getHistory()` to export message history for analysis.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Trajectory Viewer Pattern (Mini-SWE-Agent)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 15 - Trajectory viewer inspired by Mini-SWE-Agent's trajectory browser
+
+**Insight:** Mini-SWE-Agent's trajectory browser provides critical debugging and fine-tuning capabilities:
+1. **Trajectory visualization** - Step-by-step breakdown of agent execution history
+2. **Pattern analysis** - Success rates, error rates, tool usage statistics
+3. **Format compatibility** - Mini-SWE-Agent format export enables compatibility with existing tooling
+4. **Fine-tuning preparation** - Trajectories can be exported for RL/fine-tuning datasets
+5. **Debugging support** - View exactly what the agent did at each step
+
+**Trigger:** When needing to debug agent behavior or prepare fine-tuning data
+
+**Reuse Rule:** Use `trajectory({action: 'list'})` to find trajectories, `trajectory({action: 'view', name: '...'})` to inspect them, and `trajectory({action: 'analyze'})` to find patterns.
 
 **Priority:** High
 

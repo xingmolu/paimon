@@ -2002,3 +2002,251 @@ describe("rag tool", () => {
 		expect(typeof formatted).toBe("string");
 	});
 });
+
+describe("trajectory tool", () => {
+	it("should have trajectory tool in tools array", async () => {
+		const { trajectoryTool } = await import("./tools/trajectory-tool.js");
+		expect(trajectoryTool).toBeDefined();
+		expect(trajectoryTool.name).toBe("trajectory");
+		expect(trajectoryTool.description).toContain("trajectory");
+	});
+
+	it("should have trajectory parameters defined", async () => {
+		const { trajectoryTool } = await import("./tools/trajectory-tool.js");
+		expect(trajectoryTool.parameters).toBeDefined();
+		expect(trajectoryTool.execute).toBeDefined();
+	});
+
+	it("should support trajectory actions: list, view, analyze, stats, export", async () => {
+		const { trajectoryTool } = await import("./tools/trajectory-tool.js");
+		expect(trajectoryTool.name).toBe("trajectory");
+	});
+});
+
+describe("TrajectoryViewer", () => {
+	const TRAJECTORY_DIR = join(process.cwd(), "test-trajectories");
+
+	beforeEach(() => {
+		if (existsSync(TRAJECTORY_DIR)) {
+			rmSync(TRAJECTORY_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(TRAJECTORY_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(TRAJECTORY_DIR)) {
+			rmSync(TRAJECTORY_DIR, { recursive: true, force: true });
+		}
+	});
+
+	it("should create TrajectoryViewer", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+		expect(viewer).toBeDefined();
+		expect(viewer.getDataDir()).toBe(TRAJECTORY_DIR);
+	});
+
+	it("should list empty trajectories initially", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+		const trajectories = viewer.listTrajectories();
+		expect(trajectories).toEqual([]);
+	});
+
+	it("should load trajectory from file", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		// Create a sample trajectory
+		const trajectory = {
+			metadata: {
+				model: "test-model",
+				baseline: false,
+				startTime: new Date().toISOString(),
+				endTime: new Date().toISOString(),
+				totalSteps: 3,
+				success: true,
+			},
+			steps: [
+				{ step: 1, assistantResponse: "Step 1", timestamp: new Date().toISOString() },
+				{ step: 2, assistantResponse: "Step 2", timestamp: new Date().toISOString() },
+				{ step: 3, assistantResponse: "DONE", timestamp: new Date().toISOString() },
+			],
+		};
+
+		writeFileSync(
+			join(TRAJECTORY_DIR, "test-trajectory.json"),
+			JSON.stringify(trajectory),
+			"utf-8",
+		);
+
+		const loaded = viewer.loadTrajectory("test-trajectory.json");
+		expect(loaded).toBeDefined();
+		expect(loaded?.metadata.model).toBe("test-model");
+		expect(loaded?.metadata.success).toBe(true);
+		expect(loaded?.steps.length).toBe(3);
+	});
+
+	it("should view trajectory in different formats", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		const trajectory = {
+			metadata: {
+				model: "test-model",
+				baseline: false,
+				startTime: new Date().toISOString(),
+				endTime: new Date().toISOString(),
+				totalSteps: 2,
+				success: true,
+			},
+			steps: [
+				{
+					step: 1,
+					userMessage: "Hello",
+					assistantResponse: "Hi",
+					timestamp: new Date().toISOString(),
+				},
+				{ step: 2, assistantResponse: "DONE", timestamp: new Date().toISOString() },
+			],
+		};
+
+		writeFileSync(join(TRAJECTORY_DIR, "test.json"), JSON.stringify(trajectory), "utf-8");
+
+		const summary = viewer.viewTrajectory("test.json", "summary");
+		expect(summary).toContain("Trajectory Summary");
+		expect(summary).toContain("test-model");
+
+		const steps = viewer.viewTrajectory("test.json", "steps");
+		expect(steps).toContain("Step 1");
+		expect(steps).toContain("Hello");
+
+		const full = viewer.viewTrajectory("test.json", "full");
+		expect(full).toContain("metadata");
+	});
+
+	it("should analyze trajectories", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		// Create multiple trajectories
+		const traj1 = {
+			metadata: {
+				model: "m1",
+				baseline: false,
+				startTime: new Date().toISOString(),
+				endTime: new Date(Date.now() + 10000).toISOString(),
+				totalSteps: 5,
+				success: true,
+			},
+			steps: [
+				{
+					step: 1,
+					assistantResponse: "",
+					toolCall: { name: "bash", parameters: { command: "ls" } },
+					toolOutput: "output",
+					timestamp: new Date().toISOString(),
+				},
+				{
+					step: 2,
+					assistantResponse: "",
+					toolCall: { name: "bash", parameters: { command: "cat" } },
+					toolOutput: "content",
+					timestamp: new Date().toISOString(),
+				},
+				{ step: 3, assistantResponse: "DONE", timestamp: new Date().toISOString() },
+			],
+		};
+
+		const traj2 = {
+			metadata: {
+				model: "m2",
+				baseline: false,
+				startTime: new Date().toISOString(),
+				endTime: new Date(Date.now() + 5000).toISOString(),
+				totalSteps: 3,
+				success: false,
+			},
+			steps: [
+				{
+					step: 1,
+					assistantResponse: "",
+					toolCall: { name: "bash", parameters: { command: "ls" } },
+					toolOutput: "Error: failed",
+					timestamp: new Date().toISOString(),
+					isError: true,
+				},
+				{ step: 2, assistantResponse: "", timestamp: new Date().toISOString(), isError: true },
+			],
+		};
+
+		writeFileSync(join(TRAJECTORY_DIR, "traj1.json"), JSON.stringify(traj1), "utf-8");
+		writeFileSync(join(TRAJECTORY_DIR, "traj2.json"), JSON.stringify(traj2), "utf-8");
+
+		const analysis = viewer.analyzeTrajectories();
+		expect(analysis.totalTrajectories).toBe(2);
+		expect(analysis.successRate).toBe(0.5);
+		expect(analysis.toolUsage.bash).toBe(3);
+		expect(analysis.errorRate).toBeGreaterThan(0);
+	});
+
+	it("should get stats", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		const stats = viewer.getStats();
+		expect(stats.dataDir).toBe(TRAJECTORY_DIR);
+		expect(stats.totalFiles).toBe(0);
+	});
+
+	it("should export trajectory in Mini-SWE format", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		const trajectory = {
+			metadata: {
+				model: "m",
+				baseline: false,
+				startTime: new Date().toISOString(),
+				endTime: new Date().toISOString(),
+				totalSteps: 2,
+				success: true,
+			},
+			steps: [
+				{
+					step: 1,
+					userMessage: "Fix bug",
+					assistantResponse: "",
+					timestamp: new Date().toISOString(),
+				},
+				{
+					step: 2,
+					assistantResponse: "",
+					toolCall: { name: "bash", parameters: { command: "cat file" } },
+					toolOutput: "content",
+					timestamp: new Date().toISOString(),
+				},
+				{ step: 3, assistantResponse: "DONE - fixed", timestamp: new Date().toISOString() },
+			],
+		};
+
+		writeFileSync(join(TRAJECTORY_DIR, "export.json"), JSON.stringify(trajectory), "utf-8");
+
+		const miniSwe = viewer.exportTrajectory("export.json", "mini-swe");
+		expect(miniSwe).toBeDefined();
+		expect(miniSwe).toContain("input");
+		expect(miniSwe).toContain("trajectory");
+		expect(miniSwe).toContain("result");
+	});
+
+	it("should handle nonexistent trajectory", async () => {
+		const { TrajectoryViewer } = await import("./trajectory.js");
+		const viewer = new TrajectoryViewer({ dataDir: TRAJECTORY_DIR });
+
+		const loaded = viewer.loadTrajectory("nonexistent.json");
+		expect(loaded).toBeNull();
+
+		const viewed = viewer.viewTrajectory("nonexistent.json", "summary");
+		expect(viewed).toContain("not found");
+	});
+});
