@@ -27,6 +27,7 @@ import { planTool } from "./plan-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { repomapTool } from "./repomap-tool.js";
+import { rouletteTool } from "./roulette-tool.js";
 import { searchTools } from "./search-tools.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
@@ -51,6 +52,7 @@ export const metaTools: AgentTool[] = [
 	patternMinerTool,
 	bugReportTool,
 	commitMsgTool,
+	rouletteTool,
 ];
 
 /**
@@ -99,3 +101,4 @@ export { stuckTool } from "./stuck-tool.js";
 export { tomTool } from "./tom-tool.js";
 export { singularityTool } from "./singularity-tool.js";
 export { trajectoryTool } from "./trajectory-tool.js";
+export { rouletteTool, initRoulette } from "./roulette-tool.js";

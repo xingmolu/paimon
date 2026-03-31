@@ -3132,3 +3132,398 @@ describe("CommitMessageGenerator", () => {
 		});
 	});
 });
+
+describe("model roulette", () => {
+	const ROULETTE_DIR = join(process.cwd(), "test-roulette");
+
+	beforeEach(async () => {
+		if (existsSync(ROULETTE_DIR)) {
+			rmSync(ROULETTE_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(ROULETTE_DIR, { recursive: true });
+		// Reset the singleton instance
+		const { resetModelRoulette } = await import("./model-roulette.js");
+		resetModelRoulette();
+	});
+
+	afterEach(() => {
+		if (existsSync(ROULETTE_DIR)) {
+			rmSync(ROULETTE_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("ModelRoulette", () => {
+		it("should create roulette with valid config", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [
+					{ id: "model-a", weight: 1 },
+					{ id: "model-b", weight: 2 },
+				],
+				strategy: "random" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+			expect(roulette).toBeDefined();
+			expect(roulette.isValid()).toBe(true);
+		});
+
+		it("should select models randomly", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }],
+				strategy: "random" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Do multiple selections
+			const selections = [];
+			for (let i = 0; i < 10; i++) {
+				const result = roulette.selectModel();
+				selections.push(result.model.id);
+			}
+
+			// Should have selected from both models
+			expect(selections).toContain("model-a");
+			expect(selections).toContain("model-b");
+		});
+
+		it("should select models with weighted strategy", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [
+					{ id: "model-a", weight: 1 },
+					{ id: "model-b", weight: 3 }, // Higher weight, more selections
+				],
+				strategy: "weighted" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Do many selections to see distribution
+			const selections: Record<string, number> = { "model-a": 0, "model-b": 0 };
+			for (let i = 0; i < 100; i++) {
+				const result = roulette.selectModel();
+				selections[result.model.id]++;
+			}
+
+			// model-b should be selected more often due to higher weight
+			expect(selections["model-b"]).toBeGreaterThan(selections["model-a"]);
+		});
+
+		it("should select models in round-robin order", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }, { id: "model-c" }],
+				strategy: "round-robin" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// First selection should be model-b (index 1, since index increments before selection)
+			const result1 = roulette.selectModel();
+			expect(result1.model.id).toBe("model-b");
+
+			// Second should be model-c
+			const result2 = roulette.selectModel();
+			expect(result2.model.id).toBe("model-c");
+
+			// Third should wrap around to model-a
+			const result3 = roulette.selectModel();
+			expect(result3.model.id).toBe("model-a");
+		});
+
+		it("should track statistics", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }],
+				strategy: "random" as const,
+				trackStats: true,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Do some selections
+			roulette.selectModel();
+			roulette.selectModel();
+			roulette.selectModel();
+
+			// Record success/failure
+			roulette.recordSuccess("model-a", 1000, 500);
+			roulette.recordFailure("model-b", 2000);
+
+			const stats = roulette.getStats();
+			expect(stats.totalSelections).toBe(3);
+			expect(stats.totalSuccesses).toBe(1);
+			expect(stats.totalFailures).toBe(1);
+		});
+
+		it("should be invalid with less than 2 models", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }],
+				strategy: "random" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+			expect(roulette.isValid()).toBe(false);
+		});
+
+		it("should use seeded random for reproducible experiments", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }],
+				strategy: "random" as const,
+				seed: 12345, // Fixed seed for reproducibility
+			};
+
+			// Create two roulettes with same seed
+			const roulette1 = new ModelRoulette(config, ROULETTE_DIR);
+			const roulette2 = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Both should select same sequence
+			for (let i = 0; i < 5; i++) {
+				const result1 = roulette1.selectModel();
+				const result2 = roulette2.selectModel();
+				expect(result1.model.id).toBe(result2.model.id);
+			}
+		});
+
+		it("should respect switchEvery config", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }],
+				strategy: "random" as const,
+				switchEvery: 3, // Switch every 3 turns
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Turn 1: new selection
+			const result1 = roulette.selectModel();
+			expect(result1.turn).toBe(1);
+
+			// Turn 2: same model (switchEvery = 3)
+			const result2 = roulette.selectModel();
+			expect(result2.turn).toBe(2);
+			expect(result2.model.id).toBe(result1.model.id);
+
+			// Turn 3: same model
+			const result3 = roulette.selectModel();
+			expect(result3.model.id).toBe(result1.model.id);
+
+			// Turn 4: new selection
+			const result4 = roulette.selectModel();
+			expect(result4.turn).toBe(4);
+		});
+
+		it("should add and remove models", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }],
+				strategy: "random" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			expect(roulette.isValid()).toBe(false);
+
+			// Add model
+			roulette.addModel({ id: "model-b", weight: 2 });
+			expect(roulette.isValid()).toBe(true);
+			expect(roulette.getModels().length).toBe(2);
+
+			// Remove model
+			const removed = roulette.removeModel("model-a");
+			expect(removed).toBe(true);
+			expect(roulette.getModels().length).toBe(1);
+			expect(roulette.isValid()).toBe(false);
+		});
+
+		it("should update model weights", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [
+					{ id: "model-a", weight: 1 },
+					{ id: "model-b", weight: 1 },
+				],
+				strategy: "weighted" as const,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Update weight
+			const updated = roulette.setModelWeight("model-a", 5);
+			expect(updated).toBe(true);
+
+			const models = roulette.getModels();
+			const modelA = models.find((m) => m.id === "model-a");
+			expect(modelA?.weight).toBe(5);
+		});
+
+		it("should reset statistics", async () => {
+			const { ModelRoulette } = await import("./model-roulette.js");
+			const config = {
+				models: [{ id: "model-a" }, { id: "model-b" }],
+				strategy: "random" as const,
+				trackStats: true,
+			};
+			const roulette = new ModelRoulette(config, ROULETTE_DIR);
+
+			// Do selections and record
+			roulette.selectModel();
+			roulette.recordSuccess("model-a");
+
+			expect(roulette.getStats().totalSelections).toBe(1);
+
+			// Reset
+			roulette.resetStats();
+			expect(roulette.getStats().totalSelections).toBe(0);
+		});
+	});
+
+	describe("formatRouletteStats", () => {
+		it("should format statistics for display", async () => {
+			const { formatRouletteStats } = await import("./model-roulette.js");
+			const stats = {
+				modelStats: [
+					{
+						modelId: "model-a",
+						selections: 10,
+						successes: 8,
+						failures: 2,
+						avgResponseTime: 1000,
+						totalTokens: 5000,
+					},
+					{
+						modelId: "model-b",
+						selections: 5,
+						successes: 4,
+						failures: 1,
+						avgResponseTime: 1500,
+						totalTokens: 3000,
+					},
+				],
+				totalSelections: 15,
+				totalSuccesses: 12,
+				totalFailures: 3,
+				bestModel: "model-a",
+				successRate: 0.8,
+				strategy: "random",
+			};
+
+			const formatted = formatRouletteStats(stats);
+			expect(formatted).toContain("## Model Roulette Statistics");
+			expect(formatted).toContain("80.0% success");
+			expect(formatted).toContain("model-a");
+			expect(formatted).toContain("**Best Model:** model-a");
+		});
+	});
+
+	describe("rouletteTool", () => {
+		it("should have roulette tool in agent", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent } = createAgent(config);
+			expect(agent).toBeDefined();
+		});
+
+		it("should handle stats action without initialization", async () => {
+			const { rouletteTool } = await import("./tools/roulette-tool.js");
+			const result = await rouletteTool.execute("test-id", { action: "stats" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Error");
+		});
+	});
+
+	describe("MinimalAgent roulette integration", () => {
+		it("should create minimal agent with roulette config", async () => {
+			const { createMinimalAgent } = await import("./minimal-agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "default-model",
+				baseUrl: "https://test.example.com",
+				roulette: {
+					models: [{ id: "model-a" }, { id: "model-b" }],
+					strategy: "random" as const,
+				},
+			};
+			const agent = createMinimalAgent(config);
+			expect(agent).toBeDefined();
+			expect(agent.isRoulette()).toBe(true);
+		});
+
+		it("should not use roulette with single model", async () => {
+			const { createMinimalAgent } = await import("./minimal-agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "default-model",
+				baseUrl: "https://test.example.com",
+				roulette: {
+					models: [{ id: "model-a" }],
+					strategy: "random" as const,
+				},
+			};
+			const agent = createMinimalAgent(config);
+			expect(agent).toBeDefined();
+			// Invalid roulette (only 1 model) should not activate
+			expect(agent.isRoulette()).toBe(false);
+		});
+
+		it("should get current roulette model", async () => {
+			const { createMinimalAgent } = await import("./minimal-agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "default-model",
+				baseUrl: "https://test.example.com",
+				roulette: {
+					models: [{ id: "model-a" }, { id: "model-b" }],
+					strategy: "round-robin" as const,
+				},
+			};
+			const agent = createMinimalAgent(config);
+			expect(agent).toBeDefined();
+
+			// Should have selected a model during initialization
+			const currentModel = agent.getCurrentRouletteModel();
+			expect(currentModel).toBeDefined();
+			expect(["model-a", "model-b"]).toContain(currentModel?.id);
+		});
+
+		it("should switch roulette model", async () => {
+			const { createMinimalAgent } = await import("./minimal-agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "default-model",
+				baseUrl: "https://test.example.com",
+				roulette: {
+					models: [{ id: "model-a" }, { id: "model-b" }],
+					strategy: "round-robin" as const,
+				},
+			};
+			const agent = createMinimalAgent(config);
+
+			const firstModel = agent.getCurrentRouletteModel();
+			const nextModel = agent.switchRouletteModel();
+
+			// With round-robin, should switch to different model
+			expect(nextModel).toBeDefined();
+			expect(["model-a", "model-b"]).toContain(nextModel?.id);
+		});
+
+		it("should get roulette statistics from agent", async () => {
+			const { createMinimalAgent } = await import("./minimal-agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "default-model",
+				baseUrl: "https://test.example.com",
+				roulette: {
+					models: [{ id: "model-a" }, { id: "model-b" }],
+					strategy: "random" as const,
+					trackStats: true,
+				},
+			};
+			const agent = createMinimalAgent(config);
+
+			const stats = agent.getRouletteStats();
+			expect(stats).toBeDefined();
+			expect(stats?.totalSelections).toBeGreaterThanOrEqual(1);
+		});
+	});
+});

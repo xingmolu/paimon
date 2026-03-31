@@ -136,6 +136,14 @@ Planned improvements for evo.
 - [x] LLM generation — Optional LLM-based commit message generation
 - [x] Rule-based fallback — Simple rules for commit type detection without LLM
 
+## Phase 20: Model Roulette (Mini-SWE-Agent Pattern)
+- [x] ModelRoulette module — Random model switching for improved performance
+- [x] roulette tool — Tool for model selection and statistics
+- [x] Multiple strategies — random, weighted, round-robin selection
+- [x] Statistics tracking — Track model performance for analysis
+- [x] Minimal agent integration — Roulette support in MinimalAgentConfig
+- [x] Seeded random — Reproducible experiments with fixed seed
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

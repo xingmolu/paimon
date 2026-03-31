@@ -36,7 +36,9 @@
 			"test-rag/**",
 			"test-temp/**",
 			"test-sessions/**",
-			"test-checkpoints/**"
+			"test-checkpoints/**",
+			"test-roulette/**",
+			"data/**"
 		]
 	}
 }

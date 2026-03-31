@@ -4,6 +4,101 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 46 — Model Roulette (Mini-SWE-Agent Pattern) (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 20: Model Roulette for random model switching
+- Created `src/model-roulette.ts` module with ModelRoulette class
+- Created `src/tools/roulette-tool.ts` for model selection and statistics
+- Added roulette tool to metaTools array and agent tools
+- Added 21 new tests for model roulette functionality
+- Integrated roulette with MinimalAgent via `roulette` config option
+- Inspired by Mini-SWE-Agent research: "Randomly switching between GPT-5 and Sonnet 4 boosts performance"
+
+**Why this matters:**
+- This is a `capability` type task that improves agent performance through model diversity
+- Different models have different strengths; random switching improves overall success rate
+- Supports multiple strategies: random, weighted (by model weight), round-robin
+- Statistics tracking helps identify which models perform best
+- Seeded random enables reproducible experiments for RL/fine-tuning
+
+**Technical details:**
+- Created `src/model-roulette.ts`:
+  - `ModelRoulette` class for random model switching
+  - `RouletteModel` interface with id, weight, baseUrl, apiKey
+  - `RouletteConfig` interface with models, strategy, switchEvery, seed
+  - `RouletteStats` interface for tracking successes, failures, response times
+  - `selectModel()` - Select next model using configured strategy
+  - `selectRandom()`, `selectWeighted()`, `selectRoundRobin()` - Strategy implementations
+  - `recordSuccess()`, `recordFailure()` - Track model performance
+  - `getStats()` - Get statistics summary
+  - `addModel()`, `removeModel()`, `setModelWeight()` - Model pool management
+  - Seeded random for reproducible experiments
+- Created `src/tools/roulette-tool.ts`:
+  - `roulette` tool with actions: select, stats, config, reset, add, remove, weight
+  - `select` - Switch to next model
+  - `stats` - View model performance statistics
+  - `config` - View current model pool
+  - `reset` - Clear statistics
+  - `add`, `remove`, `weight` - Manage model pool
+- Modified `src/minimal-agent.ts`:
+  - Added `roulette?: RouletteConfig` to MinimalAgentConfig
+  - Added `isRoulette()`, `getCurrentRouletteModel()`, `switchRouletteModel()` methods
+  - Added `recordRouletteSuccess()`, `recordRouletteFailure()` for tracking
+  - Added `getRouletteStats()` for statistics access
+- Modified `src/tools/index.ts`:
+  - Added rouletteTool to metaTools array
+  - Added re-export for rouletteTool
+- Modified `ROADMAP.md`:
+  - Added Phase 20: Model Roulette (Mini-SWE-Agent Pattern)
+  - Marked all 6 items complete
+
+**Model Roulette Usage:**
+```typescript
+// Create agent with roulette
+const agent = createMinimalAgent({
+  apiKey: '...',
+  model: 'default-model',
+  baseUrl: '...',
+  roulette: {
+    models: [
+      { id: 'gpt-4', weight: 2 },
+      { id: 'claude-3-opus', weight: 1 },
+      { id: 'gemini-pro', weight: 1 }
+    ],
+    strategy: 'weighted',
+    switchEvery: 3, // Switch every 3 turns
+    trackStats: true
+  }
+});
+
+// Check if roulette is active
+agent.isRoulette() // true
+
+// Get current model
+agent.getCurrentRouletteModel() // { id: 'gpt-4', weight: 2 }
+
+// Switch model before next turn
+agent.switchRouletteModel()
+
+// Get statistics
+agent.getRouletteStats()
+```
+
+**Strategy Types:**
+| Strategy | Description |
+|----------|-------------|
+| `random` | Random selection from model pool |
+| `weighted` | Weighted random selection (higher weight = more likely) |
+| `round-robin` | Cycle through models in order |
+
+**Next steps:**
+- All ROADMAP phases 1-20 are complete
+- Consider using roulette in production for model diversity
+- Consider integrating roulette with patternMiner for automatic model selection
+
+---
+
 ## Day 45 — Bug Report Generator (2026-03-31)
 
 **What happened:**

@@ -23,6 +23,13 @@ import {
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { Type } from "@sinclair/typebox";
 import {
+	ModelRoulette,
+	type RouletteConfig,
+	type RouletteModel,
+	getModelRoulette,
+	resetModelRoulette,
+} from "./model-roulette.js";
+import {
 	type TemplateConfig,
 	getBaselineTemplate,
 	getDefaultMinimalTemplate,
@@ -43,6 +50,8 @@ export interface MinimalAgentConfig {
 	baseline?: boolean;
 	/** Template configuration (Jinja-style templates for customization) */
 	template?: TemplateConfig;
+	/** Roulette configuration - random model switching (Mini-SWE-Agent pattern) */
+	roulette?: RouletteConfig;
 }
 
 /**
@@ -104,6 +113,8 @@ export class MinimalAgent {
 	private config: MinimalAgentConfig;
 	private readonly bashTool: AgentTool;
 	private startTime: string;
+	private roulette?: ModelRoulette;
+	private currentRouletteModel?: RouletteModel;
 
 	constructor(config: MinimalAgentConfig) {
 		this.config = {
@@ -111,6 +122,22 @@ export class MinimalAgent {
 			timeout: 120000,
 			...config,
 		};
+
+		// Initialize roulette if configured
+		if (this.config.roulette && this.config.roulette.models.length >= 2) {
+			this.roulette = new ModelRoulette(this.config.roulette);
+			// Select initial model
+			const selection = this.roulette.selectModel();
+			this.currentRouletteModel = selection.model;
+			// Override model with roulette selection
+			this.config.model = selection.model.id;
+			if (selection.model.baseUrl) {
+				this.config.baseUrl = selection.model.baseUrl;
+			}
+			if (selection.model.apiKey) {
+				this.config.apiKey = selection.model.apiKey;
+			}
+		}
 
 		// Initialize empty message history
 		this.messages = [];
@@ -499,6 +526,70 @@ export class MinimalAgent {
 	 */
 	isBaseline(): boolean {
 		return this.config.baseline ?? false;
+	}
+
+	/**
+	 * Check if roulette mode is enabled
+	 */
+	isRoulette(): boolean {
+		return this.roulette !== undefined;
+	}
+
+	/**
+	 * Get current roulette model
+	 */
+	getCurrentRouletteModel(): RouletteModel | undefined {
+		return this.currentRouletteModel;
+	}
+
+	/**
+	 * Switch to next roulette model (called before each turn)
+	 */
+	switchRouletteModel(): RouletteModel | undefined {
+		if (!this.roulette) return undefined;
+
+		const selection = this.roulette.selectModel();
+		this.currentRouletteModel = selection.model;
+
+		// Update model configuration
+		this.config.model = selection.model.id;
+		if (selection.model.baseUrl) {
+			this.config.baseUrl = selection.model.baseUrl;
+		}
+		if (selection.model.apiKey) {
+			this.config.apiKey = selection.model.apiKey;
+		}
+
+		// Recreate model with new configuration
+		const model = this.createModel();
+		this.agent.setModel(model);
+
+		return selection.model;
+	}
+
+	/**
+	 * Record roulette success (after successful completion)
+	 */
+	recordRouletteSuccess(responseTime?: number, tokens?: number): void {
+		if (this.roulette && this.currentRouletteModel) {
+			this.roulette.recordSuccess(this.currentRouletteModel.id, responseTime, tokens);
+		}
+	}
+
+	/**
+	 * Record roulette failure (after error)
+	 */
+	recordRouletteFailure(responseTime?: number): void {
+		if (this.roulette && this.currentRouletteModel) {
+			this.roulette.recordFailure(this.currentRouletteModel.id, responseTime);
+		}
+	}
+
+	/**
+	 * Get roulette statistics
+	 */
+	getRouletteStats(): ReturnType<ModelRoulette["getStats"]> | undefined {
+		return this.roulette?.getStats();
 	}
 }
 

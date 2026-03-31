@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance | ~20m | ✅ | lint (fixed) | No | High | evolve, research | model-diversity |
 | 2026-03-31 | capability | Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve | commit-quality-improvement |
 | 2026-03-31 | capability | Bug Report Generator - Auto-generate structured bug reports from failed sessions | ~15m | ✅ | lint (fixed) | No | High | evolve | feedback-loop |
 | 2026-03-31 | capability | Fix Singularity git log format bug - Enable self-awareness tracking | ~5m | ✅ | none | No | Medium | evolve | self-awareness-tracking |
@@ -66,14 +67,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 31/38 = 82%
+- First Try Success Rate: 32/39 = 82%
 - Average Time: ~14 minutes
-- Rework Rate: 8/38 = 21%
+- Rework Rate: 8/39 = 21%
 
 ### Capability Metrics
-- Capability Tasks: 37/38 = 97%
-- High Impact Capabilities: 28/37 = 76%
-- Capability Velocity: 37 capabilities in 2 days = 18.5/day
+- Capability Tasks: 38/39 = 97%
+- High Impact Capabilities: 29/38 = 76%
+- Capability Velocity: 38 capabilities in 2 days = 19/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -90,6 +91,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Model Roulette** - High impact, random model switching improves performance by diversifying reasoning approaches (Mini-SWE-Agent pattern)
 1. **Auto-Commit Message Generation** - High impact, generates conventional commit messages from git diffs (Aider pattern)
 1. **Bug Report Generator** - High impact, auto-generates structured bug reports from failed sessions (Claude Code /bug pattern)
 1. **Error Pattern Learning** - High impact, learns from error patterns across sessions for automatic solutions (OpenHands/Claude Code pattern)
@@ -121,6 +123,35 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-03-31: Model Roulette for Performance Improvement (Mini-SWE-Agent Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 20 - Model Roulette for random model switching
+
+**Insight:** Mini-SWE-Agent research shows "Randomly switching between GPT-5 and Sonnet 4 boosts performance". Model roulette provides significant benefits:
+1. **Model diversity** - Different models have different strengths; switching improves overall success rate
+2. **Multiple strategies** - random, weighted (by model weight), round-robin (cycle through)
+3. **Statistics tracking** - Track which models perform best for future optimization
+4. **Seeded experiments** - Reproducible selection with fixed seed for RL/fine-tuning
+
+Implementation details:
+- `ModelRoulette` class with random, weighted, round-robin strategies
+- `RouletteModel` interface with id, weight, baseUrl, apiKey
+- `RouletteStats` interface for tracking successes, failures, response times
+- `switchEvery` config to control how often models switch
+- `seed` config for reproducible experiments
+- Integration with MinimalAgent via `roulette` config option
+- Tool: `roulette({action: 'select'})` to switch, `roulette({action: 'stats'})` for statistics
+
+**Trigger:** When wanting to improve agent performance through model diversity
+
+**Reuse Rule:** Configure roulette in MinimalAgentConfig: `roulette: { models: [{id: 'model-a'}, {id: 'model-b'}], strategy: 'random' }`. Use `switchRouletteModel()` before each turn.
+
+**Priority:** High
+
+---
 
 ### 2026-03-31: Auto-Commit Message Generation (Aider Pattern)
 

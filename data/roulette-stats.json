@@ -1,0 +1,18 @@
+[
+  {
+    "modelId": "model-a",
+    "selections": 13,
+    "successes": 0,
+    "failures": 0,
+    "avgResponseTime": 0,
+    "totalTokens": 0
+  },
+  {
+    "modelId": "model-b",
+    "selections": 22,
+    "successes": 0,
+    "failures": 0,
+    "avgResponseTime": 0,
+    "totalTokens": 0
+  }
+]
