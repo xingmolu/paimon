@@ -4,6 +4,95 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 40 — Self-Authorship Tracking (Aider Singularity Pattern) (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 13: Self-authorship tracking (Singularity metric)
+- Created `src/singularity.ts` module with SingularityTracker class
+- Created `src/tools/singularity-tool.ts` for tracking self-authorship
+- Added singularity tool to agent's tools array
+- Added 10 new tests for singularity functionality
+- Inspired by Aider's "88% Singularity" metric
+
+**Why this matters:**
+- This is a `capability` type task that improves self-awareness for evolution
+- Agent can now track which code it authored vs humans
+- Git commit analysis identifies bot-authored commits
+- File-level analysis with git blame shows line-level authorship
+- Enables confidence decisions when modifying code
+- Critical for understanding evolution progress
+
+**Technical details:**
+- Created `src/singularity.ts`:
+  - `SingularityTracker` class for tracking self-authorship
+  - `SingularityStats` interface with commit counts, percentages, author breakdown
+  - `FileAuthorship` interface for file-level analysis
+  - `isBotAuthor()` to recognize bot authors (paimon[bot], etc.)
+  - `parseGitLog()` for commit analysis
+  - `parseGitBlame()` for line-level analysis
+  - `calculateStats()` for full singularity report
+  - `formatSingularityStats()` for formatted output
+- Created `src/tools/singularity-tool.ts`:
+  - `singularity` tool with actions: report, check, author
+  - `report` - full stats with optional file-level analysis
+  - `check` - check if specific file is bot-authored
+  - `author` - get primary author of specific file
+- Modified `src/tools/index.ts`:
+  - Added singularityTool to metaTools array
+  - Added re-export for singularityTool
+- Modified `src/prompt.ts`:
+  - Added singularity tool to workflow documentation
+  - Added tip about checking self-authorship before modifications
+- Modified `ROADMAP.md`:
+  - Added Phase 13: Self-Authorship Tracking (Aider Singularity Pattern)
+  - Marked all 5 items complete
+
+**Singularity Tool Usage:**
+```typescript
+// Get full singularity report
+singularity({action: 'report'})
+
+// Get report with file-level analysis
+singularity({action: 'report', includeFileAnalysis: true})
+
+// Check if specific file is bot-authored
+singularity({action: 'check', file: 'src/agent.ts'})
+
+// Get primary author of file
+singularity({action: 'author', file: 'src/agent.ts'})
+
+// Analyze specific file patterns
+singularity({action: 'report', filePatterns: ['src/*.ts']})
+```
+
+**Singularity Report Format:**
+```
+## Singularity Report (Self-Authorship Tracking)
+
+**Singularity Percentage:** 60%
+- Bot commits: 12 (60%)
+- Human commits: 8 (40%)
+- Total commits: 20
+
+**Timeframe:** 2026-03-01 to 2026-03-31
+
+**Top Authors:**
+- 🤖 paimon[bot]: 12 commits (60%)
+- 👁 Robin: 5 commits (25%)
+- 👁 xingmolu: 3 commits (15%)
+
+**Most Self-Authorized Files:**
+- src/agent.ts: 85% bot-authored
+- src/tools/plan-tool.ts: 90% bot-authored
+```
+
+**Next steps:**
+- All ROADMAP phases 1-13 are complete
+- Consider using singularity tracking for confidence decisions
+- Consider researching more competitors for new capabilities
+
+---
+
 ## Day 39 — Template-Based Prompts (Mini-SWE-Agent Pattern) (2026-03-31)
 
 **What happened:**

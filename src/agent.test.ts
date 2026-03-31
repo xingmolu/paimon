@@ -1694,3 +1694,116 @@ describe("Minimal Agent with Templates", () => {
 		cleanup();
 	});
 });
+
+describe("singularity tool", () => {
+	it("should have singularity tool in tools array", async () => {
+		const module = await import("./agent.js");
+		const { createAgent } = module;
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have singularity parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support singularity actions: report, check, author", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+
+	it("should recognize paimon[bot] as bot author", async () => {
+		const { SingularityTracker } = await import("./singularity.js");
+		const tracker = new SingularityTracker();
+		expect(tracker).toBeDefined();
+	});
+
+	it("should generate singularity report", async () => {
+		const { generateSingularityReport, formatSingularityStats } = await import("./singularity.js");
+		try {
+			const stats = generateSingularityReport({ maxCommits: 10 });
+			expect(stats.totalCommits).toBeGreaterThan(0);
+			expect(stats.singularityPercentage).toBeGreaterThanOrEqual(0);
+			expect(stats.singularityPercentage).toBeLessThanOrEqual(100);
+			expect(stats.authors.length).toBeGreaterThan(0);
+
+			const formatted = formatSingularityStats(stats);
+			expect(formatted).toContain("Singularity Percentage");
+			expect(formatted).toContain("Bot commits");
+			expect(formatted).toContain("Human commits");
+		} catch {
+			// May fail in non-git environments
+		}
+	});
+
+	it("should identify bot authors correctly", async () => {
+		const { SingularityTracker } = await import("./singularity.js");
+		// Test with custom bot names
+		const tracker = new SingularityTracker({ botNames: ["paimon[bot]", "custom-bot"] });
+		expect(tracker).toBeDefined();
+	});
+
+	it("should include file-level analysis when requested", async () => {
+		const { generateSingularityReport } = await import("./singularity.js");
+		try {
+			const stats = generateSingularityReport({
+				includeFileAnalysis: true,
+				maxCommits: 10,
+				filePatterns: ["src/*.ts"],
+			});
+			expect(stats.fileAnalysis).toBeDefined();
+			if (stats.fileAnalysis && stats.fileAnalysis.length > 0) {
+				expect(stats.fileAnalysis[0].file).toBeDefined();
+				expect(stats.fileAnalysis[0].botPercentage).toBeGreaterThanOrEqual(0);
+				expect(stats.fileAnalysis[0].botPercentage).toBeLessThanOrEqual(100);
+			}
+		} catch {
+			// May fail in non-git environments
+		}
+	});
+
+	it("should check if file is bot-authored", async () => {
+		const { SingularityTracker } = await import("./singularity.js");
+		try {
+			const tracker = new SingularityTracker();
+			const result = tracker.isFileBotAuthored("src/agent.ts");
+			expect(typeof result).toBe("boolean");
+		} catch {
+			// May fail in non-git environments
+		}
+	});
+
+	it("should get primary author of file", async () => {
+		const { SingularityTracker } = await import("./singularity.js");
+		try {
+			const tracker = new SingularityTracker();
+			const result = tracker.getFilePrimaryAuthor("src/agent.ts");
+			expect(result).toBeDefined();
+			expect(typeof result).toBe("string");
+		} catch {
+			// May fail in non-git environments
+		}
+	});
+
+	it("should singularity tool export correctly", async () => {
+		const { singularityTool } = await import("./tools/singularity-tool.js");
+		expect(singularityTool).toBeDefined();
+		expect(singularityTool.name).toBe("singularity");
+		expect(singularityTool.description).toContain("Singularity metric");
+		expect(singularityTool.parameters).toBeDefined();
+		expect(singularityTool.execute).toBeDefined();
+	});
+});

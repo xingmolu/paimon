@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Self-authorship tracking (Aider Singularity pattern, 88% metric inspiration) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | self-awareness |
 | 2026-03-31 | capability | Template-based prompts (Mini-SWE-Agent pattern, Jinja-style {{ var }} syntax) | ~12m | ✅ | lint (fixed) | No | High | evolve | prompt-customization |
 | 2026-03-31 | capability | Baseline mode for minimal agent (RL/fine-tuning experiments) | ~10m | ✅ | lint | No | High | evolve | rl-experiments |
 | 2026-03-31 | capability | Complete Issue #22 Phase 12 (extract wrap.ts, prompt.ts, slim agent.ts to 260 lines) | ~10m | ✅ | none | No | High | evolve | modular-architecture-complete |
@@ -58,14 +59,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 24/31 = 77% (last iteration)
+- First Try Success Rate: 25/32 = 78% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/31 = 26%
+- Rework Rate: 8/32 = 25%
 
 ### Capability Metrics
-- Capability Tasks: 30/31 = 97%
-- High Impact Capabilities: 22/30 = 73%
-- Capability Velocity: 30 capabilities in 2 days = 15/day
+- Capability Tasks: 31/32 = 97%
+- High Impact Capabilities: 23/31 = 74%
+- Capability Velocity: 31 capabilities in 2 days = 15.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -82,6 +83,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Self-Authorship Tracking** - High impact, enables self-awareness for evolution decisions (Aider 88% Singularity pattern)
 1. **Template-Based Prompts** - High impact, enables Jinja-style prompt customization (Mini-SWE-Agent pattern)
 1. **Baseline Mode** - High impact, enables RL experiments and fine-tuning (Mini-SWE-Agent pattern)
 1. **Modular Architecture Complete** - High impact, agent.ts reduced to 260 lines (from 502), fully modular with wrap.ts and prompt.ts extracted
@@ -508,6 +510,28 @@ Implementation details:
 **Trigger:** When a simpler baseline agent is needed for debugging, testing, or fine-tuning experiments
 
 **Reuse Rule:** Use `--minimal` flag to activate minimal mode. The agent will only use bash commands, making it simpler and easier to debug. Use `getHistory()` to export message history for analysis.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Self-Authorship Tracking (Aider Singularity Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 13 - Self-authorship tracking inspired by Aider's 88% Singularity metric
+
+**Insight:** Aider's "Singularity" metric (88% of code written by itself) provides critical self-awareness for self-evolution:
+1. **Self-authorship tracking** - Know which code the agent authored vs humans via git commit analysis
+2. **Bot author detection** - Recognize `paimon[bot]` commits as self-authored
+3. **File-level analysis** - Git blame shows line-level authorship for individual files
+4. **Confidence decisions** - Be more confident modifying bot-authored code (>50% Paimon-authored)
+5. **Evolution progress tracking** - Track how much the agent has grown itself over time
+6. **Author breakdown** - See contribution percentages by each developer
+
+**Trigger:** When needing to understand code origin before modifications, or tracking evolution progress
+
+**Reuse Rule:** Use `singularity({action: 'report'})` to get full stats. Use `singularity({action: 'check', file: 'path'})` before modifying files. Be more confident with bot-authored code.
 
 **Priority:** High
 

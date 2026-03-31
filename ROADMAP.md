@@ -83,6 +83,13 @@ Planned improvements for evo.
 - [x] Slim down src/agent.ts to under 300 lines
 - [x] All tests pass with modular architecture
 
+## Phase 13: Self-Authorship Tracking (Aider Singularity Pattern)
+- [x] Singularity module — Track self-authorship percentage via git commit analysis
+- [x] singularity tool — Tool for tracking how much code was written by Paimon vs humans
+- [x] Bot author detection — Recognize paimon[bot] commits as self-authored
+- [x] File-level analysis — Analyze individual files for bot vs human authorship
+- [x] Author breakdown — Track contributions by each author
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

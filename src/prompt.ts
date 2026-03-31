@@ -220,7 +220,8 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Do NOT run git commit or git push - the evolution script handles this
 - Just say "DONE" when your work is complete
 - When stuck in a loop, use \`stuck({action: 'check'})\` then \`stuck({action: 'recover', recoveryOption: N})\`
-- On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons`;
+- On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons
+- Before modifying code, check self-authorship with \`singularity({action: 'check', file: 'path'})\` - be more confident with bot-authored code`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";

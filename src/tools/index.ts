@@ -7,7 +7,7 @@
  * - Search tools: glob, grep, find, ls
  * - HTTP tool: http
  * - Meta tools: plan, assess, reflect, checkpoint, parallel, hook
- * - Module tools: stuck, repomap, tom
+ * - Module tools: stuck, repomap, tom, singularity
  */
 
 import type { AgentTool } from "@mariozechner/pi-agent-core";
@@ -23,6 +23,7 @@ import { planTool } from "./plan-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { repomapTool } from "./repomap-tool.js";
 import { searchTools } from "./search-tools.js";
+import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { tomTool } from "./tom-tool.js";
 
@@ -37,6 +38,7 @@ export const metaTools: AgentTool[] = [
 	stuckTool,
 	repomapTool,
 	tomTool,
+	singularityTool,
 ];
 
 /**
@@ -78,3 +80,4 @@ export { reflectTool } from "./reflect-tool.js";
 export { repomapTool } from "./repomap-tool.js";
 export { stuckTool } from "./stuck-tool.js";
 export { tomTool } from "./tom-tool.js";
+export { singularityTool } from "./singularity-tool.js";
