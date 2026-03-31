@@ -7,7 +7,7 @@
  * - Search tools: glob, grep, find, ls
  * - HTTP tool: http
  * - Meta tools: plan, assess, reflect, checkpoint, parallel, hook
- * - Module tools: stuck, repomap, tom, singularity, rag, trajectory, errorPatterns, patternMiner, bugReport
+ * - Module tools: stuck, repomap, tom, singularity, rag, trajectory, errorPatterns, patternMiner, bugReport, commitMsg
  */
 
 import type { AgentTool } from "@mariozechner/pi-agent-core";
@@ -16,6 +16,7 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { assessTool } from "./assess-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
+import { commitMsgTool } from "./commit-msg-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
@@ -49,6 +50,7 @@ export const metaTools: AgentTool[] = [
 	errorPatternsTool,
 	patternMinerTool,
 	bugReportTool,
+	commitMsgTool,
 ];
 
 /**
@@ -82,6 +84,8 @@ export { fileTools, searchTools, httpTool };
 export { assessTool } from "./assess-tool.js";
 export { bugReportTool } from "./bug-report-tool.js";
 export { checkpointTool } from "./checkpoint-tool.js";
+export { commitMsgTool } from "./commit-msg-tool.js";
+export { errorPatternsTool } from "./error-patterns-tool.js";
 export { bashTool, readTool, writeTool, editTool } from "./file-tools.js";
 export { globTool, grepTool, findTool, lsTool } from "./search-tools.js";
 export { hookTool } from "./hook-tool.js";
@@ -95,4 +99,3 @@ export { stuckTool } from "./stuck-tool.js";
 export { tomTool } from "./tom-tool.js";
 export { singularityTool } from "./singularity-tool.js";
 export { trajectoryTool } from "./trajectory-tool.js";
-export { errorPatternsTool } from "./error-patterns-tool.js";

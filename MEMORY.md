@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve | commit-quality-improvement |
 | 2026-03-31 | capability | Bug Report Generator - Auto-generate structured bug reports from failed sessions | ~15m | ✅ | lint (fixed) | No | High | evolve | feedback-loop |
 | 2026-03-31 | capability | Fix Singularity git log format bug - Enable self-awareness tracking | ~5m | ✅ | none | No | Medium | evolve | self-awareness-tracking |
 | 2026-03-31 | capability | Evolution Pattern Mining - Mine successful patterns from session history for task recommendations | ~15m | ✅ | lint (fixed) | No | High | evolve, plan-architecture | task-selection-intelligence |
@@ -89,6 +90,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Auto-Commit Message Generation** - High impact, generates conventional commit messages from git diffs (Aider pattern)
 1. **Bug Report Generator** - High impact, auto-generates structured bug reports from failed sessions (Claude Code /bug pattern)
 1. **Error Pattern Learning** - High impact, learns from error patterns across sessions for automatic solutions (OpenHands/Claude Code pattern)
 1. **Trajectory Viewer** - High impact, enables debugging and fine-tuning via trajectory analysis (Mini-SWE-Agent pattern)
@@ -119,6 +121,34 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-03-31: Auto-Commit Message Generation (Aider Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 19 - Auto-generate conventional commit messages from git diffs
+
+**Insight:** Aider's commit message generation provides significant benefits for self-evolution:
+1. **Conventional commit format** - Structured messages (feat, fix, refactor, etc.) improve git history readability
+2. **Diff analysis** - Parse git diffs to extract files, lines added/removed, and content patterns
+3. **Type detection** - Detect commit type from diff patterns (test files → test, markdown → docs, etc.)
+4. **LLM generation** - Optional LLM-based generation for better messages
+5. **Rule-based fallback** - Simple rules work well without LLM overhead
+
+Implementation details:
+- `CommitMessageGenerator` class with diff parsing and analysis
+- `commitMsg` tool with generate, preview, stats, commit actions
+- Support for staged, unstaged, and all diff types
+- Scope detection from file paths
+- Token budget management for large diffs
+
+**Trigger:** When needing to generate commit messages during self-evolution
+
+**Reuse Rule:** Use `commitMsg({action: 'generate'})` to generate commit messages. Use `commitMsg({action: 'preview'})` to preview before committing.
+
+**Priority:** High
+
+---
 
 ### 2026-03-31: Evolution Pattern Mining for Task Selection
 

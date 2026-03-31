@@ -127,6 +127,15 @@ Planned improvements for evo.
 - [x] Suggested fixes — Generate fix suggestions based on error patterns
 - [x] GitHub issue format — Format bug reports as GitHub issues
 
+## Phase 19: Auto-Commit Message Generation (Aider Pattern)
+- [x] CommitMessageGenerator module — Generate conventional commit messages from git diffs
+- [x] commitMsg tool — Tool for generating commit messages with preview/stats/commit actions
+- [x] Conventional commit format — Support feat, fix, refactor, docs, test, chore types
+- [x] Diff analysis — Parse git diffs to extract files, lines added/removed
+- [x] Type detection — Detect commit type from diff patterns
+- [x] LLM generation — Optional LLM-based commit message generation
+- [x] Rule-based fallback — Simple rules for commit type detection without LLM
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
