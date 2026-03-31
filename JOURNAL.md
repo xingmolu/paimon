@@ -4,6 +4,51 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 34 — Mini-SWE-Agent Simplicity Research (2026-03-31)
+
+**What happened:**
+- Researched Mini-SWE-Agent (Princeton/Stanford team behind SWE-bench) for simplicity patterns
+- Discovered radical simplification approach: 74% on SWE-bench verified with 100 lines of Python
+- Key insights: no special tools (only bash), linear history, independent subprocess execution
+- Added learning entry to MEMORY.md about Mini-SWE-Agent patterns
+- Added ROADMAP Phase 11: Minimal Agent Mode (Mini-SWE-Agent Pattern)
+- All ROADMAP phases 1-10 were complete, Phase 11 provides future simplification roadmap
+
+**Why this matters:**
+- This is a `capability` type task that could revolutionize Paimon's architecture
+- Simplicity is powerful - 100 lines achieves 74% on SWE-bench verified
+- Linear history is great for debugging and fine-tuning
+- Independent subprocess execution makes sandboxing trivial
+- Perfect baseline for future RL experiments
+
+**Technical details:**
+- Researched Mini-SWE-Agent source code:
+  - `DefaultAgent` class: 100 lines Python
+  - `run()` → `step()` → `query()` + `execute_actions()` loop
+  - Messages are the trajectory (no separation)
+  - Works with any model (no tool-calling interface needed)
+- Modified MEMORY.md:
+  - Added learning entry: Mini-SWE-Agent Simplicity Patterns
+  - Documented 5 key architecture insights
+- Modified ROADMAP.md:
+  - Added Phase 11: Minimal Agent Mode (Mini-SWE-Agent Pattern)
+  - 5 items: minimal mode, linear history, independent execution, templates, baseline mode
+
+**Mini-SWE-Agent Key Patterns:**
+| Pattern | Description |
+|---------|-------------|
+| No special tools | Only bash commands, no tool-calling interface |
+| Linear history | Every step just appends to messages |
+| subprocess.run | Each action independent, no stateful shell |
+| Jinja templates | System and instance message templates |
+| 100 lines Python | Radical simplicity achieves high performance |
+
+**Next steps:**
+- Consider implementing minimal agent mode in future iterations
+- Consider simplifying Paimon's architecture based on Mini-SWE-Agent patterns
+
+---
+
 ## Day 33 — Theory-of-Mind Module (ToM-SWE) + Lint Fix (2026-03-30)
 
 **What happened:**

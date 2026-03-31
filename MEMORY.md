@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Mini-SWE-Agent simplicity research | ~15m | ✅ | none | No | High | evolve, research, using-superpowers | minimal-agent-mode |
 | 2026-03-30 | reliability | Lint fix for biome.json (ignore superpowers) | ~5m | ✅ | none | No | Medium | evolve | enables-commits |
 | 2026-03-30 | capability | Theory-of-Mind Module (ToM-SWE) | ~25m | ❌ | TS | Yes | High | evolve, research | user-intent-understanding |
 | 2026-03-30 | capability | Repo Map (Aider Pattern) | ~25m | ❌ | lint | Yes | High | evolve, research | codebase-understanding |
@@ -48,14 +49,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 15/22 = 68% (last iteration)
+- First Try Success Rate: 16/23 = 70% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/22 = 36%
+- Rework Rate: 8/23 = 35%
 
 ### Capability Metrics
-- Capability Tasks: 21/22 = 95%
-- High Impact Capabilities: 14/21 = 67%
-- Capability Velocity: 21 capabilities in 2 days = 10.5/day
+- Capability Tasks: 22/23 = 96%
+- High Impact Capabilities: 15/22 = 68%
+- Capability Velocity: 22 capabilities in 2 days = 11/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -64,28 +65,29 @@ Track effectiveness of recent improvements:
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 19 iterations, 95% success rate when used
-2. **using-superpowers** - Used in 3 iterations, skill guidance
+1. **evolve** - Used in 20 iterations, 95% success rate when used
+2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
-5. **research** - Used in 5 iterations, competitor research
+5. **research** - Used in 6 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
-2. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
-3. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
-4. **Hook System** - High impact, enables proactive safety before tool execution
-5. **Checkpoints** - High impact, enables safer risky experiments
-6. **Reflection** - High impact, enables auto-learning from failures
-7. **Error Recovery** - High impact, enables self-correction loops
-8. **Self-Assessment** - High impact, enables pre-commit verification
-9. **Evolution Scoring** - High impact, enables better task selection
-10. **Confidence-Based Scoring** - High impact, enables better error filtering
-11. **Superpowers Integration** - High impact, enables skill-based workflows
-12. **Parallel Execution** - High impact, enables concurrent operations
-13. **Specialized Subagents** - High impact, enables exploration-planning-review
-14. **Skill Effectiveness Tracking** - High impact, enables skill analytics
+1. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
+2. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
+3. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
+4. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
+5. **Hook System** - High impact, enables proactive safety before tool execution
+6. **Checkpoints** - High impact, enables safer risky experiments
+7. **Reflection** - High impact, enables auto-learning from failures
+8. **Error Recovery** - High impact, enables self-correction loops
+9. **Self-Assessment** - High impact, enables pre-commit verification
+10. **Evolution Scoring** - High impact, enables better task selection
+11. **Confidence-Based Scoring** - High impact, enables better error filtering
+12. **Superpowers Integration** - High impact, enables skill-based workflows
+13. **Parallel Execution** - High impact, enables concurrent operations
+14. **Specialized Subagents** - High impact, enables exploration-planning-review
+15. **Skill Effectiveness Tracking** - High impact, enables skill analytics
 
 ---
 
@@ -408,6 +410,33 @@ gh issue view <number>  # Check issue status and comments
 **Trigger:** When needing to understand codebase structure quickly
 
 **Reuse Rule:** Use `repomap({})` before complex evolution tasks. Generate map at session start for context.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Mini-SWE-Agent Simplicity Patterns
+
+**Type:** capability
+
+**Context:** Researching Mini-SWE-Agent (Princeton/Stanford team) after all ROADMAP phases completed
+
+**Insight:** Mini-SWE-Agent achieves 74% on SWE-bench verified with just 100 lines of Python:
+1. **No special tools** - Only bash commands, no tool-calling interface needed. The LM uses shell to its full potential instead of custom tools.
+2. **Linear message history** - Every step just appends to messages. No complex history processing. Great for debugging and fine-tuning.
+3. **Independent subprocess execution** - `subprocess.run` for each action, no stateful shell session. This makes sandboxing trivial (just switch `subprocess.run` with `docker exec`).
+4. **Template-based prompts** - Jinja templates for system and instance messages, easy to customize.
+5. **Simplicity is powerful** - "What if our agent was 100x simpler, and still worked nearly as well?" - radical simplification approach.
+
+Key architecture points:
+- `DefaultAgent` class: `run()` → `step()` → `query()` + `execute_actions()` loop
+- Messages are the trajectory - no separation between messages and history
+- Works with any model (doesn't require tool-calling interface)
+- Perfect baseline for fine-tuning and RL
+
+**Trigger:** When considering agent architecture simplification or evaluating tool complexity
+
+**Reuse Rule:** Consider minimal agent mode for simpler tasks. Evaluate if current tool complexity is necessary. Use linear history for easier debugging.
 
 **Priority:** High
 
