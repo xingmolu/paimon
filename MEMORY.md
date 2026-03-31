@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Bug Report Generator - Auto-generate structured bug reports from failed sessions | ~15m | ✅ | lint (fixed) | No | High | evolve | feedback-loop |
 | 2026-03-31 | capability | Fix Singularity git log format bug - Enable self-awareness tracking | ~5m | ✅ | none | No | Medium | evolve | self-awareness-tracking |
 | 2026-03-31 | capability | Evolution Pattern Mining - Mine successful patterns from session history for task recommendations | ~15m | ✅ | lint (fixed) | No | High | evolve, plan-architecture | task-selection-intelligence |
 | 2026-03-31 | capability | Error Pattern Learning - Learn from error patterns across sessions for automatic solutions | ~15m | ✅ | lint (fixed) | No | High | evolve | error-recovery |
@@ -64,19 +65,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 30/37 = 81%
+- First Try Success Rate: 31/38 = 82%
 - Average Time: ~14 minutes
-- Rework Rate: 8/37 = 22%
+- Rework Rate: 8/38 = 21%
 
 ### Capability Metrics
-- Capability Tasks: 36/37 = 97%
-- High Impact Capabilities: 27/36 = 75%
-- Capability Velocity: 36 capabilities in 2 days = 18/day
+- Capability Tasks: 37/38 = 97%
+- High Impact Capabilities: 28/37 = 76%
+- Capability Velocity: 37 capabilities in 2 days = 18.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 10
+- Lint Issues: 11
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
@@ -88,6 +89,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Bug Report Generator** - High impact, auto-generates structured bug reports from failed sessions (Claude Code /bug pattern)
 1. **Error Pattern Learning** - High impact, learns from error patterns across sessions for automatic solutions (OpenHands/Claude Code pattern)
 1. **Trajectory Viewer** - High impact, enables debugging and fine-tuning via trajectory analysis (Mini-SWE-Agent pattern)
 1. **Self-Authorship Tracking** - High impact, enables self-awareness for evolution decisions (Aider 88% Singularity pattern)

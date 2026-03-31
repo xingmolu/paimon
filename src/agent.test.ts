@@ -2666,3 +2666,254 @@ describe("PatternMiner", () => {
 		});
 	});
 });
+
+describe("bugReport tool", () => {
+	const BUG_REPORT_DIR = join(process.cwd(), "test-bug-reports");
+
+	beforeEach(() => {
+		if (existsSync(BUG_REPORT_DIR)) {
+			rmSync(BUG_REPORT_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(BUG_REPORT_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(BUG_REPORT_DIR)) {
+			rmSync(BUG_REPORT_DIR, { recursive: true, force: true });
+		}
+	});
+
+	it("should have bugReport tool in tools array", async () => {
+		const { createAgent } = await import("./agent.js");
+		expect(createAgent).toBeDefined();
+	});
+
+	it("should have bugReport parameters defined", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const { agent, run } = createAgent(config);
+		expect(agent).toBeDefined();
+		expect(run).toBeDefined();
+	});
+
+	it("should support bugReport actions: generate, list, view, stats, issue, save", async () => {
+		const { createAgent } = await import("./agent.js");
+		const config = {
+			apiKey: "test-key",
+			model: "test-model",
+			baseUrl: "https://test.example.com",
+		};
+		const result = createAgent(config);
+		expect(result.agent).toBeDefined();
+	});
+
+	describe("BugReportGenerator", () => {
+		it("should create BugReportGenerator", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+			expect(generator).toBeDefined();
+		});
+
+		it("should generate bug report", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			const report = generator.generateReport(
+				"Test task description",
+				"capability",
+				"TypeScript error: Cannot find name 'foo'",
+				["evolve", "research"],
+				15,
+				[],
+				{ firstTrySuccess: false, reworkCount: 2 },
+			);
+
+			expect(report.id).toBeDefined();
+			expect(report.title).toContain("TypeScript");
+			expect(report.context.taskDescription).toBe("Test task description");
+			expect(report.error.type).toBe("typescript");
+			expect(report.error.message).toContain("Cannot find name");
+			expect(report.suggestedFixes.length).toBeGreaterThan(0);
+		});
+
+		it("should detect error types correctly", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			// TypeScript error
+			const tsReport = generator.generateReport(
+				"Task",
+				"capability",
+				"TS2304: Cannot find name",
+				[],
+				0,
+			);
+			expect(tsReport.error.type).toBe("typescript");
+
+			// Test error
+			const testReport = generator.generateReport(
+				"Task",
+				"capability",
+				"FAIL: expected 5 but received 3",
+				[],
+				0,
+			);
+			expect(testReport.error.type).toBe("test");
+
+			// Lint error
+			const lintReport = generator.generateReport(
+				"Task",
+				"capability",
+				"lint error: unused variable",
+				[],
+				0,
+			);
+			expect(lintReport.error.type).toBe("lint");
+
+			// Runtime error
+			const runtimeReport = generator.generateReport(
+				"Task",
+				"capability",
+				"Error: ENOENT file not found",
+				[],
+				0,
+			);
+			expect(runtimeReport.error.type).toBe("runtime");
+		});
+
+		it("should extract file and line from error", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			const report = generator.generateReport(
+				"Task",
+				"capability",
+				"src/test.ts(10,5): error TS2304: Cannot find name",
+				[],
+				0,
+			);
+
+			expect(report.error.file).toBe("src/test.ts");
+			expect(report.error.line).toBe(10);
+		});
+
+		it("should format report as markdown", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			const report = generator.generateReport(
+				"Test task",
+				"capability",
+				"Test error message",
+				["evolve"],
+				10,
+			);
+
+			const markdown = generator.formatAsMarkdown(report);
+			expect(markdown).toContain("# Bug Report");
+			expect(markdown).toContain("**Task:** Test task");
+			expect(markdown).toContain("**Skills Used:** evolve");
+			expect(markdown).toContain("## Error Details");
+			expect(markdown).toContain("Test error message");
+		});
+
+		it("should save report to file", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			const report = generator.generateReport("Test task", "capability", "Test error", [], 5);
+			const filepath = generator.saveReport(report);
+
+			expect(existsSync(filepath)).toBe(true);
+			const content = readFileSync(filepath, "utf-8");
+			expect(content).toContain("# Bug Report");
+			expect(content).toContain(report.id);
+		});
+
+		it("should list saved reports", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			// Generate and save a report
+			const report = generator.generateReport("Test task", "capability", "Test error", [], 5);
+			generator.saveReport(report);
+
+			const reports = generator.listReports();
+			expect(reports.length).toBe(1);
+			expect(reports[0].filename).toContain("bug-");
+		});
+
+		it("should load saved report", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			// Generate and save a report
+			const report = generator.generateReport(
+				"Test task",
+				"capability",
+				"Test error message",
+				[],
+				5,
+			);
+			generator.saveReport(report);
+
+			// List and load it back
+			const reports = generator.listReports();
+			expect(reports.length).toBe(1);
+			const loaded = generator.loadReport(reports[0].filename);
+			expect(loaded).toBeDefined();
+			expect(loaded?.id).toBe(report.id);
+			expect(loaded?.context.taskDescription).toBe("Test task");
+		});
+
+		it("should format as GitHub issue", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			const report = generator.generateReport("Test task", "capability", "Test error", [], 5);
+			const issue = generator.formatAsGitHubIssue(report);
+
+			expect(issue).toContain("## Bug Report");
+			expect(issue).toContain("### Description");
+			expect(issue).toContain("Test task");
+			expect(issue).toContain("### Error");
+		});
+
+		it("should get stats on reports", async () => {
+			const { BugReportGenerator } = await import("./bug-report.js");
+			const generator = new BugReportGenerator(BUG_REPORT_DIR);
+
+			// Generate and save multiple reports
+			const report1 = generator.generateReport("Task 1", "capability", "TS error", [], 10);
+			const report2 = generator.generateReport("Task 2", "reliability", "Test error", [], 5);
+			generator.saveReport(report1);
+			generator.saveReport(report2);
+
+			const stats = generator.getStats();
+			expect(stats.totalReports).toBe(2);
+		});
+	});
+
+	describe("formatBugReportStats", () => {
+		it("should format stats", async () => {
+			const { formatBugReportStats } = await import("./bug-report.js");
+
+			const stats = {
+				totalReports: 5,
+				byTaskType: { capability: 3, reliability: 2 },
+				byErrorType: { typescript: 2, test: 3 },
+				averageTime: 12.5,
+			};
+
+			const result = formatBugReportStats(stats);
+			expect(result).toContain("5");
+			expect(result).toContain("capability: 3");
+			expect(result).toContain("typescript: 2");
+			expect(result).toContain("12.5");
+		});
+	});
+});

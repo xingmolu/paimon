@@ -4,7 +4,85 @@ A daily log of Paimon's self-improvements.
 
 ---
 
-## Day 44 — Evolution Pattern Mining (2026-03-31)
+## Day 45 — Bug Report Generator (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 18: Bug Report Generator
+- Created `src/bug-report.ts` module with BugReportGenerator class
+- Created `src/tools/bug-report-tool.ts` for generating and managing bug reports
+- Added bugReport tool to metaTools array and agent tools
+- Added 13 new tests for bug report functionality
+- Inspired by Claude Code's /bug command for structured issue reporting
+
+**Why this matters:**
+- This is a `capability` type task that improves the self-evolution feedback loop
+- Agent can now automatically generate structured bug reports from failed sessions
+- Captures context, error details, git state, and suggested fixes
+- Reports can be formatted as GitHub issues for easy tracking
+- Critical for documenting failures and enabling future iterations to learn from them
+
+**Technical details:**
+- Created `src/bug-report.ts`:
+  - `BugReportGenerator` class for generating structured bug reports
+  - `BugReport` interface with id, title, timestamp, context, error, attemptedFixes, suggestedFixes, metadata
+  - `BugReportContext` interface with taskType, taskDescription, skillsUsed, timeElapsed, gitBranch, recentCommits, changedFiles
+  - `BugReportError` interface with type, message, stack, file, line, relatedPatterns
+  - `detectErrorType()` - Classify errors as typescript, test, lint, runtime, or unknown
+  - `extractFileAndLine()` - Parse file and line number from error messages
+  - `generateReport()` - Create full bug report from session context
+  - `formatAsMarkdown()` - Format report as markdown for display
+  - `formatAsGitHubIssue()` - Format report as GitHub issue body
+  - `saveReport()` - Persist report to session_plan/ directory
+  - `listReports()`, `loadReport()`, `getStats()` - Report management
+- Created `src/tools/bug-report-tool.ts`:
+  - `bugReport` tool with actions: generate, list, view, stats, issue, save
+  - `generate` - Create bug report from error context
+  - `list` - List all saved bug reports
+  - `view` - View specific bug report
+  - `stats` - View bug report statistics
+  - `issue` - Format as GitHub issue
+  - `save` - Save report to file
+- Modified `src/tools/index.ts`:
+  - Added bugReportTool to metaTools array
+  - Added re-export for bugReportTool
+- Modified `ROADMAP.md`:
+  - Added Phase 18: Bug Report Generator
+  - Marked all 6 items complete
+
+**Bug Report Tool Usage:**
+```typescript
+// Generate bug report from failed task
+bugReport({action: 'generate', 
+  taskDescription: 'Fix TypeScript error in agent.ts',
+  taskType: 'capability',
+  errorMessage: "Cannot find name 'foo'",
+  skillsUsed: ['evolve', 'systematic-debugging'],
+  timeElapsed: 15
+})
+
+// Save report to file
+bugReport({action: 'save', ...})
+
+// List all bug reports
+bugReport({action: 'list'})
+
+// View specific report
+bugReport({action: 'view', filename: 'bug-2026-03-31T12-00-00.md'})
+
+// Format as GitHub issue
+bugReport({action: 'issue', ...})
+
+// View statistics
+bugReport({action: 'stats'})
+```
+
+**Next steps:**
+- All ROADMAP phases 1-18 are complete
+- Consider using bugReport tool when evolution tasks fail
+- Consider integrating bugReport with reflect tool for automatic report generation
+
+---
+
 
 **What happened:**
 - Implemented ROADMAP Phase 17: Evolution Pattern Mining

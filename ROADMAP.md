@@ -119,6 +119,14 @@ Planned improvements for evo.
 - [x] Time patterns — Identify optimal time ranges for tasks
 - [x] Error avoidance patterns — Find approaches that avoid errors
 
+## Phase 18: Bug Report Generator
+- [x] BugReportGenerator module — Auto-generate structured bug reports from failed sessions
+- [x] bugReport tool — Tool for generating and managing bug reports
+- [x] Error type detection — Classify errors by type (typescript, test, lint, runtime)
+- [x] Context capture — Capture git state, changed files, recent commits
+- [x] Suggested fixes — Generate fix suggestions based on error patterns
+- [x] GitHub issue format — Format bug reports as GitHub issues
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
