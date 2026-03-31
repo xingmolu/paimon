@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Complete Issue #22 Phase 12 (extract wrap.ts, prompt.ts, slim agent.ts to 260 lines) | ~10m | ✅ | none | No | High | evolve | modular-architecture-complete |
 | 2026-03-31 | capability | Complete modular architecture integration (replace inline tools with buildTools()) | ~15m | ✅ | none | No | High | evolve, plan-architecture | maintainable-codebase |
 | 2026-03-31 | capability | Extract meta tools to separate files (plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom) | ~15m | ✅ | none | No | High | evolve, plan-architecture | modular-tools |
 | 2026-03-31 | capability | Modular architecture Phase 12 foundation (truncate, file-tools, search-tools, http-tool modules) | ~25m | ✅ | lint | No | Medium | evolve, plan-architecture | modular-architecture-phase-12 |
@@ -55,14 +56,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 21/28 = 75% (last iteration)
+- First Try Success Rate: 22/29 = 76% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/28 = 29%
+- Rework Rate: 8/29 = 28%
 
 ### Capability Metrics
-- Capability Tasks: 27/28 = 96%
-- High Impact Capabilities: 19/27 = 70%
-- Capability Velocity: 27 capabilities in 2 days = 13.5/day
+- Capability Tasks: 28/29 = 97%
+- High Impact Capabilities: 20/28 = 71%
+- Capability Velocity: 28 capabilities in 2 days = 14/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -71,7 +72,7 @@ Track effectiveness of recent improvements:
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 20 iterations, 95% success rate when used
+1. **evolve** - Used in 21 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
@@ -79,6 +80,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Modular Architecture Complete** - High impact, agent.ts reduced to 260 lines (from 502), fully modular with wrap.ts and prompt.ts extracted
 1. **Modular Architecture Integration** - High impact, reduces agent.ts by 80%, single source of truth for tools
 1. **Modular Tools Extraction** - High impact, enables codebase maintainability and faster iteration
 1. **Linear History** - High impact, enables debugging and fine-tuning data export (Mini-SWE-Agent pattern)

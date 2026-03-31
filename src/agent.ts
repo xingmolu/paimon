@@ -3,79 +3,24 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 // Increase limit to prevent MaxListeners warnings from AbortSignal in HTTP requests
 setMaxListeners(100);
-import {
-	Agent,
-	type AgentEvent,
-	type AgentTool,
-	type AgentToolResult,
-	type ThinkingLevel,
-} from "@mariozechner/pi-agent-core";
+
+import { Agent, type AgentEvent, type AgentTool } from "@mariozechner/pi-agent-core";
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { ContextManager } from "./compaction.js";
-import { loadContextFiles } from "./context.js";
-import { type HookContext, type HookManager, globalHookManager } from "./hooks.js";
+import { globalHookManager } from "./hooks.js";
+import { buildSystemPrompt } from "./prompt.js";
 import type { SessionManager } from "./session.js";
-import { buildSkillsIndex } from "./skills.js";
 import type { ErrorMessage, LinearMessage, PaimonConfig } from "./types.js";
-
-// Re-export PaimonConfig for backward compatibility
-export type { PaimonConfig } from "./types.js";
+import { createWrappedTools } from "./wrap.js";
 
 // Import tools from extracted modules
 import { buildTools } from "./tools/index.js";
 
+// Re-export PaimonConfig for backward compatibility
+export type { PaimonConfig } from "./types.js";
+
 // Build tools from extracted modules
 const tools: AgentTool[] = buildTools();
-
-/**
- * Create wrapped tools with PreToolUse hooks
- * Each tool's execute function is wrapped to check hooks before execution
- */
-function createWrappedTools(
-	hookManager: HookManager,
-	onToolOutput?: (size: number) => void,
-): AgentTool[] {
-	return tools.map((tool) => ({
-		...tool,
-		execute: async (toolCallId: string, params: unknown): Promise<AgentToolResult<unknown>> => {
-			// Execute PreToolUse hooks
-			const hookContext: HookContext = {
-				tool: tool.name,
-				params: params as Record<string, unknown>,
-			};
-
-			const hookResult = await hookManager.executeHooks("PreToolUse", hookContext);
-
-			// If hook blocks, return block message instead of executing tool
-			if (!hookResult.allow) {
-				const blockMessage = `🚫 Hook blocked this action:\n${hookResult.block || "Unknown reason"}\n${hookResult.context || ""}`;
-				return {
-					content: [{ type: "text", text: blockMessage }],
-					details: { blocked: true, hookResult },
-				};
-			}
-
-			let result: AgentToolResult<unknown>;
-
-			// If hook warns, add warning to output
-			if (hookResult.warning) {
-				result = await tool.execute(toolCallId, params);
-				const warningPrefix = `⚠️ ${hookResult.warning}\n\n`;
-				if (result.content?.[0] && result.content[0].type === "text") {
-					result.content[0].text = warningPrefix + result.content[0].text;
-				}
-			} else {
-				result = await tool.execute(toolCallId, params);
-			}
-
-			if (onToolOutput && result.content?.[0] && result.content[0].type === "text") {
-				onToolOutput(Math.ceil(result.content[0].text.length / 4));
-			}
-
-			return result;
-		},
-	}));
-}
 
 function createModel(config: PaimonConfig): Model<Api> {
 	return {
@@ -134,7 +79,7 @@ export function createAgent(
 	let estimatedToolOutputTokens = 0;
 
 	// Initial system prompt without compaction summary
-	const systemPrompt = buildSystemPrompt(config, null);
+	const systemPrompt = buildSystemPrompt(config, tools, null);
 
 	// Add system message to linear history if enabled
 	if (linearHistoryEnabled) {
@@ -150,7 +95,7 @@ export function createAgent(
 	agent.setSystemPrompt(systemPrompt);
 	// Use wrapped tools with PreToolUse hooks for safety
 	agent.setTools(
-		createWrappedTools(globalHookManager, (size) => {
+		createWrappedTools(tools, globalHookManager, (size) => {
 			estimatedToolOutputTokens += size;
 		}),
 	);
@@ -192,7 +137,7 @@ export function createAgent(
 
 			// Rebuild agent with summary in system prompt
 			const summary = contextManager.getMessages()[0]?.content || "";
-			const newSystemPrompt = buildSystemPrompt(config, summary);
+			const newSystemPrompt = buildSystemPrompt(config, tools, summary);
 			agent.setSystemPrompt(newSystemPrompt);
 		}
 
@@ -313,190 +258,4 @@ export function createAgent(
 			},
 		}),
 	};
-}
-
-function buildToolsDescription(): string {
-	return tools.map((t) => `- ${t.name}: ${t.description}`).join("\n");
-}
-
-const MAX_TOOL_OUTPUT_CHARS = 30000;
-
-function truncateToolOutput(text: string, label: string): string {
-	if (text.length <= MAX_TOOL_OUTPUT_CHARS) return text;
-	const lines = text.split("\n");
-	const totalLines = lines.length;
-	const kept = lines.slice(0, Math.floor(totalLines * 0.6));
-	const dropped = totalLines - kept.length;
-	return `${kept.join("\n")}\n\n... [TRUNCATED: ${dropped} lines omitted, file too large (${Math.round(text.length / 1024)}KB). Use read with specific line ranges.]`;
-}
-
-function extractMemorySummary(memory: string): string {
-	const lines = memory.split("\n");
-	const sections: string[] = [];
-	let inScorecard = false;
-	let scorecardHeader = "";
-	let scorecardRows = 0;
-	let inMetrics = false;
-
-	for (const line of lines) {
-		if (line.startsWith("## Task Types")) {
-			inScorecard = false;
-			inMetrics = false;
-		}
-		if (line.startsWith("## Evolution Scorecard")) {
-			inScorecard = true;
-			inMetrics = false;
-		}
-		if (line.startsWith("## Learnings")) {
-			inScorecard = false;
-			inMetrics = false;
-			break;
-		}
-		if (line.startsWith("### ")) {
-			if (inScorecard) inMetrics = true;
-		}
-
-		if (inScorecard) {
-			if (line.startsWith("|")) {
-				if (line.includes("Date") && line.includes("Task Type")) {
-					scorecardHeader = line;
-					sections.push(line);
-				} else if (line.startsWith("|--")) {
-					sections.push(line);
-				} else {
-					scorecardRows++;
-					if (scorecardRows <= 5) {
-						sections.push(line);
-					}
-				}
-			} else if (inMetrics && !line.startsWith("|--")) {
-				sections.push(line);
-			}
-		}
-	}
-
-	if (scorecardRows > 5) {
-		sections.push(
-			`... (${scorecardRows - 5} older entries omitted. Read MEMORY.md for full history.)`,
-		);
-	}
-
-	sections.push("");
-	sections.push("Use `read MEMORY.md` to see full learnings and history.");
-
-	return sections.join("\n");
-}
-
-function buildSystemPrompt(config: PaimonConfig, summary?: string | null): string {
-	const mode = config.mode || "chat";
-
-	if (mode === "evolve") {
-		return buildEvolvePrompt(config, summary);
-	}
-	return buildChatPrompt(config, summary);
-}
-
-function buildChatPrompt(config: PaimonConfig, summary?: string | null): string {
-	let prompt = `---
-name: paimon
-description: A helpful AI assistant
-tools: [${tools.map((t) => t.name).join(", ")}]
----
-
-You are Paimon, a helpful AI assistant with access to file system tools.
-
-## Tools
-${buildToolsDescription()}
-
-## Memory
-You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
-
-${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Guidelines
-- Be helpful, concise, and accurate
-- Use tools when needed to complete tasks
-- For complex tasks, create a plan first using the plan tool
-- If something fails, explain the error and suggest solutions
-
-When done with a task, summarize what you accomplished.`;
-
-	// Load project context from AGENTS.md / CLAUDE.md files
-	const contextContent = loadContextFiles(process.cwd());
-	if (contextContent) {
-		prompt += `\n\n## Project Context\n\n${contextContent}`;
-	}
-
-	// Load persistent memory (compact summary only)
-	const memoryPath = config.memoryPath || "MEMORY.md";
-	if (existsSync(memoryPath)) {
-		const memory = readFileSync(memoryPath, "utf-8");
-		prompt += `\n\n## Current Memory (summary)\n\n${extractMemorySummary(memory)}`;
-	}
-
-	return prompt;
-}
-
-function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): string {
-	let prompt = `---
-name: evo
-description: Self-evolving AI agent that improves its own codebase
-tools: [${tools.map((t) => t.name).join(", ")}]
----
-
-You are evo, a self-evolving AI agent. Your goal is to improve yourself.
-
-## Tools
-${buildToolsDescription()}
-
-## Memory
-You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
-
-${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Workflow
-
-Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key rules:
-
-1. **Gather context**: Read IDENTITY.md, JOURNAL.md, MEMORY.md, ROADMAP.md
-2. **Select task**: Score all candidates (capability > reliability > feature). Output selection table with reasoning.
-3. **Implement**: Minimal changes, use \`edit\` preferred. Create checkpoint before risky changes.
-4. **Verify**: \`assess({})\` before saying DONE. Use \`assess({maxAttempts: 5})\` for auto-retry.
-5. **Complete**: Say "DONE", update JOURNAL.md and MEMORY.md scorecard.
-
-## Task Scoring (1-10)
-- +3: Improves future iteration success rate
-- +2: Reduces failure/rework rate
-- +2: Improves memory/learning quality
-- +1: Improves tool chain reliability
-- -1 to -3: Implementation complexity
-
-## Security
-- Never modify \`.github/workflows/\` without permission
-- Avoid eval(), exec() with user input
-- Always test before committing
-
-## IMPORTANT
-- Do NOT run git commit or git push - the evolution script handles this
-- Just say "DONE" when your work is complete
-- When stuck in a loop, use \`stuck({action: 'check'})\` then \`stuck({action: 'recover', recoveryOption: N})\`
-- On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons`;
-
-	// Add skills index (progressive loading - only names/descriptions)
-	const skillsDir = config.skillsDir || "skills";
-	const skillsIndex = buildSkillsIndex(skillsDir);
-	if (skillsIndex) {
-		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Skill Usage (REQUIRED)**:\n1. Before starting ANY task, identify which skills match\n2. Read matched skills first: \`read skills/<path>/SKILL.md\`\n3. Superpowers skills provide workflows for common task types\n\n**Priority**: Process skills (debugging, planning) → Implementation skills\n`;
-	}
-
-	// Load project context from AGENTS.md / CLAUDE.md files
-	const contextContent = loadContextFiles(process.cwd());
-	if (contextContent) {
-		prompt += `\n\n## Project Context\n\n${contextContent}`;
-	}
-
-	// Load persistent memory (compact summary only)
-	const memoryPath = config.memoryPath || "MEMORY.md";
-	if (existsSync(memoryPath)) {
-		const memory = readFileSync(memoryPath, "utf-8");
-		prompt += `\n\n## Current Memory (summary)\n\n${extractMemorySummary(memory)}`;
-	}
-
-	return prompt;
 }
