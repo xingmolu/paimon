@@ -144,6 +144,14 @@ Planned improvements for evo.
 - [x] Minimal agent integration — Roulette support in MinimalAgentConfig
 - [x] Seeded random — Reproducible experiments with fixed seed
 
+## Phase 21: Plugins/Extensions System (Claude Code/OpenHands Pattern)
+- [x] PluginManager module — Plugin discovery, loading, and management
+- [x] plugins tool — Tool for listing, enabling, disabling plugins
+- [x] Plugin manifest — YAML/JSON manifest for plugin metadata
+- [x] Tool plugins — Dynamic tool registration from plugins
+- [x] Hook plugins — Dynamic hook registration from plugins
+- [x] Plugin directories — Support for multiple plugin directories
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

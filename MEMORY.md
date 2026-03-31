@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks | ~15m | ✅ | lint (fixed) | No | High | evolve, research | extensible-architecture |
 | 2026-03-31 | capability | Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance | ~20m | ✅ | lint (fixed) | No | High | evolve, research | model-diversity |
 | 2026-03-31 | capability | Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve | commit-quality-improvement |
 | 2026-03-31 | capability | Bug Report Generator - Auto-generate structured bug reports from failed sessions | ~15m | ✅ | lint (fixed) | No | High | evolve | feedback-loop |
@@ -67,14 +68,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 32/39 = 82%
+- First Try Success Rate: 33/40 = 83%
 - Average Time: ~14 minutes
-- Rework Rate: 8/39 = 21%
+- Rework Rate: 8/40 = 20%
 
 ### Capability Metrics
-- Capability Tasks: 38/39 = 97%
-- High Impact Capabilities: 29/38 = 76%
-- Capability Velocity: 38 capabilities in 2 days = 19/day
+- Capability Tasks: 39/40 = 98%
+- High Impact Capabilities: 30/39 = 77%
+- Capability Velocity: 39 capabilities in 2 days = 20/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -91,6 +92,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Plugins/Extensions System** - High impact, enables community contributions and extensible architecture (Claude Code/OpenHands pattern)
 1. **Model Roulette** - High impact, random model switching improves performance by diversifying reasoning approaches (Mini-SWE-Agent pattern)
 1. **Auto-Commit Message Generation** - High impact, generates conventional commit messages from git diffs (Aider pattern)
 1. **Bug Report Generator** - High impact, auto-generates structured bug reports from failed sessions (Claude Code /bug pattern)
@@ -123,6 +125,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-03-31: Plugins/Extensions System (Claude Code/OpenHands Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 21 - Plugins/Extensions System for dynamic tool and hook loading
+
+**Insight:** Plugins/Extensions systems from Claude Code and OpenHands provide significant benefits for self-evolution:
+1. **Extensible architecture** - New tools and hooks can be added without modifying core code
+2. **Plugin manifest** - YAML/JSON files define plugin metadata (name, version, tools, hooks)
+3. **Plugin discovery** - Automatically discover plugins from configured directories
+4. **Enable/disable** - Runtime control over which plugins are active
+5. **Tool registration** - Dynamically add tools from plugin manifests
+6. **Hook registration** - Dynamically add hooks for validation/safety
+
+Implementation details:
+- `PluginManager` class with discoverPlugins(), loadPlugin(), initialize()
+- `PluginManifest` interface with name, version, description, tools, hooks
+- `LoadedPlugin` interface with manifest, path, enabled, tools, hooks, errors
+- `plugins` tool with actions: list, stats, enable, disable, details, refresh, dirs
+- Support for multiple plugin directories
+- Placeholder tool creation when no handler is specified
+
+**Trigger:** When wanting to extend Paimon with new capabilities without modifying core code
+
+**Reuse Rule:** Create a plugin directory with plugin.json or plugin.yaml manifest. Use `plugins({action: 'list'})` to view loaded plugins, `plugins({action: 'enable', name: 'plugin-name'})` to enable.
+
+**Priority:** High
+
+---
 
 ### 2026-03-31: Model Roulette for Performance Improvement (Mini-SWE-Agent Pattern)
 

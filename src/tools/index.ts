@@ -24,6 +24,7 @@ import { httpTool } from "./http-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
+import { pluginsTool } from "./plugins-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { repomapTool } from "./repomap-tool.js";
@@ -53,6 +54,7 @@ export const metaTools: AgentTool[] = [
 	bugReportTool,
 	commitMsgTool,
 	rouletteTool,
+	pluginsTool,
 ];
 
 /**
@@ -102,3 +104,4 @@ export { tomTool } from "./tom-tool.js";
 export { singularityTool } from "./singularity-tool.js";
 export { trajectoryTool } from "./trajectory-tool.js";
 export { rouletteTool, initRoulette } from "./roulette-tool.js";
+export { pluginsTool, getPluginTools } from "./plugins-tool.js";

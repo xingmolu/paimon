@@ -3527,3 +3527,327 @@ describe("model roulette", () => {
 		});
 	});
 });
+
+describe("plugins tool", () => {
+	const PLUGIN_DIR = join(process.cwd(), "test-plugins");
+
+	beforeEach(async () => {
+		if (existsSync(PLUGIN_DIR)) {
+			rmSync(PLUGIN_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(PLUGIN_DIR, { recursive: true });
+		// Reset singleton
+		const { resetPluginManager } = await import("./plugins.js");
+		resetPluginManager();
+	});
+
+	afterEach(async () => {
+		if (existsSync(PLUGIN_DIR)) {
+			rmSync(PLUGIN_DIR, { recursive: true, force: true });
+		}
+		// Reset singleton
+		const { resetPluginManager } = await import("./plugins.js");
+		resetPluginManager();
+	});
+
+	describe("PluginManager", () => {
+		it("should create PluginManager", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			expect(manager).toBeDefined();
+			expect(manager.isInitialized()).toBe(false);
+		});
+
+		it("should discover no plugins in empty directory", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const discovered = manager.discoverPlugins();
+			expect(discovered).toEqual([]);
+		});
+
+		it("should discover plugin with manifest", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "test-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ name: "test-plugin", version: "1.0.0" }),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const discovered = manager.discoverPlugins();
+			expect(discovered.length).toBe(1);
+			expect(discovered[0]).toBe(pluginPath);
+		});
+
+		it("should discover plugin with yaml manifest", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "yaml-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(join(pluginPath, "plugin.yaml"), "name: yaml-plugin\nversion: 1.0.0", "utf-8");
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const discovered = manager.discoverPlugins();
+			expect(discovered.length).toBe(1);
+		});
+
+		it("should load plugin manifest", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "manifest-test");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({
+					name: "manifest-test",
+					version: "2.0.0",
+					description: "Test plugin",
+					author: "Test Author",
+				}),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const manifest = manager.loadManifest(pluginPath);
+			expect(manifest).toBeDefined();
+			expect(manifest?.name).toBe("manifest-test");
+			expect(manifest?.version).toBe("2.0.0");
+			expect(manifest?.description).toBe("Test plugin");
+		});
+
+		it("should reject manifest without required fields", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "invalid-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ description: "Missing name and version" }),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const manifest = manager.loadManifest(pluginPath);
+			expect(manifest).toBeNull();
+		});
+
+		it("should initialize and load plugins", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "init-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ name: "init-plugin", version: "1.0.0", enabled: true }),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			const loaded = manager.initialize();
+			expect(loaded.length).toBe(1);
+			expect(manager.isInitialized()).toBe(true);
+		});
+
+		it("should enable/disable plugins", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "toggle-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ name: "toggle-plugin", version: "1.0.0" }),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+
+			expect(manager.enablePlugin("toggle-plugin")).toBe(true);
+			expect(manager.disablePlugin("toggle-plugin")).toBe(true);
+			expect(manager.getPlugin("toggle-plugin")?.enabled).toBe(false);
+		});
+
+		it("should get plugin statistics", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "stats-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ name: "stats-plugin", version: "1.0.0" }),
+				"utf-8",
+			);
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+
+			const stats = manager.getStats();
+			expect(stats.total).toBe(1);
+			expect(stats.enabled).toBe(1);
+			expect(stats.disabled).toBe(0);
+		});
+
+		it("should load tools from manifest", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "tools-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({
+					name: "tools-plugin",
+					version: "1.0.0",
+					tools: [{ name: "custom-tool", description: "A custom tool" }],
+				}),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+
+			const tools = manager.getPluginTools();
+			expect(tools.length).toBe(1);
+			expect(tools[0].name).toBe("custom-tool");
+		});
+
+		it("should refresh plugins", async () => {
+			const { PluginManager } = await import("./plugins.js");
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+
+			// Add a plugin after initial load
+			const pluginPath = join(PLUGIN_DIR, "refresh-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({ name: "refresh-plugin", version: "1.0.0" }),
+				"utf-8",
+			);
+
+			const loaded = manager.refresh();
+			expect(loaded.length).toBe(1);
+		});
+	});
+
+	describe("formatPluginList", () => {
+		it("should format empty plugin list", async () => {
+			const { formatPluginList, PluginManager } = await import("./plugins.js");
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+			const plugins = manager.getPlugins();
+			const result = formatPluginList(plugins);
+			expect(result).toContain("## Loaded Plugins");
+		});
+
+		it("should format plugin list with plugins", async () => {
+			const { formatPluginList, PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "format-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({
+					name: "format-plugin",
+					version: "1.0.0",
+					description: "A plugin for formatting",
+				}),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+			const plugins = manager.getPlugins();
+			const result = formatPluginList(plugins);
+			expect(result).toContain("format-plugin");
+			expect(result).toContain("v1.0.0");
+			expect(result).toContain("enabled");
+		});
+	});
+
+	describe("formatPluginStats", () => {
+		it("should format plugin statistics", async () => {
+			const { formatPluginStats } = await import("./plugins.js");
+			const stats = {
+				total: 5,
+				enabled: 3,
+				disabled: 2,
+				errors: 1,
+				tools: 4,
+				hooks: 2,
+			};
+			const result = formatPluginStats(stats);
+			expect(result).toContain("Total plugins: 5");
+			expect(result).toContain("Enabled: 3");
+			expect(result).toContain("Tools added: 4");
+		});
+	});
+
+	describe("formatPluginDetails", () => {
+		it("should format plugin details", async () => {
+			const { formatPluginDetails, PluginManager } = await import("./plugins.js");
+			const pluginPath = join(PLUGIN_DIR, "details-plugin");
+			mkdirSync(pluginPath, { recursive: true });
+			writeFileSync(
+				join(pluginPath, "plugin.json"),
+				JSON.stringify({
+					name: "details-plugin",
+					version: "1.0.0",
+					description: "Plugin with details",
+					author: "Test Author",
+				}),
+				"utf-8",
+			);
+
+			const manager = new PluginManager(undefined, [PLUGIN_DIR]);
+			manager.initialize();
+			const plugin = manager.getPlugin("details-plugin");
+			expect(plugin).toBeDefined();
+			if (!plugin) return;
+			const result = formatPluginDetails(plugin);
+			expect(result).toContain("details-plugin");
+			expect(result).toContain("v1.0.0");
+			expect(result).toContain("Test Author");
+		});
+	});
+
+	describe("plugins tool", () => {
+		it("should have plugins tool in tools array", async () => {
+			const { pluginsTool } = await import("./tools/plugins-tool.js");
+			expect(pluginsTool).toBeDefined();
+			expect(pluginsTool.name).toBe("plugins");
+		});
+
+		it("should list plugins", async () => {
+			const { resetPluginManager } = await import("./plugins.js");
+			resetPluginManager();
+			const { pluginsTool } = await import("./tools/plugins-tool.js");
+
+			const result = await pluginsTool.execute("test-id", { action: "list" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("plugins");
+		});
+
+		it("should show stats", async () => {
+			const { resetPluginManager } = await import("./plugins.js");
+			resetPluginManager();
+			const { pluginsTool } = await import("./tools/plugins-tool.js");
+
+			const result = await pluginsTool.execute("test-id", { action: "stats" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Plugin Statistics");
+		});
+
+		it("should error on missing name for enable", async () => {
+			const { resetPluginManager } = await import("./plugins.js");
+			resetPluginManager();
+			const { pluginsTool } = await import("./tools/plugins-tool.js");
+
+			const result = await pluginsTool.execute("test-id", { action: "enable" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Error");
+		});
+
+		it("should show plugin directories", async () => {
+			const { resetPluginManager } = await import("./plugins.js");
+			resetPluginManager();
+			const { pluginsTool } = await import("./tools/plugins-tool.js");
+
+			const result = await pluginsTool.execute("test-id", { action: "dirs" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Plugin Directories");
+		});
+	});
+});

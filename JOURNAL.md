@@ -4,6 +4,105 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 47 — Plugins/Extensions System (Claude Code/OpenHands Pattern) (2026-03-31)
+
+**What happened:**
+- Implemented ROADMAP Phase 21: Plugins/Extensions System
+- Created `src/plugins.ts` module with PluginManager class
+- Created `src/tools/plugins-tool.ts` for plugin management
+- Added plugins tool to metaTools array and agent tools
+- Added 20 new tests for plugin functionality
+- Inspired by Claude Code's plugins and OpenHands' extensions
+
+**Why this matters:**
+- This is a `capability` type task that enables extensible architecture
+- Plugins can add new tools and hooks without modifying core code
+- Community contributions can extend Paimon's capabilities
+- Enables future capabilities through plugin ecosystem
+- Critical for maintaining a modular, extensible codebase
+
+**Technical details:**
+- Created `src/plugins.ts`:
+  - `PluginManager` class for plugin discovery, loading, and management
+  - `PluginManifest` interface with name, version, description, tools, hooks, config
+  - `LoadedPlugin` interface with manifest, path, enabled, tools, hooks, errors
+  - `PluginStats` interface for plugin statistics
+  - `discoverPlugins()` - Find plugins from configured directories
+  - `loadManifest()` - Load plugin.json or plugin.yaml manifests
+  - `loadPlugin()` - Load a plugin and its tools/hooks
+  - `initialize()` - Initialize and load all plugins
+  - `enablePlugin()`, `disablePlugin()` - Enable/disable plugins
+  - `getPluginTools()`, `getPluginHooks()` - Get plugin contributions
+  - `getStats()` - Get plugin statistics
+  - `refresh()` - Reload plugins from directories
+  - Support for multiple plugin directories
+  - Simple YAML parsing without external dependencies
+- Created `src/tools/plugins-tool.ts`:
+  - `plugins` tool with actions: list, stats, enable, disable, details, refresh, dirs
+  - List plugins with status and statistics
+  - Enable/disable plugins by name
+  - View plugin details and configuration
+  - Refresh plugin list after adding new plugins
+  - Manage plugin directories
+- Modified `src/tools/index.ts`:
+  - Added pluginsTool to metaTools array
+  - Added re-export for pluginsTool and getPluginTools
+- Modified `ROADMAP.md`:
+  - Added Phase 21: Plugins/Extensions System
+  - Marked all 6 items complete
+
+**Plugin Usage:**
+```typescript
+// List all plugins
+plugins({action: 'list'})
+
+// View plugin statistics
+plugins({action: 'stats'})
+
+// Enable/disable plugin
+plugins({action: 'enable', name: 'my-plugin'})
+plugins({action: 'disable', name: 'my-plugin'})
+
+// View plugin details
+plugins({action: 'details', name: 'my-plugin'})
+
+// Refresh plugins after adding new ones
+plugins({action: 'refresh'})
+
+// Manage plugin directories
+plugins({action: 'dirs'})
+```
+
+**Plugin Manifest Example:**
+```json
+{
+  "name": "my-plugin",
+  "version": "1.0.0",
+  "description": "My custom plugin",
+  "author": "Developer",
+  "tools": [
+    {
+      "name": "custom-tool",
+      "description": "A custom tool"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "custom-hook",
+      "type": "PreToolUse",
+      "priority": 50
+    }
+  ]
+}
+```
+
+**Next steps:**
+- All ROADMAP phases 1-21 are complete
+- Consider using plugins for future capabilities
+- Consider creating example plugins for common use cases
+
+---
+
 ## Day 46 — Model Roulette (Mini-SWE-Agent Pattern) (2026-03-31)
 
 **What happened:**
