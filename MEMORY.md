@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-31 | capability | Minimal agent mode (Mini-SWE-Agent pattern) | ~20m | ✅ | none | No | High | evolve, research | minimal-baseline-mode |
 | 2026-03-31 | capability | Mini-SWE-Agent simplicity research | ~15m | ✅ | none | No | High | evolve, research, using-superpowers | minimal-agent-mode |
 | 2026-03-30 | reliability | Lint fix for biome.json (ignore superpowers) | ~5m | ✅ | none | No | Medium | evolve | enables-commits |
 | 2026-03-30 | capability | Theory-of-Mind Module (ToM-SWE) | ~25m | ❌ | TS | Yes | High | evolve, research | user-intent-understanding |
@@ -49,14 +50,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 16/23 = 70% (last iteration)
+- First Try Success Rate: 17/24 = 71% (last iteration)
 - Average Time: ~14 minutes
-- Rework Rate: 8/23 = 35%
+- Rework Rate: 8/24 = 33%
 
 ### Capability Metrics
-- Capability Tasks: 22/23 = 96%
-- High Impact Capabilities: 15/22 = 68%
-- Capability Velocity: 22 capabilities in 2 days = 11/day
+- Capability Tasks: 23/24 = 96%
+- High Impact Capabilities: 16/23 = 70%
+- Capability Velocity: 23 capabilities in 2 days = 11.5/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -73,7 +74,8 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
-1. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
+1. **Minimal Agent Mode** - High impact, enables radical architecture simplification (Mini-SWE-Agent pattern, bash-only mode)
+2. **Mini-SWE-Agent Simplicity** - High impact, enables radical architecture simplification (Princeton/Stanford pattern)
 2. **Theory-of-Mind** - High impact, enables personalized guidance and intent understanding (OpenHands ToM-SWE pattern)
 3. **Repo Map** - High impact, enables codebase understanding without reading every file (Aider pattern)
 4. **Stuck Detection & Recovery** - High impact, enables autonomous loop recovery (OpenHands pattern)
@@ -410,6 +412,33 @@ gh issue view <number>  # Check issue status and comments
 **Trigger:** When needing to understand codebase structure quickly
 
 **Reuse Rule:** Use `repomap({})` before complex evolution tasks. Generate map at session start for context.
+
+**Priority:** High
+
+---
+
+### 2026-03-31: Minimal Agent Mode Implementation
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 11 - Minimal agent mode inspired by Mini-SWE-Agent (Princeton/Stanford)
+
+**Insight:** MinimalAgent class with only bash tool achieves radical simplification:
+1. **Bash-only design** - Shell commands can do everything: read files (cat), write files (echo >), search (grep), etc. No need for specialized file tools.
+2. **Linear message history** - Append-only history makes debugging and fine-tuning easier. Every interaction is just added to the messages array.
+3. **Independent subprocess execution** - execSync for each command, no stateful shell session. Makes sandboxing trivial (just switch execSync with docker exec).
+4. **Template-based system prompt** - Easy to customize with custom system prompts via setSystemPrompt() method.
+5. **History export/import** - getHistoryJson(), saveHistory(), loadHistory() enable session persistence and fine-tuning data export.
+
+Implementation details:
+- ~150 lines for full MinimalAgent class (still very compact)
+- CLI flag: `--minimal` or `-m` activates minimal mode
+- Full linear history tracking with export/import capability
+- Compatible with existing session management
+
+**Trigger:** When a simpler baseline agent is needed for debugging, testing, or fine-tuning experiments
+
+**Reuse Rule:** Use `--minimal` flag to activate minimal mode. The agent will only use bash commands, making it simpler and easier to debug. Use `getHistory()` to export message history for analysis.
 
 **Priority:** High
 

@@ -7,3 +7,9 @@ export {
 	formatConsultation,
 	formatStats,
 } from "./tom.js";
+export {
+	type MinimalAgentConfig,
+	type MinimalMessage,
+	MinimalAgent,
+	createMinimalAgent,
+} from "./minimal-agent.js";

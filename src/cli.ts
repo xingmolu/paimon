@@ -3,6 +3,7 @@ import "dotenv/config";
 import { existsSync, readFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import { type PaimonConfig, createAgent } from "./agent.js";
+import { type MinimalAgentConfig, createMinimalAgent } from "./minimal-agent.js";
 import { SessionManager, formatSessionList } from "./session.js";
 
 const COLORS = {
@@ -26,6 +27,7 @@ interface CliOptions {
 	session: "new" | "continue" | "resume" | "none";
 	file?: string;
 	prompt?: string;
+	minimal?: boolean;
 }
 
 function parseArgs(args: string[]): CliOptions {
@@ -75,6 +77,14 @@ function parseArgs(args: string[]): CliOptions {
 		args.splice(args.indexOf("--no-session"), 1);
 	}
 
+	// Check for --minimal flag (Mini-SWE-Agent mode)
+	if (args.includes("--minimal") || args.includes("-m")) {
+		options.minimal = true;
+		args.splice(args.indexOf("--minimal"), 1);
+		const shortIdx = args.indexOf("-m");
+		if (shortIdx !== -1) args.splice(shortIdx, 1);
+	}
+
 	// Check for --file
 	const fileIndex = args.indexOf("--file");
 	if (fileIndex !== -1 && args[fileIndex + 1]) {
@@ -112,33 +122,38 @@ async function main() {
 			process.exit(1);
 		}
 		const prompt = readFileSync(options.file, "utf-8");
-		await runOnce(prompt, options.mode, options.session);
+		await runOnce(prompt, options.mode, options.session, options.minimal);
 		return;
 	}
 
 	// Run with direct prompt
 	if (options.prompt) {
-		await runOnce(options.prompt, options.mode, options.session);
+		await runOnce(options.prompt, options.mode, options.session, options.minimal);
 		return;
 	}
 
 	// REPL mode
-	await runRepl(options.mode, options.session);
+	await runRepl(options.mode, options.session, options.minimal);
 }
 
 async function runOnce(
 	prompt: string,
 	mode: "chat" | "evolve",
 	sessionMode: "new" | "continue" | "none",
+	minimal?: boolean,
 ) {
 	const config = getConfig(mode);
 	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
-	const { run } = createAgent(config, sessionManager);
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
 
 	printBanner();
 	console.log(`${COLORS.dim}  model: ${config.model}${COLORS.reset}`);
 	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
+	if (minimal) {
+		console.log(
+			`${COLORS.dim}  minimal: enabled (bash-only mode, Mini-SWE-Agent pattern)${COLORS.reset}`,
+		);
+	}
 	if (sessionMode === "continue" && sessionManager.continue()) {
 		console.log(
 			`${COLORS.dim}  session: resumed ${sessionManager.getSessionFile()}${COLORS.reset}`,
@@ -153,7 +168,21 @@ async function runOnce(
 	sessionManager.save("user", prompt);
 
 	try {
-		const result = await run(prompt, debug, (delta) => process.stdout.write(delta));
+		let result: string;
+		if (minimal) {
+			// Use minimal agent (bash-only)
+			const minimalConfig: MinimalAgentConfig = {
+				apiKey: config.apiKey,
+				model: config.model,
+				baseUrl: config.baseUrl,
+			};
+			const agent = createMinimalAgent(minimalConfig);
+			result = await agent.run(prompt, debug);
+		} else {
+			// Use full agent with all tools
+			const { run } = createAgent(config, sessionManager);
+			result = await run(prompt, debug, (delta) => process.stdout.write(delta));
+		}
 		// Save assistant response
 		sessionManager.save("assistant", result);
 		console.log("\n");
@@ -165,15 +194,38 @@ async function runOnce(
 	}
 }
 
-async function runRepl(mode: "chat" | "evolve", sessionMode: "new" | "continue" | "none") {
+async function runRepl(
+	mode: "chat" | "evolve",
+	sessionMode: "new" | "continue" | "none",
+	minimal?: boolean,
+) {
 	const config = getConfig(mode);
 	const sessionManager = new SessionManager(undefined, sessionMode !== "none");
-	const { agent, run } = createAgent(config, sessionManager);
 	const debug = process.env.PAIMON_DEBUG === "true" || process.env.PAIMON_DEBUG === "1";
+
+	// Create appropriate agent based on mode
+	let fullAgent: ReturnType<typeof createAgent> | undefined;
+	let minimalAgent: ReturnType<typeof createMinimalAgent> | undefined;
+
+	if (minimal) {
+		const minimalConfig: MinimalAgentConfig = {
+			apiKey: config.apiKey,
+			model: config.model,
+			baseUrl: config.baseUrl,
+		};
+		minimalAgent = createMinimalAgent(minimalConfig);
+	} else {
+		fullAgent = createAgent(config, sessionManager);
+	}
+
+	const { agent, run } = fullAgent || { agent: undefined, run: undefined };
 
 	printBanner();
 	console.log(`${COLORS.dim}  model: ${config.model}`);
 	console.log(`${COLORS.dim}  mode: ${mode}${COLORS.reset}`);
+	if (minimal) {
+		console.log(`${COLORS.dim}  minimal: enabled (bash-only mode)${COLORS.reset}`);
+	}
 
 	// Handle session
 	if (sessionMode === "continue" && sessionManager.continue()) {
@@ -221,7 +273,14 @@ async function runRepl(mode: "chat" | "evolve", sessionMode: "new" | "continue" 
 		const userMsg = sessionManager.save("user", trimmed, lastAssistantId);
 
 		try {
-			const result = await run(trimmed, debug, (delta) => process.stdout.write(delta));
+			let result: string;
+			if (minimal && minimalAgent) {
+				result = await minimalAgent.run(trimmed, debug);
+			} else if (run) {
+				result = await run(trimmed, debug, (delta) => process.stdout.write(delta));
+			} else {
+				throw new Error("Agent not initialized");
+			}
 			// Save assistant response with reference to user message
 			const assistantMsg = sessionManager.save("assistant", result, userMsg.id);
 			lastAssistantId = assistantMsg.id;
