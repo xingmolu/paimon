@@ -410,9 +410,10 @@ const tools: AgentTool[] = [
 					timeout: 120000,
 					maxBuffer: 10 * 1024 * 1024,
 				});
+				const text = truncateToolOutput(output || "(empty)", `bash: ${command}`);
 				return {
-					content: [{ type: "text", text: output || "(empty)" }],
-					details: output || "(empty)",
+					content: [{ type: "text", text }],
+					details: text,
 				};
 			} catch (e) {
 				const error = e instanceof Error ? e.message : String(e);
@@ -445,8 +446,8 @@ const tools: AgentTool[] = [
 					.map((l, i) => `${i + 1}: ${l}`)
 					.join("\n");
 				return {
-					content: [{ type: "text", text: numbered }],
-					details: numbered,
+					content: [{ type: "text", text: truncateToolOutput(numbered, path) }],
+					details: truncateToolOutput(numbered, path),
 				};
 			} catch (e) {
 				const error = e instanceof Error ? e.message : String(e);
@@ -538,7 +539,7 @@ const tools: AgentTool[] = [
 				const files = globSync(pattern);
 				const result = files.length > 0 ? files.join("\n") : "(no matches)";
 				return {
-					content: [{ type: "text", text: result }],
+					content: [{ type: "text", text: truncateToolOutput(result, "glob") }],
 					details: files,
 				};
 			} catch (e) {
@@ -582,9 +583,10 @@ const tools: AgentTool[] = [
 					timeout: 30000,
 					maxBuffer: 1024 * 1024,
 				});
+				const text = truncateToolOutput(output || "(no matches)", `grep: ${pattern}`);
 				return {
-					content: [{ type: "text", text: output || "(no matches)" }],
-					details: output || "(no matches)",
+					content: [{ type: "text", text }],
+					details: text,
 				};
 			} catch (e) {
 				// grep returns exit code 1 when no matches, which throws
@@ -2242,8 +2244,8 @@ Each learning should be:
 				output += map;
 
 				return {
-					content: [{ type: "text", text: output }],
-					details: output,
+					content: [{ type: "text", text: truncateToolOutput(output, "repomap") }],
+					details: truncateToolOutput(output, "repomap"),
 				};
 			} catch (e) {
 				const error = e instanceof Error ? e.message : String(e);
@@ -2408,7 +2410,10 @@ Each learning should be:
  * Create wrapped tools with PreToolUse hooks
  * Each tool's execute function is wrapped to check hooks before execution
  */
-function createWrappedTools(hookManager: HookManager): AgentTool[] {
+function createWrappedTools(
+	hookManager: HookManager,
+	onToolOutput?: (size: number) => void,
+): AgentTool[] {
 	return tools.map((tool) => ({
 		...tool,
 		execute: async (toolCallId: string, params: unknown): Promise<AgentToolResult<unknown>> => {
@@ -2429,19 +2434,24 @@ function createWrappedTools(hookManager: HookManager): AgentTool[] {
 				};
 			}
 
+			let result: AgentToolResult<unknown>;
+
 			// If hook warns, add warning to output
 			if (hookResult.warning) {
-				// Execute the tool normally, but we'll add warning to output
-				const result = await tool.execute(toolCallId, params);
+				result = await tool.execute(toolCallId, params);
 				const warningPrefix = `⚠️ ${hookResult.warning}\n\n`;
 				if (result.content?.[0] && result.content[0].type === "text") {
 					result.content[0].text = warningPrefix + result.content[0].text;
 				}
-				return result;
+			} else {
+				result = await tool.execute(toolCallId, params);
 			}
 
-			// No hook intervention, execute normally
-			return tool.execute(toolCallId, params);
+			if (onToolOutput && result.content?.[0] && result.content[0].type === "text") {
+				onToolOutput(Math.ceil(result.content[0].text.length / 4));
+			}
+
+			return result;
 		},
 	}));
 }
@@ -2511,6 +2521,8 @@ export function createAgent(
 	contextManager.setModel(model);
 	contextManager.setApiKeyGetter(() => config.apiKey);
 
+	let estimatedToolOutputTokens = 0;
+
 	// Initial system prompt without compaction summary
 	const systemPrompt = buildSystemPrompt(config, null);
 
@@ -2518,7 +2530,11 @@ export function createAgent(
 	agent.setModel(model);
 	agent.setSystemPrompt(systemPrompt);
 	// Use wrapped tools with PreToolUse hooks for safety
-	agent.setTools(createWrappedTools(globalHookManager));
+	agent.setTools(
+		createWrappedTools(globalHookManager, (size) => {
+			estimatedToolOutputTokens += size;
+		}),
+	);
 
 	// Provide API key dynamically for the custom provider
 	agent.getApiKey = () => config.apiKey;
@@ -2531,11 +2547,14 @@ export function createAgent(
 		// Track user message
 		contextManager.addMessage("user", prompt);
 
-		// Check if compaction is needed
-		if (contextManager.shouldCompact()) {
+		// Check if compaction is needed (include tool output estimates)
+		const contextStatus = contextManager.getStatus();
+		const totalEstimated = contextStatus.tokens + estimatedToolOutputTokens;
+		if (contextManager.shouldCompact() || totalEstimated > 80000) {
 			if (verbose) {
-				const status = contextManager.getStatus();
-				console.log(`[Compaction] Context at ~${status.tokens} tokens, compacting...`);
+				console.log(
+					`[Compaction] Context ~${contextStatus.tokens} + tools ~${estimatedToolOutputTokens} = ~${totalEstimated} tokens, compacting...`,
+				);
 			}
 
 			// Perform compaction
@@ -2634,6 +2653,78 @@ export function createAgent(
 	};
 }
 
+function buildToolsDescription(): string {
+	return tools.map((t) => `- ${t.name}: ${t.description}`).join("\n");
+}
+
+const MAX_TOOL_OUTPUT_CHARS = 30000;
+
+function truncateToolOutput(text: string, label: string): string {
+	if (text.length <= MAX_TOOL_OUTPUT_CHARS) return text;
+	const lines = text.split("\n");
+	const totalLines = lines.length;
+	const kept = lines.slice(0, Math.floor(totalLines * 0.6));
+	const dropped = totalLines - kept.length;
+	return `${kept.join("\n")}\n\n... [TRUNCATED: ${dropped} lines omitted, file too large (${Math.round(text.length / 1024)}KB). Use read with specific line ranges.]`;
+}
+
+function extractMemorySummary(memory: string): string {
+	const lines = memory.split("\n");
+	const sections: string[] = [];
+	let inScorecard = false;
+	let scorecardHeader = "";
+	let scorecardRows = 0;
+	let inMetrics = false;
+
+	for (const line of lines) {
+		if (line.startsWith("## Task Types")) {
+			inScorecard = false;
+			inMetrics = false;
+		}
+		if (line.startsWith("## Evolution Scorecard")) {
+			inScorecard = true;
+			inMetrics = false;
+		}
+		if (line.startsWith("## Learnings")) {
+			inScorecard = false;
+			inMetrics = false;
+			break;
+		}
+		if (line.startsWith("### ")) {
+			if (inScorecard) inMetrics = true;
+		}
+
+		if (inScorecard) {
+			if (line.startsWith("|")) {
+				if (line.includes("Date") && line.includes("Task Type")) {
+					scorecardHeader = line;
+					sections.push(line);
+				} else if (line.startsWith("|--")) {
+					sections.push(line);
+				} else {
+					scorecardRows++;
+					if (scorecardRows <= 5) {
+						sections.push(line);
+					}
+				}
+			} else if (inMetrics && !line.startsWith("|--")) {
+				sections.push(line);
+			}
+		}
+	}
+
+	if (scorecardRows > 5) {
+		sections.push(
+			`... (${scorecardRows - 5} older entries omitted. Read MEMORY.md for full history.)`,
+		);
+	}
+
+	sections.push("");
+	sections.push("Use `read MEMORY.md` to see full learnings and history.");
+
+	return sections.join("\n");
+}
+
 function buildSystemPrompt(config: PaimonConfig, summary?: string | null): string {
 	const mode = config.mode || "chat";
 
@@ -2647,45 +2738,13 @@ function buildChatPrompt(config: PaimonConfig, summary?: string | null): string 
 	let prompt = `---
 name: paimon
 description: A helpful AI assistant
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom]
+tools: [${tools.map((t) => t.name).join(", ")}]
 ---
 
 You are Paimon, a helpful AI assistant with access to file system tools.
 
-You can help users with various tasks like reading files, writing code, executing commands, and more.
-
 ## Tools
-- bash: Execute shell commands
-- read: Read a file
-- write: Write a file
-- edit: Edit a file by replacing text
-- glob: Find files by glob pattern
-- grep: Search file contents by regex pattern
-- find: Find files by name, type, or modification time
-- ls: List directory contents
-- http: Make HTTP requests to fetch web content or call APIs
-- plan: Create and manage step-by-step plans for complex tasks
-- assess: Run self-assessment checks (build, tests, lint) - use before completion. Supports \`maxAttempts\` for error recovery loops.
-- reflect: Analyze failures and extract lessons for MEMORY.md - use after failed assessments.
-- checkpoint: Save and restore snapshots for safe rollback during risky changes.
-- parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
-- hook: Manage hooks for pre-tool validation and safety checks - prevents dangerous patterns automatically.
-- stuck: Detect when agent is looping and provide recovery options - inspired by OpenHands' StuckDetector.
-- repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
-- tom: Theory-of-Mind consultation - provides personalized guidance based on user profile and session history (OpenHands ToM-SWE pattern).
-
-## Multi-Step Reasoning
-
-For complex tasks, use the plan tool to:
-1. **Create a plan** - Break down the task into numbered steps
-2. **Work through steps** - Mark each step as 'in_progress' then 'completed'
-3. **Track progress** - Use 'show' to see current status
-4. **Adjust if needed** - Update or skip steps as circumstances change
-
-Example workflow:
-- \`plan({action: 'create', steps: ['Analyze requirements', 'Implement feature', 'Test changes']})\`
-- \`plan({action: 'progress', stepId: 1, status: 'in_progress'})\`
-- After completing: \`plan({action: 'progress', stepId: 1, status: 'completed'})\`
+${buildToolsDescription()}
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
@@ -2694,9 +2753,7 @@ ${summary ? `## Conversation Summary\n\nThe following is a summary of earlier co
 - Be helpful, concise, and accurate
 - Use tools when needed to complete tasks
 - For complex tasks, create a plan first using the plan tool
-- Explain what you're doing when using tools
 - If something fails, explain the error and suggest solutions
-- Ask for clarification if the request is unclear
 
 When done with a task, summarize what you accomplished.`;
 
@@ -2706,11 +2763,11 @@ When done with a task, summarize what you accomplished.`;
 		prompt += `\n\n## Project Context\n\n${contextContent}`;
 	}
 
-	// Load persistent memory
+	// Load persistent memory (compact summary only)
 	const memoryPath = config.memoryPath || "MEMORY.md";
 	if (existsSync(memoryPath)) {
 		const memory = readFileSync(memoryPath, "utf-8");
-		prompt += `\n\n## Current Memory\n\n${memory}`;
+		prompt += `\n\n## Current Memory (summary)\n\n${extractMemorySummary(memory)}`;
 	}
 
 	return prompt;
@@ -2720,304 +2777,50 @@ function buildEvolvePrompt(config: PaimonConfig, summary?: string | null): strin
 	let prompt = `---
 name: evo
 description: Self-evolving AI agent that improves its own codebase
-tools: [bash, read, write, edit, glob, grep, find, ls, http, plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom]
+tools: [${tools.map((t) => t.name).join(", ")}]
 ---
 
-You are evo, a self-evolving AI agent.
-
-Your goal is to improve yourself. You can read your own code, make changes, run tests, and commit improvements.
+You are evo, a self-evolving AI agent. Your goal is to improve yourself.
 
 ## Tools
-- bash: Execute shell commands
-- read: Read a file
-- write: Write a file
-- edit: Edit a file by replacing text
-- glob: Find files by glob pattern
-- grep: Search file contents by regex pattern
-- find: Find files by name, type, or modification time
-- ls: List directory contents
-- http: Make HTTP requests to fetch web content or call APIs
-- plan: Create and manage step-by-step plans for complex tasks
-- assess: Run self-assessment checks before completion. Use \`maxAttempts\` for error recovery.
-- reflect: Extract lessons from failures and update MEMORY.md automatically.
-- checkpoint: Save and restore snapshots for safe rollback during risky changes.
-- parallel: Run multiple independent tasks concurrently - use for tasks with no shared state (e.g., lint + typecheck + tests simultaneously).
-- hook: Manage hooks for pre-tool validation - prevents dangerous patterns automatically.
-- stuck: Detect when agent is looping and provide recovery options (restart before loop, restart with last message, quit).
-- repomap: Generate a structured map of the codebase showing definitions - helps understand codebase structure without reading every file.
-- tom: Theory-of-Mind consultation - provides personalized guidance based on user profile and session history (OpenHands ToM-SWE pattern).
-
-## Multi-Step Reasoning
-
-For complex evolution tasks, use the plan tool to:
-1. **Create a plan** - Break down the evolution task into numbered steps
-2. **Work through steps** - Mark each step as 'in_progress' then 'completed'
-3. **Track progress** - Use 'show' to see current status
-4. **Adjust if needed** - Update or skip steps based on verification results
-
-Example evolution workflow:
-- \`plan({action: 'create', steps: ['Read ROADMAP', 'Check issues', 'Implement feature', 'Run tests', 'Update JOURNAL']})\`
-- \`plan({action: 'progress', stepId: 3, status: 'in_progress'})\`
-- After tests pass: \`plan({action: 'progress', stepId: 4, status: 'completed'})\`
+${buildToolsDescription()}
 
 ## Memory
 You have persistent memory in MEMORY.md. Read it to recall past learnings, update it when you discover something important.
 
-${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Learning from Failures
+${summary ? `## Conversation Summary\n\nThe following is a summary of earlier conversation that was compacted to save context:\n\n${summary}\n\n` : ""}## Workflow
 
-When something fails (build errors, test failures, runtime errors), follow this process:
+Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key rules:
 
-### 1. Capture the Error
-- Copy the exact error message
-- Note what you were trying to do
-- Save the relevant context (file, line number, operation)
+1. **Gather context**: Read IDENTITY.md, JOURNAL.md, MEMORY.md, ROADMAP.md
+2. **Select task**: Score all candidates (capability > reliability > feature). Output selection table with reasoning.
+3. **Implement**: Minimal changes, use \`edit\` preferred. Create checkpoint before risky changes.
+4. **Verify**: \`assess({})\` before saying DONE. Use \`assess({maxAttempts: 5})\` for auto-retry.
+5. **Complete**: Say "DONE", update JOURNAL.md and MEMORY.md scorecard.
 
-### 2. Root Cause Analysis
-- Ask: "Why did this fail?"
-- Check dependencies, types, imports, logic
-- Consider edge cases you might have missed
+## Task Scoring (1-10)
+- +3: Improves future iteration success rate
+- +2: Reduces failure/rework rate
+- +2: Improves memory/learning quality
+- +1: Improves tool chain reliability
+- -1 to -3: Implementation complexity
 
-### 3. Extract the Lesson
-- What pattern does this failure reveal?
-- How can you prevent this in the future?
-- Is this a general principle or specific case?
-
-### 4. Update MEMORY.md
-Add a learning entry with the standard format: Date, Context, Insight, Action.
-
-See MEMORY.md for the exact format of existing learnings.
-
-### Common Failure Patterns to Watch For
-- **TypeScript errors**: Usually missing imports, wrong types, or incorrect property access
-- **Test failures**: Often edge cases or assumptions about behavior
-- **Runtime hangs**: Missing timeout, infinite loop, or unresolved promise
-- **API errors**: Invalid credentials, wrong endpoint, or missing error handling
-
-## Security Awareness
-Before making changes, consider:
-- **Protected paths**: Never modify files in .github/workflows/ without explicit permission
-- **Dangerous patterns**: Avoid eval(), exec() with user input, unescaped shell commands
-- **Always test**: Run \`npm run build && npm test\` before committing
-- **Minimal changes**: Make the smallest change that accomplishes the goal
-
-## Workflow Stages
-
-### 1. Context Gathering
-- Read IDENTITY.md to understand your purpose
-- Read JOURNAL.md to see what you've done
-- Read MEMORY.md to recall learnings
-- Read ROADMAP.md to see what's planned
-- Use \`git status\` and \`git log --oneline -5\` to understand current state
-
-### 2. Task Selection with Evolution Value Scoring (REQUIRED)
-
-**Do NOT just pick the first issue or ROADMAP item.** Instead, use evolution value scoring:
-
-#### Skill Matching (REQUIRED)
-Before selecting a task, check which skills apply:
-1. Review available skills in the Skills section below
-2. Identify skills that match the task type (debugging, planning, verification)
-3. Read matched skills BEFORE starting the task: \`read skills/<path>/SKILL.md\`
-4. If multiple skills match, use this priority: process skills → implementation skills
-
-Skill types and when to use them:
-- **systematic-debugging**: For fix/bug/debug tasks
-- **writing-plans**: For implement/plan/feature tasks
-- **brainstorming**: For design/explore/research tasks
-- **verification-before-completion**: Before saying DONE
-- **requesting-code-review**: After major changes
-- **using-superpowers**: General guidance on skill usage
-
-#### Task Types
-| Type | Description | Priority |
-|------|-------------|----------|
-| \`capability\` | Improves self-evolution ability itself | Highest |
-| \`reliability\` | Improves stability/safety/error handling | Medium |
-| \`feature\` | Adds new general functionality | Lower |
-
-**Rule:** Prefer \`capability\` > \`reliability\` > \`feature\`. If 3+ consecutive iterations are not \`capability\`, explain why.
-
-#### Scoring Algorithm
-1. List ALL candidates (issues + ROADMAP items + research opportunities)
-2. Classify EACH task as: capability | reliability | feature
-3. Score EACH on evolution value (1-10):
-   +3: Improves future iteration success rate
-   +2: Reduces failure/rework rate
-   +2: Improves memory/learning quality
-   +1: Improves tool chain reliability
-   -1 to -3: Implementation complexity
-4. SELECT highest-scoring capability task
-5. OUTPUT a task selection table with reasoning
-
-#### Example Output
-\`\`\`
-## Task Selection
-
-| Task | Type | Score | Reasoning |
-|------|------|-------|-----------|
-| Issue #20: Evolution scoring | capability | 9 | Directly improves task selection |
-| ROADMAP: Parallel execution | capability | 7 | Improves efficiency |
-
-Selected: Issue #20 (score 9)
-Reason: Highest-scoring capability task that improves evolution ability.
-\`\`\`
-
-- Check GitHub issues: \`gh issue list --state open\`
-- Read ROADMAP.md for incomplete items
-- Use MEMORY.md scorecard to learn from recent iterations
-- Score all candidates, select highest-scoring capability task
-- If no capability tasks available, select highest-scoring reliability
-- Explain your selection rationale
-
-### 3. Implementation
-- Use \`edit\` for surgical changes (preferred)
-- Use \`write\` for new files only
-- Keep changes minimal and focused
-- **Create checkpoint before risky changes**:
-  \`\`\`
-  checkpoint({action: 'create', description: 'Before refactoring X module'})
-  \`\`\`
-  This saves a snapshot you can restore if something goes wrong.
-
-### 3.1 Checkpoint Safety
-For complex or risky changes, create checkpoints at key milestones:
-
-1. **Before major refactoring** - Save state before restructuring code
-2. **Before deleting code** - Preserve files you might need later
-3. **After completing a component** - Mark stable points for rollback
-
-\`\`\`
-// Create checkpoint
-checkpoint({action: 'create', description: 'Stable state before adding feature X'})
-
-// List checkpoints
-checkpoint({action: 'list'})
-
-// Restore if something goes wrong
-checkpoint({action: 'restore', checkpointId: 'ckpt-123456-abc123'})
-\`\`\`
-
-**Checkpoint Workflow:**
-1. Create checkpoint before making changes
-2. Implement your feature
-3. Run assessment - if it fails, restore checkpoint and try again
-4. Delete checkpoint after successful commit
-
-### 4. Verification
-- Run \`npm run build\` to check TypeScript compilation
-- Run \`npm test -- --run\` to verify all tests pass
-- Fix any issues
-
-### 5. Self-Assessment (REQUIRED)
-Before saying DONE, use the assess tool to evaluate your changes:
-\`\`\`
-assess({})
-\`\`\`
-This will check:
-- Build passes
-- Tests pass  
-- Lint passes
-- No security issues in changed files
-- Lists changed files
-
-**Only proceed to Completion if all checks pass.**
-
-### 5.1 Error Recovery Loop
-For complex changes, enable automatic retry loops:
-\`\`\`
-assess({maxAttempts: 5})  // Retry up to 5 times with error recovery
-\`\`\`
-
-The tool will:
-- Extract error patterns from failures (TypeScript errors, test failures, lint issues)
-- Provide actionable suggestions for each error
-- Auto-fix lint issues on retry attempts
-- Track attempts and progress
-
-**Maximum 5 attempts recommended.** If still failing after retries:
-1. Read the specific error patterns
-2. Fix issues manually
-3. Run assess again or increase maxAttempts
-
-### 5.2 Loop Detection and Recovery
-
-If you find yourself repeatedly trying the same approach without success, use the stuck tool:
-
-\`\`\`
-// Check if stuck in a loop
-stuck({action: 'check'})
-
-// If stuck, choose a recovery option
-stuck({action: 'recover', recoveryOption: 1})  // Restart before loop
-stuck({action: 'recover', recoveryOption: 2})  // Restart with last message
-stuck({action: 'recover', recoveryOption: 3})  // Quit task
-\`\`\`
-
-**Loop Types Detected:**
-- **Repeated action**: Same tool called 3+ times with same result
-- **Same error**: Same error pattern occurring 3+ times
-- **No progress**: Similar content appearing 5+ times (agent spinning)
-
-**Recovery Options:**
-1. Restart from before loop (preserves earlier progress)
-2. Restart with last user instruction (try different approach)
-3. Quit current task (ask user for help)
-
-Inspired by OpenHands' StuckDetector for autonomous error recovery.
-
-### 5.3 Reflection on Failures
-If assessment fails after exhausting retry attempts, capture the lesson:
-\`\`\`
-reflect({
-  taskDescription: "What you were trying to accomplish",
-  errorPatterns: assessmentResult.errorPatterns  // optional, uses last assessment
-})
-\`\`\`
-
-This will:
-- Analyze the error patterns
-- Generate a structured learning entry (Context, Insight, Action)
-- Automatically append to MEMORY.md
-- Help prevent similar failures in future sessions
-
-**Always reflect after failures** - every error is a learning opportunity.
-
-### 6. Completion
-- Say "DONE" and summarize your work (include task type: capability/reliability/feature)
-- Update JOURNAL.md with what you did
-- Update MEMORY.md Evolution Scorecard with enhanced metrics:
-  \`\`\`
-  | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
-  |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
-  | YYYY-MM-DD | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | skill1, skill2 | enabled-capability |
-  \`\`\`
-  **Time:** Estimate in minutes (e.g., ~10m, ~20m)
-  **Errors:** none, TS (TypeScript), test, lint, runtime
-  **Skills Used:** List skills that were actively used (not just matched)
-  **Enables:** What future capabilities this enables
-- Add new learning to MEMORY.md if something was discovered
-- Close completed GitHub issues: \`gh issue close <number> --comment "Completed"\`
-- If you completed a ROADMAP item, mark it done with \`edit\` (change \`- [ ]\` to \`- [x]\`)
+## Security
+- Never modify \`.github/workflows/\` without permission
+- Avoid eval(), exec() with user input
+- Always test before committing
 
 ## IMPORTANT
 - Do NOT run git commit or git push - the evolution script handles this
 - Just say "DONE" when your work is complete
-
-## Best Practices (from Claude Code)
-
-1. **Confidence over options**: Make decisive choices rather than presenting alternatives
-2. **File references**: Include file:line references when discussing code
-3. **Phased approach**: Break work into clear phases with specific tasks
-4. **Error context**: When reporting errors, include relevant context
-5. **Security first**: If you see dangerous patterns, warn about them
-
-When done, say "DONE" and summarize.`;
+- When stuck in a loop, use \`stuck({action: 'check'})\` then \`stuck({action: 'recover', recoveryOption: N})\`
+- On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";
 	const skillsIndex = buildSkillsIndex(skillsDir);
 	if (skillsIndex) {
-		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Skill Usage (REQUIRED)**:\n1. Before starting ANY task, identify which skills match\n2. Read matched skills first: \`read skills/<path>/SKILL.md\`\n3. Superpowers skills (source: obra/superpowers) provide workflows for common task types\n4. Project skills provide domain-specific guidance\n\n**Priority**: Process skills (debugging, planning) → Implementation skills\n\n`;
+		prompt += `\n\n## Skills\n${skillsIndex}\n\n**Skill Usage (REQUIRED)**:\n1. Before starting ANY task, identify which skills match\n2. Read matched skills first: \`read skills/<path>/SKILL.md\`\n3. Superpowers skills provide workflows for common task types\n\n**Priority**: Process skills (debugging, planning) → Implementation skills\n`;
 	}
 
 	// Load project context from AGENTS.md / CLAUDE.md files
@@ -3026,11 +2829,11 @@ When done, say "DONE" and summarize.`;
 		prompt += `\n\n## Project Context\n\n${contextContent}`;
 	}
 
-	// Load persistent memory
+	// Load persistent memory (compact summary only)
 	const memoryPath = config.memoryPath || "MEMORY.md";
 	if (existsSync(memoryPath)) {
 		const memory = readFileSync(memoryPath, "utf-8");
-		prompt += `\n\n## Current Memory\n\n${memory}`;
+		prompt += `\n\n## Current Memory (summary)\n\n${extractMemorySummary(memory)}`;
 	}
 
 	return prompt;

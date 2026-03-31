@@ -24,6 +24,8 @@ const COLORS = {
 const DATE = new Date().toISOString().split("T")[0];
 const MAX_ITERATIONS = 3;
 const SESSION_DIR = "session_plan";
+const JOURNAL_ARCHIVE_DIR = "JOURNAL_ARCHIVE";
+const MAX_JOURNAL_DAYS = 7;
 
 /**
  * Skill audit logging for tracking superpowers usage
@@ -127,6 +129,63 @@ function verifyBuild(): boolean {
 	}
 }
 
+function archiveJournal(): void {
+	if (!existsSync("JOURNAL.md")) return;
+
+	const content = readFileSync("JOURNAL.md", "utf-8");
+	const dayEntries = content.split(/(?=^## Day )/m).filter(Boolean);
+
+	if (dayEntries.length === 0) return;
+
+	const now = new Date();
+	const cutoff = new Date(now.getTime() - MAX_JOURNAL_DAYS * 24 * 60 * 60 * 1000);
+
+	const recent: string[] = [];
+	const archived: string[] = [];
+
+	for (const entry of dayEntries) {
+		const dateMatch = entry.match(/## Day \d+ — .+ \((\d{4}-\d{2}-\d{2})\)/);
+		if (!dateMatch) {
+			recent.push(entry);
+			continue;
+		}
+		const entryDate = new Date(dateMatch[1]);
+		if (entryDate < cutoff) {
+			archived.push(entry);
+		} else {
+			recent.push(entry);
+		}
+	}
+
+	if (archived.length === 0) return;
+
+	if (!existsSync(JOURNAL_ARCHIVE_DIR)) {
+		mkdirSync(JOURNAL_ARCHIVE_DIR, { recursive: true });
+	}
+
+	const archiveMonth =
+		archived
+			.flatMap((e) => {
+				const m = e.match(/## Day \d+ — .+ \((\d{4}-\d{2})/);
+				return m ? [m[1]] : [];
+			})
+			.filter(Boolean)[0] || DATE.slice(0, 7);
+
+	const archivePath = join(JOURNAL_ARCHIVE_DIR, `${archiveMonth}.md`);
+	const existing = existsSync(archivePath) ? readFileSync(archivePath, "utf-8") : "";
+	writeFileSync(archivePath, `${existing}\n${archived.join("\n")}`, "utf-8");
+
+	const headerMatch = content.match(/^# Journal[\s\S]*?\n---\n/);
+	const header = headerMatch
+		? headerMatch[0]
+		: "# Journal\n\nA daily log of Paimon's self-improvements.\n\n---\n";
+	writeFileSync("JOURNAL.md", `${header}\n${recent.join("\n")}`, "utf-8");
+
+	console.log(
+		`${COLORS.dim}  Archived ${archived.length} old journal entries to ${archivePath}${COLORS.reset}\n`,
+	);
+}
+
 function verifyTests(): boolean {
 	try {
 		execSync("npm test -- --run", { encoding: "utf-8", stdio: "pipe", timeout: 60000 });
@@ -222,6 +281,10 @@ async function main() {
 	console.log(
 		`${COLORS.dim}Superpowers: ${superpowersSkills.length} skills loaded${COLORS.reset}\n`,
 	);
+
+	// Archive old journal entries to keep context small
+	console.log("→ Archiving old journal entries...");
+	archiveJournal();
 
 	// Build
 	console.log("→ Building...");
