@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Journal Auto-Truncation - Auto-truncate JOURNAL.md, archive old entries with summaries, reduce context bloat | ~15m | ✅ | lint (fixed) | No | High | evolve | context-efficiency, token-savings |
 | 2026-04-01 | capability | Tool Result Caching - Cache tool results to avoid redundant calls, reduce token usage | ~20m | ✅ | lint (fixed), test (fixed) | No | High | evolve | token-efficiency, rate-limit-avoidance |
 | 2026-04-01 | capability | Token/Cost Tracking (Aider pattern) - Track LLM token usage and costs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | cost-efficiency |
 | 2026-04-01 | capability | Multi-Agent Orchestrator (Claude Quickstart two-agent pattern) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | multi-agent-evolution |
@@ -77,19 +78,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 42/49 = 86%
+- First Try Success Rate: 43/50 = 86%
 - Average Time: ~14 minutes
-- Rework Rate: 8/49 = 16%
+- Rework Rate: 8/50 = 16%
 
 ### Capability Metrics
-- Capability Tasks: 48/49 = 98%
-- High Impact Capabilities: 39/48 = 81%
-- Capability Velocity: 48 capabilities in 3 days = 16/day
+- Capability Tasks: 49/50 = 98%
+- High Impact Capabilities: 40/49 = 82%
+- Capability Velocity: 49 capabilities in 3 days = 16/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 14
+- Lint Issues: 15
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
@@ -101,6 +102,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Journal Auto-Truncation** - High impact, auto-truncates JOURNAL.md, archives old entries with summaries, reduces context bloat for better token efficiency
 1. **Tool Result Caching** - High impact, caches tool results to avoid redundant calls, reducing token usage and preventing API rate limit issues
 1. **Token/Cost Tracking** - High impact, tracks LLM token usage and costs for efficiency optimization (Aider pattern)
 1. **Multi-Agent Orchestrator** - High impact, enables two-agent pattern (initializer + coder) for better complex task handling
@@ -143,6 +145,37 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Journal Auto-Truncation for Context Efficiency (Issue #24)
+
+**Type:** capability
+
+**Context:** Implementing Issue #24 - Optimize JOURNAL file size with auto-truncation and archiving
+
+**Insight:** A journal auto-truncation system provides significant benefits for self-evolution:
+1. **Context efficiency** - Reduces JOURNAL.md size by ~50%, reducing context window usage
+2. **Token savings** - Large JOURNAL.md (117KB) was causing context bloat in every session
+3. **Archive preservation** - Old entries archived to separate files, not lost
+4. **Summary generation** - Key information preserved in summaries with archive links
+5. **Configurable limits** - Max entries (30), max lines (500) trigger truncation
+
+Implementation details:
+- `JournalManager` module for parsing, truncating, and archiving JOURNAL.md
+- `JournalEntry`, `JournalStats`, `TruncateResult`, `JournalConfig` interfaces
+- `parseJournal()` - Parse JOURNAL.md into structured entries
+- `truncateJournal()` - Keep recent N entries, archive old with summaries
+- `generateEntrySummary()` - Create concise summary with archive link
+- `journal` tool with actions: stats, truncate, archives, read, entries, config
+- Scripts/truncate-journal.ts for manual execution
+- 23 tests for full functionality coverage
+
+**Trigger:** When JOURNAL.md grows too large and impacts context efficiency
+
+**Reuse Rule:** Use `journal({action: 'stats'})` to view statistics. Use `journal({action: 'truncate', maxEntries: 30})` to truncate. Use `journal({action: 'archives'})` to list archived files.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Tool Result Caching for Token Efficiency
 

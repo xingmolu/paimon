@@ -23,6 +23,7 @@ import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
+import { journalTool } from "./journal-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
@@ -73,6 +74,7 @@ export const metaTools: AgentTool[] = [
 	multiAgentTool,
 	tokenTrackingTool,
 	toolCacheTool,
+	journalTool,
 ];
 
 /**
@@ -132,7 +134,19 @@ export { safetyGatesTool, getSafetyGatesForHook } from "./safety-gates-tool.js";
 export { multiAgentTool } from "./multi-agent-tool.js";
 export { tokenTrackingTool, getTokenTracker, resetTokenTracker } from "./token-tracking-tool.js";
 export { toolCacheTool } from "./tool-cache-tool.js";
+export { journalTool } from "./journal-tool.js";
 export { getToolCache, resetToolCache, ToolCache, generateCacheKey } from "../tool-cache.js";
+export {
+	journalManager,
+	parseJournal,
+	getJournalStats,
+	truncateJournal,
+	listArchives,
+	readArchivedEntry,
+	JournalEntry,
+	JournalStats,
+	TruncateResult,
+} from "../journal-manager.js";
 export {
 	getBenchmarkRunner,
 	createSampleTasks,
