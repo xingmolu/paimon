@@ -189,6 +189,15 @@ Planned improvements for evo.
 - [x] Error pattern matching — Match errors against known patterns
 - [x] Statistics tracking — Track sessions, iterations, success rates
 
+## Phase 26: SWE-bench Benchmark Integration
+- [x] BenchmarkRunner module — Run benchmark tasks for evaluation
+- [x] benchmark tool — Tool for running and managing benchmarks
+- [x] SWE-bench format — Load tasks from JSON/YAML format
+- [x] Task execution — Run evolution tasks on benchmark instances
+- [x] Patch validation — Validate generated patches against gold
+- [x] Statistics tracking — Track pass rates, time, errors, quality
+- [x] Sample tasks — Create sample benchmark tasks for testing
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

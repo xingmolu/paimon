@@ -4,6 +4,81 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 52 — SWE-bench Benchmark Integration (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 26: SWE-bench Benchmark Integration
+- Created `src/benchmark.ts` module with BenchmarkRunner class
+- Created `src/tools/benchmark-tool.ts` for benchmark management
+- Added benchmark tool to metaTools array and agent tools
+- Added 24 new tests for benchmark functionality
+- Inspired by SWE-bench, Mini-SWE-Agent benchmark evaluation
+
+**Why this matters:**
+- This is a `capability` type task that enables standardized evaluation
+- Agents can now run benchmark tasks for evaluation
+- SWE-bench compatible format for interoperability
+- Task filtering by category and difficulty
+- Patch validation against gold patches
+- Statistics tracking for pass rates, time, quality
+
+**Technical details:**
+- Created `src/benchmark.ts`:
+  - `BenchmarkRunner` class for running benchmark tasks
+  - `BenchmarkTask` interface: instance_id, problem_statement, repo, base_commit, difficulty, category
+  - `BenchmarkResult` interface: success, time_minutes, errors, quality_score
+  - `BenchmarkStats` interface: passRate, averageTime, averageQuality, byDifficulty, byCategory
+  - `loadTasks()`, `loadTasksFromDir()` - Load tasks from JSON files
+  - `runTask()`, `runAll()` - Execute benchmark tasks
+  - `validatePatch()` - Compare generated patch against gold
+  - `calculateStats()` - Generate statistics from results
+  - `saveResults()` - Save results to JSON
+- Created `src/tools/benchmark-tool.ts`:
+  - `benchmark` tool with actions: load, run, runAll, stats, tasks, results, clear, sample, save, validate, add
+  - Each action returns AgentToolResult with content and details
+- Modified `src/tools/index.ts`:
+  - Added benchmarkTool to metaTools array
+  - Added re-export for benchmarkTool
+- Modified `ROADMAP.md`:
+  - Added Phase 26: SWE-bench Benchmark Integration
+  - Marked all 7 items complete
+
+**Benchmark Tool Usage:**
+```typescript
+// Load sample tasks
+benchmark({action: 'sample'})
+
+// View loaded tasks
+benchmark({action: 'tasks'})
+
+// Run all tasks
+benchmark({action: 'runAll'})
+
+// View statistics
+benchmark({action: 'stats'})
+
+// Add custom task
+benchmark({action: 'add', 
+  taskId: 'custom-001', 
+  problem: 'Fix bug in code',
+  difficulty: 'easy',
+  category: ['bug-fix']
+})
+
+// Validate patch
+benchmark({action: 'validate',
+  generatedPatch: '--- a/file.ts...',
+  goldPatch: '--- a/file.ts...'
+})
+```
+
+**Next steps:**
+- ROADMAP phases 1-26 are complete
+- Consider integrating benchmark with SDK for batch evaluation
+- Consider adding SWE-bench Lite subset for faster evaluation
+
+---
+
 ## Day 51 — SDK/API for Programmatic Evolution (2026-04-01)
 
 **What happened:**

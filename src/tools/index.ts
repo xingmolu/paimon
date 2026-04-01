@@ -14,6 +14,7 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 
 // Import extracted tool modules
 import { assessTool } from "./assess-tool.js";
+import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
@@ -63,6 +64,7 @@ export const metaTools: AgentTool[] = [
 	taskPredictorTool,
 	intelligenceTool,
 	sdkTool,
+	benchmarkTool,
 ];
 
 /**
@@ -117,6 +119,12 @@ export { metricsTool } from "./metrics-tool.js";
 export { taskPredictorTool } from "./task-predictor-tool.js";
 export { intelligenceTool } from "./intelligence-tool.js";
 export { sdkTool, createSDKTool } from "./sdk-tool.js";
+export { benchmarkTool } from "./benchmark-tool.js";
+export {
+	getBenchmarkRunner,
+	createSampleTasks,
+	BenchmarkRunner,
+} from "../benchmark.js";
 export {
 	getSDK,
 	initSDK,

@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities | ~15m | ✅ | lint (fixed) | No | High | evolve | benchmark-evaluation |
 | 2026-04-01 | capability | SDK/API for Programmatic Evolution (OpenHands/mini-swe-agent pattern) | ~15m | ✅ | none | No | High | evolve, research | programmatic-control, batch-mode |
 | 2026-04-01 | capability | Unified Evolution Intelligence - Integrate all intelligence tools for unified task recommendations | ~15m | ✅ | none | No | High | evolve, research | unified-intelligence |
 | 2026-04-01 | capability | Task Success Predictor - Predict task success likelihood before starting | ~15m | ✅ | none | No | High | evolve | smarter-task-selection |
@@ -72,14 +73,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 37/44 = 84%
+- First Try Success Rate: 38/45 = 84%
 - Average Time: ~14 minutes
-- Rework Rate: 8/44 = 18%
+- Rework Rate: 8/45 = 18%
 
 ### Capability Metrics
-- Capability Tasks: 43/44 = 98%
-- High Impact Capabilities: 34/43 = 79%
-- Capability Velocity: 43 capabilities in 3 days = 14/day
+- Capability Tasks: 44/45 = 98%
+- High Impact Capabilities: 35/44 = 80%
+- Capability Velocity: 44 capabilities in 3 days = 15/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -96,6 +97,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **SWE-bench Benchmark Integration** - High impact, enables standardized evaluation, benchmark tasks, patch validation (SWE-bench pattern)
 1. **SDK/API for Programmatic Evolution** - High impact, enables programmatic control, batch mode, CI/CD integration (OpenHands/mini-swe-agent pattern)
 1. **Unified Evolution Intelligence** - High impact, integrates all intelligence tools for unified task recommendations, enabling smarter task selection
 1. **Task Success Predictor** - High impact, predicts task success likelihood before starting for smarter task selection
@@ -133,6 +135,35 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: SWE-bench Benchmark Integration for Standardized Evaluation
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 26 - SWE-bench Benchmark Integration for evaluating self-evolution capabilities
+
+**Insight:** A benchmark integration system for standardized evaluation provides significant benefits for self-evolution:
+1. **Standardized task format** - SWE-bench compatible JSON format with problem statements, repos, base commits
+2. **Task filtering** - Filter by category, difficulty, max tasks
+3. **Patch validation** - Compare generated patches against gold patches
+4. **Statistics tracking** - Pass rates, time metrics, error breakdown, quality scores
+5. **Sample tasks** - Built-in sample tasks for testing
+
+Implementation details:
+- `BenchmarkRunner` class with task loading and execution
+- `BenchmarkTask`, `BenchmarkResult`, `BenchmarkConfig`, `BenchmarkStats` interfaces
+- `benchmark` tool with actions: load, run, runAll, stats, tasks, results, clear, sample, save, validate, add
+- Task loading from JSON files and directories
+- Category and difficulty filtering
+- Patch validation with normalization
+
+**Trigger:** When needing to evaluate self-evolution capabilities against standardized benchmarks
+
+**Reuse Rule:** Use `benchmark({action: 'sample'})` to load sample tasks. Use `benchmark({action: 'runAll'})` to execute. Use `benchmark({action: 'stats'})` for statistics.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: SDK/API for Programmatic Evolution (OpenHands/mini-swe-agent Pattern)
 

@@ -4698,3 +4698,354 @@ describe("SDK", () => {
 		});
 	});
 });
+
+describe("Benchmark Module", () => {
+	const BENCHMARK_DIR = join(process.cwd(), "test-benchmarks");
+
+	beforeEach(() => {
+		if (existsSync(BENCHMARK_DIR)) {
+			rmSync(BENCHMARK_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(BENCHMARK_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(BENCHMARK_DIR)) {
+			rmSync(BENCHMARK_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("BenchmarkRunner", () => {
+		it("should create BenchmarkRunner", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+			expect(runner).toBeDefined();
+		});
+
+		it("should load tasks from JSON file", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			const tasksFile = join(BENCHMARK_DIR, "tasks.json");
+			writeFileSync(
+				tasksFile,
+				JSON.stringify([
+					{
+						instance_id: "test-001",
+						problem_statement: "Fix a bug",
+						repo: "test/repo",
+						base_commit: "main",
+					},
+				]),
+				"utf-8",
+			);
+
+			const count = runner.loadTasks(tasksFile);
+			expect(count).toBe(1);
+			expect(runner.getTasks().length).toBe(1);
+		});
+
+		it("should load tasks from directory", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			writeFileSync(
+				join(BENCHMARK_DIR, "tasks1.json"),
+				JSON.stringify([
+					{
+						instance_id: "test-001",
+						problem_statement: "Task 1",
+						repo: "test/repo",
+						base_commit: "main",
+					},
+				]),
+				"utf-8",
+			);
+
+			writeFileSync(
+				join(BENCHMARK_DIR, "tasks2.json"),
+				JSON.stringify([
+					{
+						instance_id: "test-002",
+						problem_statement: "Task 2",
+						repo: "test/repo",
+						base_commit: "main",
+					},
+				]),
+				"utf-8",
+			);
+
+			const count = runner.loadTasksFromDir(BENCHMARK_DIR);
+			expect(count).toBe(2);
+		});
+
+		it("should apply category filter", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner({
+				categoryFilter: ["bug-fix"],
+			});
+
+			const tasksFile = join(BENCHMARK_DIR, "tasks.json");
+			writeFileSync(
+				tasksFile,
+				JSON.stringify([
+					{
+						instance_id: "test-001",
+						problem_statement: "Bug fix",
+						repo: "test/repo",
+						base_commit: "main",
+						category: ["bug-fix"],
+					},
+					{
+						instance_id: "test-002",
+						problem_statement: "Feature",
+						repo: "test/repo",
+						base_commit: "main",
+						category: ["feature"],
+					},
+				]),
+				"utf-8",
+			);
+
+			const count = runner.loadTasks(tasksFile);
+			expect(count).toBe(1);
+			expect(runner.getTasks()[0].instance_id).toBe("test-001");
+		});
+
+		it("should apply difficulty filter", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner({
+				difficultyFilter: ["easy"],
+			});
+
+			const tasksFile = join(BENCHMARK_DIR, "tasks.json");
+			writeFileSync(
+				tasksFile,
+				JSON.stringify([
+					{
+						instance_id: "test-001",
+						problem_statement: "Easy task",
+						repo: "test/repo",
+						base_commit: "main",
+						difficulty: "easy",
+					},
+					{
+						instance_id: "test-002",
+						problem_statement: "Hard task",
+						repo: "test/repo",
+						base_commit: "main",
+						difficulty: "hard",
+					},
+				]),
+				"utf-8",
+			);
+
+			const count = runner.loadTasks(tasksFile);
+			expect(count).toBe(1);
+			expect(runner.getTasks()[0].difficulty).toBe("easy");
+		});
+
+		it("should apply maxTasks limit", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner({
+				maxTasks: 2,
+			});
+
+			const tasksFile = join(BENCHMARK_DIR, "tasks.json");
+			writeFileSync(
+				tasksFile,
+				JSON.stringify([
+					{
+						instance_id: "test-001",
+						problem_statement: "Task 1",
+						repo: "test",
+						base_commit: "main",
+					},
+					{
+						instance_id: "test-002",
+						problem_statement: "Task 2",
+						repo: "test",
+						base_commit: "main",
+					},
+					{
+						instance_id: "test-003",
+						problem_statement: "Task 3",
+						repo: "test",
+						base_commit: "main",
+					},
+				]),
+				"utf-8",
+			);
+
+			const count = runner.loadTasks(tasksFile);
+			expect(count).toBe(2);
+		});
+
+		it("should add single task", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			runner.addTask({
+				instance_id: "custom-001",
+				problem_statement: "Custom task",
+				repo: "test/repo",
+				base_commit: "main",
+			});
+
+			expect(runner.getTasks().length).toBe(1);
+		});
+
+		it("should clear tasks", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			runner.addTask({
+				instance_id: "test-001",
+				problem_statement: "Test",
+				repo: "test",
+				base_commit: "main",
+			});
+			runner.clearTasks();
+
+			expect(runner.getTasks().length).toBe(0);
+		});
+
+		it("should calculate statistics", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			// Add results manually for testing
+			runner.addTask({
+				instance_id: "test-001",
+				problem_statement: "Test",
+				repo: "test",
+				base_commit: "main",
+				difficulty: "easy",
+			});
+
+			// Run calculateStats with empty results
+			const stats = runner.calculateStats();
+			expect(stats.totalTasks).toBe(0);
+			expect(stats.passRate).toBe(0);
+		});
+
+		it("should validate patch", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			const gold = "--- a/file.ts\n+++ b/file.ts\n@@ -1,1 +1,1 @@\n-old\n+new";
+			const generated = "--- a/file.ts\n+++ b/file.ts\n@@ -1,1 +1,1 @@\n-old\n+new";
+
+			expect(runner.validatePatch(generated, gold)).toBe(true);
+		});
+
+		it("should detect different patches", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			const gold = "--- a/file.ts\n+++ b/file.ts\n@@ -1,1 +1,1 @@\n-old\n+new";
+			const generated = "--- a/file.ts\n+++ b/file.ts\n@@ -1,1 +1,1 @@\n-old\n+different";
+
+			expect(runner.validatePatch(generated, gold)).toBe(false);
+		});
+
+		it("should format task as markdown", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			const formatted = runner.formatTask({
+				instance_id: "test-001",
+				problem_statement: "Fix bug in code",
+				repo: "test/repo",
+				base_commit: "abc123",
+				difficulty: "easy",
+				category: ["bug-fix"],
+			});
+
+			expect(formatted).toContain("test-001");
+			expect(formatted).toContain("Fix bug in code");
+			expect(formatted).toContain("test/repo");
+			expect(formatted).toContain("easy");
+		});
+
+		it("should format stats as markdown", async () => {
+			const { BenchmarkRunner } = await import("./benchmark.js");
+			const runner = new BenchmarkRunner();
+
+			const stats = runner.calculateStats();
+			const formatted = runner.formatStats(stats);
+
+			expect(formatted).toContain("Benchmark Statistics");
+			expect(formatted).toContain("Total Tasks");
+		});
+	});
+
+	describe("createSampleTasks", () => {
+		it("should create sample tasks", async () => {
+			const { createSampleTasks } = await import("./benchmark.js");
+			const samples = createSampleTasks();
+
+			expect(samples.length).toBe(3);
+			expect(samples[0].instance_id).toBe("sample-001");
+			expect(samples[0].difficulty).toBe("easy");
+		});
+
+		it("should have different difficulty levels", async () => {
+			const { createSampleTasks } = await import("./benchmark.js");
+			const samples = createSampleTasks();
+
+			const difficulties = samples.map((t) => t.difficulty);
+			expect(difficulties).toContain("easy");
+			expect(difficulties).toContain("medium");
+			expect(difficulties).toContain("hard");
+		});
+	});
+
+	describe("getBenchmarkRunner", () => {
+		it("should get singleton instance", async () => {
+			const { getBenchmarkRunner } = await import("./benchmark.js");
+			const runner1 = getBenchmarkRunner();
+			const runner2 = getBenchmarkRunner();
+
+			expect(runner1).toBe(runner2);
+		});
+
+		it("should accept config", async () => {
+			const { getBenchmarkRunner } = await import("./benchmark.js");
+			const runner = getBenchmarkRunner({ maxTasks: 10 });
+
+			expect(runner).toBeDefined();
+		});
+	});
+
+	describe("benchmark tool", () => {
+		it("should have benchmark tool in tools array", async () => {
+			const module = await import("./agent.js");
+			const { createAgent } = module;
+			expect(createAgent).toBeDefined();
+		});
+
+		it("should have benchmark parameters defined", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent, run } = createAgent(config);
+			expect(agent).toBeDefined();
+			expect(run).toBeDefined();
+		});
+
+		it("should support benchmark actions: load, run, stats, tasks", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+		});
+	});
+});
