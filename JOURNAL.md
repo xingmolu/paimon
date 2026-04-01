@@ -4,6 +4,83 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 48 — Evolution Metrics Dashboard (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 22: Evolution Metrics Dashboard
+- Created `src/metrics.ts` module with EvolutionMetricsTracker class
+- Created `src/tools/metrics-tool.ts` for viewing and analyzing metrics
+- Added metrics tool to metaTools array and agent
+- Added 19 new tests for metrics functionality
+- Parses MEMORY.md scorecard to track evolution progress
+
+**Why this matters:**
+- This is a `capability` type task that improves self-awareness
+- Agent can now track success rate trends, time metrics, error patterns
+- Skill effectiveness tracking helps identify which skills work best
+- Capability velocity tracking shows progress over time
+- Critical for understanding evolution quality and identifying improvements
+
+**Technical details:**
+- Created `src/metrics.ts`:
+  - `EvolutionMetricsTracker` class for tracking metrics
+  - `MetricPoint` interface with date, value, trend
+  - `SuccessRateMetric` - Weekly success rate with trend indicators
+  - `TimeMetric` - Average time by task type with fastest/slowest tasks
+  - `ErrorMetric` - Error counts by type with common patterns
+  - `SkillMetric` - Skill usage counts and success rates
+  - `CapabilityVelocityMetric` - Capabilities per day with high impact %
+  - `getWeekKey()` for ISO week number calculation
+  - `formatMetricsDashboard()` for formatted output
+  - `formatSuccessRateChart()` for ASCII chart visualization
+- Created `src/tools/metrics-tool.ts`:
+  - `metrics` tool with actions: dashboard, success, time, errors, skills, velocity, chart, refresh, save
+  - Each action returns formatted markdown output
+  - Supports saving metrics to data/evolution-metrics.json
+- Modified `src/tools/index.ts`:
+  - Added metricsTool to metaTools array
+  - Added re-export for metricsTool
+- Modified `ROADMAP.md`:
+  - Added Phase 22: Evolution Metrics Dashboard
+  - Marked all 6 items complete
+
+**Metrics Tool Usage:**
+```typescript
+// View full dashboard
+metrics({action: 'dashboard'})
+
+// View success rate trends
+metrics({action: 'success'})
+
+// View time metrics
+metrics({action: 'time'})
+
+// View error metrics
+metrics({action: 'errors'})
+
+// View skill effectiveness
+metrics({action: 'skills'})
+
+// View capability velocity
+metrics({action: 'velocity'})
+
+// View ASCII chart
+metrics({action: 'chart'})
+
+// Refresh metrics from MEMORY.md
+metrics({action: 'refresh'})
+
+// Save metrics to file
+metrics({action: 'save'})
+```
+
+**Next steps:**
+- All ROADMAP phases 1-22 are complete
+- Consider using metrics for evolution decisions
+- Consider adding predictive metrics based on patterns
+
+---
+
 ## Day 47 — Plugins/Extensions System (Claude Code/OpenHands Pattern) (2026-03-31)
 
 **What happened:**

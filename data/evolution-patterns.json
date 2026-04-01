@@ -1,249 +1,307 @@
 {
-	"patterns": [
-		{
-			"id": "skill-combo-evo",
-			"type": "skill-combination",
-			"description": "Skills evolve have 100% success rate",
-			"characteristics": {
-				"skills": ["evolve"]
-			},
-			"successRate": 100,
-			"firstTryRate": 100,
-			"averageTime": 11,
-			"confidence": 95,
-			"sampleSize": 13,
-			"examples": [
-				{
-					"taskDescription": "Bug Report Generator - Auto-generate structured bug reports from failed sessions",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Fix Singularity git log format bug - Enable self-awareness tracking",
-					"date": "2026-03-31",
-					"time": 5,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Error Pattern Learning - Learn from error patterns across sessions for automatic solutions",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.913Z"
-		},
-		{
-			"id": "skill-combo-evo-pla",
-			"type": "skill-combination",
-			"description": "Skills evolve + plan-architecture have 100% success rate",
-			"characteristics": {
-				"skills": ["evolve", "plan-architecture"]
-			},
-			"successRate": 100,
-			"firstTryRate": 100,
-			"averageTime": 18,
-			"confidence": 70,
-			"sampleSize": 4,
-			"examples": [
-				{
-					"taskDescription": "Evolution Pattern Mining - Mine successful patterns from session history for task recommendations",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve", "plan-architecture"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Complete modular architecture integration (replace inline tools with buildTools())",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve", "plan-architecture"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Extract meta tools to separate files (plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom)",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve", "plan-architecture"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.913Z"
-		},
-		{
-			"id": "skill-combo-evo-wri",
-			"type": "skill-combination",
-			"description": "Skills evolve + writing-plans have 100% success rate",
-			"characteristics": {
-				"skills": ["evolve", "writing-plans"]
-			},
-			"successRate": 100,
-			"firstTryRate": 100,
-			"averageTime": 16,
-			"confidence": 70,
-			"sampleSize": 4,
-			"examples": [
-				{
-					"taskDescription": "Linear history option (Mini-SWE-Agent pattern)",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve", "writing-plans"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Multi-step reasoning",
-					"date": "2026-03-30",
-					"time": 10,
-					"skillsUsed": ["evolve", "writing-plans"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Session persistence",
-					"date": "2026-03-30",
-					"time": 20,
-					"skillsUsed": ["evolve", "writing-plans"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.913Z"
-		},
-		{
-			"id": "skill-combo-evo-sys",
-			"type": "skill-combination",
-			"description": "Skills evolve + systematic-debugging have 100% success rate",
-			"characteristics": {
-				"skills": ["evolve", "systematic-debugging"]
-			},
-			"successRate": 100,
-			"firstTryRate": 100,
-			"averageTime": 17,
-			"confidence": 65,
-			"sampleSize": 3,
-			"examples": [
-				{
-					"taskDescription": "Hook system for pre-tool validation",
-					"date": "2026-03-30",
-					"time": 15,
-					"skillsUsed": ["evolve", "systematic-debugging"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Checkpoints for rollback",
-					"date": "2026-03-30",
-					"time": 15,
-					"skillsUsed": ["evolve", "systematic-debugging"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Error recovery loops",
-					"date": "2026-03-30",
-					"time": 20,
-					"skillsUsed": ["evolve", "systematic-debugging"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.913Z"
-		},
-		{
-			"id": "task-type-capability",
-			"type": "task-type-success",
-			"description": "capability tasks: 89% success, 78% high impact",
-			"characteristics": {
-				"taskType": "capability"
-			},
-			"successRate": 89,
-			"firstTryRate": 89,
-			"averageTime": 16,
-			"confidence": 95,
-			"sampleSize": 37,
-			"examples": [
-				{
-					"taskDescription": "Bug Report Generator - Auto-generate structured bug reports from failed sessions",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Evolution Pattern Mining - Mine successful patterns from session history for task recommendations",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve", "plan-architecture"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Error Pattern Learning - Learn from error patterns across sessions for automatic solutions",
-					"date": "2026-03-31",
-					"time": 15,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.914Z"
-		},
-		{
-			"id": "time-pattern-quick",
-			"type": "time-pattern",
-			"description": "Tasks under 8min have 100% success",
-			"characteristics": {
-				"timeRange": {
-					"min": 0,
-					"max": 8
-				}
-			},
-			"successRate": 100,
-			"firstTryRate": 100,
-			"averageTime": 5,
-			"confidence": 62,
-			"sampleSize": 4,
-			"examples": [
-				{
-					"taskDescription": "Fix Singularity git log format bug - Enable self-awareness tracking",
-					"date": "2026-03-31",
-					"time": 5,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Lint fix for biome.json (ignore superpowers)",
-					"date": "2026-03-30",
-					"time": 5,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				},
-				{
-					"taskDescription": "Enhanced scorecard metrics",
-					"date": "2026-03-30",
-					"time": 5,
-					"skillsUsed": ["evolve"],
-					"success": true,
-					"firstTry": true
-				}
-			],
-			"lastUpdated": "2026-03-31T20:53:18.914Z"
-		}
-	],
-	"lastUpdated": "2026-03-31T20:53:18.914Z",
-	"sessionCount": 39
+  "patterns": [
+    {
+      "id": "skill-combo-evo",
+      "type": "skill-combination",
+      "description": "Skills evolve have 100% success rate",
+      "characteristics": {
+        "skills": [
+          "evolve"
+        ]
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 12,
+      "confidence": 95,
+      "sampleSize": 14,
+      "examples": [
+        {
+          "taskDescription": "Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Bug Report Generator - Auto-generate structured bug reports from failed sessions",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix Singularity git log format bug - Enable self-awareness tracking",
+          "date": "2026-03-31",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.084Z"
+    },
+    {
+      "id": "skill-combo-evo-pla",
+      "type": "skill-combination",
+      "description": "Skills evolve + plan-architecture have 100% success rate",
+      "characteristics": {
+        "skills": [
+          "evolve",
+          "plan-architecture"
+        ]
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 18,
+      "confidence": 70,
+      "sampleSize": 4,
+      "examples": [
+        {
+          "taskDescription": "Evolution Pattern Mining - Mine successful patterns from session history for task recommendations",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Complete modular architecture integration (replace inline tools with buildTools())",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Extract meta tools to separate files (plan, assess, reflect, checkpoint, parallel, hook, stuck, repomap, tom)",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.084Z"
+    },
+    {
+      "id": "skill-combo-evo-wri",
+      "type": "skill-combination",
+      "description": "Skills evolve + writing-plans have 100% success rate",
+      "characteristics": {
+        "skills": [
+          "evolve",
+          "writing-plans"
+        ]
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 16,
+      "confidence": 70,
+      "sampleSize": 4,
+      "examples": [
+        {
+          "taskDescription": "Linear history option (Mini-SWE-Agent pattern)",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "writing-plans"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Multi-step reasoning",
+          "date": "2026-03-30",
+          "time": 10,
+          "skillsUsed": [
+            "evolve",
+            "writing-plans"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Session persistence",
+          "date": "2026-03-30",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "writing-plans"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.084Z"
+    },
+    {
+      "id": "skill-combo-evo-sys",
+      "type": "skill-combination",
+      "description": "Skills evolve + systematic-debugging have 100% success rate",
+      "characteristics": {
+        "skills": [
+          "evolve",
+          "systematic-debugging"
+        ]
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 17,
+      "confidence": 65,
+      "sampleSize": 3,
+      "examples": [
+        {
+          "taskDescription": "Hook system for pre-tool validation",
+          "date": "2026-03-30",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "systematic-debugging"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Checkpoints for rollback",
+          "date": "2026-03-30",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "systematic-debugging"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Error recovery loops",
+          "date": "2026-03-30",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "systematic-debugging"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.084Z"
+    },
+    {
+      "id": "task-type-capability",
+      "type": "task-type-success",
+      "description": "capability tasks: 90% success, 80% high impact",
+      "characteristics": {
+        "taskType": "capability"
+      },
+      "successRate": 90,
+      "firstTryRate": 90,
+      "averageTime": 16,
+      "confidence": 95,
+      "sampleSize": 40,
+      "examples": [
+        {
+          "taskDescription": "Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance",
+          "date": "2026-03-31",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs",
+          "date": "2026-03-31",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.084Z"
+    },
+    {
+      "id": "time-pattern-quick",
+      "type": "time-pattern",
+      "description": "Tasks under 8min have 100% success",
+      "characteristics": {
+        "timeRange": {
+          "min": 0,
+          "max": 8
+        }
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 5,
+      "confidence": 62,
+      "sampleSize": 4,
+      "examples": [
+        {
+          "taskDescription": "Fix Singularity git log format bug - Enable self-awareness tracking",
+          "date": "2026-03-31",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Lint fix for biome.json (ignore superpowers)",
+          "date": "2026-03-30",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Enhanced scorecard metrics",
+          "date": "2026-03-30",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-01T03:35:37.085Z"
+    }
+  ],
+  "lastUpdated": "2026-04-01T03:35:37.085Z",
+  "sessionCount": 42
 }

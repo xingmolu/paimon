@@ -21,6 +21,7 @@ import { errorPatternsTool } from "./error-patterns-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
+import { metricsTool } from "./metrics-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
@@ -55,6 +56,7 @@ export const metaTools: AgentTool[] = [
 	commitMsgTool,
 	rouletteTool,
 	pluginsTool,
+	metricsTool,
 ];
 
 /**
@@ -105,3 +107,4 @@ export { singularityTool } from "./singularity-tool.js";
 export { trajectoryTool } from "./trajectory-tool.js";
 export { rouletteTool, initRoulette } from "./roulette-tool.js";
 export { pluginsTool, getPluginTools } from "./plugins-tool.js";
+export { metricsTool } from "./metrics-tool.js";

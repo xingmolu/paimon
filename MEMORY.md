@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Evolution Metrics Dashboard - Track and visualize evolution metrics over time | ~15m | ✅ | none | No | High | evolve | metrics-visibility |
 | 2026-03-31 | capability | Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks | ~15m | ✅ | lint (fixed) | No | High | evolve, research | extensible-architecture |
 | 2026-03-31 | capability | Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance | ~20m | ✅ | lint (fixed) | No | High | evolve, research | model-diversity |
 | 2026-03-31 | capability | Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve | commit-quality-improvement |
@@ -68,14 +69,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 33/40 = 83%
+- First Try Success Rate: 34/41 = 83%
 - Average Time: ~14 minutes
-- Rework Rate: 8/40 = 20%
+- Rework Rate: 8/41 = 20%
 
 ### Capability Metrics
-- Capability Tasks: 39/40 = 98%
-- High Impact Capabilities: 30/39 = 77%
-- Capability Velocity: 39 capabilities in 2 days = 20/day
+- Capability Tasks: 40/41 = 98%
+- High Impact Capabilities: 31/40 = 78%
+- Capability Velocity: 40 capabilities in 3 days = 13/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -84,7 +85,7 @@ Track effectiveness of recent improvements:
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 23 iterations, 95% success rate when used
+1. **evolve** - Used in 24 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
@@ -92,6 +93,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Evolution Metrics Dashboard** - High impact, enables tracking and visualizing evolution metrics over time for better self-awareness
 1. **Plugins/Extensions System** - High impact, enables community contributions and extensible architecture (Claude Code/OpenHands pattern)
 1. **Model Roulette** - High impact, random model switching improves performance by diversifying reasoning approaches (Mini-SWE-Agent pattern)
 1. **Auto-Commit Message Generation** - High impact, generates conventional commit messages from git diffs (Aider pattern)
@@ -125,6 +127,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Evolution Metrics Dashboard for Self-Awareness
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 22 - Evolution Metrics Dashboard for tracking and visualizing evolution metrics over time
+
+**Insight:** An evolution metrics dashboard provides significant benefits for self-evolution:
+1. **Success rate trends** - Track first-try success rate changes over time to identify improvements or regressions
+2. **Time metrics** - Understand which task types take longer and identify optimization opportunities
+3. **Error analysis** - Track error patterns by type and identify common issues
+4. **Skill effectiveness** - Track which skills have highest success rates and usage
+5. **Capability velocity** - Track capabilities per day and high impact percentage
+
+Implementation details:
+- `EvolutionMetricsTracker` class parses MEMORY.md scorecard
+- `MetricPoint` interface with date, value, trend
+- `SuccessRateMetric`, `TimeMetric`, `ErrorMetric`, `SkillMetric`, `CapabilityVelocityMetric` interfaces
+- `getWeekKey()` for weekly aggregation
+- Trend detection (up/down/stable) based on historical changes
+- `metrics` tool with actions: dashboard, success, time, errors, skills, velocity, chart, refresh, save
+- ASCII chart for success rate visualization
+
+**Trigger:** When wanting to understand evolution progress and identify improvement opportunities
+
+**Reuse Rule:** Use `metrics({action: 'dashboard'})` to view full metrics dashboard. Use `metrics({action: 'success'})` to see success rate trends. Use `metrics({action: 'skills'})` to see skill effectiveness.
+
+**Priority:** High
+
+---
 
 ### 2026-03-31: Plugins/Extensions System (Claude Code/OpenHands Pattern)
 

@@ -3851,3 +3851,296 @@ describe("plugins tool", () => {
 		});
 	});
 });
+
+describe("metrics tool", () => {
+	const METRICS_DIR = join(process.cwd(), "test-metrics");
+
+	beforeEach(() => {
+		if (existsSync(METRICS_DIR)) {
+			rmSync(METRICS_DIR, { recursive: true, force: true });
+		}
+		mkdirSync(METRICS_DIR, { recursive: true });
+	});
+
+	afterEach(() => {
+		if (existsSync(METRICS_DIR)) {
+			rmSync(METRICS_DIR, { recursive: true, force: true });
+		}
+	});
+
+	describe("EvolutionMetricsTracker", () => {
+		it("should create EvolutionMetricsTracker", async () => {
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ dataDir: METRICS_DIR });
+			expect(tracker).toBeDefined();
+		});
+
+		it("should parse MEMORY.md scorecard", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Test task | ~10m | ✅ | none | No | High | evolve | test-capability |
+| 2026-03-30 | reliability | Fix bug | ~5m | ❌ | TS | Yes | Medium | evolve | bug-fix |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const metrics = tracker.getMetrics();
+			expect(metrics.iterationsAnalyzed).toBe(2);
+		});
+
+		it("should calculate success rate", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ✅ | none | No | High | evolve | cap1 |
+| 2026-03-30 | capability | Task 2 | ~10m | ✅ | none | No | High | evolve | cap2 |
+| 2026-03-30 | capability | Task 3 | ~10m | ❌ | TS | Yes | Medium | evolve | cap3 |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const successRate = tracker.calculateSuccessRate();
+			// 2/3 = 66.67%
+			expect(successRate.weeklyAverage).toBeCloseTo(66.67, 1);
+		});
+
+		it("should calculate time metrics", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Fast task | ~5m | ✅ | none | No | High | evolve | fast |
+| 2026-03-30 | capability | Slow task | ~30m | ✅ | none | No | High | evolve | slow |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const timeMetrics = tracker.calculateTimeMetrics();
+			expect(timeMetrics.averageMinutes).toBe(17.5);
+			expect(timeMetrics.fastestTask).toBe("Fast task");
+			expect(timeMetrics.slowestTask).toBe("Slow task");
+		});
+
+		it("should calculate error metrics", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ❌ | TS | Yes | Medium | evolve | cap1 |
+| 2026-03-30 | capability | Task 2 | ~10m | ❌ | lint | Yes | Medium | evolve | cap2 |
+| 2026-03-30 | capability | Task 3 | ~10m | ✅ | none | No | High | evolve | cap3 |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const errorMetrics = tracker.calculateErrorMetrics();
+			expect(errorMetrics.totalErrors).toBe(2);
+			expect(errorMetrics.byType.TS).toBe(1);
+			expect(errorMetrics.byType.lint).toBe(1);
+		});
+
+		it("should calculate skill metrics", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ✅ | none | No | High | evolve, research | cap1 |
+| 2026-03-30 | capability | Task 2 | ~15m | ✅ | none | No | High | evolve | cap2 |
+| 2026-03-30 | capability | Task 3 | ~20m | ❌ | TS | Yes | Medium | evolve, systematic-debugging | cap3 |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const skillMetrics = tracker.calculateSkillMetrics();
+			expect(skillMetrics.length).toBeGreaterThan(0);
+			// evolve skill should have 3 uses
+			const evolveSkill = skillMetrics.find((s) => s.skill === "evolve");
+			expect(evolveSkill?.usageCount).toBe(3);
+		});
+
+		it("should calculate capability velocity", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ✅ | none | No | High | evolve | cap1 |
+| 2026-03-30 | capability | Task 2 | ~10m | ✅ | none | No | High | evolve | cap2 |
+| 2026-03-30 | reliability | Fix bug | ~5m | ✅ | none | No | Medium | evolve | bug-fix |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const velocity = tracker.calculateCapabilityVelocity();
+			expect(velocity.totalCapabilities).toBe(2);
+		});
+
+		it("should save and load metrics", async () => {
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ✅ | none | No | High | evolve | cap1 |
+`,
+				"utf-8",
+			);
+
+			const { EvolutionMetricsTracker } = await import("./metrics.js");
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			tracker.saveMetrics();
+
+			const metricsFile = join(METRICS_DIR, "evolution-metrics.json");
+			expect(existsSync(metricsFile)).toBe(true);
+
+			const loaded = tracker.loadMetrics();
+			expect(loaded).toBeDefined();
+			expect(loaded?.iterationsAnalyzed).toBe(1);
+		});
+	});
+
+	describe("formatMetricsDashboard", () => {
+		it("should format metrics dashboard", async () => {
+			const { formatMetricsDashboard, EvolutionMetricsTracker } = await import("./metrics.js");
+			const testMemory = join(METRICS_DIR, "MEMORY.md");
+			writeFileSync(
+				testMemory,
+				`# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-03-30 | capability | Task 1 | ~10m | ✅ | none | No | High | evolve | cap1 |
+`,
+				"utf-8",
+			);
+
+			const tracker = new EvolutionMetricsTracker({ memoryFile: testMemory, dataDir: METRICS_DIR });
+			const metrics = tracker.getMetrics();
+			const result = formatMetricsDashboard(metrics);
+			expect(result).toContain("Evolution Metrics Dashboard");
+			expect(result).toContain("First-Try Success Rate");
+			expect(result).toContain("Skill Effectiveness");
+		});
+	});
+
+	describe("metricsTool", () => {
+		it("should have metrics tool in tools array", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			expect(metricsTool).toBeDefined();
+			expect(metricsTool.name).toBe("metrics");
+		});
+
+		it("should show dashboard", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "dashboard" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Evolution Metrics Dashboard");
+		});
+
+		it("should show success metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "success" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("First-Try Success Rate Metrics");
+		});
+
+		it("should show time metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "time" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Time Metrics");
+		});
+
+		it("should show error metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "errors" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Error Metrics");
+		});
+
+		it("should show skill metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "skills" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Skill Effectiveness Metrics");
+		});
+
+		it("should show velocity metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "velocity" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Capability Velocity Metrics");
+		});
+
+		it("should show chart", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "chart" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Success Rate Trend Chart");
+		});
+
+		it("should refresh metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "refresh" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Metrics refreshed");
+		});
+
+		it("should save metrics", async () => {
+			const { metricsTool } = await import("./tools/metrics-tool.js");
+			const result = await metricsTool.execute("test-id", { action: "save" });
+			const textContent = result.content.find((c) => c.type === "text");
+			expect(textContent?.text).toContain("Metrics saved");
+		});
+	});
+});

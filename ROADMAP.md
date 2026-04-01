@@ -152,6 +152,15 @@ Planned improvements for evo.
 - [x] Hook plugins — Dynamic hook registration from plugins
 - [x] Plugin directories — Support for multiple plugin directories
 
+## Phase 22: Evolution Metrics Dashboard
+- [x] EvolutionMetricsTracker module — Track and visualize evolution metrics over time
+- [x] metrics tool — Tool for viewing metrics dashboard and analysis
+- [x] Success rate trends — Weekly success rate tracking with trend indicators
+- [x] Time metrics — Average time by task type with trend analysis
+- [x] Error metrics — Error counts by type with common pattern detection
+- [x] Skill effectiveness — Track skill usage counts and success rates
+- [x] Capability velocity — Track capabilities per day and high impact percentage
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
