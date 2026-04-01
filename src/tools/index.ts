@@ -41,6 +41,7 @@ import { stuckTool } from "./stuck-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
 import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
+import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
 
 // Meta tools that have been extracted
@@ -71,6 +72,7 @@ export const metaTools: AgentTool[] = [
 	safetyGatesTool,
 	multiAgentTool,
 	tokenTrackingTool,
+	toolCacheTool,
 ];
 
 /**
@@ -129,6 +131,8 @@ export { benchmarkTool } from "./benchmark-tool.js";
 export { safetyGatesTool, getSafetyGatesForHook } from "./safety-gates-tool.js";
 export { multiAgentTool } from "./multi-agent-tool.js";
 export { tokenTrackingTool, getTokenTracker, resetTokenTracker } from "./token-tracking-tool.js";
+export { toolCacheTool } from "./tool-cache-tool.js";
+export { getToolCache, resetToolCache, ToolCache, generateCacheKey } from "../tool-cache.js";
 export {
 	getBenchmarkRunner,
 	createSampleTasks,

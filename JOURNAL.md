@@ -4,6 +4,71 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 55 — Tool Result Caching (2026-04-01)
+
+**What happened:**
+- Implemented Tool Result Caching capability
+- Created `src/tool-cache.ts` module with ToolCache class
+- Created `src/tools/tool-cache-tool.ts` for cache management
+- Added toolCache to metaTools array and agent tools
+- Added 39 tests for tool cache functionality
+
+**Why this matters:**
+- This is a `capability` type task that enables token efficiency
+- Caches tool results to avoid redundant tool calls
+- Reduces token usage and prevents API rate limit issues
+- Configurable caching with never-cache tools and short-TTL tools
+- Statistics tracking for cache hits, misses, tokens saved
+
+**Technical details:**
+- Created `src/tool-cache.ts`:
+  - `ToolCache` class for caching tool results
+  - `CacheEntry` interface: key, toolName, params, result, timestamp, ttl, tokensSaved, hitCount
+  - `CacheConfig` interface: maxSize, defaultTtl, enabled, noCacheTools, shortTtlTools, shortTtl
+  - `CacheStats` interface: hits, misses, size, tokensSaved, hitRate, avgHitsPerEntry, topTools
+  - `generateCacheKey()` - Generate consistent cache key from tool + params
+  - `get()`, `set()`, `has()` - Core cache operations
+  - `clear()`, `clearTool()`, `clearExpired()` - Cache management
+  - `getStats()`, `getConfig()`, `setConfig()` - Configuration and statistics
+  - TTL support with configurable per-tool TTL
+  - Persistence to data/tool-cache.json
+- Created `src/tools/tool-cache-tool.ts`:
+  - `toolCache` tool with actions: stats, config, entries, clear, clearTool, clearExpired, enable, disable, get, has, setConfig
+- Modified `src/tools/index.ts`:
+  - Added toolCacheTool to metaTools array
+  - Added re-exports for toolCache tool and functions
+
+**Tool Cache Usage:**
+```typescript
+// View cache statistics
+toolCache({action: 'stats'})
+
+// View cache configuration
+toolCache({action: 'config'})
+
+// View cached entries
+toolCache({action: 'entries', toolName: 'read'})
+
+// Clear entire cache
+toolCache({action: 'clear'})
+
+// Clear cache for specific tool
+toolCache({action: 'clearTool', toolName: 'read'})
+
+// Enable/disable caching
+toolCache({action: 'enable'})
+toolCache({action: 'disable'})
+
+// Update configuration
+toolCache({action: 'setConfig', configUpdates: {maxSize: 500}})
+```
+
+**Next steps:**
+- Consider integrating cache with actual tool execution
+- Consider adding cache warm-up for frequently used tools
+
+---
+
 ## Day 54 — Token/Cost Tracking (Aider Pattern) (2026-04-01)
 
 **What happened:**

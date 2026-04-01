@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Tool Result Caching - Cache tool results to avoid redundant calls, reduce token usage | ~20m | ✅ | lint (fixed), test (fixed) | No | High | evolve | token-efficiency, rate-limit-avoidance |
 | 2026-04-01 | capability | Token/Cost Tracking (Aider pattern) - Track LLM token usage and costs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | cost-efficiency |
 | 2026-04-01 | capability | Multi-Agent Orchestrator (Claude Quickstart two-agent pattern) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | multi-agent-evolution |
 | 2026-04-01 | capability | Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes | ~15m | ✅ | lint (fixed) | No | High | evolve | safer-self-modification |
@@ -76,19 +77,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 41/48 = 85%
+- First Try Success Rate: 42/49 = 86%
 - Average Time: ~14 minutes
-- Rework Rate: 8/48 = 17%
+- Rework Rate: 8/49 = 16%
 
 ### Capability Metrics
-- Capability Tasks: 47/48 = 98%
-- High Impact Capabilities: 38/47 = 81%
-- Capability Velocity: 47 capabilities in 3 days = 16/day
+- Capability Tasks: 48/49 = 98%
+- High Impact Capabilities: 39/48 = 81%
+- Capability Velocity: 48 capabilities in 3 days = 16/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 13
+- Lint Issues: 14
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
@@ -100,6 +101,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Tool Result Caching** - High impact, caches tool results to avoid redundant calls, reducing token usage and preventing API rate limit issues
 1. **Token/Cost Tracking** - High impact, tracks LLM token usage and costs for efficiency optimization (Aider pattern)
 1. **Multi-Agent Orchestrator** - High impact, enables two-agent pattern (initializer + coder) for better complex task handling
 1. **Self-Modification Safety Gates** - High impact, enables proactive dangerous pattern detection before code changes, preventing breaking changes and security vulnerabilities
@@ -141,6 +143,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Tool Result Caching for Token Efficiency
+
+**Type:** capability
+
+**Context:** Implementing tool result caching to avoid redundant tool calls, reducing token usage and preventing API rate limit issues.
+
+**Insight:** A tool result caching system provides significant benefits for self-evolution:
+1. **Token efficiency** - Avoid redundant tool calls by caching results
+2. **Rate limit prevention** - Reduce API calls that could hit rate limits
+3. **Configurable caching** - Never cache dynamic tools (bash, edit, write), short TTL for file tools (read, ls, glob)
+4. **Statistics tracking** - Track hits, misses, tokens saved, top cached tools
+5. **Persistence** - Save cache to disk for resumption across sessions
+
+Implementation details:
+- `ToolCache` class for caching tool results with TTL support
+- `CacheEntry`, `CacheConfig`, `CacheStats`, `CacheToolResult` interfaces
+- `generateCacheKey()` function for consistent key generation from tool + params
+- `toolCache` tool with actions: stats, config, entries, clear, clearTool, clearExpired, enable, disable, get, has, setConfig
+- Configurable max size, TTL, no-cache tools, short-TTL tools
+- Data persistence to data/tool-cache.json
+- 39 tests for full functionality coverage
+
+**Trigger:** When wanting to optimize token usage and avoid redundant tool calls
+
+**Reuse Rule:** Use `toolCache({action: 'stats'})` to view cache statistics. Use `toolCache({action: 'clear'})` to clear cache. The cache is automatically used for cacheable tools.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Token/Cost Tracking for LLM Efficiency (Aider Pattern)
 
