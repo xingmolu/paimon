@@ -4,6 +4,61 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 57 — Context Budget Monitoring Tool (ROADMAP Phase 30) (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 30: Context Budget Monitoring Tool
+- Created `src/context-budget.ts` module with ContextBudgetManager class
+- Created `src/tools/context-budget-tool.ts` for contextBudget tool
+- Added `contextBudget` tool to metaTools array
+- Added 29 tests for context budget functionality
+- Updated system prompt to document contextBudget tool usage
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive context management
+- Prevents context overflow failures by monitoring usage before hitting limits
+- Provides health status (healthy, warning, critical, overflow)
+- Generates optimization suggestions for reducing context usage
+- Integrates with existing compaction module for comprehensive context management
+
+**Technical details:**
+- Created `src/context-budget.ts`:
+  - `ContextBudgetManager` class for proactive context monitoring
+  - `ContextBudgetConfig`, `ContextUsageStats`, `ContextBudgetStats`, `OptimizationSuggestion` interfaces
+  - `checkBudget()` - Check current usage and health status
+  - `getOptimizationSuggestions()` - Get suggestions for reducing context
+  - `getStats()` - Get comprehensive statistics including history
+  - Health status: healthy, warning, critical, overflow
+  - Configurable thresholds (70% warning, 85% critical)
+- Created `src/tools/context-budget-tool.ts`:
+  - `contextBudget` tool with actions: check, stats, suggestions, config, update, add, reset, history
+- Modified `src/tools/index.ts`:
+  - Added contextBudgetTool to metaTools array
+  - Added re-exports for context-budget module
+- Modified `src/prompt.ts`:
+  - Added contextBudget tool documentation in IMPORTANT section
+
+**Context Budget Tool Usage:**
+```typescript
+// Check current context usage
+contextBudget({action: 'check'})
+
+// Get full statistics
+contextBudget({action: 'stats'})
+
+// Get optimization suggestions
+contextBudget({action: 'suggestions'})
+
+// View configuration
+contextBudget({action: 'config'})
+```
+
+**Next steps:**
+- Consider integrating contextBudget with agent run loop for automatic monitoring
+- Consider adding proactive warnings during tool execution
+
+---
+
 ## Day 56 — Journal Auto-Truncation (Issue #24) (2026-04-01)
 
 **What happened:**

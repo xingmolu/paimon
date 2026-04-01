@@ -225,6 +225,15 @@ Planned improvements for evo.
 - [x] Statistics aggregation — Cost by model, task type, daily/weekly trends
 - [x] Data persistence — Save usage data for analysis
 
+## Phase 30: Context Budget Monitoring Tool
+- [x] ContextBudgetManager module — Proactive context window monitoring
+- [x] contextBudget tool — Tool for monitoring and managing context usage
+- [x] Context health status — Real-time token usage and limits monitoring
+- [x] Proactive warnings — Alert before hitting context limits
+- [x] Optimization suggestions — Recommend context reduction actions
+- [x] Integration with compaction — Work with existing ContextManager
+- [x] Statistics tracking — Track context usage patterns over sessions
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

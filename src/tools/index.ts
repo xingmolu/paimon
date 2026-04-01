@@ -18,6 +18,7 @@ import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
+import { contextBudgetTool } from "./context-budget-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
@@ -75,6 +76,7 @@ export const metaTools: AgentTool[] = [
 	tokenTrackingTool,
 	toolCacheTool,
 	journalTool,
+	contextBudgetTool,
 ];
 
 /**
@@ -135,6 +137,7 @@ export { multiAgentTool } from "./multi-agent-tool.js";
 export { tokenTrackingTool, getTokenTracker, resetTokenTracker } from "./token-tracking-tool.js";
 export { toolCacheTool } from "./tool-cache-tool.js";
 export { journalTool } from "./journal-tool.js";
+export { contextBudgetTool, createContextBudgetTool } from "./context-budget-tool.js";
 export { getToolCache, resetToolCache, ToolCache, generateCacheKey } from "../tool-cache.js";
 export {
 	journalManager,
@@ -152,6 +155,16 @@ export {
 	createSampleTasks,
 	BenchmarkRunner,
 } from "../benchmark.js";
+export {
+	ContextBudgetManager,
+	getGlobalContextBudgetManager,
+	initGlobalContextBudgetManager,
+	DEFAULT_CONTEXT_BUDGET_CONFIG,
+	ContextBudgetConfig,
+	ContextUsageStats,
+	ContextBudgetStats,
+	OptimizationSuggestion,
+} from "../context-budget.js";
 export {
 	getSDK,
 	initSDK,
