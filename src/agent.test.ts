@@ -4308,3 +4308,163 @@ describe("TaskSuccessPredictor", () => {
 		expect(predictor1).toBe(predictor2);
 	});
 });
+
+describe("intelligence tool", () => {
+	it("should have intelligence tool in metaTools", async () => {
+		const { metaTools } = await import("./tools/index.js");
+		const intelligence = metaTools.find((t) => t.name === "intelligence");
+		expect(intelligence).toBeDefined();
+		expect(intelligence?.description).toContain("Unified evolution intelligence");
+	});
+
+	it("should have intelligence parameters defined", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		expect(intelligenceTool.name).toBe("intelligence");
+		expect(intelligenceTool.parameters).toBeDefined();
+	});
+
+	it("should support analyze action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", {
+			action: "analyze",
+			taskDescription: "Implement new capability",
+			taskType: "capability",
+			skillsAvailable: ["evolve"],
+			complexity: "medium",
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Unified Evolution Intelligence");
+		expect(textContent?.text).toContain("Combined Confidence");
+		expect(textContent?.text).toContain("Success Probability");
+	});
+
+	it("should support stats action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", { action: "stats" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Evolution Intelligence Statistics");
+		expect(textContent?.text).toContain("Combined Accuracy");
+		expect(textContent?.text).toContain("Predictor Stats");
+		expect(textContent?.text).toContain("Pattern Stats");
+		expect(textContent?.text).toContain("Error Pattern Stats");
+		expect(textContent?.text).toContain("RAG Stats");
+	});
+
+	it("should support refresh action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", { action: "refresh" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("All intelligence modules refreshed");
+	});
+
+	it("should support risks action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", {
+			action: "risks",
+			taskType: "capability",
+			complexity: "high",
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Error Risk Analysis");
+	});
+
+	it("should support opportunities action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", {
+			action: "opportunities",
+			taskDescription: "Implement predictor",
+			taskType: "capability",
+			skillsAvailable: ["evolve", "research"],
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Key Opportunities");
+	});
+
+	it("should handle unknown action", async () => {
+		const { intelligenceTool } = await import("./tools/intelligence-tool.js");
+		const result = await intelligenceTool.execute("test-id", { action: "unknown" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Unknown action");
+		expect(textContent?.text).toContain("Available: analyze, stats, refresh, risks, opportunities");
+	});
+});
+
+describe("EvolutionIntelligence", () => {
+	it("should create intelligence instance", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		expect(intelligence).toBeDefined();
+	});
+
+	it("should analyze task context", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		const recommendation = intelligence.analyze({
+			taskDescription: "Implement new tool",
+			taskType: "capability",
+			skillsAvailable: ["evolve"],
+			complexity: "medium",
+		});
+		expect(recommendation.prediction).toBeDefined();
+		expect(recommendation.patternRecommendations).toBeDefined();
+		expect(recommendation.errorRisks).toBeDefined();
+		expect(recommendation.relevantContext).toBeDefined();
+		expect(recommendation.combinedConfidence).toBeGreaterThanOrEqual(0);
+		expect(recommendation.combinedConfidence).toBeLessThanOrEqual(100);
+		expect(recommendation.overallRecommendation).toBeDefined();
+		expect(recommendation.suggestedApproach).toBeDefined();
+		expect(Array.isArray(recommendation.keyRisks)).toBe(true);
+		expect(Array.isArray(recommendation.keyOpportunities)).toBe(true);
+	});
+
+	it("should get combined stats", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		const stats = intelligence.getStats();
+		expect(stats.predictorStats).toBeDefined();
+		expect(stats.patternStats).toBeDefined();
+		expect(stats.errorPatternStats).toBeDefined();
+		expect(stats.ragStats).toBeDefined();
+		expect(stats.combinedAccuracy).toBeGreaterThanOrEqual(0);
+		expect(stats.combinedAccuracy).toBeLessThanOrEqual(100);
+	});
+
+	it("should format recommendation", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		const recommendation = intelligence.analyze({
+			taskDescription: "Test task",
+			taskType: "capability",
+			skillsAvailable: [],
+		});
+		const formatted = intelligence.formatRecommendation(recommendation);
+		expect(formatted).toContain("Unified Evolution Intelligence Recommendation");
+		expect(formatted).toContain("Combined Confidence");
+		expect(formatted).toContain("Overall Recommendation");
+		expect(formatted).toContain("Suggested Approach");
+	});
+
+	it("should format stats", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		const stats = intelligence.getStats();
+		const formatted = intelligence.formatStats(stats);
+		expect(formatted).toContain("Evolution Intelligence Statistics");
+		expect(formatted).toContain("Combined Accuracy");
+	});
+
+	it("should refresh all modules", async () => {
+		const { EvolutionIntelligence } = await import("./intelligence.js");
+		const intelligence = new EvolutionIntelligence();
+		intelligence.refresh();
+		// Should not throw
+		expect(intelligence).toBeDefined();
+	});
+
+	it("should get singleton intelligence", async () => {
+		const { getEvolutionIntelligence } = await import("./intelligence.js");
+		const intel1 = getEvolutionIntelligence();
+		const intel2 = getEvolutionIntelligence();
+		expect(intel1).toBe(intel2);
+	});
+});

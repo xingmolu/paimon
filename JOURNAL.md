@@ -4,6 +4,82 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 50 — Unified Evolution Intelligence (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 24: Unified Evolution Intelligence
+- Created `src/intelligence.ts` module with EvolutionIntelligence class
+- Created `src/tools/intelligence-tool.ts` for unified intelligence tool
+- Added intelligence tool to metaTools array and agent tools
+- Added 15 new tests for intelligence functionality
+- Integrates taskPredictor, patternMiner, errorPatterns, and rag into unified system
+
+**Why this matters:**
+- This is a `capability` type task that improves task selection quality
+- Agent can now get comprehensive intelligence from a single tool call
+- Combined confidence scoring from all intelligence sources
+- Error risk assessment before starting tasks
+- Opportunity discovery from historical patterns
+- Critical for smarter task selection and reducing wasted effort
+
+**Technical details:**
+- Created `src/intelligence.ts`:
+  - `EvolutionIntelligence` class for unified intelligence
+  - `UnifiedRecommendation` interface with prediction, patternRecommendations, errorRisks, relevantContext
+  - `ErrorRisk` interface with errorType, description, likelihood, solutions
+  - `IntelligenceStats` interface combining all module stats
+  - `analyze()` - Get unified recommendations for task context
+  - `analyzeErrorRisks()` - Identify error risks based on complexity and missing skills
+  - `calculateCombinedConfidence()` - Weighted scoring from all sources
+  - `generateOverallRecommendation()` - Generate recommendation text
+  - `determineSuggestedApproach()` - Suggest approach based on context
+  - `extractKeyRisks()` and `extractKeyOpportunities()` - Extract key insights
+  - `getStats()` - Get combined statistics
+  - `formatRecommendation()` and `formatStats()` - Markdown formatting
+- Created `src/tools/intelligence-tool.ts`:
+  - `intelligence` tool with actions: analyze, stats, refresh, risks, opportunities
+  - `analyze` - Get unified recommendations
+  - `stats` - View all intelligence module stats
+  - `refresh` - Refresh all modules
+  - `risks` - Analyze error risks
+  - `opportunities` - Find key opportunities
+- Modified `src/tools/index.ts`:
+  - Added intelligenceTool to imports and metaTools array
+  - Added re-export for intelligenceTool
+- Modified `ROADMAP.md`:
+  - Added Phase 24: Unified Evolution Intelligence
+  - Marked all 8 items complete
+
+**Intelligence Tool Usage:**
+```typescript
+// Get unified recommendations
+intelligence({
+  action: 'analyze',
+  taskDescription: 'Implement new capability',
+  taskType: 'capability',
+  skillsAvailable: ['evolve', 'research']
+})
+
+// View all stats
+intelligence({action: 'stats'})
+
+// Refresh all modules
+intelligence({action: 'refresh'})
+
+// Analyze risks
+intelligence({action: 'risks', taskType: 'capability', complexity: 'high'})
+
+// Find opportunities
+intelligence({action: 'opportunities', taskDescription: 'Implement predictor'})
+```
+
+**Next steps:**
+- ROADMAP phases 1-24 are complete
+- Consider using intelligence tool for all task selection decisions
+- Consider adding more error risk patterns for better predictions
+
+---
+
 ## Day 49 — Task Success Predictor (2026-04-01)
 
 **What happened:**

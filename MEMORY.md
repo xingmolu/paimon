@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Unified Evolution Intelligence - Integrate all intelligence tools for unified task recommendations | ~15m | ✅ | none | No | High | evolve, research | unified-intelligence |
 | 2026-04-01 | capability | Task Success Predictor - Predict task success likelihood before starting | ~15m | ✅ | none | No | High | evolve | smarter-task-selection |
 | 2026-04-01 | capability | Evolution Metrics Dashboard - Track and visualize evolution metrics over time | ~15m | ✅ | none | No | High | evolve | metrics-visibility |
 | 2026-03-31 | capability | Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks | ~15m | ✅ | lint (fixed) | No | High | evolve, research | extensible-architecture |
@@ -70,14 +71,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 35/42 = 83%
+- First Try Success Rate: 36/43 = 84%
 - Average Time: ~14 minutes
-- Rework Rate: 8/42 = 19%
+- Rework Rate: 8/43 = 19%
 
 ### Capability Metrics
-- Capability Tasks: 41/42 = 98%
-- High Impact Capabilities: 32/41 = 78%
-- Capability Velocity: 41 capabilities in 3 days = 14/day
+- Capability Tasks: 42/43 = 98%
+- High Impact Capabilities: 33/42 = 79%
+- Capability Velocity: 42 capabilities in 3 days = 14/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -94,6 +95,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Unified Evolution Intelligence** - High impact, integrates all intelligence tools for unified task recommendations, enabling smarter task selection
 1. **Task Success Predictor** - High impact, predicts task success likelihood before starting for smarter task selection
 1. **Evolution Metrics Dashboard** - High impact, enables tracking and visualizing evolution metrics over time for better self-awareness
 1. **Plugins/Extensions System** - High impact, enables community contributions and extensible architecture (Claude Code/OpenHands pattern)
@@ -129,6 +131,35 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Unified Evolution Intelligence for Task Selection
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 24 - Unified intelligence system for smarter task selection
+
+**Insight:** A unified intelligence system that combines all intelligence tools provides significant benefits for self-evolution:
+1. **Single entry point** - One tool (`intelligence`) instead of calling multiple tools separately
+2. **Combined confidence scoring** - Weighted scoring from taskPredictor, patternMiner, errorPatterns, and rag
+3. **Comprehensive analysis** - Success probability, pattern recommendations, error risks, and relevant context all in one response
+4. **Risk identification** - Identify error risks before starting tasks
+5. **Opportunity discovery** - Find opportunities to leverage past successful patterns
+
+Implementation details:
+- `EvolutionIntelligence` class integrates TaskSuccessPredictor, PatternMiner, ErrorPatternLearner, RagModule
+- `UnifiedRecommendation` interface with prediction, patternRecommendations, errorRisks, relevantContext
+- Combined confidence calculated from all sources with weighted formula
+- `intelligence` tool with actions: analyze, stats, refresh, risks, opportunities
+- Error risk analysis based on complexity and missing skills
+- Opportunity extraction from pattern matches and RAG context
+
+**Trigger:** When selecting tasks or needing comprehensive intelligence before starting work
+
+**Reuse Rule:** Use `intelligence({action: 'analyze', taskDescription: '...', taskType: 'capability'})` before task selection. Use `intelligence({action: 'stats'})` to view all intelligence module stats.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Task Success Predictor for Smarter Task Selection
 

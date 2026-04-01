@@ -21,6 +21,7 @@ import { errorPatternsTool } from "./error-patterns-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
+import { intelligenceTool } from "./intelligence-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
@@ -59,6 +60,7 @@ export const metaTools: AgentTool[] = [
 	pluginsTool,
 	metricsTool,
 	taskPredictorTool,
+	intelligenceTool,
 ];
 
 /**
@@ -111,3 +113,4 @@ export { rouletteTool, initRoulette } from "./roulette-tool.js";
 export { pluginsTool, getPluginTools } from "./plugins-tool.js";
 export { metricsTool } from "./metrics-tool.js";
 export { taskPredictorTool } from "./task-predictor-tool.js";
+export { intelligenceTool } from "./intelligence-tool.js";

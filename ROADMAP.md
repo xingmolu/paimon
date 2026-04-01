@@ -170,6 +170,16 @@ Planned improvements for evo.
 - [x] Similar tasks — Find similar successful and failed tasks
 - [x] Prediction stats — Track prediction accuracy over time
 
+## Phase 24: Unified Evolution Intelligence
+- [x] EvolutionIntelligence module — Unified system for task selection intelligence
+- [x] intelligence tool — Single entry point for all intelligence recommendations
+- [x] Task predictor integration — Integrate TaskSuccessPredictor for success predictions
+- [x] Pattern miner integration — Integrate PatternMiner for pattern recommendations
+- [x] Error patterns integration — Integrate ErrorPatternLearner for error risks
+- [x] RAG integration — Integrate RagModule for context enrichment
+- [x] Combined confidence scoring — Weighted scoring from all sources
+- [x] Unified recommendations — Overall recommendation with risks and opportunities
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
