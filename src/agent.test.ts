@@ -4144,3 +4144,167 @@ describe("metrics tool", () => {
 		});
 	});
 });
+
+describe("taskPredictor tool", () => {
+	it("should have taskPredictor tool in tools array", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		expect(taskPredictorTool).toBeDefined();
+		expect(taskPredictorTool.name).toBe("taskPredictor");
+	});
+
+	it("should have taskPredictor parameters defined", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		expect(taskPredictorTool.parameters).toBeDefined();
+	});
+
+	it("should support taskPredictor actions: predict, stats, patterns, refresh", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		expect(taskPredictorTool.name).toBe("taskPredictor");
+	});
+
+	it("should predict task success", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", {
+			action: "predict",
+			taskDescription: "Implement new capability",
+			taskType: "capability",
+			skillsAvailable: ["evolve", "research"],
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Task Success Prediction");
+	});
+
+	it("should require taskDescription for predict", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", {
+			action: "predict",
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Error");
+	});
+
+	it("should require taskType for predict", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", {
+			action: "predict",
+			taskDescription: "Test task",
+		});
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Error");
+	});
+
+	it("should show prediction stats", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", { action: "stats" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Task Predictor Statistics");
+	});
+
+	it("should show historical patterns", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", { action: "patterns" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Historical Patterns");
+	});
+
+	it("should refresh patterns", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", { action: "refresh" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Task Predictor Refreshed");
+	});
+
+	it("should handle unknown action", async () => {
+		const { taskPredictorTool } = await import("./tools/task-predictor-tool.js");
+		const result = await taskPredictorTool.execute("test-id", { action: "unknown" });
+		const textContent = result.content.find((c) => c.type === "text");
+		expect(textContent?.text).toContain("Error");
+	});
+});
+
+describe("TaskSuccessPredictor", () => {
+	it("should create predictor", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		expect(predictor).toBeDefined();
+	});
+
+	it("should get patterns", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		const patterns = predictor.getPatterns();
+		expect(Array.isArray(patterns)).toBe(true);
+	});
+
+	it("should predict capability task", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		const prediction = predictor.predict({
+			taskDescription: "Implement new capability",
+			taskType: "capability",
+			skillsAvailable: ["evolve"],
+		});
+		expect(prediction.successProbability).toBeGreaterThanOrEqual(0);
+		expect(prediction.successProbability).toBeLessThanOrEqual(1);
+		expect(prediction.confidence).toBeGreaterThanOrEqual(0);
+		expect(prediction.estimatedTime).toBeGreaterThan(0);
+		expect(Array.isArray(prediction.riskFactors)).toBe(true);
+		expect(Array.isArray(prediction.recommendedSkills)).toBe(true);
+	});
+
+	it("should predict with complexity", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		const lowPrediction = predictor.predict({
+			taskDescription: "Simple fix",
+			taskType: "reliability",
+			skillsAvailable: ["evolve"],
+			complexity: "low",
+		});
+		const highPrediction = predictor.predict({
+			taskDescription: "Complex refactor",
+			taskType: "capability",
+			skillsAvailable: ["evolve"],
+			complexity: "high",
+		});
+		// High complexity should have lower probability and higher estimated time
+		expect(highPrediction.estimatedTime).toBeGreaterThan(lowPrediction.estimatedTime);
+	});
+
+	it("should get stats", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		const stats = predictor.getStats();
+		expect(stats.totalPredictions).toBeGreaterThanOrEqual(0);
+		expect(stats.accuratePredictions).toBeGreaterThanOrEqual(0);
+	});
+
+	it("should format prediction", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		const prediction = predictor.predict({
+			taskDescription: "Test task",
+			taskType: "capability",
+			skillsAvailable: [],
+		});
+		const formatted = predictor.formatPrediction(prediction);
+		expect(formatted).toContain("Task Success Prediction");
+		expect(formatted).toContain("Success Probability");
+		expect(formatted).toContain("Confidence");
+	});
+
+	it("should refresh patterns", async () => {
+		const { TaskSuccessPredictor } = await import("./task-predictor.js");
+		const predictor = new TaskSuccessPredictor();
+		predictor.refresh();
+		const patterns = predictor.getPatterns();
+		expect(Array.isArray(patterns)).toBe(true);
+	});
+
+	it("should get singleton predictor", async () => {
+		const { getTaskPredictor } = await import("./task-predictor.js");
+		const predictor1 = getTaskPredictor();
+		const predictor2 = getTaskPredictor();
+		expect(predictor1).toBe(predictor2);
+	});
+});

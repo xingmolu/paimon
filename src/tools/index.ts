@@ -33,6 +33,7 @@ import { rouletteTool } from "./roulette-tool.js";
 import { searchTools } from "./search-tools.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
+import { taskPredictorTool } from "./task-predictor-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
 
@@ -57,6 +58,7 @@ export const metaTools: AgentTool[] = [
 	rouletteTool,
 	pluginsTool,
 	metricsTool,
+	taskPredictorTool,
 ];
 
 /**
@@ -108,3 +110,4 @@ export { trajectoryTool } from "./trajectory-tool.js";
 export { rouletteTool, initRoulette } from "./roulette-tool.js";
 export { pluginsTool, getPluginTools } from "./plugins-tool.js";
 export { metricsTool } from "./metrics-tool.js";
+export { taskPredictorTool } from "./task-predictor-tool.js";

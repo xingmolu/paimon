@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Task Success Predictor - Predict task success likelihood before starting | ~15m | ✅ | none | No | High | evolve | smarter-task-selection |
 | 2026-04-01 | capability | Evolution Metrics Dashboard - Track and visualize evolution metrics over time | ~15m | ✅ | none | No | High | evolve | metrics-visibility |
 | 2026-03-31 | capability | Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks | ~15m | ✅ | lint (fixed) | No | High | evolve, research | extensible-architecture |
 | 2026-03-31 | capability | Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance | ~20m | ✅ | lint (fixed) | No | High | evolve, research | model-diversity |
@@ -69,14 +70,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 34/41 = 83%
+- First Try Success Rate: 35/42 = 83%
 - Average Time: ~14 minutes
-- Rework Rate: 8/41 = 20%
+- Rework Rate: 8/42 = 19%
 
 ### Capability Metrics
-- Capability Tasks: 40/41 = 98%
-- High Impact Capabilities: 31/40 = 78%
-- Capability Velocity: 40 capabilities in 3 days = 13/day
+- Capability Tasks: 41/42 = 98%
+- High Impact Capabilities: 32/41 = 78%
+- Capability Velocity: 41 capabilities in 3 days = 14/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -93,6 +94,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Task Success Predictor** - High impact, predicts task success likelihood before starting for smarter task selection
 1. **Evolution Metrics Dashboard** - High impact, enables tracking and visualizing evolution metrics over time for better self-awareness
 1. **Plugins/Extensions System** - High impact, enables community contributions and extensible architecture (Claude Code/OpenHands pattern)
 1. **Model Roulette** - High impact, random model switching improves performance by diversifying reasoning approaches (Mini-SWE-Agent pattern)
@@ -127,6 +129,36 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Task Success Predictor for Smarter Task Selection
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 23 - Task Success Predictor for predicting task outcomes before starting
+
+**Insight:** Predicting task success before starting provides significant benefits for self-evolution:
+1. **Success probability** - Estimate likelihood of success from historical patterns
+2. **Risk factors** - Identify factors that could cause failure (missing skills, high complexity)
+3. **Recommended skills** - Suggest skills based on historical success with similar tasks
+4. **Similar tasks** - Find similar successful and failed tasks for learning
+5. **Time estimation** - Estimate time based on task type and complexity
+
+Implementation details:
+- `TaskSuccessPredictor` class parses MEMORY.md scorecard
+- `TaskPrediction` interface with probability, confidence, estimatedTime, riskFactors
+- `TaskContext` interface with taskDescription, taskType, skillsAvailable, complexity
+- `predict()` calculates probability from type success rate, skill match, complexity penalty
+- `identifyRiskFactors()` checks for missing skills, high complexity, common errors
+- `findSimilarTasks()` finds related tasks from history
+- `taskPredictor` tool with actions: predict, stats, patterns, refresh
+
+**Trigger:** When selecting tasks or wanting to predict outcomes before starting
+
+**Reuse Rule:** Use `taskPredictor({action: 'predict', taskDescription: '...', taskType: 'capability'})` before task selection. Use `taskPredictor({action: 'stats'})` to view prediction accuracy.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Evolution Metrics Dashboard for Self-Awareness
 

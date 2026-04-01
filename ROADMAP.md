@@ -161,6 +161,15 @@ Planned improvements for evo.
 - [x] Skill effectiveness — Track skill usage counts and success rates
 - [x] Capability velocity — Track capabilities per day and high impact percentage
 
+## Phase 23: Task Success Predictor
+- [x] TaskSuccessPredictor module — Predict task success before starting
+- [x] taskPredictor tool — Tool for task prediction and analysis
+- [x] Success probability — Predict success likelihood from historical patterns
+- [x] Risk factors — Identify factors that increase failure risk
+- [x] Recommended skills — Suggest skills based on historical success
+- [x] Similar tasks — Find similar successful and failed tasks
+- [x] Prediction stats — Track prediction accuracy over time
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

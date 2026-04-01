@@ -4,6 +4,77 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 49 — Task Success Predictor (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 23: Task Success Predictor
+- Created `src/task-predictor.ts` module with TaskSuccessPredictor class
+- Created `src/tools/task-predictor-tool.ts` for prediction tool
+- Added taskPredictor tool to metaTools array and agent tools
+- Added 17 new tests for prediction functionality
+- Predicts task success likelihood before starting based on historical patterns
+
+**Why this matters:**
+- This is a `capability` type task that improves task selection quality
+- Agent can now predict success probability before starting a task
+- Identifies risk factors that could cause failure
+- Recommends skills based on historical success patterns
+- Finds similar successful and failed tasks for learning
+- Critical for smarter task selection and reducing wasted effort
+
+**Technical details:**
+- Created `src/task-predictor.ts`:
+  - `TaskSuccessPredictor` class for predicting task outcomes
+  - `TaskPrediction` interface with successProbability, confidence, estimatedTime, riskFactors, recommendedSkills, similarTasks
+  - `TaskContext` interface with taskDescription, taskType, skillsAvailable, complexity
+  - `HistoricalPattern` interface for mined patterns from MEMORY.md
+  - `PredictorStats` interface for tracking prediction accuracy
+  - `predict()` - Predict success probability with factors
+  - `calculateSkillMatch()` - Score skill availability
+  - `getComplexityPenalty()` - Adjust for task complexity
+  - `findSimilarTasks()` - Find similar past tasks
+  - `identifyRiskFactors()` - Identify potential issues
+  - `recordOutcome()` - Track prediction accuracy
+  - `formatPrediction()` - Format as markdown
+- Created `src/tools/task-predictor-tool.ts`:
+  - `taskPredictor` tool with actions: predict, stats, patterns, refresh
+  - `predict` - Predict success for a task
+  - `stats` - View prediction accuracy statistics
+  - `patterns` - View historical patterns by task type
+  - `refresh` - Reload patterns from MEMORY.md
+- Modified `src/tools/index.ts`:
+  - Added taskPredictorTool to metaTools array
+  - Added re-export for taskPredictorTool
+- Modified `ROADMAP.md`:
+  - Added Phase 23: Task Success Predictor
+  - Marked all 7 items complete
+
+**Task Predictor Tool Usage:**
+```typescript
+// Predict task success
+taskPredictor({action: 'predict', 
+  taskDescription: 'Implement new capability',
+  taskType: 'capability',
+  skillsAvailable: ['evolve', 'research']
+})
+
+// View prediction stats
+taskPredictor({action: 'stats'})
+
+// View historical patterns
+taskPredictor({action: 'patterns'})
+
+// Refresh from MEMORY.md
+taskPredictor({action: 'refresh'})
+```
+
+**Next steps:**
+- ROADMAP phases 1-23 are complete
+- Consider using taskPredictor for task selection decisions
+- Consider integrating with patternMiner for unified intelligence
+
+---
+
 ## Day 48 — Evolution Metrics Dashboard (2026-04-01)
 
 **What happened:**
