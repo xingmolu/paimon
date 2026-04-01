@@ -207,6 +207,15 @@ Planned improvements for evo.
 - [x] Custom patterns — Add/remove custom dangerous patterns
 - [x] Statistics tracking — Track scans, blocks, warnings, bypasses
 
+## Phase 28: Multi-Agent Orchestrator (Claude Quickstart Pattern)
+- [x] MultiAgentOrchestrator module — Two-agent pattern (initializer + coder)
+- [x] multiAgent tool — Tool for orchestrator management
+- [x] Initializer agent — Creates task list, plans approach, sets up structure
+- [x] Coder agent — Executes tasks, marks completion, persists progress
+- [x] Task list management — Create, update, track tasks with dependencies
+- [x] Session persistence — Progress saved via JSON and text files
+- [x] Statistics tracking — Track sessions, tasks, success rates
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

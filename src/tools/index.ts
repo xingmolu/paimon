@@ -24,6 +24,7 @@ import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { metricsTool } from "./metrics-tool.js";
+import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
@@ -67,6 +68,7 @@ export const metaTools: AgentTool[] = [
 	sdkTool,
 	benchmarkTool,
 	safetyGatesTool,
+	multiAgentTool,
 ];
 
 /**
@@ -123,6 +125,7 @@ export { intelligenceTool } from "./intelligence-tool.js";
 export { sdkTool, createSDKTool } from "./sdk-tool.js";
 export { benchmarkTool } from "./benchmark-tool.js";
 export { safetyGatesTool, getSafetyGatesForHook } from "./safety-gates-tool.js";
+export { multiAgentTool } from "./multi-agent-tool.js";
 export {
 	getBenchmarkRunner,
 	createSampleTasks,
