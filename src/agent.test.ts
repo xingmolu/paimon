@@ -4468,3 +4468,233 @@ describe("EvolutionIntelligence", () => {
 		expect(intel1).toBe(intel2);
 	});
 });
+
+describe("SDK", () => {
+	describe("EvolutionSDK", () => {
+		it("should create EvolutionSDK with config", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+				model: "test-model",
+			});
+			expect(sdk).toBeDefined();
+		});
+
+		it("should initialize SDK with defaults", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			expect(sdk).toBeDefined();
+		});
+
+		it("should start a session", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const session = await sdk.startSession();
+			expect(session).toBeDefined();
+			expect(session.id).toBeDefined();
+			expect(session.status).toBe("running");
+		});
+
+		it("should get session status", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const session = await sdk.startSession();
+			const status = sdk.getStatus(session.id);
+			expect(status).toBeDefined();
+			expect(status?.id).toBe(session.id);
+		});
+
+		it("should stop a session", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const session = await sdk.startSession();
+			sdk.stopSession(session.id);
+			const status = sdk.getStatus(session.id);
+			expect(status?.status).toBe("paused");
+		});
+
+		it("should resume a paused session", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const session = await sdk.startSession();
+			sdk.stopSession(session.id);
+			sdk.resumeSession(session.id);
+			const status = sdk.getStatus(session.id);
+			expect(status?.status).toBe("running");
+		});
+
+		it("should delete a session", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const session = await sdk.startSession();
+			sdk.deleteSession(session.id);
+			const status = sdk.getStatus(session.id);
+			expect(status).toBeUndefined();
+		});
+
+		it("should get SDK stats", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			await sdk.startSession();
+			const stats = sdk.getStats();
+			expect(stats).toBeDefined();
+			expect(stats.totalSessions).toBeGreaterThanOrEqual(1);
+			expect(stats.activeSessions).toBeGreaterThanOrEqual(1);
+		});
+
+		it("should get all sessions", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			await sdk.startSession();
+			const sessions = sdk.getAllSessions();
+			expect(sessions.length).toBeGreaterThanOrEqual(1);
+		});
+
+		it("should get prediction for task", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const prediction = sdk.getPrediction({
+				taskDescription: "Test task",
+				taskType: "capability",
+			});
+			expect(prediction).toBeDefined();
+			expect(prediction.successProbability).toBeGreaterThanOrEqual(0);
+			expect(prediction.successProbability).toBeLessThanOrEqual(100);
+		});
+
+		it("should match error patterns", async () => {
+			const { EvolutionSDK } = await import("./sdk.js");
+			const sdk = new EvolutionSDK({
+				apiKey: "test-key",
+			});
+			const match = sdk.matchErrorPattern("Cannot find name 'foo'");
+			expect(match).toBeDefined();
+		});
+	});
+
+	describe("SDK formatters", () => {
+		it("should format SDK stats", async () => {
+			const { formatSDKStats } = await import("./sdk.js");
+			const stats = {
+				totalSessions: 5,
+				activeSessions: 2,
+				completedSessions: 2,
+				failedSessions: 1,
+				totalIterations: 10,
+				averageSuccessRate: 80,
+			};
+			const formatted = formatSDKStats(stats);
+			expect(formatted).toContain("SDK Statistics");
+			expect(formatted).toContain("Total Sessions");
+			expect(formatted).toContain("5");
+		});
+
+		it("should format evolution result", async () => {
+			const { formatEvolutionResult } = await import("./sdk.js");
+			const result = {
+				success: true,
+				description: "Test iteration",
+				taskType: "capability" as const,
+				timeMinutes: 5,
+				errors: [],
+				filesChanged: ["test.ts"],
+			};
+			const formatted = formatEvolutionResult(result);
+			expect(formatted).toContain("Evolution Result");
+			expect(formatted).toContain("Test iteration");
+			expect(formatted).toContain("capability");
+		});
+
+		it("should format session", async () => {
+			const { formatSession } = await import("./sdk.js");
+			const session = {
+				id: "session-123",
+				startTime: new Date(),
+				config: { apiKey: "test" },
+				iterationsCompleted: 5,
+				results: [],
+				status: "running" as const,
+			};
+			const formatted = formatSession(session);
+			expect(formatted).toContain("Evolution Session");
+			expect(formatted).toContain("session-123");
+			expect(formatted).toContain("running");
+		});
+
+		it("should format batch result", async () => {
+			const { formatBatchResult } = await import("./sdk.js");
+			const batchResult = {
+				totalIterations: 10,
+				successfulIterations: 8,
+				successRate: 0.8,
+				session: {
+					id: "session-123",
+					startTime: new Date(),
+					config: { apiKey: "test" },
+					iterationsCompleted: 10,
+					results: [],
+					status: "completed" as const,
+				},
+			};
+			const formatted = formatBatchResult(batchResult);
+			expect(formatted).toContain("Batch Evolution Result");
+			expect(formatted).toContain("Total Iterations");
+			expect(formatted).toContain("10");
+		});
+	});
+
+	describe("SDK initialization", () => {
+		it("should initialize SDK globally", async () => {
+			const { initSDK, getSDK } = await import("./sdk.js");
+			const sdk = initSDK({ apiKey: "test-key" });
+			expect(sdk).toBeDefined();
+			const sdk2 = getSDK();
+			expect(sdk2).toBe(sdk);
+		});
+	});
+
+	describe("SDK tool", () => {
+		it("should create SDK tool", async () => {
+			const { createSDKTool } = await import("./tools/sdk-tool.js");
+			const tool = createSDKTool();
+			expect(tool).toBeDefined();
+			expect(tool.name).toBe("sdk");
+		});
+
+		it("should have sdk tool in tools array", async () => {
+			const module = await import("./agent.js");
+			const { createAgent } = module;
+			expect(createAgent).toBeDefined();
+		});
+
+		it("should have sdk parameters defined", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const { agent, run } = createAgent(config);
+			expect(agent).toBeDefined();
+			expect(run).toBeDefined();
+		});
+	});
+});

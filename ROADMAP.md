@@ -180,6 +180,15 @@ Planned improvements for evo.
 - [x] Combined confidence scoring — Weighted scoring from all sources
 - [x] Unified recommendations — Overall recommendation with risks and opportunities
 
+## Phase 25: SDK/API for Programmatic Evolution
+- [x] EvolutionSDK class — Programmatic API for self-evolution
+- [x] sdk tool — Tool interface for SDK management
+- [x] Session management — startSession(), runIteration(), stopSession()
+- [x] Batch evolution — batchEvolve() with callbacks and thresholds
+- [x] Intelligence integration — Integrated predictions and recommendations
+- [x] Error pattern matching — Match errors against known patterns
+- [x] Statistics tracking — Track sessions, iterations, success rates
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

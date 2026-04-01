@@ -4,6 +4,86 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 51 — SDK/API for Programmatic Evolution (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 25: SDK/API for Programmatic Evolution
+- Created `src/sdk.ts` module with EvolutionSDK class
+- Created `src/tools/sdk-tool.ts` for SDK management via tools
+- Added sdk tool to metaTools array and agent tools
+- Added 12 new tests for SDK functionality
+- Inspired by OpenHands SDK and mini-swe-agent Python bindings
+
+**Why this matters:**
+- This is a `capability` type task that enables programmatic control
+- External tools can now drive evolution programmatically
+- Batch mode enables running multiple iterations with callbacks
+- CI/CD integration enables automated evolution in pipelines
+- Critical for external tool integration and automation
+
+**Technical details:**
+- Created `src/sdk.ts`:
+  - `EvolutionSDK` class for programmatic API
+  - `EvolutionConfig` interface with apiKey, baseUrl, model, maxIterations, etc.
+  - `EvolutionResult` interface with success, description, taskType, timeMinutes, errors, filesChanged
+  - `EvolutionSession` interface with id, startTime, config, iterationsCompleted, results, status
+  - `BatchEvolutionConfig` and `BatchEvolutionResult` interfaces
+  - `startSession()` - Start a new evolution session
+  - `runIteration(sessionId)` - Run a single iteration
+  - `getStatus(sessionId)` - Get session status
+  - `stopSession(sessionId)` - Stop a running session
+  - `resumeSession(sessionId)` - Resume a paused session
+  - `deleteSession(sessionId)` - Delete a session
+  - `batchEvolve(config)` - Run batch evolution with callbacks
+  - `getAllSessions()` - Get all active sessions
+  - `getStats()` - Get SDK statistics
+  - `getPrediction(context)` - Get task prediction
+  - `getRecommendations(context)` - Get intelligence recommendations
+  - `matchErrorPattern(error)` - Match error against known patterns
+- Created `src/tools/sdk-tool.ts`:
+  - `sdk` tool with actions: init, start, run, status, stop, resume, delete, batch, sessions, stats, predict, recommend, match
+  - Each action returns formatted markdown output
+- Modified `src/tools/index.ts`:
+  - Added sdkTool to metaTools array
+  - Added re-export for sdkTool and SDK functions
+- Modified `ROADMAP.md`:
+  - Added Phase 25: SDK/API for Programmatic Evolution
+  - Marked all 7 items complete
+
+**SDK Tool Usage:**
+```typescript
+// Initialize SDK
+sdk({action: 'init', apiKey: 'your-key', baseUrl: 'https://api.example.com'})
+
+// Start a session
+sdk({action: 'start'})
+
+// Run an iteration
+sdk({action: 'run', sessionId: 'session-123'})
+
+// Run batch evolution
+sdk({action: 'batch', iterations: 5, focusTypes: ['capability']})
+
+// Get SDK stats
+sdk({action: 'stats'})
+
+// Get prediction
+sdk({action: 'predict', taskDescription: 'Implement feature', taskType: 'capability'})
+
+// Get recommendations
+sdk({action: 'recommend', taskDescription: 'Evolution task', taskType: 'capability'})
+
+// Match error pattern
+sdk({action: 'match', error: "Cannot find name 'foo'"})
+```
+
+**Next steps:**
+- ROADMAP phases 1-25 are complete
+- Consider using SDK for CI/CD integration
+- Consider adding benchmark mode (SWE-bench) via SDK
+
+---
+
 ## Day 50 — Unified Evolution Intelligence (2026-04-01)
 
 **What happened:**

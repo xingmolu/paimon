@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | SDK/API for Programmatic Evolution (OpenHands/mini-swe-agent pattern) | ~15m | ✅ | none | No | High | evolve, research | programmatic-control, batch-mode |
 | 2026-04-01 | capability | Unified Evolution Intelligence - Integrate all intelligence tools for unified task recommendations | ~15m | ✅ | none | No | High | evolve, research | unified-intelligence |
 | 2026-04-01 | capability | Task Success Predictor - Predict task success likelihood before starting | ~15m | ✅ | none | No | High | evolve | smarter-task-selection |
 | 2026-04-01 | capability | Evolution Metrics Dashboard - Track and visualize evolution metrics over time | ~15m | ✅ | none | No | High | evolve | metrics-visibility |
@@ -71,14 +72,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 36/43 = 84%
+- First Try Success Rate: 37/44 = 84%
 - Average Time: ~14 minutes
-- Rework Rate: 8/43 = 19%
+- Rework Rate: 8/44 = 18%
 
 ### Capability Metrics
-- Capability Tasks: 42/43 = 98%
-- High Impact Capabilities: 33/42 = 79%
-- Capability Velocity: 42 capabilities in 3 days = 14/day
+- Capability Tasks: 43/44 = 98%
+- High Impact Capabilities: 34/43 = 79%
+- Capability Velocity: 43 capabilities in 3 days = 14/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -87,14 +88,15 @@ Track effectiveness of recent improvements:
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 24 iterations, 95% success rate when used
+1. **evolve** - Used in 25 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
-5. **research** - Used in 7 iterations, competitor research
+5. **research** - Used in 8 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **SDK/API for Programmatic Evolution** - High impact, enables programmatic control, batch mode, CI/CD integration (OpenHands/mini-swe-agent pattern)
 1. **Unified Evolution Intelligence** - High impact, integrates all intelligence tools for unified task recommendations, enabling smarter task selection
 1. **Task Success Predictor** - High impact, predicts task success likelihood before starting for smarter task selection
 1. **Evolution Metrics Dashboard** - High impact, enables tracking and visualizing evolution metrics over time for better self-awareness
@@ -131,6 +133,35 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: SDK/API for Programmatic Evolution (OpenHands/mini-swe-agent Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 25 - SDK for programmatic agent control
+
+**Insight:** An SDK for programmatic evolution provides significant benefits:
+1. **External tool integration** - Allow external tools to drive evolution programmatically
+2. **Batch evolution mode** - Run multiple iterations with callbacks and thresholds
+3. **CI/CD integration** - Enable automated evolution in pipelines
+4. **Session management** - Start, stop, resume, and delete evolution sessions
+5. **Intelligence integration** - Combined predictions and recommendations via SDK
+
+Implementation details:
+- `EvolutionSDK` class with programmatic API
+- `EvolutionConfig`, `EvolutionResult`, `EvolutionSession` interfaces
+- Methods: `startSession()`, `runIteration()`, `getStatus()`, `stopSession()`, `batchEvolve()`
+- `sdk` tool for tool-based SDK management
+- Actions: init, start, run, status, stop, resume, delete, batch, sessions, stats, predict, recommend, match
+- Integration with intelligence, patternMiner, errorPatterns, taskPredictor
+
+**Trigger:** When needing programmatic control over evolution or batch mode
+
+**Reuse Rule:** Use `sdk({action: 'init', apiKey: 'your-key'})` to initialize. Use `sdk({action: 'batch', iterations: 5})` for batch evolution.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Unified Evolution Intelligence for Task Selection
 

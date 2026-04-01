@@ -31,6 +31,7 @@ import { ragTool } from "./rag-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { repomapTool } from "./repomap-tool.js";
 import { rouletteTool } from "./roulette-tool.js";
+import { sdkTool } from "./sdk-tool.js";
 import { searchTools } from "./search-tools.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
@@ -61,6 +62,7 @@ export const metaTools: AgentTool[] = [
 	metricsTool,
 	taskPredictorTool,
 	intelligenceTool,
+	sdkTool,
 ];
 
 /**
@@ -114,3 +116,13 @@ export { pluginsTool, getPluginTools } from "./plugins-tool.js";
 export { metricsTool } from "./metrics-tool.js";
 export { taskPredictorTool } from "./task-predictor-tool.js";
 export { intelligenceTool } from "./intelligence-tool.js";
+export { sdkTool, createSDKTool } from "./sdk-tool.js";
+export {
+	getSDK,
+	initSDK,
+	EvolutionSDK,
+	formatSDKStats,
+	formatSession,
+	formatEvolutionResult,
+	formatBatchResult,
+} from "../sdk.js";
