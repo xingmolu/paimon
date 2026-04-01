@@ -13,8 +13,18 @@
       "firstTryRate": 100,
       "averageTime": 12,
       "confidence": 95,
-      "sampleSize": 17,
+      "sampleSize": 18,
       "examples": [
+        {
+          "taskDescription": "Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes",
+          "date": "2026-04-01",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities",
           "date": "2026-04-01",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Evolution Metrics Dashboard - Track and visualize evolution metrics over time",
-          "date": "2026-04-01",
-          "time": 15,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,12 +202,12 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 91% success, 82% high impact",
+      "description": "capability tasks: 91% success, 83% high impact",
       "characteristics": {
         "taskType": "capability"
       },
@@ -215,8 +215,18 @@
       "firstTryRate": 91,
       "averageTime": 16,
       "confidence": 95,
-      "sampleSize": 45,
+      "sampleSize": 46,
       "examples": [
+        {
+          "taskDescription": "Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes",
+          "date": "2026-04-01",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities",
           "date": "2026-04-01",
@@ -237,20 +247,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Unified Evolution Intelligence - Integrate all intelligence tools for unified task recommendations",
-          "date": "2026-04-01",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "time-pattern-quick",
@@ -299,7 +298,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -351,9 +350,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-01T06:38:14.334Z"
+      "lastUpdated": "2026-04-01T06:57:58.690Z"
     }
   ],
-  "lastUpdated": "2026-04-01T06:38:14.334Z",
-  "sessionCount": 47
+  "lastUpdated": "2026-04-01T06:57:58.690Z",
+  "sessionCount": 48
 }

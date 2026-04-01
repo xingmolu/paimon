@@ -198,6 +198,15 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track pass rates, time, errors, quality
 - [x] Sample tasks — Create sample benchmark tasks for testing
 
+## Phase 27: Self-Modification Safety Gates
+- [x] SafetyGateManager module — Proactive dangerous pattern detection
+- [x] safetyGates tool — Tool for scanning code changes
+- [x] Risk level categorization — Critical, high, medium, low risk patterns
+- [x] Pattern categories — Security, breaking, data-loss, workflow, self-modification
+- [x] Hook integration — Pre-edit validation with Safety Gates
+- [x] Custom patterns — Add/remove custom dangerous patterns
+- [x] Statistics tracking — Track scans, blocks, warnings, bypasses
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

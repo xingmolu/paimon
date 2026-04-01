@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 91.48936170212765,
+    "current": 91.66666666666666,
     "points": [
       {
         "date": "2026-W14",
-        "value": 91.48936170212765,
+        "value": 91.66666666666666,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 91.48936170212765,
+    "weeklyAverage": 91.66666666666666,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 15.148936170212766,
+    "averageMinutes": 15.145833333333334,
     "byTaskType": {
-      "capability": 15.6,
+      "capability": 15.58695652173913,
       "reliability": 5
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 15.148936170212766,
+        "value": 15.145833333333334,
         "trend": "stable"
       }
     ],
@@ -28,14 +28,15 @@
     "slowestTask": "Modular architecture Phase 12 foundation (truncate, file-tools, search-tools, http-tool modules)"
   },
   "errors": {
-    "totalErrors": 22,
+    "totalErrors": 23,
     "byType": {
-      "lint (fixed)": 10,
+      "lint (fixed)": 11,
       "lint (fixed), test (fixed)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-01: lint (fixed) in \"Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes\"",
       "2026-04-01: lint (fixed) in \"SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities\"",
       "2026-03-31: lint (fixed) in \"Plugins/Extensions System (Claude Code/OpenHands pattern) - Dynamic plugin loading for tools and hooks\"",
       "2026-03-31: lint (fixed) in \"Model Roulette (Mini-SWE-Agent pattern) - Random model switching for improved performance\"",
@@ -44,13 +45,12 @@
       "2026-03-31: lint (fixed) in \"Evolution Pattern Mining - Mine successful patterns from session history for task recommendations\"",
       "2026-03-31: lint (fixed) in \"Error Pattern Learning - Learn from error patterns across sessions for automatic solutions\"",
       "2026-03-31: lint (fixed) in \"Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories\"",
-      "2026-03-31: lint (fixed) in \"RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings\"",
-      "2026-03-31: lint (fixed) in \"Self-authorship tracking (Aider Singularity pattern, 88% metric inspiration)\""
+      "2026-03-31: lint (fixed) in \"RAG Context Enrichment (PR-Agent pattern) - Semantic search over past sessions and learnings\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 22,
+        "value": 23,
         "trend": "stable"
       }
     ],
@@ -64,9 +64,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 45,
-      "successRate": 91.11111111111111,
-      "averageTime": 15.488888888888889,
+      "usageCount": 46,
+      "successRate": 91.30434782608695,
+      "averageTime": 15.478260869565217,
       "trend": "improving"
     },
     {
@@ -138,17 +138,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 22.5
+        "value": 23
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 45,
-    "highImpactCount": 37,
-    "highImpactPercentage": 82.22222222222221
+    "totalCapabilities": 46,
+    "highImpactCount": 38,
+    "highImpactPercentage": 82.6086956521739
   },
-  "lastUpdated": "2026-04-01T06:38:14.216Z",
-  "iterationsAnalyzed": 47
+  "lastUpdated": "2026-04-01T06:57:58.582Z",
+  "iterationsAnalyzed": 48
 }

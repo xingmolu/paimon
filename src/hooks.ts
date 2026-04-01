@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getSafetyGateManager } from "./safety-gates.js";
 
 /**
  * Hook system for intercepting and validating tool calls
@@ -223,6 +224,57 @@ const DEFAULT_SECURITY_HOOKS: Hook[] = [
 					allow: true,
 					warning: `Security patterns detected:\n${warnings.map((w) => `  - ${w}`).join("\n")}`,
 					context: `File: ${context.params?.path || "unknown"}`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "safety-gates-scan",
+		type: "PreToolUse",
+		name: "Safety Gates Code Scan",
+		description:
+			"Uses Safety Gates module to scan code for dangerous patterns before writing/editing",
+		enabled: true,
+		priority: 85,
+		handler: (context: HookContext): HookResult => {
+			if ((context.tool !== "write" && context.tool !== "edit") || !context.params?.content) {
+				return { allow: true };
+			}
+
+			const content = String(context.params.content);
+			const file = context.params?.path ? String(context.params.path) : undefined;
+
+			// Use Safety Gates for comprehensive scanning
+			const safetyManager = getSafetyGateManager();
+			if (!safetyManager.isEnabled()) {
+				return { allow: true };
+			}
+
+			const result = safetyManager.scan(content, file);
+
+			// If blocked by critical patterns
+			if (!result.safe) {
+				const criticalPatterns = result.critical.filter((p) => !p.bypassable);
+				if (criticalPatterns.length > 0) {
+					const messages = criticalPatterns.map((p) => `${p.name} (${p.risk}): ${p.description}`);
+					return {
+						allow: false,
+						block: `Safety Gates detected dangerous patterns:\n${messages.map((m) => `  - ${m}`).join("\n")}`,
+						context: `File: ${file || "unknown"}\nPatterns: ${criticalPatterns.length} critical`,
+					};
+				}
+			}
+
+			// If high-risk patterns detected, warn
+			const highRisk = result.highRisk;
+			if (highRisk.length > 0) {
+				const messages = highRisk.map((p) => `${p.name} (${p.risk}): ${p.suggestion}`);
+				return {
+					allow: true,
+					warning: `Safety Gates detected high-risk patterns:\n${messages.map((m) => `  - ${m}`).join("\n")}`,
+					context: `File: ${file || "unknown"}\nPatterns: ${highRisk.length} high-risk`,
 				};
 			}
 

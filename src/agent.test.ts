@@ -5049,3 +5049,63 @@ describe("Benchmark Module", () => {
 		});
 	});
 });
+describe("Safety Gates", () => {
+	describe("SafetyGateManager", () => {
+		it("should create SafetyGateManager", async () => {
+			const { SafetyGateManager, getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			expect(manager).toBeDefined();
+			expect(manager.isEnabled()).toBeDefined();
+		});
+
+		it("should scan content for patterns", async () => {
+			const { getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			const result = manager.scan("const x = 1;");
+			expect(result).toBeDefined();
+			expect(result.patterns).toBeDefined();
+		});
+
+		it("should pass safe code", async () => {
+			const { getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			const safeCode = "const x = 1 + 2;";
+			const result = manager.scan(safeCode);
+			expect(result.safe).toBe(true);
+			expect(result.patterns.length).toBe(0);
+		});
+
+		it("should track statistics", async () => {
+			const { getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			manager.scan("const x = 1;");
+			const stats = manager.getStats();
+			expect(stats.totalScans).toBeGreaterThan(0);
+		});
+
+		it("should enable/disable gates", async () => {
+			const { getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			manager.setEnabled(true);
+			expect(manager.isEnabled()).toBe(true);
+			manager.setEnabled(false);
+			expect(manager.isEnabled()).toBe(false);
+			manager.setEnabled(true);
+		});
+
+		it("should format patterns list", async () => {
+			const { getSafetyGateManager } = await import("./safety-gates.js");
+			const manager = getSafetyGateManager();
+			const formatted = manager.formatPatternsList();
+			expect(formatted).toContain("Safety Gate Patterns");
+		});
+	});
+
+	describe("safetyGates tool", () => {
+		it("should have safetyGates tool", async () => {
+			const { safetyGatesTool } = await import("./tools/safety-gates-tool.js");
+			expect(safetyGatesTool).toBeDefined();
+			expect(safetyGatesTool.name).toBe("safetyGates");
+		});
+	});
+});
