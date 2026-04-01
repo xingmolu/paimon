@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-01 | capability | Token/Cost Tracking (Aider pattern) - Track LLM token usage and costs | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | cost-efficiency |
 | 2026-04-01 | capability | Multi-Agent Orchestrator (Claude Quickstart two-agent pattern) | ~15m | ✅ | lint (fixed) | No | High | evolve, research | multi-agent-evolution |
 | 2026-04-01 | capability | Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes | ~15m | ✅ | lint (fixed) | No | High | evolve | safer-self-modification |
 | 2026-04-01 | capability | SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities | ~15m | ✅ | lint (fixed) | No | High | evolve | benchmark-evaluation |
@@ -75,19 +76,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 40/47 = 85%
+- First Try Success Rate: 41/48 = 85%
 - Average Time: ~14 minutes
-- Rework Rate: 8/47 = 17%
+- Rework Rate: 8/48 = 17%
 
 ### Capability Metrics
-- Capability Tasks: 46/47 = 98%
-- High Impact Capabilities: 37/46 = 80%
-- Capability Velocity: 46 capabilities in 3 days = 15/day
+- Capability Tasks: 47/48 = 98%
+- High Impact Capabilities: 38/47 = 81%
+- Capability Velocity: 47 capabilities in 3 days = 16/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 12
+- Lint Issues: 13
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
@@ -99,6 +100,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Token/Cost Tracking** - High impact, tracks LLM token usage and costs for efficiency optimization (Aider pattern)
 1. **Multi-Agent Orchestrator** - High impact, enables two-agent pattern (initializer + coder) for better complex task handling
 1. **Self-Modification Safety Gates** - High impact, enables proactive dangerous pattern detection before code changes, preventing breaking changes and security vulnerabilities
 1. **SWE-bench Benchmark Integration** - High impact, enables standardized evaluation, benchmark tasks, patch validation (SWE-bench pattern)
@@ -139,6 +141,37 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-01: Token/Cost Tracking for LLM Efficiency (Aider Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 29 - Token/Cost Tracking for monitoring LLM API usage
+
+**Insight:** A token/cost tracking system provides significant benefits for self-evolution:
+1. **Usage visibility** - Track how many tokens are being used per API call and session
+2. **Cost awareness** - Calculate costs based on model-specific pricing
+3. **Efficiency optimization** - Identify expensive operations and optimize token usage
+4. **Cache tracking** - Track cache hits and writes for Anthropic/DeepSeek-style caching
+5. **Session management** - Track usage per task type for analysis
+6. **Statistics aggregation** - View costs by model, task type, daily/weekly trends
+
+Implementation details:
+- `TokenTracker` class for tracking token usage and costs
+- `TokenUsage`, `TokenSession`, `TokenStats` interfaces
+- `ModelCostConfig` for model-specific pricing (GPT-4, Claude, etc.)
+- `tokenTracking` tool with actions: start, end, record, stats, report, session, sessions, clear, cost, export
+- Support for Anthropic-style cache multipliers (1.25x write, 0.10x hit)
+- Support for DeepSeek-style cache hit pricing
+- Data persistence to data/token-tracking.json
+
+**Trigger:** When needing to understand and optimize LLM API costs
+
+**Reuse Rule:** Use `tokenTracking({action: 'start', sessionId: '...'})` to start a session. Use `tokenTracking({action: 'record', model: 'gpt-4', promptTokens: 1000, completionTokens: 500})` to record usage. Use `tokenTracking({action: 'stats'})` to view statistics.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Multi-Agent Orchestrator for Complex Task Handling
 

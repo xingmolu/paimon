@@ -39,6 +39,7 @@ import { searchTools } from "./search-tools.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
+import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
 
@@ -69,6 +70,7 @@ export const metaTools: AgentTool[] = [
 	benchmarkTool,
 	safetyGatesTool,
 	multiAgentTool,
+	tokenTrackingTool,
 ];
 
 /**
@@ -126,6 +128,7 @@ export { sdkTool, createSDKTool } from "./sdk-tool.js";
 export { benchmarkTool } from "./benchmark-tool.js";
 export { safetyGatesTool, getSafetyGatesForHook } from "./safety-gates-tool.js";
 export { multiAgentTool } from "./multi-agent-tool.js";
+export { tokenTrackingTool, getTokenTracker, resetTokenTracker } from "./token-tracking-tool.js";
 export {
 	getBenchmarkRunner,
 	createSampleTasks,

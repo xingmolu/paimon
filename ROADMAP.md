@@ -216,6 +216,15 @@ Planned improvements for evo.
 - [x] Session persistence — Progress saved via JSON and text files
 - [x] Statistics tracking — Track sessions, tasks, success rates
 
+## Phase 29: Token/Cost Tracking (Aider Pattern)
+- [x] TokenTracker module — Track LLM token usage and costs
+- [x] tokenTracking tool — Tool for managing token usage and cost analysis
+- [x] Session tracking — Track usage per session with task type
+- [x] Cost calculation — Calculate costs with model-specific pricing
+- [x] Cache support — Support for cache hits/writes (Anthropic/DeepSeek patterns)
+- [x] Statistics aggregation — Cost by model, task type, daily/weekly trends
+- [x] Data persistence — Save usage data for analysis
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

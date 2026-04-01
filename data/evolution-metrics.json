@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 91.83673469387756,
+    "current": 92,
     "points": [
       {
         "date": "2026-W14",
-        "value": 91.83673469387756,
+        "value": 92,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 91.83673469387756,
+    "weeklyAverage": 92,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 15.142857142857142,
+    "averageMinutes": 15.14,
     "byTaskType": {
-      "capability": 15.574468085106384,
+      "capability": 15.5625,
       "reliability": 5
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 15.142857142857142,
+        "value": 15.14,
         "trend": "stable"
       }
     ],
@@ -28,14 +28,15 @@
     "slowestTask": "Modular architecture Phase 12 foundation (truncate, file-tools, search-tools, http-tool modules)"
   },
   "errors": {
-    "totalErrors": 24,
+    "totalErrors": 25,
     "byType": {
+      "lint (fixed), test (fixed)": 2,
       "lint (fixed)": 12,
-      "lint (fixed), test (fixed)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-01: lint (fixed), test (fixed) in \"Token/Cost Tracking (Aider pattern) - Track LLM token usage and costs\"",
       "2026-04-01: lint (fixed) in \"Multi-Agent Orchestrator (Claude Quickstart two-agent pattern)\"",
       "2026-04-01: lint (fixed) in \"Self-Modification Safety Gates - Proactive dangerous pattern detection before code changes\"",
       "2026-04-01: lint (fixed) in \"SWE-bench Benchmark Integration - Standardized benchmark for evaluating self-evolution capabilities\"",
@@ -44,36 +45,35 @@
       "2026-03-31: lint (fixed), test (fixed) in \"Auto-Commit Message Generation (Aider pattern) - Generate conventional commit messages from git diffs\"",
       "2026-03-31: lint (fixed) in \"Bug Report Generator - Auto-generate structured bug reports from failed sessions\"",
       "2026-03-31: lint (fixed) in \"Evolution Pattern Mining - Mine successful patterns from session history for task recommendations\"",
-      "2026-03-31: lint (fixed) in \"Error Pattern Learning - Learn from error patterns across sessions for automatic solutions\"",
-      "2026-03-31: lint (fixed) in \"Trajectory Viewer Tool (Mini-SWE-Agent pattern) - View/analyze agent execution trajectories\""
+      "2026-03-31: lint (fixed) in \"Error Pattern Learning - Learn from error patterns across sessions for automatic solutions\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 24,
+        "value": 25,
         "trend": "stable"
       }
     ],
     "commonPatterns": [
       "lint (fixed)",
       "lint",
-      "ts",
-      "lint (fixed), test (fixed)"
+      "lint (fixed), test (fixed)",
+      "ts"
     ]
   },
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 47,
-      "successRate": 91.48936170212765,
-      "averageTime": 15.46808510638298,
+      "usageCount": 48,
+      "successRate": 91.66666666666666,
+      "averageTime": 15.458333333333334,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 13,
-      "successRate": 76.92307692307693,
-      "averageTime": 18.076923076923077,
+      "usageCount": 14,
+      "successRate": 78.57142857142857,
+      "averageTime": 17.857142857142858,
       "trend": "stable"
     },
     {
@@ -138,17 +138,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 23.5
+        "value": 24
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 47,
-    "highImpactCount": 39,
-    "highImpactPercentage": 82.97872340425532
+    "totalCapabilities": 48,
+    "highImpactCount": 40,
+    "highImpactPercentage": 83.33333333333334
   },
-  "lastUpdated": "2026-04-01T09:43:50.588Z",
-  "iterationsAnalyzed": 49
+  "lastUpdated": "2026-04-01T10:10:06.410Z",
+  "iterationsAnalyzed": 50
 }

@@ -4,6 +4,84 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 54 — Token/Cost Tracking (Aider Pattern) (2026-04-01)
+
+**What happened:**
+- Implemented ROADMAP Phase 29: Token/Cost Tracking
+- Created `src/token-tracking.ts` module with TokenTracker class
+- Created `src/tools/token-tracking-tool.ts` for token/cost management
+- Added tokenTracking tool to metaTools array and agent tools
+- Added 21 new tests for token tracking functionality
+- Inspired by Aider's calculate_and_show_tokens_and_cost pattern
+
+**Why this matters:**
+- This is a `capability` type task that enables LLM efficiency tracking
+- Track token usage per API call, session, and overall
+- Calculate costs based on model-specific pricing (GPT-4, Claude, etc.)
+- Support for Anthropic-style cache multipliers (1.25x write, 0.10x hit)
+- Support for DeepSeek-style cache hit pricing
+- Critical for understanding and optimizing API costs
+
+**Technical details:**
+- Created `src/token-tracking.ts`:
+  - `TokenTracker` class for tracking token usage and costs
+  - `TokenUsage` interface: timestamp, model, promptTokens, completionTokens, totalTokens, cacheHitTokens, cacheWriteTokens, cost, sessionId, taskType
+  - `TokenSession` interface: sessionId, startTime, endTime, totalPromptTokens, totalCompletionTokens, totalCost, apiCalls
+  - `TokenStats` interface: totalSessions, totalApiCalls, totalCost, costByModel, costByTaskType, dailyCost, weeklyCost
+  - `ModelCostConfig` for model-specific pricing
+  - `startSession()` - Start a new tracking session
+  - `endSession()` - End current session
+  - `recordUsage()` - Record token usage from an API call
+  - `calculateCost()` - Calculate cost with model-specific pricing
+  - `getStats()` - Get statistics from tracked usage
+  - Data persistence to data/token-tracking.json
+- Created `src/tools/token-tracking-tool.ts`:
+  - `tokenTracking` tool with actions: start, end, record, stats, report, session, sessions, clear, cost, export
+- Modified `src/tools/index.ts`:
+  - Added tokenTrackingTool to metaTools array
+  - Added re-export for tokenTrackingTool
+- Modified `ROADMAP.md`:
+  - Added Phase 29: Token/Cost Tracking (Aider Pattern)
+  - Marked all 7 items complete
+
+**Token Tracking Tool Usage:**
+```typescript
+// Start a session
+tokenTracking({action: 'start', sessionId: 'my-session', taskType: 'capability'})
+
+// Record usage
+tokenTracking({action: 'record', 
+  model: 'gpt-4',
+  promptTokens: 1000,
+  completionTokens: 500
+})
+
+// Calculate cost without recording
+tokenTracking({action: 'cost',
+  model: 'claude-3-opus',
+  promptTokens: 1000,
+  completionTokens: 500,
+  cacheHitTokens: 200,
+  cacheWriteTokens: 100
+})
+
+// View statistics
+tokenTracking({action: 'stats'})
+
+// View sessions
+tokenTracking({action: 'sessions'})
+
+// End session
+tokenTracking({action: 'end', sessionId: 'my-session', success: true})
+```
+
+**Next steps:**
+- ROADMAP phases 1-29 are complete
+- Consider integrating token tracking with actual LLM API calls
+- Consider adding budget limits and alerts
+
+---
+
 ## Day 53 — Multi-Agent Orchestrator (2026-04-01)
 
 **What happened:**
