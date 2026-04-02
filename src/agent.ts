@@ -6,6 +6,11 @@ setMaxListeners(100);
 
 import { Agent, type AgentEvent, type AgentTool } from "@mariozechner/pi-agent-core";
 import type { Api, Model } from "@mariozechner/pi-ai";
+import {
+	type AutoInvokeManager,
+	type AutoInvokeSuggestion,
+	getAutoInvokeManager,
+} from "./auto-invoke.js";
 import { ContextManager } from "./compaction.js";
 import {
 	type ContextBudgetManager,
@@ -93,6 +98,16 @@ export function createAgent(
 	executeSessionStartHooks: () => Promise<string[]>;
 	/** Execute Stop hooks */
 	executeStopHooks: (reason: string) => Promise<string[]>;
+	/** Get auto-invoke suggestions for skills based on context */
+	getAutoInvokeSuggestions: (
+		files: string[],
+		keywords: string[],
+		toolsUsed: string[],
+		taskType?: string,
+		taskDescription?: string,
+	) => AutoInvokeSuggestion[];
+	/** Get auto-invoke manager for advanced operations */
+	getAutoInvokeManager: () => AutoInvokeManager;
 } {
 	const model = createModel(config);
 	// Session manager is stored for potential future use
@@ -487,5 +502,15 @@ export function createAgent(
 		// SessionStart and Stop hook execution
 		executeSessionStartHooks,
 		executeStopHooks,
+		// Auto-invoke skill suggestions
+		getAutoInvokeSuggestions: (
+			files: string[],
+			keywords: string[],
+			toolsUsed: string[],
+			taskType?: string,
+			taskDescription?: string,
+		) =>
+			getAutoInvokeManager().analyzeContext(files, keywords, toolsUsed, taskType, taskDescription),
+		getAutoInvokeManager: () => getAutoInvokeManager(),
 	};
 }

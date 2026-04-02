@@ -229,7 +229,8 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - For risky operations, use \`interactiveApproval({action: 'request', tool: '...', toolParams: {...}, description: '...'})\` to request approval before proceeding
 - Check pending approvals with \`interactiveApproval({action: 'pending'})\` and approve/reject as needed
 - For autonomous iteration on complex tasks, use \`ralphLoop({action: 'start', prompt: '...', completionPromise: 'COMPLETE', maxIterations: 50})\` to create a self-referential feedback loop - the agent will iterate until the completion promise appears in output or max iterations reached
-- Create dynamic hooks from patterns with \`hookify({action: 'create', description: 'Warn me when I use rm -rf commands'})\` - automatically creates hooks from descriptions without editing config files`;
+- Create dynamic hooks from patterns with \`hookify({action: 'create', description: 'Warn me when I use rm -rf commands'})\` - automatically creates hooks from descriptions without editing config files
+- Auto-invoke skills based on task context with \`autoInvoke({action: 'analyze', files: ['src/*.ts'], keywords: ['debug'], toolsUsed: ['assess']})\` - get skill suggestions based on current context, or \`autoInvoke({action: 'list'})\` to view all rules`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";

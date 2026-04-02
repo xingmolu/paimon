@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-02 | capability | Auto-Invoke Skills Pattern (Claude Code Pattern) - Automatic skill suggestions based on task context with file patterns, keywords, tool usage, and task type triggers | ~15m | ✅ | lint (fixed) | No | High | evolve, research | automatic-skill-discovery, context-aware-suggestions |
 | 2026-04-02 | capability | Hookify Pattern (Claude Code hookify Plugin) - Dynamic hook creation from conversation patterns with simple markdown rules, pattern extraction, and HookManager integration | ~15m | ✅ | lint (fixed) | No | High | evolve, research | dynamic-hook-creation, pattern-extraction |
 | 2026-04-02 | capability | Ralph Loop Pattern (Claude Code ralph-wiggum) - Self-referential iteration loop for autonomous continuous improvement using Stop hook interception | ~20m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | autonomous-iteration, continuous-improvement |
 | 2026-04-02 | capability | Context Budget Auto-Monitoring Integration - Automatic context budget checks in agent run loop with proactive warnings, optimization suggestions, and agent methods for status/stats/suggestions | ~15m | ✅ | lint (fixed) | No | High | evolve | proactive-context-overflow-prevention |
@@ -84,14 +85,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 49/56 = 88%
+- First Try Success Rate: 50/57 = 88%
 - Average Time: ~14 minutes
-- Rework Rate: 8/56 = 14%
+- Rework Rate: 8/57 = 14%
 
 ### Capability Metrics
-- Capability Tasks: 55/56 = 98%
-- High Impact Capabilities: 46/55 = 84%
-- Capability Velocity: 55 capabilities in 3 days = 18/day
+- Capability Tasks: 56/57 = 98%
+- High Impact Capabilities: 47/56 = 84%
+- Capability Velocity: 56 capabilities in 3 days = 19/day
 
 ### Error Analysis
 - TypeScript Errors: 2
@@ -108,6 +109,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Auto-Invoke Skills** - High impact, enables automatic skill discovery based on task context with multiple trigger types (file patterns, keywords, tool usage, task type) (Claude Code auto-invoke pattern)
 1. **Hookify Pattern** - High impact, enables dynamic hook creation from conversation patterns with simple markdown rules, pattern extraction, and HookManager integration (Claude Code hookify plugin pattern)
 1. **Ralph Loop Pattern** - High impact, enables self-referential iteration loops for autonomous continuous improvement using Stop hook interception (Claude Code ralph-wiggum pattern)
 1. **Context Budget Auto-Monitoring** - High impact, enables proactive context overflow prevention during evolution sessions with automatic monitoring in agent run loop

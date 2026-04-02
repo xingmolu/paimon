@@ -272,6 +272,16 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track blocked operations, warnings, rules by event
 - [x] Tests — Comprehensive tests for Hookify functionality
 
+## Phase 35: Auto-Invoke Skills (Claude Code Pattern)
+- [x] AutoInvokeManager module — Automatic skill suggestions based on context
+- [x] autoInvoke tool — Tool for managing auto-invoke rules
+- [x] Multiple trigger types — File patterns, keywords, tool usage, task type
+- [x] Confidence scoring — Max weight + match bonus for suggestions
+- [x] Default rules — 10 rules for common patterns (frontend, debugging, evolution, etc.)
+- [x] Agent integration — getAutoInvokeSuggestions() method for programmatic access
+- [x] Statistics tracking — Track invocations, skills used, trigger types
+- [x] Tests — Comprehensive tests for Auto-Invoke functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

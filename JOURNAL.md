@@ -4,6 +4,75 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 63 — Auto-Invoke Skills Pattern (Claude Code Pattern) (2026-04-02)
+
+**What happened:**
+- Implemented Auto-Invoke Skills Pattern - Automatic skill suggestions based on task context
+- Created `src/auto-invoke.ts` module with AutoInvokeManager class
+- Created `src/tools/auto-invoke-tool.ts` for autoInvoke tool
+- Added 35 tests for Auto-Invoke functionality
+- Updated system prompt to document autoInvoke tool usage
+
+**Why this matters:**
+- This is a `capability` type task that enables automatic skill discovery
+- Skills are automatically suggested based on detected context
+- Reduces manual skill selection - right skills for right tasks
+- Multiple trigger types: file patterns, keywords, tool usage, task type
+- Confidence-based suggestions with configurable thresholds
+
+**Technical details:**
+- Created `src/auto-invoke.ts`:
+  - `AutoInvokeManager` class for managing auto-invoke rules
+  - `AutoInvokeRule`, `AutoInvokeTrigger`, `AutoInvokeConfig`, `AutoInvokeStats`, `AutoInvokeSuggestion` interfaces
+  - `analyzeContext()` - Analyze context and return skill suggestions
+  - `matchTrigger()` - Match triggers against file patterns, keywords, tools, task type
+  - `addRule()`, `removeRule()`, `setRuleEnabled()` - Rule management
+  - `recordInvocation()`, `getStats()` - Statistics tracking
+  - State persistence to `~/.paimon/auto-invoke.json`
+- Created `src/tools/auto-invoke-tool.ts`:
+  - `autoInvoke` tool with actions: analyze, list, get, add, remove, enable, disable, stats, config, reset, clear, record
+- Modified `src/tools/index.ts`:
+  - Added autoInvokeTool to metaTools array
+  - Added re-exports for auto-invoke module
+- Modified `src/agent.ts`:
+  - Added imports for AutoInvokeManager and types
+  - Added `getAutoInvokeSuggestions()` method to agent return object
+  - Added `getAutoInvokeManager()` method for advanced operations
+- Modified `src/prompt.ts`:
+  - Added autoInvoke tool documentation in IMPORTANT section
+
+**Default Auto-Invoke Rules:**
+| Rule ID | Skill | Triggers |
+|---------|-------|----------|
+| frontend-work | frontend-design | CSS/SCSS files, frontend keywords |
+| debugging-work | systematic-debugging | Debug keywords, assess/reflect tools |
+| evolution-work | evolve | Evolution context, MEMORY.md files |
+| testing-work | test-driven-development | Test files, testing keywords |
+| review-work | review-changes | Review keywords, assess tool |
+| research-work | research | Research keywords, http tool |
+| architecture-work | plan-architecture | Architecture keywords, refactoring |
+
+**Auto-Invoke Tool Usage:**
+```typescript
+// Analyze context for skill suggestions
+autoInvoke({action: 'analyze', files: ['src/styles.css'], keywords: ['frontend'], taskType: 'frontend'})
+
+// List all rules
+autoInvoke({action: 'list'})
+
+// Get rule details
+autoInvoke({action: 'get', ruleId: 'frontend-work'})
+
+// Add custom rule
+autoInvoke({action: 'add', ruleId: 'my-rule', skill: 'my-skill', triggers: [{type: 'keyword', pattern: 'custom', weight: 0.8}]})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks for automatic skill pre-loading
+- Consider adding more sophisticated context detection (AST analysis, etc.)
+
+---
+
 ## Day 62 — Hookify Pattern (Claude Code hookify Plugin) (2026-04-02)
 
 **What happened:**

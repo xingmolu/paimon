@@ -14,6 +14,7 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 
 // Import extracted tool modules
 import { assessTool } from "./assess-tool.js";
+import { autoInvokeTool } from "./auto-invoke-tool.js";
 import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
@@ -83,6 +84,7 @@ export const metaTools: AgentTool[] = [
 	interactiveApprovalTool,
 	ralphLoopTool,
 	hookifyTool,
+	autoInvokeTool,
 ];
 
 /**
@@ -213,3 +215,16 @@ export type {
 	ConversationMessage,
 	ConversationAnalysis,
 } from "../hookify.js";
+export {
+	getAutoInvokeManager,
+	AutoInvokeManager,
+} from "../auto-invoke.js";
+export type {
+	AutoInvokeRule,
+	AutoInvokeTrigger,
+	AutoInvokeConfig,
+	AutoInvokeStats,
+	AutoInvokeSuggestion,
+	TriggerType,
+	ContextType,
+} from "../auto-invoke.js";
