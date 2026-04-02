@@ -9,6 +9,7 @@ import type { Api, Model } from "@mariozechner/pi-ai";
 import { ContextManager } from "./compaction.js";
 import {
 	type ContextBudgetManager,
+	type ContextReductionResult,
 	type ContextUsageStats,
 	getGlobalContextBudgetManager,
 	initGlobalContextBudgetManager,
@@ -16,7 +17,12 @@ import {
 import { globalHookManager } from "./hooks.js";
 import { buildSystemPrompt } from "./prompt.js";
 import type { SessionManager } from "./session.js";
-import type { ErrorMessage, LinearMessage, PaimonConfig } from "./types.js";
+import type {
+	AutoContextReductionConfig,
+	ErrorMessage,
+	LinearMessage,
+	PaimonConfig,
+} from "./types.js";
 import { createWrappedTools } from "./wrap.js";
 
 // Import tools from extracted modules
@@ -27,6 +33,15 @@ export type { PaimonConfig } from "./types.js";
 
 // Build tools from extracted modules
 const tools: AgentTool[] = buildTools();
+
+// Default automatic context reduction configuration
+const DEFAULT_AUTO_CONTEXT_REDUCTION: AutoContextReductionConfig = {
+	enabled: true,
+	actions: ["truncate_outputs", "compact_aggressive", "clear_cache"],
+	maxToolOutputTokens: 5000,
+	compactThreshold: 75, // More aggressive compaction at 75%
+	logActions: true,
+};
 
 function createModel(config: PaimonConfig): Model<Api> {
 	return {
@@ -60,6 +75,10 @@ export function createAgent(
 	getContextBudgetStats: () => ReturnType<ContextBudgetManager["getStats"]>;
 	/** Get optimization suggestions for reducing context */
 	getContextBudgetSuggestions: () => ReturnType<ContextBudgetManager["getOptimizationSuggestions"]>;
+	/** Get context reduction log */
+	getContextReductionLog: () => ReturnType<ContextBudgetManager["getReductionLog"]>;
+	/** Execute automatic context reduction actions */
+	executeContextReduction: () => ContextReductionResult[];
 	/** Get linear message history (for debugging/fine-tuning) - only when linearHistory is enabled */
 	getHistory?: () => LinearMessage[];
 	/** Get history as JSON string - only when linearHistory is enabled */
@@ -95,11 +114,18 @@ export function createAgent(
 		...contextBudgetConfig,
 	});
 
+	// Initialize auto context reduction config
+	const autoReductionConfig: AutoContextReductionConfig = {
+		...DEFAULT_AUTO_CONTEXT_REDUCTION,
+		...config.autoContextReduction,
+	};
+
 	// Linear message history for debugging/fine-tuning (Mini-SWE-Agent pattern)
 	const linearHistoryEnabled = config.linearHistory === true;
 	const linearHistory: LinearMessage[] = [];
 
 	let estimatedToolOutputTokens = 0;
+	let maxToolOutputTokens = autoReductionConfig.maxToolOutputTokens || 5000;
 
 	// Initial system prompt without compaction summary
 	const systemPrompt = buildSystemPrompt(config, tools, null);
@@ -168,6 +194,85 @@ export function createAgent(
 				}
 			} catch (error) {
 				results.push(`[${hook.name}] Hook execution failed: ${error}`);
+			}
+		}
+
+		return results;
+	};
+
+	/**
+	 * Execute automatic context reduction actions when context is critical.
+	 * Returns list of actions executed and their results.
+	 */
+	const executeContextReduction = (): ContextReductionResult[] => {
+		if (!autoReductionConfig.enabled) {
+			return [];
+		}
+
+		const results: ContextReductionResult[] = [];
+		const timestamp = Date.now();
+		const suggestions = contextBudgetManager.getAutoExecutableSuggestions();
+
+		for (const action of autoReductionConfig.actions) {
+			const result: ContextReductionResult = {
+				action,
+				success: false,
+				tokenSavings: 0,
+				description: "",
+				timestamp,
+			};
+
+			switch (action) {
+				case "truncate_outputs": {
+					// Reduce tool output truncation limit
+					const oldLimit = maxToolOutputTokens;
+					maxToolOutputTokens = Math.max(2000, Math.floor(maxToolOutputTokens * 0.5));
+					result.success = true;
+					result.tokenSavings = estimatedToolOutputTokens * 0.5;
+					result.description = `Reduced tool output limit from ${oldLimit} to ${maxToolOutputTokens} tokens`;
+					break;
+				}
+
+				case "compact_aggressive":
+					// More aggressive compaction is handled in the run loop
+					// This action marks that aggressive compaction should be triggered
+					result.success = true;
+					result.tokenSavings = 0; // Actual savings from compaction are tracked separately
+					result.description = "Triggered aggressive compaction threshold";
+					break;
+
+				case "clear_cache": {
+					// Clear tool output estimates (simulated cache clear)
+					const clearedTokens = Math.floor(estimatedToolOutputTokens * 0.3);
+					estimatedToolOutputTokens -= clearedTokens;
+					result.success = true;
+					result.tokenSavings = clearedTokens;
+					result.description = `Cleared ${clearedTokens} estimated tool output tokens`;
+					break;
+				}
+
+				case "reduce_tools":
+					// Not auto-executable - requires manual decision
+					result.success = false;
+					result.description = "Tool reduction requires manual decision";
+					break;
+
+				case "archive_memory":
+					// Not auto-executable - requires user confirmation
+					result.success = false;
+					result.description = "Memory archival requires user confirmation";
+					break;
+			}
+
+			if (result.success && result.tokenSavings > 0) {
+				contextBudgetManager.logReductionAction(result);
+				results.push(result);
+
+				if (autoReductionConfig.logActions) {
+					console.log(
+						`[Auto Reduction] ${result.action}: ${result.description} (~${result.tokenSavings} tokens saved)`,
+					);
+				}
 			}
 		}
 
@@ -346,6 +451,10 @@ export function createAgent(
 		getContextBudgetStats: () => contextBudgetManager.getStats(),
 		/** Get optimization suggestions for reducing context */
 		getContextBudgetSuggestions: () => contextBudgetManager.getOptimizationSuggestions(),
+		/** Get context reduction log */
+		getContextReductionLog: () => contextBudgetManager.getReductionLog(),
+		/** Execute automatic context reduction actions */
+		executeContextReduction,
 		// Linear history methods - only available when linearHistory is enabled
 		...(linearHistoryEnabled && {
 			getHistory: () => [...linearHistory],

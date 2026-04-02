@@ -4,6 +4,67 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 61 — Ralph Loop Pattern (Claude Code ralph-wiggum) (2026-04-02)
+
+**What happened:**
+- Implemented Ralph Loop Pattern - Self-referential iteration loop for autonomous continuous improvement
+- Created `src/ralph-loop.ts` module with RalphLoopManager class
+- Created `src/tools/ralph-loop-tool.ts` for ralphLoop tool
+- Added Stop hook `ralph-loop-intercept` in `src/hooks.ts` for exit interception
+- Added 33 tests for Ralph Loop functionality
+- Updated system prompt to document ralphLoop tool usage
+
+**Why this matters:**
+- This is a `capability` type task that enables autonomous iteration
+- Agent can work continuously on a task until completion promise detected
+- Stop hook intercepts exit attempts and feeds prompt back
+- Each iteration sees modified files and git history
+- Enables progressive improvement without manual intervention
+
+**Technical details:**
+- Created `src/ralph-loop.ts`:
+  - `RalphLoopManager` class for managing iteration loops
+  - `RalphLoopState`, `RalphLoopConfig`, `RalphLoopStats` interfaces
+  - `startLoop()` - Start new loop with prompt, completion promise, max iterations
+  - `incrementIteration()` - Increment count, check max limit
+  - `checkCompletionPromise()` - Detect completion in output
+  - `completeLoop()`, `cancelLoop()` - End loops manually
+  - `listLoops()`, `getStats()` - View loop history and statistics
+  - State persistence to `~/.paimon/ralph-loops/`
+- Created `src/tools/ralph-loop-tool.ts`:
+  - `ralphLoop` tool with actions: start, status, complete, cancel, list, stats, get, note, clear, config
+- Modified `src/hooks.ts`:
+  - Added `ralph-loop-intercept` Stop hook with priority 150
+  - Intercepts exit and continues iteration if active loop exists
+- Modified `src/tools/index.ts`:
+  - Added ralphLoopTool to metaTools array
+  - Added re-exports for ralph-loop module
+- Modified `src/prompt.ts`:
+  - Added ralphLoop tool documentation in IMPORTANT section
+
+**Ralph Loop Tool Usage:**
+```typescript
+// Start a Ralph Loop
+ralphLoop({
+  action: 'start',
+  prompt: 'Build a REST API for todos. Output <promise>COMPLETE</promise> when done.',
+  completionPromise: 'COMPLETE',
+  maxIterations: 50
+})
+
+// Check loop status
+ralphLoop({action: 'status'})
+
+// Cancel a loop
+ralphLoop({action: 'cancel', id: 'ralph-123', reason: 'Task blocked'})
+```
+
+**Next steps:**
+- Consider integrating with agent run loop for automatic iteration
+- Consider adding completion promise detection in agent output
+
+---
+
 ## Day 60 — Context Budget Auto-Monitoring Integration (2026-04-02)
 
 **What happened:**

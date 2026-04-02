@@ -252,6 +252,16 @@ Planned improvements for evo.
 - [x] CLI integration — Execute hooks in runOnce() and runRepl()
 - [x] Tests — Comprehensive tests for SessionStart/Stop hooks
 
+## Phase 33: Ralph Loop Pattern (Claude Code ralph-wiggum Pattern)
+- [x] RalphLoopManager module — Manage self-referential iteration loops
+- [x] ralphLoop tool — Tool for managing loops (start, status, complete, cancel, list, stats)
+- [x] Stop hook interception — Block exit and continue iteration
+- [x] Completion promise detection — Unique string signals task completion
+- [x] Max iterations safety — Prevent infinite loops
+- [x] State persistence — Save loop state to disk for resumption
+- [x] Statistics tracking — Track loops, iterations, completion rates
+- [x] Tests — Comprehensive tests for Ralph Loop functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

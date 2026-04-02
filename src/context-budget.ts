@@ -111,6 +111,38 @@ export interface OptimizationSuggestion {
 	estimatedSavings: number;
 	/** Priority (1 = highest) */
 	priority: number;
+	/** Whether this action can be executed automatically */
+	autoExecutable: boolean;
+}
+
+/**
+ * Context reduction action execution result.
+ */
+export interface ContextReductionResult {
+	/** Action that was executed */
+	action: string;
+	/** Whether the action was successful */
+	success: boolean;
+	/** Actual token savings (estimated) */
+	tokenSavings: number;
+	/** Description of what was done */
+	description: string;
+	/** Timestamp */
+	timestamp: number;
+}
+
+/**
+ * Context reduction action execution log.
+ */
+export interface ContextReductionLog {
+	/** Total actions executed */
+	totalActions: number;
+	/** Total token savings */
+	totalSavings: number;
+	/** Last reduction timestamp */
+	lastReduction: number | null;
+	/** Action history */
+	history: ContextReductionResult[];
 }
 
 /**
@@ -125,6 +157,12 @@ export class ContextBudgetManager {
 	private criticalCount = 0;
 	private overflowCount = 0;
 	private currentTokenEstimate = 0;
+	private reductionLog: ContextReductionLog = {
+		totalActions: 0,
+		totalSavings: 0,
+		lastReduction: null,
+		history: [],
+	};
 
 	constructor(config: Partial<ContextBudgetConfig> = {}) {
 		this.config = { ...DEFAULT_CONTEXT_BUDGET_CONFIG, ...config };
@@ -246,54 +284,94 @@ export class ContextBudgetManager {
 		const usagePercent = (this.currentTokenEstimate / this.config.maxContextWindow) * 100;
 
 		if (usagePercent > 60) {
-			// Suggest truncating tool outputs
+			// Suggest truncating tool outputs - auto-executable
 			suggestions.push({
 				action: "truncate_output",
 				description: "Truncate large tool outputs to essential information",
 				estimatedSavings: Math.round(this.currentTokenEstimate * 0.15),
 				priority: 1,
+				autoExecutable: true,
 			});
 		}
 
 		if (usagePercent > 70) {
-			// Suggest compacting history
+			// Suggest compacting history - auto-executable
 			suggestions.push({
 				action: "compact_history",
 				description: "Summarize old conversation messages",
 				estimatedSavings: Math.round(this.currentTokenEstimate * 0.25),
 				priority: 2,
+				autoExecutable: true,
 			});
 		}
 
 		if (usagePercent > 80) {
-			// Suggest reducing tools in context
+			// Suggest reducing tools in context - not auto-executable (requires manual decision)
 			suggestions.push({
 				action: "reduce_tools",
 				description: "Load minimal set of tools for current task",
 				estimatedSavings: Math.round(this.currentTokenEstimate * 0.1),
 				priority: 3,
+				autoExecutable: false,
 			});
 		}
 
 		if (usagePercent > 85) {
-			// Suggest archiving memory
+			// Suggest archiving memory - not auto-executable (requires user confirmation)
 			suggestions.push({
 				action: "archive_memory",
 				description: "Archive old MEMORY.md entries to separate file",
 				estimatedSavings: Math.round(this.currentTokenEstimate * 0.2),
 				priority: 4,
+				autoExecutable: false,
 			});
 		}
 
-		// Always suggest clearing cache if it's significant
+		// Always suggest clearing cache - auto-executable
 		suggestions.push({
 			action: "clear_cache",
 			description: "Clear tool result cache to free up memory",
 			estimatedSavings: 500, // Approximate
 			priority: 5,
+			autoExecutable: true,
 		});
 
 		return suggestions;
+	}
+
+	/**
+	 * Log a context reduction action.
+	 */
+	logReductionAction(result: ContextReductionResult): void {
+		this.reductionLog.totalActions++;
+		this.reductionLog.totalSavings += result.tokenSavings;
+		this.reductionLog.lastReduction = result.timestamp;
+		this.reductionLog.history.push(result);
+
+		// Limit history to 50 entries
+		if (this.reductionLog.history.length > 50) {
+			this.reductionLog.history.shift();
+		}
+
+		// Update current token estimate after reduction
+		this.currentTokenEstimate -= result.tokenSavings;
+		if (this.currentTokenEstimate < 0) {
+			this.currentTokenEstimate = 0;
+		}
+	}
+
+	/**
+	 * Get context reduction log.
+	 */
+	getReductionLog(): ContextReductionLog {
+		return { ...this.reductionLog };
+	}
+
+	/**
+	 * Get auto-executable suggestions only.
+	 */
+	getAutoExecutableSuggestions(): OptimizationSuggestion[] {
+		return this.getOptimizationSuggestions().filter((s) => s.autoExecutable);
 	}
 
 	/**
@@ -345,6 +423,12 @@ export class ContextBudgetManager {
 		this.criticalCount = 0;
 		this.overflowCount = 0;
 		this.currentTokenEstimate = 0;
+		this.reductionLog = {
+			totalActions: 0,
+			totalSavings: 0,
+			lastReduction: null,
+			history: [],
+		};
 	}
 
 	/**

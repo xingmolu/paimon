@@ -33,6 +33,7 @@ import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
 import { pluginsTool } from "./plugins-tool.js";
 import { ragTool } from "./rag-tool.js";
+import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { repomapTool } from "./repomap-tool.js";
 import { rouletteTool } from "./roulette-tool.js";
@@ -79,6 +80,7 @@ export const metaTools: AgentTool[] = [
 	journalTool,
 	contextBudgetTool,
 	interactiveApprovalTool,
+	ralphLoopTool,
 ];
 
 /**
@@ -188,3 +190,13 @@ export type {
 	InteractiveApprovalConfig,
 	InteractiveApprovalStats,
 } from "../interactive-approval.js";
+export {
+	getRalphLoopManager,
+	RalphLoopManager,
+	resetRalphLoopManager,
+} from "../ralph-loop.js";
+export type {
+	RalphLoopState,
+	RalphLoopConfig,
+	RalphLoopStats,
+} from "../ralph-loop.js";

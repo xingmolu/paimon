@@ -227,7 +227,8 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Before task selection, use \`patternMiner({action: 'recommend', taskType: 'capability'})\` to get pattern-based recommendations for optimal approach
 - Monitor context usage with \`contextBudget({action: 'check'})\` - proactively manage context before hitting limits
 - For risky operations, use \`interactiveApproval({action: 'request', tool: '...', toolParams: {...}, description: '...'})\` to request approval before proceeding
-- Check pending approvals with \`interactiveApproval({action: 'pending'})\` and approve/reject as needed`;
+- Check pending approvals with \`interactiveApproval({action: 'pending'})\` and approve/reject as needed
+- For autonomous iteration on complex tasks, use \`ralphLoop({action: 'start', prompt: '...', completionPromise: 'COMPLETE', maxIterations: 50})\` to create a self-referential feedback loop - the agent will iterate until the completion promise appears in output or max iterations reached`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";

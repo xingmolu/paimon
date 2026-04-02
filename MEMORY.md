@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-02 | capability | Ralph Loop Pattern (Claude Code ralph-wiggum) - Self-referential iteration loop for autonomous continuous improvement using Stop hook interception | ~20m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | autonomous-iteration, continuous-improvement |
 | 2026-04-02 | capability | Context Budget Auto-Monitoring Integration - Automatic context budget checks in agent run loop with proactive warnings, optimization suggestions, and agent methods for status/stats/suggestions | ~15m | ✅ | lint (fixed) | No | High | evolve | proactive-context-overflow-prevention |
 | 2026-04-02 | capability | SessionStart and Stop Hooks (OpenHands Pattern) - Agent lifecycle hooks for initialization and cleanup | ~20m | ✅ | lint (fixed), TS (fixed) | No | High | evolve | agent-lifecycle-control, session-initialization |
 | 2026-04-02 | capability | Interactive Approval Mode (SWE-agent/Aider Pattern) - Approval workflow for risky operations with auto-approve, batch operations, and statistics | ~20m | ✅ | lint (fixed) | No | High | evolve, research | safer-self-modification, human-in-the-loop |
@@ -82,30 +83,31 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 47/54 = 87%
+- First Try Success Rate: 48/55 = 87%
 - Average Time: ~14 minutes
-- Rework Rate: 8/54 = 15%
+- Rework Rate: 8/55 = 15%
 
 ### Capability Metrics
-- Capability Tasks: 53/54 = 98%
-- High Impact Capabilities: 44/53 = 83%
-- Capability Velocity: 53 capabilities in 3 days = 18/day
+- Capability Tasks: 54/55 = 98%
+- High Impact Capabilities: 45/54 = 83%
+- Capability Velocity: 54 capabilities in 3 days = 18/day
 
 ### Error Analysis
 - TypeScript Errors: 2
 - Test Failures: 0
-- Lint Issues: 17
+- Lint Issues: 18
 - Runtime Errors: 0
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 28 iterations, 95% success rate when used
+1. **evolve** - Used in 29 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
-5. **research** - Used in 9 iterations, competitor research
+5. **research** - Used in 10 iterations, competitor research
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Ralph Loop Pattern** - High impact, enables self-referential iteration loops for autonomous continuous improvement using Stop hook interception (Claude Code ralph-wiggum pattern)
 1. **Context Budget Auto-Monitoring** - High impact, enables proactive context overflow prevention during evolution sessions with automatic monitoring in agent run loop
 1. **SessionStart and Stop Hooks** - High impact, enables agent lifecycle control for initialization and cleanup (OpenHands pattern)
 1. **Interactive Approval Mode** - High impact, enables safer self-modification with human-in-the-loop approval for risky operations (SWE-agent/Aider pattern)
@@ -153,6 +155,39 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-02: Ralph Loop Pattern for Autonomous Iteration (Claude Code ralph-wiggum Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 33 - Ralph Loop Pattern for self-referential iteration loops
+
+**Insight:** A self-referential iteration loop provides significant benefits for self-evolution:
+1. **Autonomous iteration** - Agent works continuously until completion promise detected or max iterations reached
+2. **Stop hook interception** - Block exit attempts and feed the same prompt back for continuous improvement
+3. **Self-referential feedback** - Each iteration sees modified files and git history, enabling progressive improvement
+4. **Completion promise** - Unique string signals when task is complete
+5. **Safety limits** - Max iterations prevents infinite loops
+
+Implementation details:
+- `RalphLoopManager` class for managing iteration loops
+- `RalphLoopState`, `RalphLoopConfig`, `RalphLoopStats` interfaces
+- `startLoop()` - Start a new iteration loop with prompt, completion promise, max iterations
+- `incrementIteration()` - Increment iteration count, check max limit
+- `checkCompletionPromise()` - Detect completion promise in output
+- `completeLoop()`, `cancelLoop()` - End loops manually
+- `ralphLoop` tool with actions: start, status, complete, cancel, list, stats, get, note, clear, config
+- Stop hook `ralph-loop-intercept` for intercepting exit attempts
+- State persistence to `~/.paimon/ralph-loops/`
+- 33 tests for full functionality coverage
+
+**Trigger:** When needing autonomous continuous iteration for complex tasks
+
+**Reuse Rule:** Use `ralphLoop({action: 'start', prompt: '...', completionPromise: 'COMPLETE', maxIterations: 50})` to start a loop. Use `ralphLoop({action: 'status'})` to check progress. Use `ralphLoop({action: 'cancel', id: '...'})` to stop.
+
+**Priority:** High
+
+---
 
 ### 2026-04-01: Context Budget Monitoring for Proactive Context Management (ROADMAP Phase 30)
 

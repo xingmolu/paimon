@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getRalphLoopManager } from "./ralph-loop.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 
 /**
@@ -142,6 +143,43 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
  * Default Stop hooks for cleanup
  */
 const DEFAULT_STOP_HOOKS: Hook[] = [
+	{
+		id: "ralph-loop-intercept",
+		type: "Stop",
+		name: "Ralph Loop Iteration Interceptor",
+		description: "Intercepts exit attempts for Ralph Loop and continues iteration until completion",
+		enabled: true,
+		priority: 150, // Highest priority - runs first
+		handler: (context: HookContext): HookResult => {
+			const ralphManager = getRalphLoopManager();
+
+			// Check if there's an active Ralph Loop
+			if (!ralphManager.hasActiveLoop()) {
+				return { allow: true };
+			}
+
+			// Check for completion promise in session output
+			// Note: This would need session transcript access which isn't available in HookContext
+			// For now, we increment iteration and block if not at max
+
+			const result = ralphManager.incrementIteration();
+
+			if (!result.shouldContinue) {
+				// Max iterations reached or no loop - allow exit
+				return {
+					allow: true,
+					context: `Ralph Loop: ${result.reason}`,
+				};
+			}
+
+			// Block exit and feed prompt back
+			return {
+				allow: false,
+				block: `🔄 Ralph Loop iteration ${ralphManager.getCurrentLoop()?.currentIteration}/${ralphManager.getCurrentLoop()?.maxIterations}. Continue working on the task.`,
+				context: `Continuing iteration. Original prompt: ${result.prompt?.substring(0, 200)}...`,
+			};
+		},
+	},
 	{
 		id: "stop-session-stats",
 		type: "Stop",

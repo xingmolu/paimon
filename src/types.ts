@@ -93,6 +93,32 @@ export interface LinearMessage {
 }
 
 /**
+ * Automatic context reduction action types
+ */
+export type ContextReductionAction =
+	| "compact_aggressive"
+	| "truncate_outputs"
+	| "clear_cache"
+	| "reduce_tools"
+	| "archive_memory";
+
+/**
+ * Automatic context reduction configuration
+ */
+export interface AutoContextReductionConfig {
+	/** Enable automatic context reduction on critical status */
+	enabled: boolean;
+	/** Actions to execute automatically (ordered by priority) */
+	actions: ContextReductionAction[];
+	/** Maximum tool output size when truncating (tokens) */
+	maxToolOutputTokens?: number;
+	/** Compact threshold for aggressive compaction (percentage) */
+	compactThreshold?: number;
+	/** Whether to log executed actions */
+	logActions?: boolean;
+}
+
+/**
  * Paimon agent configuration
  */
 export interface PaimonConfig {
@@ -108,6 +134,8 @@ export interface PaimonConfig {
 	linearHistory?: boolean;
 	/** Context budget monitoring configuration for proactive context management */
 	contextBudget?: Partial<ContextBudgetConfig>;
+	/** Automatic context reduction configuration for critical status handling */
+	autoContextReduction?: Partial<AutoContextReductionConfig>;
 }
 
 /**
