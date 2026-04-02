@@ -282,6 +282,16 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track invocations, skills used, trigger types
 - [x] Tests — Comprehensive tests for Auto-Invoke functionality
 
+## Phase 36: Explanatory Output Style (Claude Code Pattern)
+- [x] ExplanatoryOutputStyleManager module — Educational context injection at session start
+- [x] explanatoryOutputStyle tool — Tool for managing educational insights
+- [x] Educational insights library — 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety
+- [x] SessionStart hook integration — Inject context automatically at session start
+- [x] Insight categories — architecture, patterns, evolution, tools, skills, memory, safety
+- [x] Configurable verbosity — brief, normal, detailed modes
+- [x] Statistics tracking — Track sessions enhanced, insights shown, top insights
+- [x] Tests — Comprehensive tests for Explanatory Output Style functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -4,6 +4,74 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 64 — Explanatory Output Style Pattern (Claude Code Pattern) (2026-04-02)
+
+**What happened:**
+- Implemented Explanatory Output Style Pattern - Educational context injection at session start
+- Created `src/explanatory-output-style.ts` module with ExplanatoryOutputStyleManager class
+- Created `src/tools/explanatory-output-style-tool.ts` for explanatoryOutputStyle tool
+- Added 35 tests for Explanatory Output Style functionality
+- Added SessionStart hook `session-explanatory-output-style` for automatic context injection
+- Updated ROADMAP.md with Phase 36
+
+**Why this matters:**
+- This is a `capability` type task that enables educational guidance
+- Agent learns WHY patterns are used, reducing rework through better understanding
+- Automatic educational context injection at session start
+- 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety
+- Session-specific tips for evolve and chat modes
+
+**Technical details:**
+- Created `src/explanatory-output-style.ts`:
+  - `ExplanatoryOutputStyleManager` class for managing educational insights
+  - `InsightCategory`, `EducationalInsight`, `ExplanatoryOutputStyleConfig`, `ExplanatoryOutputStyleStats` interfaces
+  - `generateEducationalContext()` - Generate educational context for session start
+  - `getInsight()`, `getInsightsByCategory()` - Access specific insights
+  - `addInsight()`, `removeInsight()` - Manage custom insights
+  - State persistence to `~/.paimon/explanatory-output-style.json`
+- Created `src/tools/explanatory-output-style-tool.ts`:
+  - `explanatoryOutputStyle` tool with actions: context, insights, insight, category, add, config, stats, enable, disable, reset, clear
+- Modified `src/hooks.ts`:
+  - Added `session-explanatory-output-style` SessionStart hook with priority 110
+  - Injects educational context automatically at session start
+- Modified `src/tools/index.ts`:
+  - Added explanatoryOutputStyleTool to metaTools array
+  - Added re-exports for explanatory-output-style module
+- Modified `src/prompt.ts`:
+  - Added explanatoryOutputStyle tool documentation in IMPORTANT section
+
+**Default Insight Categories:**
+| Category | Count | Topics |
+|----------|-------|--------|
+| architecture | 3 | Modular Architecture, Singleton Pattern, Tool Wrapper System |
+| patterns | 4 | Evolution Value Scoring, Error Recovery, Checkpoints, Confidence Scoring |
+| evolution | 3 | Capability-First Priority, Memory-Driven Selection, Session Persistence |
+| tools | 4 | assess(), reflect(), ralphLoop(), contextBudget() |
+| skills | 2 | Skill-Based Workflows, Auto-Invoke Skills |
+| memory | 3 | Scorecard, Learnings Section, Journal Auto-Truncation |
+| safety | 3 | Safety Gates, Interactive Approval, Hook System |
+
+**Explanatory Output Style Tool Usage:**
+```typescript
+// View all educational insights
+explanatoryOutputStyle({action: 'insights'})
+
+// Get specific insight
+explanatoryOutputStyle({action: 'insight', title: 'Evolution Value Scoring'})
+
+// Generate educational context
+explanatoryOutputStyle({action: 'context', sessionMode: 'evolve'})
+
+// View statistics
+explanatoryOutputStyle({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with memory to personalize insights based on past failures
+- Consider adding more category-specific insights
+
+---
+
 ## Day 63 — Auto-Invoke Skills Pattern (Claude Code Pattern) (2026-04-02)
 
 **What happened:**

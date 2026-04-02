@@ -21,6 +21,7 @@ import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
+import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
@@ -85,6 +86,7 @@ export const metaTools: AgentTool[] = [
 	ralphLoopTool,
 	hookifyTool,
 	autoInvokeTool,
+	explanatoryOutputStyleTool,
 ];
 
 /**
@@ -228,3 +230,13 @@ export type {
 	TriggerType,
 	ContextType,
 } from "../auto-invoke.js";
+export {
+	getExplanatoryOutputStyleManager,
+	ExplanatoryOutputStyleManager,
+} from "../explanatory-output-style.js";
+export type {
+	InsightCategory,
+	EducationalInsight,
+	ExplanatoryOutputStyleConfig,
+	ExplanatoryOutputStyleStats,
+} from "../explanatory-output-style.js";

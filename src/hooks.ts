@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 
@@ -89,6 +90,34 @@ export interface HooksConfig {
  * Default SessionStart hooks for initialization
  */
 const DEFAULT_SESSION_START_HOOKS: Hook[] = [
+	{
+		id: "session-explanatory-output-style",
+		type: "SessionStart",
+		name: "Inject Educational Context",
+		description:
+			"Injects educational insights about implementation choices and codebase patterns at session start (Claude Code explanatory-output-style pattern)",
+		enabled: true,
+		priority: 110, // Higher priority - runs first to inject context before other hooks
+		handler: (context: HookContext): HookResult => {
+			const manager = getExplanatoryOutputStyleManager();
+			if (!manager.isEnabled()) {
+				return { allow: true };
+			}
+
+			// Generate educational context based on session mode
+			const sessionMode = context.session?.mode;
+			const educationalContext = manager.generateEducationalContext(sessionMode);
+
+			if (educationalContext) {
+				return {
+					allow: true,
+					context: educationalContext,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
 	{
 		id: "session-memory-load",
 		type: "SessionStart",
