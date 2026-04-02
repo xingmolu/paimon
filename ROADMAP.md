@@ -234,6 +234,15 @@ Planned improvements for evo.
 - [x] Integration with compaction — Work with existing ContextManager
 - [x] Statistics tracking — Track context usage patterns over sessions
 
+## Phase 31: Interactive Approval Mode (SWE-agent/Aider Pattern)
+- [x] InteractiveApprovalManager module — Approval workflow for risky operations
+- [x] interactiveApproval tool — Tool for managing approval requests
+- [x] Approval categories — File-delete, workflow, self-modification, security, etc.
+- [x] Risk-based decisions — Auto-approve low risk, require approval for high risk
+- [x] Protected file detection — Identify files that always require approval
+- [x] Batch operations — Approve/reject multiple requests at once
+- [x] Statistics tracking — Track approval rates, history, patterns
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

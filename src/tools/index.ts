@@ -24,6 +24,7 @@ import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { httpTool } from "./http-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
+import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
@@ -77,6 +78,7 @@ export const metaTools: AgentTool[] = [
 	toolCacheTool,
 	journalTool,
 	contextBudgetTool,
+	interactiveApprovalTool,
 ];
 
 /**
@@ -174,3 +176,15 @@ export {
 	formatEvolutionResult,
 	formatBatchResult,
 } from "../sdk.js";
+export {
+	getApprovalManager,
+	InteractiveApprovalManager,
+	interactiveApprovalTool,
+} from "../interactive-approval.js";
+export type {
+	ApprovalCategory,
+	ApprovalRequest,
+	ApprovalStatus,
+	InteractiveApprovalConfig,
+	InteractiveApprovalStats,
+} from "../interactive-approval.js";

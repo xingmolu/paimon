@@ -4,6 +4,67 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 58 — Interactive Approval Mode (ROADMAP Phase 31) (2026-04-02)
+
+**What happened:**
+- Implemented ROADMAP Phase 31: Interactive Approval Mode (SWE-agent/Aider Pattern)
+- Created `src/interactive-approval.ts` module with InteractiveApprovalManager class
+- Created `src/tools/interactive-approval-tool.ts` for interactiveApproval tool
+- Added `interactiveApproval` tool to metaTools array
+- Added 32 tests for interactive approval functionality
+- Updated system prompt to document interactiveApproval tool usage
+
+**Why this matters:**
+- This is a `capability` type task that enables safer self-modification
+- Provides human-in-the-loop approval for risky operations
+- Reduces risk of unintended consequences from dangerous operations
+- Integrates with safety gates for pattern detection
+
+**Technical details:**
+- Created `src/interactive-approval.ts`:
+  - `InteractiveApprovalManager` class for approval workflow management
+  - `ApprovalCategory`, `ApprovalStatus`, `ApprovalRequest`, `InteractiveApprovalConfig` interfaces
+  - `requiresApproval()` - Determine if operation needs approval
+  - `createRequest()` - Create approval request with risk assessment
+  - `approve()`, `reject()` - Process pending approvals
+  - `tryAutoApprove()` - Auto-approve eligible low-risk requests
+  - `batchApprove()`, `batchReject()` - Batch operations
+  - Protected file detection for workflows, safety-gates, hooks, etc.
+- Created `src/tools/interactive-approval-tool.ts`:
+  - `interactiveApproval` tool with actions: request, approve, reject, pending, stats, config, history, clear, batch, auto, get
+- Modified `src/tools/index.ts`:
+  - Added interactiveApprovalTool to metaTools array
+  - Added re-exports for interactive-approval module
+- Modified `src/prompt.ts`:
+  - Added interactiveApproval tool documentation in IMPORTANT section
+
+**Interactive Approval Tool Usage:**
+```typescript
+// Request approval for a risky operation
+interactiveApproval({action: 'request', tool: 'bash', toolParams: {command: 'rm -rf dist'}, description: 'Delete dist folder'})
+
+// View pending approvals
+interactiveApproval({action: 'pending'})
+
+// Approve a request
+interactiveApproval({action: 'approve', requestId: 'approval-123', reason: 'Safe to proceed'})
+```
+
+**Approval Categories:**
+| Category | Description |
+|----------|-------------|
+| file-delete | File/directory deletion |
+| workflow | CI/CD workflow changes |
+| self-modification | Modifying agent's own code |
+| security | Security-related changes |
+| data-loss | Operations that could lose data |
+
+**Next steps:**
+- Consider integrating with hook system for automatic approval requests
+- Consider adding approval timeout with escalation
+
+---
+
 ## Day 57 — Context Budget Monitoring Tool (ROADMAP Phase 30) (2026-04-01)
 
 **What happened:**

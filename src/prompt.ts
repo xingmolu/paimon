@@ -225,7 +225,9 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Before starting a complex task, search for relevant past context with \`rag({action: 'search', query: 'task description'})\` - reduces rework by finding similar solutions
 - When encountering errors, use \`errorPatterns({action: 'match', error: 'error message'})\` to find known solutions from past sessions
 - Before task selection, use \`patternMiner({action: 'recommend', taskType: 'capability'})\` to get pattern-based recommendations for optimal approach
-- Monitor context usage with \`contextBudget({action: 'check'})\` - proactively manage context before hitting limits`;
+- Monitor context usage with \`contextBudget({action: 'check'})\` - proactively manage context before hitting limits
+- For risky operations, use \`interactiveApproval({action: 'request', tool: '...', toolParams: {...}, description: '...'})\` to request approval before proceeding
+- Check pending approvals with \`interactiveApproval({action: 'pending'})\` and approve/reject as needed`;
 
 	// Add skills index (progressive loading - only names/descriptions)
 	const skillsDir = config.skillsDir || "skills";
