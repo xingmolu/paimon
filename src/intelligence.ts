@@ -13,8 +13,12 @@
  * Inspired by Claude Code's unified intelligence approach and OpenHands' ToM integration.
  */
 
-import { ErrorPattern, getErrorPatternLearner } from "./error-patterns.js";
-import { EvolutionPattern, type PatternRecommendation, getPatternMiner } from "./pattern-miner.js";
+import { type ErrorPattern, getErrorPatternLearner } from "./error-patterns.js";
+import {
+	type EvolutionPattern,
+	type PatternRecommendation,
+	getPatternMiner,
+} from "./pattern-miner.js";
 import { RagModule, type RagSearchResult } from "./rag.js";
 import {
 	type PredictorStats,

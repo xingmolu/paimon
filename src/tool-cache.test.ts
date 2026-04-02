@@ -2,8 +2,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-	CacheConfig,
-	CacheEntry,
+	type CacheConfig,
+	type CacheEntry,
 	ToolCache,
 	generateCacheKey,
 	getToolCache,

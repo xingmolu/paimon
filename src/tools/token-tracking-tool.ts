@@ -5,8 +5,8 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import {
-	TokenSession,
-	TokenTracker,
+	type TokenSession,
+	type TokenTracker,
 	type TokenUsage,
 	getTokenTracker,
 	resetTokenTracker,
@@ -361,4 +361,4 @@ export const tokenTrackingTool: AgentTool = {
 };
 
 // Re-export for convenience
-export { getTokenTracker, resetTokenTracker, TokenTracker };
+export { getTokenTracker, resetTokenTracker, type TokenTracker };

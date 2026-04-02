@@ -4,7 +4,7 @@
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-	TokenSession,
+	type TokenSession,
 	type TokenTracker,
 	type TokenUsage,
 	getTokenTracker,
