@@ -4,6 +4,66 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 60 — Context Budget Auto-Monitoring Integration (2026-04-02)
+
+**What happened:**
+- Implemented automatic context budget monitoring in agent run loop
+- Added proactive warnings when context usage reaches warning (70%) or critical (85%) thresholds
+- Added `getContextBudgetStatus()`, `getContextBudgetStats()`, `getContextBudgetSuggestions()` methods to agent return object
+- Added `contextBudget` config option to `PaimonConfig` for customizable thresholds
+- Added 6 tests for context budget auto-monitoring functionality
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive context overflow prevention
+- Context budget is now automatically checked during each agent run loop iteration
+- Prevents context overflow failures before they happen
+- Provides optimization suggestions when context usage is high
+- Integrates with existing compaction for comprehensive context management
+
+**Technical details:**
+- Modified `src/agent.ts`:
+  - Added imports for `ContextBudgetManager` and related types
+  - Initialized `contextBudgetManager` in `createAgent()` with model context window
+  - Added automatic `checkBudget()` call in `run()` function
+  - Added proactive warnings for warning/critical/overflow status
+  - Added post-compaction context budget update
+  - Added 3 new methods to agent return object
+- Modified `src/types.ts`:
+  - Added `contextBudget` config option to `PaimonConfig`
+- Added tests in `src/agent.test.ts`:
+  - Tests for context budget methods existence
+  - Tests for status, stats, and suggestions return values
+  - Tests for custom config support
+  - Tests for healthy status initialization
+
+**Context Budget Auto-Monitoring Usage:**
+```typescript
+// Create agent with custom context budget thresholds
+const agent = createAgent({
+  apiKey: '...',
+  model: '...',
+  baseUrl: '...',
+  contextBudget: {
+    warningThresholdPercent: 60,
+    criticalThresholdPercent: 80,
+  }
+});
+
+// Get current context budget status
+const status = agent.getContextBudgetStatus();
+// { healthStatus: 'healthy', usagePercent: 45, recommendations: [...] }
+
+// Get optimization suggestions
+const suggestions = agent.getContextBudgetSuggestions();
+// [{ action: 'truncate_output', description: '...', estimatedSavings: 5000 }]
+```
+
+**Next steps:**
+- Consider adding automatic context reduction actions on critical status
+- Consider adding context budget alerts in CLI output
+
+---
+
 ## Day 59 — SessionStart and Stop Hooks (ROADMAP Phase 32) (2026-04-02)
 
 **What happened:**

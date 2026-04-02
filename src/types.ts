@@ -4,6 +4,7 @@
  */
 
 import type { CompactionConfig } from "./compaction.js";
+import type { ContextBudgetConfig } from "./context-budget.js";
 
 /**
  * Plan state for multi-step reasoning
@@ -105,6 +106,8 @@ export interface PaimonConfig {
 	compaction?: Partial<CompactionConfig> | false;
 	/** Enable linear message history for debugging/fine-tuning (Mini-SWE-Agent pattern) */
 	linearHistory?: boolean;
+	/** Context budget monitoring configuration for proactive context management */
+	contextBudget?: Partial<ContextBudgetConfig>;
 }
 
 /**

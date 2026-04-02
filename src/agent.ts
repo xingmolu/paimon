@@ -7,6 +7,12 @@ setMaxListeners(100);
 import { Agent, type AgentEvent, type AgentTool } from "@mariozechner/pi-agent-core";
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { ContextManager } from "./compaction.js";
+import {
+	type ContextBudgetManager,
+	type ContextUsageStats,
+	getGlobalContextBudgetManager,
+	initGlobalContextBudgetManager,
+} from "./context-budget.js";
 import { globalHookManager } from "./hooks.js";
 import { buildSystemPrompt } from "./prompt.js";
 import type { SessionManager } from "./session.js";
@@ -48,6 +54,12 @@ export function createAgent(
 	run: (prompt: string, verbose?: boolean, onStream?: (delta: string) => void) => Promise<string>;
 	/** Get context status for debugging */
 	getContextStatus: () => { messages: number; tokens: number; hasSummary: boolean };
+	/** Get context budget status for proactive monitoring */
+	getContextBudgetStatus: () => ContextUsageStats;
+	/** Get context budget statistics */
+	getContextBudgetStats: () => ReturnType<ContextBudgetManager["getStats"]>;
+	/** Get optimization suggestions for reducing context */
+	getContextBudgetSuggestions: () => ReturnType<ContextBudgetManager["getOptimizationSuggestions"]>;
 	/** Get linear message history (for debugging/fine-tuning) - only when linearHistory is enabled */
 	getHistory?: () => LinearMessage[];
 	/** Get history as JSON string - only when linearHistory is enabled */
@@ -75,6 +87,13 @@ export function createAgent(
 	);
 	contextManager.setModel(model);
 	contextManager.setApiKeyGetter(() => config.apiKey);
+
+	// Initialize context budget manager for proactive monitoring
+	const contextBudgetConfig = config.contextBudget || {};
+	const contextBudgetManager = initGlobalContextBudgetManager({
+		maxContextWindow: model.contextWindow,
+		...contextBudgetConfig,
+	});
 
 	// Linear message history for debugging/fine-tuning (Mini-SWE-Agent pattern)
 	const linearHistoryEnabled = config.linearHistory === true;
@@ -171,6 +190,40 @@ export function createAgent(
 		// Check if compaction is needed (include tool output estimates)
 		const contextStatus = contextManager.getStatus();
 		const totalEstimated = contextStatus.tokens + estimatedToolOutputTokens;
+
+		// Update context budget manager with current estimate
+		contextBudgetManager.updateTokenEstimate(totalEstimated);
+
+		// Proactive context budget check - check BEFORE reaching compaction threshold
+		const budgetStatus = contextBudgetManager.checkBudget("run_loop");
+		if (verbose && budgetStatus.healthStatus !== "healthy") {
+			console.log(
+				`[Context Budget] Status: ${budgetStatus.healthStatus}, Usage: ${Math.round(budgetStatus.usagePercent)}%`,
+			);
+			for (const rec of budgetStatus.recommendations) {
+				console.log(`[Context Budget] ${rec}`);
+			}
+		}
+
+		// If context is critical, force proactive compaction
+		if (budgetStatus.healthStatus === "critical" || budgetStatus.healthStatus === "overflow") {
+			if (verbose) {
+				console.log(
+					`[Context Budget] CRITICAL: Proactively compacting at ${Math.round(budgetStatus.usagePercent)}% usage`,
+				);
+			}
+
+			// Get optimization suggestions
+			const suggestions = contextBudgetManager.getOptimizationSuggestions();
+			if (verbose) {
+				for (const sug of suggestions.slice(0, 3)) {
+					console.log(
+						`[Context Budget] Suggestion: ${sug.description} (~${sug.estimatedSavings} tokens)`,
+					);
+				}
+			}
+		}
+
 		if (contextManager.shouldCompact() || totalEstimated > 80000) {
 			if (verbose) {
 				console.log(
@@ -185,6 +238,13 @@ export function createAgent(
 				console.log(
 					`[Compaction] Summarized ${result.messagesSummarized} messages, kept ${result.messagesKept}, saved ~${result.tokensSaved} tokens`,
 				);
+			}
+
+			// Update context budget after compaction
+			const newStatus = contextManager.getStatus();
+			contextBudgetManager.updateTokenEstimate(newStatus.tokens);
+			if (verbose) {
+				console.log(`[Context Budget] After compaction: ${newStatus.tokens} tokens`);
 			}
 
 			// Rebuild agent with summary in system prompt
@@ -280,6 +340,12 @@ export function createAgent(
 		agent,
 		run,
 		getContextStatus: () => contextManager.getStatus(),
+		/** Get context budget status for proactive monitoring */
+		getContextBudgetStatus: () => contextBudgetManager.checkBudget("status_query"),
+		/** Get context budget statistics */
+		getContextBudgetStats: () => contextBudgetManager.getStats(),
+		/** Get optimization suggestions for reducing context */
+		getContextBudgetSuggestions: () => contextBudgetManager.getOptimizationSuggestions(),
 		// Linear history methods - only available when linearHistory is enabled
 		...(linearHistoryEnabled && {
 			getHistory: () => [...linearHistory],

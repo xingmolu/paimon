@@ -275,6 +275,98 @@ describe("Agent", () => {
 		expect(run).toBeDefined();
 		expect(typeof run).toBe("function");
 	});
+
+	describe("Context Budget Auto-Monitoring", () => {
+		it("should have context budget methods on agent", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.getContextBudgetStatus).toBeDefined();
+			expect(result.getContextBudgetStats).toBeDefined();
+			expect(result.getContextBudgetSuggestions).toBeDefined();
+			expect(typeof result.getContextBudgetStatus).toBe("function");
+			expect(typeof result.getContextBudgetStats).toBe("function");
+			expect(typeof result.getContextBudgetSuggestions).toBe("function");
+		});
+
+		it("should return context budget status with health status", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			const status = result.getContextBudgetStatus();
+			expect(status).toBeDefined();
+			expect(status.healthStatus).toBeDefined();
+			expect(status.currentTokens).toBeDefined();
+			expect(status.usagePercent).toBeDefined();
+			expect(status.recommendations).toBeDefined();
+		});
+
+		it("should return context budget stats", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			const stats = result.getContextBudgetStats();
+			expect(stats).toBeDefined();
+			expect(stats.totalChecks).toBeDefined();
+			expect(stats.currentUsage).toBeDefined();
+			expect(stats.history).toBeDefined();
+		});
+
+		it("should return optimization suggestions", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			const suggestions = result.getContextBudgetSuggestions();
+			expect(suggestions).toBeDefined();
+			expect(Array.isArray(suggestions)).toBe(true);
+		});
+
+		it("should support custom contextBudget config", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+				contextBudget: {
+					warningThresholdPercent: 60,
+					criticalThresholdPercent: 80,
+				},
+			};
+			const result = createAgent(config);
+			expect(result.agent).toBeDefined();
+			expect(result.getContextBudgetStatus).toBeDefined();
+		});
+
+		it("should initialize healthy status at zero tokens", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			const status = result.getContextBudgetStatus();
+			expect(status.currentTokens).toBe(0);
+			expect(status.healthStatus).toBe("healthy");
+			expect(status.usagePercent).toBe(0);
+		});
+	});
 });
 
 describe("plan tool", () => {
