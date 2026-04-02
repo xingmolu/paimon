@@ -160,6 +160,8 @@ export {
 	getGlobalContextBudgetManager,
 	initGlobalContextBudgetManager,
 	DEFAULT_CONTEXT_BUDGET_CONFIG,
+} from "../context-budget.js";
+export type {
 	ContextBudgetConfig,
 	ContextUsageStats,
 	ContextBudgetStats,
