@@ -4,6 +4,68 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 62 — Hookify Pattern (Claude Code hookify Plugin) (2026-04-02)
+
+**What happened:**
+- Implemented Hookify Pattern - Dynamic hook creation from conversation patterns
+- Created `src/hookify.ts` module with HookifyManager class
+- Created `src/tools/hookify-tool.ts` for hookify tool
+- Added 33 tests for Hookify functionality
+- Updated system prompt to document hookify tool usage
+- Updated ROADMAP.md with Phase 34
+
+**Why this matters:**
+- This is a `capability` type task that enables dynamic hook creation
+- Users can create hooks from descriptions without editing config files
+- Automatically extracts regex patterns from user descriptions
+- Analyzes conversations to find problematic behaviors
+- Integrates with HookManager for seamless hook registration
+
+**Technical details:**
+- Created `src/hookify.ts`:
+  - `HookifyManager` class for managing dynamic hook rules
+  - `HookifyRuleConfig`, `HookifyRule`, `HookifyStats` interfaces
+  - `createRule()` - Create rule from description with pattern extraction
+  - `analyzeConversation()` - Find problematic behaviors in conversation
+  - `extractPattern()` - Extract regex patterns from descriptions
+  - `registerWithHookManager()` - Register rules with global hook manager
+  - Rule persistence to `~/.paimon/hookify-rules/`
+- Created `src/tools/hookify-tool.ts`:
+  - `hookify` tool with actions: create, analyze, list, enable, disable, delete, get, stats, clear, help
+- Modified `src/tools/index.ts`:
+  - Added hookifyTool to metaTools array
+  - Added re-exports for hookify module
+- Modified `src/prompt.ts`:
+  - Added hookify tool documentation in IMPORTANT section
+
+**Hookify Tool Usage:**
+```typescript
+// Create a dynamic hook from description
+hookify({action: 'create', description: 'Warn me when I use rm -rf commands'})
+
+// Analyze conversation for behaviors
+hookify({action: 'analyze', messages: [{role: 'user', content: '...'}]})
+
+// List all hookify rules
+hookify({action: 'list'})
+
+// Enable/disable a rule
+hookify({action: 'enable', name: 'block-dangerous-rm'})
+```
+
+**Pattern Extraction:**
+| Description | Extracted Pattern |
+|-------------|-------------------|
+| "Warn when I use rm -rf" | `\brm\s+-rf\b` |
+| "Block console.log" | `console\.log` |
+| "Prevent git push --force" | `\bgit\s+push\s+--force\b` |
+
+**Next steps:**
+- Consider integrating with conversation history for automatic behavior detection
+- Consider adding rule templates for common patterns
+
+---
+
 ## Day 61 — Ralph Loop Pattern (Claude Code ralph-wiggum) (2026-04-02)
 
 **What happened:**

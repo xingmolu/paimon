@@ -22,6 +22,7 @@ import { contextBudgetTool } from "./context-budget-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
+import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
@@ -81,6 +82,7 @@ export const metaTools: AgentTool[] = [
 	contextBudgetTool,
 	interactiveApprovalTool,
 	ralphLoopTool,
+	hookifyTool,
 ];
 
 /**
@@ -200,3 +202,14 @@ export type {
 	RalphLoopConfig,
 	RalphLoopStats,
 } from "../ralph-loop.js";
+export {
+	getHookifyManager,
+	HookifyManager,
+} from "../hookify.js";
+export type {
+	HookifyRuleConfig,
+	HookifyRule,
+	HookifyStats,
+	ConversationMessage,
+	ConversationAnalysis,
+} from "../hookify.js";

@@ -262,6 +262,16 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track loops, iterations, completion rates
 - [x] Tests — Comprehensive tests for Ralph Loop functionality
 
+## Phase 34: Hookify Pattern (Claude Code hookify Plugin)
+- [x] HookifyManager module — Dynamic hook creation from conversation patterns
+- [x] hookify tool — Tool for creating and managing dynamic hooks
+- [x] Rule file format — Markdown with YAML frontmatter for hook rules
+- [x] Pattern extraction — Extract regex patterns from user descriptions
+- [x] Conversation analyzer — Analyze conversations for problematic behaviors
+- [x] HookManager integration — Register hookify rules with global hook manager
+- [x] Statistics tracking — Track blocked operations, warnings, rules by event
+- [x] Tests — Comprehensive tests for Hookify functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
