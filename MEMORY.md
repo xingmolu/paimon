@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-02 | capability | Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns | ~20m | ✅ | lint (fixed) | No | High | evolve, research | safer-self-modification, security-pattern-detection |
 | 2026-04-02 | capability | Explanatory Output Style Pattern (Claude Code Pattern) - Educational context injection at session start with 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety | ~20m | ✅ | lint (fixed), test (fixed) | No | High | evolve, research | educational-guidance, understanding-patterns |
 | 2026-04-02 | capability | Auto-Invoke Skills Pattern (Claude Code Pattern) - Automatic skill suggestions based on task context with file patterns, keywords, tool usage, and task type triggers | ~15m | ✅ | lint (fixed) | No | High | evolve, research | automatic-skill-discovery, context-aware-suggestions |
 | 2026-04-02 | capability | Hookify Pattern (Claude Code hookify Plugin) - Dynamic hook creation from conversation patterns with simple markdown rules, pattern extraction, and HookManager integration | ~15m | ✅ | lint (fixed) | No | High | evolve, research | dynamic-hook-creation, pattern-extraction |
@@ -86,14 +87,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 51/59 = 86%
+- First Try Success Rate: 52/60 = 87%
 - Average Time: ~14 minutes
-- Rework Rate: 9/59 = 15%
+- Rework Rate: 9/60 = 15%
 
 ### Capability Metrics
-- Capability Tasks: 58/59 = 98%
-- High Impact Capabilities: 48/58 = 83%
-- Capability Velocity: 58 capabilities in 3 days = 19/day
+- Capability Tasks: 59/60 = 98%
+- High Impact Capabilities: 49/59 = 83%
+- Capability Velocity: 59 capabilities in 3 days = 20/day
 
 ### Error Analysis
 - TypeScript Errors: 3
@@ -111,6 +112,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Security Guidance** - High impact, enables proactive security pattern detection with 9 categories and 20 default patterns for safer self-modification (Claude Code security-guidance pattern)
 1. **Explanatory Output Style** - High impact, enables educational context injection at session start with 23 default insights about implementation choices and codebase patterns (Claude Code explanatory-output-style pattern)
 1. **Auto-Invoke Skills** - High impact, enables automatic skill discovery based on task context with multiple trigger types (file patterns, keywords, tool usage, task type) (Claude Code auto-invoke pattern)
 1. **Hookify Pattern** - High impact, enables dynamic hook creation from conversation patterns with simple markdown rules, pattern extraction, and HookManager integration (Claude Code hookify plugin pattern)
@@ -162,6 +164,39 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-02: Security Guidance PreToolUse Hook (Claude Code Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 37 - Security Guidance PreToolUse Hook for proactive security pattern detection
+
+**Insight:** A security guidance system provides significant benefits for safe self-evolution:
+1. **Proactive security** - Detect security vulnerabilities BEFORE code is written, not after
+2. **9 security categories** - Command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data
+3. **20 default patterns** - Comprehensive pattern library for common vulnerabilities
+4. **Risk level categorization** - Critical, high, medium, low - helps prioritize fixes
+5. **PreToolUse integration** - Automatic scanning before write/edit operations
+6. **Configurable blocking** - Block critical/high patterns automatically
+7. **Custom patterns** - Add project-specific security patterns
+
+Implementation details:
+- `SecurityGuidanceManager` class for managing security patterns
+- `SecurityPattern`, `SecurityWarning`, `SecurityScanResult` interfaces
+- `scanContent()`, `scanFile()` - Scan code for security patterns
+- `getPatterns()`, `getPatternsByCategory()`, `getPatternsByRiskLevel()` - Pattern access
+- `addPattern()`, `removePattern()` - Custom pattern management
+- `securityGuidance` tool with actions: scan, patterns, pattern, categories, risk, add, remove, enable, disable, config, stats, reset
+- PreToolUse hook `security-guidance-check` with priority 110 (highest)
+- State persistence to `~/.paimon/security-guidance.json`
+
+**Trigger:** When needing to prevent security vulnerabilities during self-modification
+
+**Reuse Rule:** Use `securityGuidance({action: 'scan', content: '...'})` to scan code. Use `securityGuidance({action: 'patterns'})` to view all patterns. Use `securityGuidance({action: 'config', blockCritical: true})` to configure.
+
+**Priority:** High
+
+---
 
 ### 2026-04-02: Ralph Loop Pattern for Autonomous Iteration (Claude Code ralph-wiggum Pattern)
 

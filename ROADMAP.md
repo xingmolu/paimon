@@ -292,6 +292,17 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track sessions enhanced, insights shown, top insights
 - [x] Tests — Comprehensive tests for Explanatory Output Style functionality
 
+## Phase 37: Security Guidance PreToolUse Hook (Claude Code Pattern)
+- [x] SecurityGuidanceManager module — Proactive security pattern detection
+- [x] securityGuidance tool — Tool for scanning and managing security patterns
+- [x] 9 security pattern categories — Command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data
+- [x] 20 default security patterns — Comprehensive pattern library for common vulnerabilities
+- [x] Risk level categorization — Critical, high, medium, low risk patterns
+- [x] PreToolUse hook integration — Automatic security scanning before write/edit operations
+- [x] Configurable blocking — Block critical/high risk patterns automatically
+- [x] Custom pattern support — Add custom security patterns
+- [x] Statistics tracking — Track scans, warnings, blocks, top patterns
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
 import { getSafetyGateManager } from "./safety-gates.js";
+import { getSecurityGuidanceManager } from "./security-guidance.js";
 
 /**
  * Hook system for intercepting and validating tool calls
@@ -260,6 +261,81 @@ const DEFAULT_STOP_HOOKS: Hook[] = [
  * Default security hooks for dangerous patterns
  */
 const DEFAULT_SECURITY_HOOKS: Hook[] = [
+	{
+		id: "security-guidance-check",
+		type: "PreToolUse",
+		name: "Security Guidance Pattern Scanner",
+		description:
+			"Scans code for security patterns (9 categories) before write/edit operations using Security Guidance module",
+		enabled: true,
+		priority: 110, // Highest priority for security - runs before other security hooks
+		handler: (context: HookContext): HookResult => {
+			if ((context.tool !== "write" && context.tool !== "edit") || !context.params?.content) {
+				return { allow: true };
+			}
+
+			const content = String(context.params.content);
+			const file = context.params?.path ? String(context.params.path) : undefined;
+
+			// Use Security Guidance manager for comprehensive pattern scanning
+			const securityManager = getSecurityGuidanceManager();
+			const config = securityManager.getConfig();
+
+			if (!config.enabled) {
+				return { allow: true };
+			}
+
+			// Scan content for security patterns
+			const result = securityManager.scanContent(content, file);
+
+			// If blocked by critical/high patterns
+			if (result.blocked) {
+				const criticalWarnings = result.warnings.filter((w) => w.riskLevel === "critical");
+				const highWarnings = result.warnings.filter((w) => w.riskLevel === "high");
+
+				const messages: string[] = [];
+				for (const w of criticalWarnings) {
+					messages.push(`${w.name} (${w.riskLevel}): ${w.suggestion}`);
+				}
+				for (const w of highWarnings) {
+					messages.push(`${w.name} (${w.riskLevel}): ${w.suggestion}`);
+				}
+
+				return {
+					allow: false,
+					block: `Security patterns detected:\n${messages.map((m) => `  - ${m}`).join("\n")}\n\nUse securityGuidance({action: 'patterns'}) to view all patterns.`,
+					context: `File: ${file || "unknown"}\nPatterns: ${criticalWarnings.length} critical, ${highWarnings.length} high`,
+				};
+			}
+
+			// If medium/low warnings detected, show warning
+			if (result.warnings.length > 0) {
+				const mediumWarnings = result.warnings.filter((w) => w.riskLevel === "medium");
+				const lowWarnings = result.warnings.filter((w) => w.riskLevel === "low");
+
+				if (
+					(config.warnMedium && mediumWarnings.length > 0) ||
+					(config.warnLow && lowWarnings.length > 0)
+				) {
+					const messages: string[] = [];
+					for (const w of mediumWarnings) {
+						messages.push(`${w.name} (${w.riskLevel}): ${w.suggestion}`);
+					}
+					for (const w of lowWarnings) {
+						messages.push(`${w.name} (${w.riskLevel}): ${w.suggestion}`);
+					}
+
+					return {
+						allow: true,
+						warning: `Security patterns detected:\n${messages.map((m) => `  - ${m}`).join("\n")}`,
+						context: `File: ${file || "unknown"}\nPatterns: ${mediumWarnings.length} medium, ${lowWarnings.length} low`,
+					};
+				}
+			}
+
+			return { allow: true };
+		},
+	},
 	{
 		id: "security-bash-dangerous",
 		type: "PreToolUse",

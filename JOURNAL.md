@@ -4,6 +4,75 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 66 — Security Guidance PreToolUse Hook (Claude Code Pattern) (2026-04-02)
+
+**What happened:**
+- Implemented ROADMAP Phase 37: Security Guidance PreToolUse Hook
+- Created `src/security-guidance.ts` module with SecurityGuidanceManager class
+- Created `src/tools/security-guidance-tool.ts` for securityGuidance tool
+- Added PreToolUse hook `security-guidance-check` with priority 110 (highest)
+- Updated ROADMAP.md with Phase 37
+
+**Why this matters:**
+- This is a `capability` type task that enables safer self-modification
+- Proactively detects security vulnerabilities BEFORE code is written
+- 9 security categories: command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data
+- 20 default security patterns for common vulnerabilities
+- Risk level categorization: critical, high, medium, low
+- Configurable blocking - block critical/high patterns automatically
+
+**Technical details:**
+- Created `src/security-guidance.ts`:
+  - `SecurityGuidanceManager` class for managing security patterns
+  - `SecurityPattern`, `SecurityWarning`, `SecurityScanResult`, `SecurityGuidanceConfig`, `SecurityGuidanceStats` interfaces
+  - `scanContent()`, `scanFile()` - Scan code for security patterns
+  - `getPatterns()`, `getPatternsByCategory()`, `getPatternsByRiskLevel()` - Pattern access
+  - `addPattern()`, `removePattern()`, `setPatternEnabled()` - Custom pattern management
+  - 20 default patterns covering 9 categories
+  - State persistence to `~/.paimon/security-guidance.json`
+- Created `src/tools/security-guidance-tool.ts`:
+  - `securityGuidance` tool with actions: scan, patterns, pattern, categories, risk, add, remove, enable, disable, config, stats, reset
+- Modified `src/hooks.ts`:
+  - Added `security-guidance-check` PreToolUse hook with priority 110
+  - Scans content before write/edit operations
+  - Blocks critical/high patterns, warns on medium/low
+- Modified `src/tools/index.ts`:
+  - Added securityGuidanceTool to metaTools array
+  - Added re-exports for security-guidance module
+- Modified `src/prompt.ts`:
+  - Added securityGuidance tool documentation in IMPORTANT section
+
+**Security Pattern Categories:**
+| Category | Count | Risk Levels |
+|----------|-------|-------------|
+| command-injection | 3 | critical, high |
+| xss | 3 | high, medium |
+| eval-usage | 2 | critical, high |
+| dangerous-html | 2 | high, medium |
+| pickle-deserialization | 1 | critical |
+| os-system | 2 | critical, high |
+| sql-injection | 2 | critical |
+| path-traversal | 2 | high |
+| sensitive-data | 2 | critical, high |
+
+**Security Guidance Tool Usage:**
+```typescript
+// Scan code for security patterns
+securityGuidance({action: 'scan', content: 'eval(userInput)'})
+
+// View all security patterns
+securityGuidance({action: 'patterns'})
+
+// Configure blocking
+securityGuidance({action: 'config', blockCritical: true, blockHigh: false})
+```
+
+**Next steps:**
+- Consider adding more patterns for specific frameworks
+- Consider integrating with npm audit for dependency vulnerabilities
+
+---
+
 ## Day 65 — ROADMAP Phase 36 Complete (2026-04-02)
 
 **What happened:**

@@ -43,6 +43,7 @@ import { rouletteTool } from "./roulette-tool.js";
 import { safetyGatesTool } from "./safety-gates-tool.js";
 import { sdkTool } from "./sdk-tool.js";
 import { searchTools } from "./search-tools.js";
+import { securityGuidanceTool } from "./security-guidance-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
@@ -87,6 +88,7 @@ export const metaTools: AgentTool[] = [
 	hookifyTool,
 	autoInvokeTool,
 	explanatoryOutputStyleTool,
+	securityGuidanceTool,
 ];
 
 /**
@@ -240,3 +242,17 @@ export type {
 	ExplanatoryOutputStyleConfig,
 	ExplanatoryOutputStyleStats,
 } from "../explanatory-output-style.js";
+export {
+	getSecurityGuidanceManager,
+	SecurityGuidanceManager,
+	resetSecurityGuidanceManager,
+} from "../security-guidance.js";
+export type {
+	SecurityCategory,
+	RiskLevel,
+	SecurityPattern,
+	SecurityWarning,
+	SecurityScanResult,
+	SecurityGuidanceStats,
+	SecurityGuidanceConfig,
+} from "../security-guidance.js";
