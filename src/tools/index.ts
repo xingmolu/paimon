@@ -146,10 +146,8 @@ export {
 	truncateJournal,
 	listArchives,
 	readArchivedEntry,
-	JournalEntry,
-	JournalStats,
-	TruncateResult,
 } from "../journal-manager.js";
+export type { JournalEntry, JournalStats, TruncateResult } from "../journal-manager.js";
 export {
 	getBenchmarkRunner,
 	createSampleTasks,
