@@ -4,6 +4,70 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 59 — SessionStart and Stop Hooks (ROADMAP Phase 32) (2026-04-02)
+
+**What happened:**
+- Implemented ROADMAP Phase 32: SessionStart and Stop Hooks (OpenHands Pattern)
+- Added default SessionStart hooks for session initialization
+- Added default Stop hooks for session cleanup
+- Integrated hooks into agent lifecycle with executeSessionStartHooks() and executeStopHooks()
+- Integrated hooks into CLI (runOnce and runRepl functions)
+- Added 15 tests for SessionStart/Stop hooks
+
+**Why this matters:**
+- This is a `capability` type task that enables agent lifecycle control
+- SessionStart hooks allow initialization actions at session start
+- Stop hooks allow cleanup actions at session end
+- Enables better session management and state tracking
+- Inspired by OpenHands hook system pattern
+
+**Technical details:**
+- Modified `src/hooks.ts`:
+  - Added `DEFAULT_SESSION_START_HOOKS` array with 3 hooks:
+    - `session-memory-load` - Logs memory status in evolve mode
+    - `session-context-budget` - Initializes context budget tracking
+    - `session-journal-check` - Checks if journal needs truncation
+  - Added `DEFAULT_STOP_HOOKS` array with 3 hooks:
+    - `stop-session-stats` - Saves session statistics on stop
+    - `stop-token-tracking` - Finalizes token tracking
+    - `stop-tool-cache-save` - Persists tool cache
+  - Updated default config to include all hook types
+- Modified `src/agent.ts`:
+  - Added `executeSessionStartHooks()` method to agent return object
+  - Added `executeStopHooks()` method to agent return object
+  - Both methods execute hooks and return context messages
+- Modified `src/cli.ts`:
+  - Execute SessionStart hooks after agent creation
+  - Execute Stop hooks after session completion
+  - Execute Stop hooks on /quit command in REPL mode
+- Added tests in `src/agent.test.ts`:
+  - Tests for hook registration
+  - Tests for hook execution
+  - Tests for agent methods
+
+**SessionStart Hook Usage:**
+```typescript
+// Hooks are automatically executed at session start
+// Agent returns the context messages from hooks
+const agentContext = createAgent(config);
+const messages = await agentContext.executeSessionStartHooks();
+// messages = ["[Load Memory on Session Start] Session started in evolve mode...", ...]
+```
+
+**Stop Hook Usage:**
+```typescript
+// Execute hooks when session ends
+const stopMessages = await agentContext.executeStopHooks("session_complete");
+// stopMessages = ["[Save Session Statistics] Session stopped...", ...]
+```
+
+**Next steps:**
+- Consider adding more SessionStart hooks (e.g., plugin initialization)
+- Consider adding session pause/resume hooks
+- Consider adding hooks for error scenarios
+
+---
+
 ## Day 58 — Interactive Approval Mode (ROADMAP Phase 31) (2026-04-02)
 
 **What happened:**

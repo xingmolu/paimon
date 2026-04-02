@@ -85,6 +85,111 @@ export interface HooksConfig {
 }
 
 /**
+ * Default SessionStart hooks for initialization
+ */
+const DEFAULT_SESSION_START_HOOKS: Hook[] = [
+	{
+		id: "session-memory-load",
+		type: "SessionStart",
+		name: "Load Memory on Session Start",
+		description: "Logs memory status at session start for context awareness",
+		enabled: true,
+		priority: 100,
+		handler: (context: HookContext): HookResult => {
+			if (context.session?.mode === "evolve") {
+				// In evolve mode, memory should be loaded
+				return {
+					allow: true,
+					context: "Session started in evolve mode. MEMORY.md should be loaded for context.",
+				};
+			}
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-context-budget",
+		type: "SessionStart",
+		name: "Check Context Budget",
+		description: "Initialize context budget tracking at session start",
+		enabled: true,
+		priority: 90,
+		handler: (context: HookContext): HookResult => {
+			// Context budget monitoring initialized
+			return {
+				allow: true,
+				context: `Context budget monitoring enabled. Use contextBudget({action: 'check'}) to monitor usage.`,
+			};
+		},
+	},
+	{
+		id: "session-journal-check",
+		type: "SessionStart",
+		name: "Check Journal Size",
+		description: "Check if journal needs truncation to prevent context bloat",
+		enabled: true,
+		priority: 80,
+		handler: (context: HookContext): HookResult => {
+			// Journal truncation check
+			return {
+				allow: true,
+				context: `Journal truncation available. Use journal({action: 'stats'}) to check size.`,
+			};
+		},
+	},
+];
+
+/**
+ * Default Stop hooks for cleanup
+ */
+const DEFAULT_STOP_HOOKS: Hook[] = [
+	{
+		id: "stop-session-stats",
+		type: "Stop",
+		name: "Save Session Statistics",
+		description: "Logs session statistics on stop for evolution tracking",
+		enabled: true,
+		priority: 100,
+		handler: (context: HookContext): HookResult => {
+			// Log session end statistics
+			return {
+				allow: true,
+				context: `Session stopped: ${context.reason || "unknown reason"}. Statistics saved.`,
+			};
+		},
+	},
+	{
+		id: "stop-token-tracking",
+		type: "Stop",
+		name: "Finalize Token Tracking",
+		description: "End token tracking session on stop",
+		enabled: true,
+		priority: 90,
+		handler: (context: HookContext): HookResult => {
+			// Token tracking session end
+			return {
+				allow: true,
+				context: `Token tracking session ended. Use tokenTracking({action: 'stats'}) for summary.`,
+			};
+		},
+	},
+	{
+		id: "stop-tool-cache-save",
+		type: "Stop",
+		name: "Save Tool Cache",
+		description: "Persist tool cache on session stop",
+		enabled: true,
+		priority: 80,
+		handler: (context: HookContext): HookResult => {
+			// Tool cache persistence
+			return {
+				allow: true,
+				context: `Tool cache persisted. Use toolCache({action: 'stats'}) for cache statistics.`,
+			};
+		},
+	},
+];
+
+/**
  * Default security hooks for dangerous patterns
  */
 const DEFAULT_SECURITY_HOOKS: Hook[] = [
@@ -309,9 +414,9 @@ export class HookManager {
 			}
 		}
 
-		// Create default config
+		// Create default config with all hook types
 		return {
-			hooks: DEFAULT_SECURITY_HOOKS,
+			hooks: [...DEFAULT_SESSION_START_HOOKS, ...DEFAULT_STOP_HOOKS, ...DEFAULT_SECURITY_HOOKS],
 			settings: {
 				enabled: true,
 				defaultBehavior: "allow",

@@ -199,8 +199,24 @@ async function runOnce(
 			result = await agent.run(prompt, debug);
 		} else {
 			// Use full agent with all tools
-			const { run } = createAgent(config, sessionManager);
-			result = await run(prompt, debug, (delta) => process.stdout.write(delta));
+			const agentContext = createAgent(config, sessionManager);
+			// Execute SessionStart hooks
+			const startMessages = await agentContext.executeSessionStartHooks();
+			if (debug && startMessages.length > 0) {
+				console.log(`${COLORS.dim}[SessionStart Hooks]${COLORS.reset}`);
+				for (const msg of startMessages) {
+					console.log(`${COLORS.dim}  ${msg}${COLORS.reset}`);
+				}
+			}
+			result = await agentContext.run(prompt, debug, (delta) => process.stdout.write(delta));
+			// Execute Stop hooks
+			const stopMessages = await agentContext.executeStopHooks("session_complete");
+			if (debug && stopMessages.length > 0) {
+				console.log(`${COLORS.dim}[Stop Hooks]${COLORS.reset}`);
+				for (const msg of stopMessages) {
+					console.log(`${COLORS.dim}  ${msg}${COLORS.reset}`);
+				}
+			}
 		}
 		// Save assistant response
 		sessionManager.save("assistant", result);
@@ -240,6 +256,16 @@ async function runRepl(
 		minimalAgent = createMinimalAgent(minimalConfig);
 	} else {
 		fullAgent = createAgent(config, sessionManager);
+		// Execute SessionStart hooks for REPL mode
+		if (fullAgent) {
+			const startMessages = await fullAgent.executeSessionStartHooks();
+			if (debug && startMessages.length > 0) {
+				console.log(`${COLORS.dim}[SessionStart Hooks]${COLORS.reset}`);
+				for (const msg of startMessages) {
+					console.log(`${COLORS.dim}  ${msg}${COLORS.reset}`);
+				}
+			}
+		}
 	}
 
 	const { agent, run } = fullAgent || { agent: undefined, run: undefined };
@@ -293,6 +319,16 @@ async function runRepl(
 
 		if (!trimmed) continue;
 		if (trimmed === "/quit" || trimmed === "/exit") {
+			// Execute Stop hooks before quitting
+			if (fullAgent) {
+				const stopMessages = await fullAgent.executeStopHooks("user_quit");
+				if (debug && stopMessages.length > 0) {
+					console.log(`${COLORS.dim}[Stop Hooks]${COLORS.reset}`);
+					for (const msg of stopMessages) {
+						console.log(`${COLORS.dim}  ${msg}${COLORS.reset}`);
+					}
+				}
+			}
 			console.log(`\n${COLORS.dim}  bye${COLORS.reset}\n`);
 			rl.close();
 			break;

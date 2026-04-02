@@ -5109,3 +5109,140 @@ describe("Safety Gates", () => {
 		});
 	});
 });
+
+describe("SessionStart and Stop Hooks", () => {
+	describe("HookManager", () => {
+		it("should have SessionStart hooks registered", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("SessionStart");
+			expect(hooks.length).toBeGreaterThan(0);
+		});
+
+		it("should have Stop hooks registered", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("Stop");
+			expect(hooks.length).toBeGreaterThan(0);
+		});
+
+		it("should have session-memory-load hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("SessionStart");
+			const memoryHook = hooks.find((h) => h.id === "session-memory-load");
+			expect(memoryHook).toBeDefined();
+			expect(memoryHook?.name).toBe("Load Memory on Session Start");
+		});
+
+		it("should have session-context-budget hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("SessionStart");
+			const budgetHook = hooks.find((h) => h.id === "session-context-budget");
+			expect(budgetHook).toBeDefined();
+			expect(budgetHook?.name).toBe("Check Context Budget");
+		});
+
+		it("should have session-journal-check hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("SessionStart");
+			const journalHook = hooks.find((h) => h.id === "session-journal-check");
+			expect(journalHook).toBeDefined();
+			expect(journalHook?.name).toBe("Check Journal Size");
+		});
+
+		it("should have stop-session-stats hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("Stop");
+			const statsHook = hooks.find((h) => h.id === "stop-session-stats");
+			expect(statsHook).toBeDefined();
+			expect(statsHook?.name).toBe("Save Session Statistics");
+		});
+
+		it("should have stop-token-tracking hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("Stop");
+			const tokenHook = hooks.find((h) => h.id === "stop-token-tracking");
+			expect(tokenHook).toBeDefined();
+			expect(tokenHook?.name).toBe("Finalize Token Tracking");
+		});
+
+		it("should have stop-tool-cache-save hook", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("Stop");
+			const cacheHook = hooks.find((h) => h.id === "stop-tool-cache-save");
+			expect(cacheHook).toBeDefined();
+			expect(cacheHook?.name).toBe("Save Tool Cache");
+		});
+
+		it("should execute SessionStart hooks", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const result = await globalHookManager.executeHooks("SessionStart", {
+				session: { mode: "evolve", project: "test", timestamp: new Date().toISOString() },
+			});
+			expect(result.allow).toBe(true);
+		});
+
+		it("should execute Stop hooks", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const result = await globalHookManager.executeHooks("Stop", { reason: "test_stop" });
+			expect(result.allow).toBe(true);
+		});
+
+		it("should sort hooks by priority", async () => {
+			const { globalHookManager } = await import("./hooks.js");
+			const hooks = globalHookManager.getHooks("SessionStart");
+			for (let i = 1; i < hooks.length; i++) {
+				expect(hooks[i - 1].priority).toBeGreaterThanOrEqual(hooks[i].priority);
+			}
+		});
+	});
+
+	describe("Agent hook methods", () => {
+		it("should have executeSessionStartHooks method", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.executeSessionStartHooks).toBeDefined();
+			expect(typeof result.executeSessionStartHooks).toBe("function");
+		});
+
+		it("should have executeStopHooks method", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			expect(result.executeStopHooks).toBeDefined();
+			expect(typeof result.executeStopHooks).toBe("function");
+		});
+
+		it("should return context messages from SessionStart hooks", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+				mode: "evolve" as const,
+			};
+			const result = createAgent(config);
+			const messages = await result.executeSessionStartHooks();
+			expect(messages.length).toBeGreaterThan(0);
+		});
+
+		it("should return context messages from Stop hooks", async () => {
+			const { createAgent } = await import("./agent.js");
+			const config = {
+				apiKey: "test-key",
+				model: "test-model",
+				baseUrl: "https://test.example.com",
+			};
+			const result = createAgent(config);
+			const messages = await result.executeStopHooks("session_complete");
+			expect(messages.length).toBeGreaterThan(0);
+		});
+	});
+});

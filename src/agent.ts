@@ -58,6 +58,10 @@ export function createAgent(
 	loadHistory?: (path: string) => void;
 	/** Clear history (keep system message) - only when linearHistory is enabled */
 	clearHistory?: () => void;
+	/** Execute SessionStart hooks */
+	executeSessionStartHooks: () => Promise<string[]>;
+	/** Execute Stop hooks */
+	executeStopHooks: (reason: string) => Promise<string[]>;
 } {
 	const model = createModel(config);
 	// Session manager is stored for potential future use
@@ -102,6 +106,54 @@ export function createAgent(
 
 	// Provide API key dynamically for the custom provider
 	agent.getApiKey = () => config.apiKey;
+
+	/**
+	 * Execute SessionStart hooks and return their context messages
+	 */
+	const executeSessionStartHooks = async (): Promise<string[]> => {
+		const sessionContext = {
+			mode: config.mode || "chat",
+			project: process.cwd(),
+			timestamp: new Date().toISOString(),
+		};
+
+		const hooks = globalHookManager.getHooks("SessionStart");
+		const results: string[] = [];
+
+		for (const hook of hooks) {
+			try {
+				const result = await hook.handler({ session: sessionContext });
+				if (result.context) {
+					results.push(`[${hook.name}] ${result.context}`);
+				}
+			} catch (error) {
+				results.push(`[${hook.name}] Hook execution failed: ${error}`);
+			}
+		}
+
+		return results;
+	};
+
+	/**
+	 * Execute Stop hooks and return their context messages
+	 */
+	const executeStopHooks = async (reason: string): Promise<string[]> => {
+		const hooks = globalHookManager.getHooks("Stop");
+		const results: string[] = [];
+
+		for (const hook of hooks) {
+			try {
+				const result = await hook.handler({ reason });
+				if (result.context) {
+					results.push(`[${hook.name}] ${result.context}`);
+				}
+			} catch (error) {
+				results.push(`[${hook.name}] Hook execution failed: ${error}`);
+			}
+		}
+
+		return results;
+	};
 
 	const run = async (
 		prompt: string,
@@ -257,5 +309,8 @@ export function createAgent(
 				}
 			},
 		}),
+		// SessionStart and Stop hook execution
+		executeSessionStartHooks,
+		executeStopHooks,
 	};
 }

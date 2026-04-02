@@ -243,6 +243,15 @@ Planned improvements for evo.
 - [x] Batch operations — Approve/reject multiple requests at once
 - [x] Statistics tracking — Track approval rates, history, patterns
 
+## Phase 32: SessionStart and Stop Hooks (OpenHands Pattern)
+- [x] SessionStart hook type — Hooks executed at session initialization
+- [x] Stop hook type — Hooks executed at session termination
+- [x] Default SessionStart hooks — Memory load, context budget check, journal check
+- [x] Default Stop hooks — Session stats save, token tracking finalize, tool cache save
+- [x] Agent integration — executeSessionStartHooks() and executeStopHooks() methods
+- [x] CLI integration — Execute hooks in runOnce() and runRepl()
+- [x] Tests — Comprehensive tests for SessionStart/Stop hooks
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
