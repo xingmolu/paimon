@@ -378,6 +378,15 @@ Planned improvements for evo.
 - [x] Target savings mode — Get recommendations to achieve specific token savings
 - [x] Statistics tracking — Track analyses, recommendations, estimated savings, average importance score
 
+## Phase 45: Frontend Design Skill (Claude Code Pattern)
+- [x] FrontendDesignManager module — Guidance for distinctive frontend interfaces
+- [x] frontendDesign tool — Tool for accessing design principles and recommendations
+- [x] 12 design principles — Typography, color, spacing, animation, layout, interaction, accessibility, performance
+- [x] Context detection — Detect frontend work context (new-component, refactor, style-update, responsive-design, animation-work, typography-work, layout-work, general-frontend)
+- [x] Anti-pattern warnings — Warn against generic AI aesthetics
+- [x] Bold design choices — Guidance on distinctive typography, intentional color, meaningful animations
+- [x] Statistics tracking — Track guidance provided, principles shown, contexts detected
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

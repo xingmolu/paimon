@@ -26,6 +26,7 @@ import { errorPatternsTool } from "./error-patterns-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
+import { frontendDesignTool } from "./frontend-design-tool.js";
 import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
@@ -103,6 +104,7 @@ export const metaTools: AgentTool[] = [
 	agentBuilderTool,
 	selfHealingToolWrapper,
 	contextImportanceTool,
+	frontendDesignTool,
 ];
 
 /**
@@ -399,3 +401,13 @@ export type {
 	ContextImportanceConfig,
 	ContextImportanceStats,
 } from "../context-importance.js";
+export { frontendDesignTool } from "./frontend-design-tool.js";
+export { FrontendDesignManager } from "../frontend-design.js";
+export type {
+	DesignPrinciple,
+	DesignCategory,
+	FrontendContext,
+	DesignGuidance,
+	FrontendDesignConfig,
+	FrontendDesignStats,
+} from "../frontend-design.js";

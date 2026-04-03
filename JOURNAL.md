@@ -4,6 +4,78 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 72 — Frontend Design Skill (Claude Code Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 45: Frontend Design Skill
+- Created `src/frontend-design.ts` module with FrontendDesignManager class
+- Created `src/tools/frontend-design-tool.ts` for frontendDesign tool
+- Added 12 design principles covering 8 categories
+- Updated ROADMAP.md with Phase 45
+
+**Why this matters:**
+- This is a `capability` type task that enables distinctive frontend interfaces
+- Inspired by Claude Code's frontend-design plugin for creating distinctive, production-grade interfaces
+- 12 design principles: typography, color, spacing, animation, layout, interaction, accessibility, performance
+- Context detection: new-component, refactor, style-update, responsive-design, animation-work, typography-work, layout-work, general-frontend
+- Anti-pattern warnings against generic AI aesthetics
+- Bold design choices: distinctive typography, intentional color, meaningful animations
+
+**Technical details:**
+- Created `src/frontend-design.ts`:
+  - `FrontendDesignManager` class for managing design guidance
+  - `DesignPrinciple`, `DesignCategory`, `FrontendContext`, `DesignGuidance` types
+  - `FrontendDesignConfig`, `FrontendDesignStats` interfaces
+  - 12 default design principles with examples and anti-patterns
+  - `detectContext()` - Detect frontend work context from task description
+  - `getGuidance()` - Get design guidance for context
+  - `getPrinciple()`, `getPrinciplesByCategory()` - Access specific principles
+  - `addPrinciple()`, `removePrinciple()` - Custom principle management
+  - State persistence to `~/.paimon/frontend-design.json`
+- Created `src/tools/frontend-design-tool.ts`:
+  - `frontendDesign` tool with actions: guidance, principles, principle, category, context, session, config, stats, reset, add, remove, enable, disable, help
+- Modified `src/tools/index.ts`:
+  - Added frontendDesignTool to metaTools array
+  - Added re-exports for frontend-design module
+- Modified `src/prompt.ts`:
+  - Added frontendDesign tool documentation in IMPORTANT section
+
+**Design Principle Categories:**
+| Category | Principles | Topics |
+|----------|-----------|--------|
+| typography | 2 | Distinctive typography, Typography scale |
+| color | 2 | Intentional color palette, Bold accents |
+| spacing | 1 | Consistent spacing system |
+| animation | 2 | Meaningful animations, Entrance animations |
+| layout | 2 | Clear layout hierarchy, Intentional responsive |
+| interaction | 1 | Micro-interactions |
+| accessibility | 1 | Accessible design |
+| performance | 1 | Performance-conscious design |
+
+**Frontend Design Tool Usage:**
+```typescript
+// Get design guidance for new component
+frontendDesign({action: 'guidance', context: 'new-component'})
+
+// Get guidance with auto context detection
+frontendDesign({action: 'guidance', taskDescription: 'Create a card component with hover animation'})
+
+// Get typography principles
+frontendDesign({action: 'category', category: 'typography'})
+
+// Get specific principle
+frontendDesign({action: 'principle', principleId: 'distinctive-typography'})
+
+// Configure settings
+frontendDesign({action: 'config', maxPrinciples: 3, preferredStyle: 'bold'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks for frontend context injection
+- Consider adding CSS/SCSS file analysis for pattern detection
+
+---
+
 ## Day 71 — Context Importance Scoring (Aider ChatSummary Pattern) (2026-04-03)
 
 **What happened:**
