@@ -396,6 +396,26 @@ Planned improvements for evo.
 - [x] Multiple shell sessions — Run multiple interactive sessions in parallel
 - [x] Statistics tracking — Track executions, sessions, success rates by environment type
 
+## Phase 47: Role-Based Multi-Agent Protocol (MetaGPT Pattern)
+- [x] RoleBasedAgentManager module — Manage specialized agent roles with SOP-based coordination
+- [x] roleBasedAgents tool — Tool for role-based multi-agent sessions
+- [x] 6 default agent roles — ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer
+- [x] SOP workflow system — Standard Operating Procedures for multi-agent coordination
+- [x] 3 default workflows — software-company, feature-development, code-review
+- [x] Artifact management — Track outputs with confidence scores
+- [x] Phase transitions — Automatic workflow progression
+- [x] Statistics tracking — Track sessions, artifacts, phases, role usage
+
+## Phase 48: Task Tracking Tool (OpenHands SDK Pattern)
+- [x] TaskTrackingManager module — Manage task tracking for agent execution
+- [x] taskTracking tool — Tool for tracking task progress, dependencies, and completion state
+- [x] Session management — Start, list, set active, clear task sessions
+- [x] Task lifecycle — Add, update, complete, fail tasks with status tracking
+- [x] Dependency management — Task dependencies with automatic blocking/unblocking
+- [x] Subtask support — Parent-child task relationships
+- [x] Progress tracking — Percentage completion, time estimates, session summaries
+- [x] Statistics tracking — Track sessions, tasks, priorities, tags, dependency depth
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -24,7 +24,8 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
-| 2026-04-03 | capability | Remote Execution Environment (SWE-ReX Pattern) - Sandboxed shell environments for safer evolution with local, Docker, Modal, and remote support, shell session management for interactive tools, remoteExecution tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | sandboxed-evolution, docker-execution, interactive-sessions |
+| 2026-04-03 | capability | Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool | ~20m | ✅ | TS (fixed) | No | High | evolve | structured-task-tracking, progress-monitoring, dependency-management |
+| 2026-04-03 | capability | Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool | ~20m | ✅ | TS (fixed) | No | High | evolve, research | specialized-multi-agent-roles, sop-workflows, metagpt-pattern |
 | 2026-04-03 | capability | Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool | ~15m | ✅ | lint (fixed) | No | High | evolve, research | distinctive-frontend-design, bold-design-choices, avoid-generic-aesthetics |
 | 2026-04-03 | capability | Context Importance Scoring (Aider ChatSummary Pattern) - Intelligent message importance scoring for smarter truncation, 8 importance factors, content type classification, truncation recommendations with estimated savings, contextImportance tool | ~20m | ✅ | none | No | High | evolve | smarter-context-truncation, reduced-context-overflow |
 | 2026-04-03 | capability | Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | automatic-error-correction, reduced-manual-intervention |
@@ -96,17 +97,17 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 61/69 = 88%
+- First Try Success Rate: 63/71 = 89%
 - Average Time: ~14 minutes
-- Rework Rate: 9/69 = 13%
+- Rework Rate: 9/71 = 13%
 
 ### Capability Metrics
-- Capability Tasks: 68/69 = 99%
-- High Impact Capabilities: 58/68 = 85%
-- Capability Velocity: 68 capabilities in 3 days = 23/day
+- Capability Tasks: 70/71 = 99%
+- High Impact Capabilities: 60/70 = 86%
+- Capability Velocity: 70 capabilities in 3 days = 23/day
 
 ### Error Analysis
-- TypeScript Errors: 3
+- TypeScript Errors: 4
 - Test Failures: 0
 - Lint Issues: 21
 - Runtime Errors: 0
@@ -121,6 +122,8 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Task Tracking Tool** - High impact, enables structured task tracking with progress monitoring, dependency management (automatic blocking/unblocking), subtask hierarchy, priority-based ordering, time tracking, session persistence (OpenHands SDK Pattern)
+1. **Role-Based Multi-Agent Protocol** - High impact, enables specialized multi-agent coordination with SOP-based workflows, 6 agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer), 3 default workflows, artifact management (MetaGPT pattern)
 1. **Remote Execution Environment** - High impact, enables sandboxed evolution with Docker/local/remote execution environments, shell session management for interactive tools (ipython, gdb), massively parallel agent runs for benchmarking (SWE-ReX pattern)
 1. **Frontend Design Skill** - High impact, enables guidance for creating distinctive, production-grade frontend interfaces with 12 design principles covering typography, color, spacing, animation, layout, interaction, accessibility, performance (Claude Code frontend-design pattern)
 1. **Context Importance Scoring** - High impact, enables intelligent message importance scoring for smarter truncation decisions with 8 importance factors, content type classification, and truncation recommendations with estimated savings (Aider ChatSummary pattern)
@@ -181,6 +184,67 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-03: Task Tracking Tool (OpenHands SDK Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 48 - Task Tracking Tool for tracking task progress, dependencies, and completion state during agent execution
+
+**Insight:** A task tracking tool provides significant benefits for self-evolution:
+1. **Progress visibility** - Track which tasks are pending, in-progress, completed, or failed
+2. **Dependency management** - Tasks can depend on other tasks, with automatic blocking until dependencies complete
+3. **Subtask hierarchy** - Parent-child relationships for breaking down complex tasks
+4. **Time tracking** - Estimated vs actual time for performance analysis
+5. **Session persistence** - State saved to disk for resumption across sessions
+
+Implementation details:
+- `TaskTrackingManager` class with singleton pattern
+- 18 actions: start, current, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats
+- Automatic blocking when dependencies incomplete
+- Automatic unblocking when dependencies complete
+- Priority-based task ordering (critical > high > medium > low)
+- `taskTracking` tool integrated into metaTools
+- State persistence to `~/.paimon/task-tracking.json`
+
+**Trigger:** When needing to track progress during complex multi-step evolution tasks
+
+**Reuse Rule:** Use `taskTracking({action: 'start', name: '...'})` to start a session. Use `taskTracking({action: 'add', name: '...', description: '...', priority: 'high'})` to add tasks. Use `taskTracking({action: 'next'})` to get the next task to work on. Use `taskTracking({action: 'complete', taskId: '...'})` to mark tasks complete.
+
+**Priority:** High
+
+---
+
+## Learnings
+
+### 2026-04-03: Role-Based Multi-Agent Protocol (MetaGPT Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 47 - Role-Based Multi-Agent Protocol for specialized agent roles with SOP-based coordination
+
+**Insight:** A role-based multi-agent protocol provides significant benefits for complex task coordination:
+1. **Specialized roles** - Each role has defined responsibilities, inputs, outputs, and SOP steps
+2. **SOP-based coordination** - Standard Operating Procedures ensure consistent task execution
+3. **Phase transitions** - Automatic workflow progression through defined phases
+4. **Artifact management** - Track outputs with confidence scores for quality control
+5. **Workflow flexibility** - Multiple workflows for different use cases (software-company, feature-development, code-review)
+
+Implementation details:
+- `RoleBasedAgentManager` class for managing role-based sessions
+- 6 default roles: ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer
+- Each role has: responsibilities, inputs, outputs, SOP steps, priority
+- 3 default workflows with phase transitions and role assignments
+- `roleBasedAgents` tool with 18 actions for session, role, workflow, and SOP management
+- State persistence to `~/.paimon/role-based-agents.json`
+
+**Trigger:** When needing coordinated multi-agent execution for complex tasks
+
+**Reuse Rule:** Use `roleBasedAgents({action: 'start', workflowId: 'software-company'})` to start a session. Use `roleBasedAgents({action: 'sop', roleId: 'architect'})` to get SOP steps for a role. Use `roleBasedAgents({action: 'output', sessionId: '...', roleId: '...', artifacts: [...]})` to record outputs.
+
+**Priority:** High
+
+---
 
 ### 2026-04-03: Remote Execution Environment (SWE-ReX Pattern)
 

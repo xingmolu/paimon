@@ -47,6 +47,7 @@ import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { remoteExecutionToolDef } from "./remote-execution-tool.js";
 import { repomapTool } from "./repomap-tool.js";
+import { roleBasedAgentsToolDef } from "./role-based-agents-tool.js";
 import { rouletteTool } from "./roulette-tool.js";
 import { safetyGatesTool } from "./safety-gates-tool.js";
 import { sdkTool } from "./sdk-tool.js";
@@ -56,6 +57,7 @@ import { selfHealingToolWrapper } from "./self-healing-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
+import { taskTrackingTool } from "./task-tracking-tool.js";
 import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
@@ -107,6 +109,8 @@ export const metaTools: AgentTool[] = [
 	contextImportanceTool,
 	frontendDesignTool,
 	remoteExecutionToolDef,
+	roleBasedAgentsToolDef,
+	taskTrackingTool,
 ];
 
 /**
@@ -434,3 +438,32 @@ export type {
 	RemoteExecutionManager,
 	RemoteExecutionToolArgs,
 } from "../remote-execution.js";
+export { roleBasedAgentsToolDef } from "./role-based-agents-tool.js";
+export {
+	getRoleBasedAgentManager,
+	RoleBasedAgentManager,
+} from "../role-based-agents.js";
+export type {
+	AgentRole,
+	SOPPhase,
+	ArtifactType,
+	RoleOutput,
+	Artifact,
+	AgentRoleDefinition,
+	SOPWorkflow,
+	RoleBasedSession,
+	RoleBasedAgentsConfig,
+	RoleBasedAgentsStats,
+} from "../role-based-agents.js";
+export { taskTrackingTool } from "./task-tracking-tool.js";
+export {
+	getTaskTrackingManager,
+	TaskTrackingManager,
+	executeTaskTrackingTool,
+	taskTrackingToolDefinition,
+} from "../task-tracking.js";
+export type {
+	Task,
+	TaskSession,
+	TaskTrackingStats,
+} from "../task-tracking.js";

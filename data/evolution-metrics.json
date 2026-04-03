@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 92.85714285714286,
+    "current": 92.95774647887323,
     "points": [
       {
         "date": "2026-W14",
-        "value": 92.85714285714286,
+        "value": 92.95774647887323,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 92.85714285714286,
+    "weeklyAverage": 92.95774647887323,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.457142857142856,
+    "averageMinutes": 16.507042253521128,
     "byTaskType": {
-      "capability": 16.794117647058822,
+      "capability": 16.840579710144926,
       "reliability": 5
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.457142857142856,
+        "value": 16.507042253521128,
         "trend": "stable"
       }
     ],
@@ -28,9 +28,10 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 44,
+    "totalErrors": 45,
     "byType": {
-      "lint (fixed)": 25,
+      "TS (fixed)": 2,
+      "lint (fixed)": 24,
       "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
       "lint (fixed), TS (fixed)": 1,
@@ -38,7 +39,8 @@
       "TS": 2
     },
     "recentErrors": [
-      "2026-04-03: lint (fixed) in \"Remote Execution Environment (SWE-ReX Pattern) - Sandboxed shell environments for safer evolution with local, Docker, Modal, and remote support, shell session management for interactive tools, remoteExecution tool\"",
+      "2026-04-03: TS (fixed) in \"Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool\"",
+      "2026-04-03: TS (fixed) in \"Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool\"",
       "2026-04-03: lint (fixed) in \"Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool\"",
       "2026-04-03: lint (fixed) in \"Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool\"",
       "2026-04-03: lint (fixed) in \"Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents\"",
@@ -46,13 +48,12 @@
       "2026-04-03: lint (fixed) in \"PR Review Toolkit (Claude Code Pattern) - Comprehensive PR review with 6 specialized agents: comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier with confidence-based scoring\"",
       "2026-04-03: lint (fixed) in \"Learning Output Style Tool Integration (Claude Code Pattern) - Converted learningOutputStyleTool to AgentTool interface, integrated into metaTools, 11 default insights, 8 decision categories, SessionStart hook\"",
       "2026-04-03: lint (fixed), test (fixed) in \"Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration\"",
-      "2026-04-02: lint (fixed) in \"Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns\"",
-      "2026-04-02: lint (fixed), test (fixed) in \"Explanatory Output Style Pattern (Claude Code Pattern) - Educational context injection at session start with 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety\""
+      "2026-04-02: lint (fixed) in \"Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 44,
+        "value": 45,
         "trend": "stable"
       }
     ],
@@ -60,16 +61,16 @@
       "lint (fixed)",
       "lint",
       "lint (fixed), test (fixed)",
-      "ts",
-      "ts (file corruption)"
+      "ts (fixed)",
+      "ts"
     ]
   },
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 68,
-      "successRate": 92.64705882352942,
-      "averageTime": 16.720588235294116,
+      "usageCount": 69,
+      "successRate": 92.7536231884058,
+      "averageTime": 16.768115942028984,
       "trend": "improving"
     },
     {
@@ -141,17 +142,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 34
+        "value": 34.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 68,
-    "highImpactCount": 59,
-    "highImpactPercentage": 86.76470588235294
+    "totalCapabilities": 69,
+    "highImpactCount": 60,
+    "highImpactPercentage": 86.95652173913044
   },
-  "lastUpdated": "2026-04-03T11:01:03.359Z",
-  "iterationsAnalyzed": 70
+  "lastUpdated": "2026-04-03T11:54:38.895Z",
+  "iterationsAnalyzed": 71
 }

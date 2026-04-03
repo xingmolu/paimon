@@ -4,6 +4,74 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 74 — Role-Based Multi-Agent Protocol (MetaGPT Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 47: Role-Based Multi-Agent Protocol
+- Created `src/role-based-agents.ts` module with RoleBasedAgentManager class
+- Created `src/tools/role-based-agents-tool.ts` for roleBasedAgents tool
+- Added 6 default agent roles with SOP-based workflow coordination
+- Updated ROADMAP.md with Phase 47
+
+**Why this matters:**
+- This is a `capability` type task that enables specialized multi-agent coordination
+- Inspired by MetaGPT's "Software Company as Multi-Agent System" concept
+- Key principle: Code = SOP(Team) - Standard Operating Procedures for multi-agent coordination
+- 6 specialized roles: ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer
+- 3 default workflows: software-company (7 phases), feature-development (5 phases), code-review (2 phases)
+- Each role has defined responsibilities, inputs, outputs, and SOP steps
+- Artifact management with confidence scoring
+
+**Technical details:**
+- Created `src/role-based-agents.ts`:
+  - `RoleBasedAgentManager` class for managing role-based sessions
+  - `AgentRole`, `SOPPhase`, `ArtifactType` types
+  - `AgentRoleDefinition`, `SOPWorkflow`, `RoleBasedSession` interfaces
+  - 6 default role definitions with responsibilities, inputs, outputs, and SOP steps
+  - 3 default workflows with phase transitions
+  - State persistence to `~/.paimon/role-based-agents.json`
+- Created `src/tools/role-based-agents-tool.ts`:
+  - `roleBasedAgents` tool with actions: start, advance, output, complete, cancel, session, sessions, roles, role, workflows, workflow, sop, phase-guidance, stats, config, reset, clear, help
+- Modified `src/tools/index.ts`:
+  - Added roleBasedAgentsToolDef to metaTools array
+  - Added re-exports for role-based-agents module
+- Modified `src/prompt.ts`:
+  - Added roleBasedAgents tool documentation in IMPORTANT section
+
+**Agent Roles:**
+| Role | Focus | Priority |
+|------|-------|----------|
+| product-manager | Requirements, user stories, competitive analysis | 100 |
+| architect | Architecture, data structures, APIs | 90 |
+| project-manager | Task breakdown, scheduling | 80 |
+| engineer | Implementation, unit tests | 70 |
+| qa-engineer | Testing, validation | 60 |
+| reviewer | Code review, quality check | 50 |
+
+**Role-Based Agents Tool Usage:**
+```typescript
+// Start a software company workflow
+roleBasedAgents({action: 'start', workflowId: 'software-company'})
+
+// Get all roles
+roleBasedAgents({action: 'roles'})
+
+// Get SOP for a role
+roleBasedAgents({action: 'sop', roleId: 'architect'})
+
+// Advance phase
+roleBasedAgents({action: 'advance', sessionId: 'session-123'})
+
+// Record output
+roleBasedAgents({action: 'output', sessionId: 'session-123', roleId: 'architect', artifacts: [{type: 'api-design', name: 'User API', content: '...', confidence: 90}]})
+```
+
+**Next steps:**
+- Consider integrating with LLM for intelligent role execution
+- Consider adding role-to-role communication protocol
+
+---
+
 ## Day 73 — Remote Execution Environment (SWE-ReX Pattern) (2026-04-03)
 
 **What happened:**
