@@ -21,6 +21,7 @@ import { bugReportTool } from "./bug-report-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
+import { contextImportanceTool } from "./context-importance-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
@@ -101,6 +102,7 @@ export const metaTools: AgentTool[] = [
 	pluginDevTool,
 	agentBuilderTool,
 	selfHealingToolWrapper,
+	contextImportanceTool,
 ];
 
 /**
@@ -380,3 +382,20 @@ export type {
 	SelfHealingConfig,
 	SelfHealingToolArgs,
 } from "../self-healing.js";
+export {
+	getGlobalContextImportanceScorer,
+	initGlobalContextImportanceScorer,
+	ContextImportanceScorer,
+} from "../context-importance.js";
+export type {
+	MessageRole,
+	ImportanceFactor,
+	ContentType,
+	ImportanceLevel,
+	MessageImportanceScore,
+	MessageForAnalysis,
+	TruncationRecommendation,
+	ContextImportanceAnalysis,
+	ContextImportanceConfig,
+	ContextImportanceStats,
+} from "../context-importance.js";

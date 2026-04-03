@@ -368,6 +368,16 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track detections, fixes, failures by category and pattern
 - [x] Detection history — Track recent pattern detections
 
+## Phase 44: Context Importance Scoring (Aider ChatSummary Pattern)
+- [x] ContextImportanceScorer module — Intelligent message importance scoring for smarter truncation
+- [x] contextImportance tool — Tool for importance analysis and truncation recommendations
+- [x] 8 importance factors — Role weight, recency, content type, tool success, error presence, file reference, plan reference, size factor
+- [x] Content type classification — System prompt, skill definition, file content, tool result, error message, plan output, user instruction, assistant response
+- [x] Importance level classification — Critical, high, medium, low, truncatable
+- [x] Truncation recommendations — Prioritized list of messages to truncate with estimated savings
+- [x] Target savings mode — Get recommendations to achieve specific token savings
+- [x] Statistics tracking — Track analyses, recommendations, estimated savings, average importance score
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Context Importance Scoring (Aider ChatSummary Pattern) - Intelligent message importance scoring for smarter truncation, 8 importance factors, content type classification, truncation recommendations with estimated savings, contextImportance tool | ~20m | ✅ | none | No | High | evolve | smarter-context-truncation, reduced-context-overflow |
 | 2026-04-03 | capability | Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | automatic-error-correction, reduced-manual-intervention |
 | 2026-04-03 | capability | Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents | ~20m | ✅ | lint (fixed) | No | High | evolve, research | composable-agents, agent-chains, agent-swarms |
 | 2026-04-03 | capability | Plugin Development Toolkit (Claude Code Pattern) - 8-phase workflow for plugin development with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer) | ~20m | ✅ | lint (fixed) | No | High | evolve, research | plugin-creation-capability, structured-workflow |
@@ -93,14 +94,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 58/66 = 88%
+- First Try Success Rate: 59/67 = 88%
 - Average Time: ~14 minutes
-- Rework Rate: 9/66 = 14%
+- Rework Rate: 9/67 = 13%
 
 ### Capability Metrics
-- Capability Tasks: 65/66 = 98%
-- High Impact Capabilities: 55/65 = 85%
-- Capability Velocity: 65 capabilities in 3 days = 22/day
+- Capability Tasks: 66/67 = 99%
+- High Impact Capabilities: 56/66 = 85%
+- Capability Velocity: 66 capabilities in 3 days = 22/day
 
 ### Error Analysis
 - TypeScript Errors: 3
@@ -110,7 +111,7 @@ Track effectiveness of recent improvements:
 - File Corruption Issues: 1
 
 ### Skill Effectiveness (Top Used Skills)
-1. **evolve** - Used in 29 iterations, 95% success rate when used
+1. **evolve** - Used in 30 iterations, 95% success rate when used
 2. **using-superpowers** - Used in 4 iterations, skill guidance
 3. **systematic-debugging** - Used in 3 iterations, debugging workflow
 4. **writing-plans** - Used in 5 iterations, planning workflow
@@ -118,6 +119,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Context Importance Scoring** - High impact, enables intelligent message importance scoring for smarter truncation decisions with 8 importance factors, content type classification, and truncation recommendations with estimated savings (Aider ChatSummary pattern)
 1. **Self-Healing Code Patterns** - High impact, enables automatic detection and correction of common error patterns with 12 default patterns and 4 fix strategies for TypeScript, lint, test, runtime, import, syntax, and dependency errors (OpenHands/Aider pattern)
 1. **Agent SDK Dev Pattern** - High impact, enables composable agent definitions, agent chaining, multi-agent swarms with parallel/sequential/race/all-to-all strategies, lifecycle hooks (onStart, onComplete, onError, onProgress), and 6 built-in agents (evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence) (Claude Code/OpenHands pattern)
 1. **Plugin Development Toolkit** - High impact, enables creating new capabilities through structured 8-phase workflow with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer) (Claude Code plugin-dev pattern)
@@ -175,6 +177,37 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-03: Context Importance Scoring (Aider ChatSummary Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 44 - Context Importance Scoring for intelligent truncation decisions
+
+**Insight:** A context importance scoring system provides significant benefits for context management:
+1. **8 importance factors** - Role weight, recency, content type, tool success, error presence, file reference, plan reference, size factor
+2. **Content type classification** - System prompt, skill definition, file content, tool result, error message, plan output, user instruction, assistant response
+3. **Importance levels** - Critical, high, medium, low, truncatable - helps prioritize what to keep
+4. **Truncation recommendations** - Prioritized list with estimated token savings
+5. **Target savings mode** - Get recommendations to achieve specific token savings
+6. **Statistics tracking** - Track analyses, recommendations, estimated savings
+
+Implementation details:
+- `ContextImportanceScorer` class for message importance analysis
+- `MessageForAnalysis`, `MessageImportanceScore`, `TruncationRecommendation` interfaces
+- `scoreMessage()` - Score single message with factor breakdown
+- `analyzeConversation()` - Full conversation analysis with truncation recommendations
+- `getRecommendationsForTarget()` - Get recommendations for specific token savings
+- `contextImportance` tool with actions: analyze, score, recommendations, target, stats, config, update-config, reset
+- 24 tests for comprehensive coverage
+
+**Trigger:** When needing to make intelligent truncation decisions for context management
+
+**Reuse Rule:** Use `contextImportance({action: 'analyze', messages: [...]})` to analyze a conversation. Use `contextImportance({action: 'target', messages: [...], targetSavings: 5000})` to get recommendations for specific token savings.
+
+**Priority:** High
+
+---
 
 ### 2026-04-03: Agent SDK Dev Pattern (Claude Code/OpenHands Pattern)
 

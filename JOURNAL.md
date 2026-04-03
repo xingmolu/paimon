@@ -4,6 +4,63 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 71 — Context Importance Scoring (Aider ChatSummary Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 44: Context Importance Scoring
+- Created `src/context-importance.ts` module with ContextImportanceScorer class
+- Created `src/tools/context-importance-tool.ts` for contextImportance tool
+- Added 24 tests for Context Importance functionality
+- Updated ROADMAP.md with Phase 44
+
+**Why this matters:**
+- This is a `capability` type task that enables smarter context truncation
+- Inspired by Aider's ChatSummary pattern which tokenizes messages and intelligently splits them based on importance
+- 8 importance factors: role weight, recency, content type, tool success, error presence, file reference, plan reference, size factor
+- Content type classification: system_prompt, skill_definition, file_content, tool_result, error_message, plan_output, user_instruction, assistant_response
+- Importance levels: critical, high, medium, low, truncatable
+- Truncation recommendations with estimated token savings
+
+**Technical details:**
+- Created `src/context-importance.ts`:
+  - `ContextImportanceScorer` class for managing importance scoring
+  - `MessageRole`, `ImportanceFactor`, `ContentType`, `ImportanceLevel` types
+  - `MessageImportanceScore`, `MessageForAnalysis`, `TruncationRecommendation`, `ContextImportanceAnalysis` interfaces
+  - `scoreMessage()` - Score single message with factor breakdown
+  - `analyzeConversation()` - Full conversation analysis
+  - `getRecommendationsForTarget()` - Get recommendations for target savings
+  - State persistence to scorer instance
+- Created `src/tools/context-importance-tool.ts`:
+  - `contextImportance` tool with actions: analyze, score, recommendations, target, stats, config, update-config, reset
+- Modified `src/tools/index.ts`:
+  - Added contextImportanceTool to metaTools array
+  - Added re-exports for context-importance module
+- Modified `src/prompt.ts`:
+  - Added contextImportance tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 44: Context Importance Scoring
+
+**Context Importance Tool Usage:**
+```typescript
+// Analyze conversation for importance
+contextImportance({action: 'analyze', messages: [{role: 'user', content: '...'}]})
+
+// Score single message
+contextImportance({action: 'score', messages: [...], messageIndex: 0})
+
+// Get truncation recommendations
+contextImportance({action: 'recommendations', messages: [...]})
+
+// Get recommendations for target savings
+contextImportance({action: 'target', messages: [...], targetSavings: 5000})
+```
+
+**Next steps:**
+- Consider integrating with context compaction for automatic importance-based truncation
+- Consider adding more content type classifiers
+
+---
+
 ## Day 70 — Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) (2026-04-03)
 
 **What happened:**
