@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents | ~20m | ✅ | lint (fixed) | No | High | evolve, research | composable-agents, agent-chains, agent-swarms |
 | 2026-04-03 | capability | Plugin Development Toolkit (Claude Code Pattern) - 8-phase workflow for plugin development with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer) | ~20m | ✅ | lint (fixed) | No | High | evolve, research | plugin-creation-capability, structured-workflow |
 | 2026-04-03 | capability | PR Review Toolkit (Claude Code Pattern) - Comprehensive PR review with 6 specialized agents: comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier with confidence-based scoring | ~25m | ✅ | lint (fixed) | No | High | evolve, research | comprehensive-pr-review, specialized-agents |
 | 2026-04-03 | capability | Learning Output Style Tool Integration (Claude Code Pattern) - Converted learningOutputStyleTool to AgentTool interface, integrated into metaTools, 11 default insights, 8 decision categories, SessionStart hook | ~15m | ✅ | lint (fixed) | No | High | evolve | interactive-learning-mode, decision-point-detection |
@@ -91,19 +92,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 56/64 = 88%
+- First Try Success Rate: 57/65 = 88%
 - Average Time: ~14 minutes
-- Rework Rate: 9/64 = 14%
+- Rework Rate: 9/65 = 14%
 
 ### Capability Metrics
-- Capability Tasks: 63/64 = 98%
-- High Impact Capabilities: 53/63 = 84%
-- Capability Velocity: 63 capabilities in 3 days = 21/day
+- Capability Tasks: 64/65 = 98%
+- High Impact Capabilities: 54/64 = 84%
+- Capability Velocity: 64 capabilities in 3 days = 21/day
 
 ### Error Analysis
 - TypeScript Errors: 3
 - Test Failures: 0
-- Lint Issues: 20
+- Lint Issues: 21
 - Runtime Errors: 0
 - File Corruption Issues: 1
 
@@ -116,6 +117,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Agent SDK Dev Pattern** - High impact, enables composable agent definitions, agent chaining, multi-agent swarms with parallel/sequential/race/all-to-all strategies, lifecycle hooks (onStart, onComplete, onError, onProgress), and 6 built-in agents (evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence) (Claude Code/OpenHands pattern)
 1. **Plugin Development Toolkit** - High impact, enables creating new capabilities through structured 8-phase workflow with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer) (Claude Code plugin-dev pattern)
 1. **Learning Output Style Tool Integration** - High impact, enables interactive learning mode for requesting meaningful code contributions at decision points with 11 default insights and 8 decision categories (Claude Code learning-output-style pattern)
 1. **Feature Dev 7-Phase Workflow** - High impact, enables structured feature development with 7 phases (Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary) and agent orchestration (Claude Code feature-dev pattern)
@@ -171,6 +173,37 @@ Track effectiveness of recent improvements:
 ---
 
 ## Learnings
+
+### 2026-04-03: Agent SDK Dev Pattern (Claude Code/OpenHands Pattern)
+
+**Type:** capability
+
+**Context:** Implementing ROADMAP Phase 42 - Agent SDK Dev Pattern for composable agent definitions
+
+**Insight:** A composable agent system provides significant benefits for self-evolution:
+1. **Agent definitions** - Typed arguments and outputs for agents with schema validation
+2. **Agent chaining** - Chain multiple agents sequentially with output mapping between agents
+3. **Agent swarms** - Execute multiple agents with different strategies (parallel, sequential, race, all-to-all)
+4. **Lifecycle hooks** - onStart, onComplete, onError, onProgress for agent execution control
+5. **Agent registry** - Track agent usage, success rates, and performance metrics
+6. **Built-in agents** - 6 pre-configured agents for common evolution tasks
+
+Implementation details:
+- `AgentBuilder` class for managing composable agents
+- `AgentDefinition`, `AgentContext`, `AgentConfig`, `AgentLifecycleHooks` interfaces
+- `AgentChain` for sequential agent execution with output mapping
+- `AgentSwarm` for parallel/coordinated agent execution
+- `execute()`, `executeChain()`, `executeSwarm()` methods
+- `agentBuilder` tool with actions: init, define, execute, chain, execute-chain, swarm, execute-swarm, agents, agent, chains, swarms, registry, stats, history, remove, reset, help
+- Built-in agents: evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence
+
+**Trigger:** When needing to define and compose agents for complex evolution workflows
+
+**Reuse Rule:** Use `agentBuilder({action: 'init'})` to initialize. Use `agentBuilder({action: 'execute', agentId: 'code-explorer', args: {...}})` to execute an agent. Use `agentBuilder({action: 'chain', id: 'my-chain', agents: ['agent1', 'agent2']})` to define a chain. Use `agentBuilder({action: 'swarm', id: 'my-swarm', agents: ['agent1', 'agent2'], strategy: 'parallel'})` to define a swarm.
+
+**Priority:** High
+
+---
 
 ### 2026-04-03: Plugin Development Toolkit (Claude Code Pattern)
 

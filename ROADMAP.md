@@ -347,6 +347,17 @@ Planned improvements for evo.
 - [x] Session persistence — Save session state for resumption
 - [x] Statistics tracking — Track sessions, phases, components, skills, agents
 
+## Phase 42: Agent SDK Dev Pattern (Claude Code/OpenHands Pattern)
+- [x] AgentBuilder module — Composable agent definition system
+- [x] agentBuilder tool — Tool for defining and managing agents
+- [x] Agent definitions — Typed arguments and outputs for agents
+- [x] Agent chaining — Chain multiple agents sequentially with output mapping
+- [x] Agent swarms — Execute multiple agents in parallel, sequential, race, or all-to-all strategies
+- [x] Lifecycle hooks — onStart, onComplete, onError, onProgress hooks for agent execution
+- [x] Agent registry — Track agent usage, success rates, and performance
+- [x] Built-in agents — evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence
+- [x] Statistics tracking — Track executions, success rates, top agents by usage
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -12,6 +12,7 @@
 
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 
+import { agentBuilderTool } from "./agent-builder-tool.js";
 // Import extracted tool modules
 import { assessTool } from "./assess-tool.js";
 import { autoInvokeTool } from "./auto-invoke-tool.js";
@@ -36,8 +37,8 @@ import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
-import { pluginsTool } from "./plugins-tool.js";
 import { pluginDevTool } from "./plugin-dev-tool.js";
+import { pluginsTool } from "./plugins-tool.js";
 import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
@@ -97,6 +98,7 @@ export const metaTools: AgentTool[] = [
 	featureDevTool,
 	prReviewToolkitTool,
 	pluginDevTool,
+	agentBuilderTool,
 ];
 
 /**
@@ -316,9 +318,7 @@ export type {
 	ReviewResult,
 } from "../pr-review-toolkit.js";
 export { pluginDevTool } from "./plugin-dev-tool.js";
-export {
-	PluginDevManager,
-} from "../plugin-dev.js";
+export { PluginDevManager } from "../plugin-dev.js";
 export type {
 	PluginDevPhase,
 	PluginSkillType,
@@ -332,3 +332,30 @@ export type {
 	PluginDevConfig,
 	PluginDevStats,
 } from "../plugin-dev.js";
+export { agentBuilderTool } from "./agent-builder-tool.js";
+export {
+	getAgentBuilder,
+	initAgentBuilder,
+	AgentBuilder,
+	formatAgentResult,
+	formatAgentStats,
+	formatAgentDefinition,
+	formatChainDefinition,
+	formatSwarmDefinition,
+} from "../agent-builder.js";
+export type {
+	AgentDefinition,
+	AgentContext,
+	AgentConfig,
+	AgentLifecycleHooks,
+	AgentProgress,
+	AgentResult,
+	AgentChain,
+	ChainOutputMapping,
+	AgentSwarm,
+	SwarmStrategy,
+	SwarmCoordinator,
+	AgentRegistryRecord,
+	AgentBuilderStats,
+	AgentBuilderConfig,
+} from "../agent-builder.js";

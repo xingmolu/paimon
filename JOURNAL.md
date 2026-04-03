@@ -4,6 +4,84 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 70 — Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 42: Agent SDK Dev Pattern
+- Created `src/agent-builder.ts` module with AgentBuilder class
+- Created `src/tools/agent-builder-tool.ts` for agentBuilder tool
+- Added 6 built-in agents and swarm strategies
+- Updated ROADMAP.md with Phase 42
+
+**Why this matters:**
+- This is a `capability` type task that enables composable agent definitions
+- Agent definitions with typed arguments and outputs
+- Agent chaining for sequential execution with output mapping
+- Agent swarms for parallel/coordinated execution
+- Lifecycle hooks: onStart, onComplete, onError, onProgress
+
+**Technical details:**
+- Created `src/agent-builder.ts`:
+  - `AgentBuilder` class for managing composable agents
+  - `AgentDefinition`, `AgentContext`, `AgentConfig`, `AgentLifecycleHooks` interfaces
+  - `AgentChain` for sequential agent execution
+  - `AgentSwarm` for parallel/coordinated execution
+  - Swarm strategies: parallel, sequential, race, all-to-all
+  - Agent registry for tracking usage and performance
+  - State persistence to `~/.paimon/agent-builder.json`
+- Created `src/tools/agent-builder-tool.ts`:
+  - `agentBuilder` tool with actions: init, define, execute, chain, execute-chain, swarm, execute-swarm, agents, agent, chains, swarms, registry, stats, history, remove, reset, help
+- Modified `src/tools/index.ts`:
+  - Added agentBuilderTool to metaTools array
+  - Added re-exports for agent-builder module
+- Modified `src/prompt.ts`:
+  - Added agentBuilder tool documentation in IMPORTANT section
+
+**Built-in Agents:**
+| Agent | Description | Tags |
+|-------|-------------|------|
+| evolution-agent | Default self-evolution agent | evolution, core |
+| code-explorer | Deep codebase exploration | exploration, analysis |
+| code-reviewer | Code quality review | review, quality |
+| planner | Architecture planning | planning, architecture |
+| error-recovery | Error recovery agent | error, recovery |
+| intelligence | Unified recommendations | intelligence |
+
+**Swarm Strategies:**
+| Strategy | Description |
+|----------|-------------|
+| parallel | Execute all agents simultaneously |
+| sequential | Execute agents one by one |
+| race | Return first successful result |
+| all-to-all | Each agent gets all previous outputs |
+
+**Agent Builder Usage:**
+```typescript
+// Initialize
+agentBuilder({action: 'init'})
+
+// Execute built-in agent
+agentBuilder({action: 'execute', agentId: 'code-explorer', args: {files: ['src/*.ts'], query: 'agent'}})
+
+// Define custom chain
+agentBuilder({action: 'chain', id: 'review-chain', agents: ['code-explorer', 'code-reviewer']})
+
+// Execute chain
+agentBuilder({action: 'execute-chain', chainId: 'review-chain', args: {files: ['src/*.ts']}})
+
+// Define parallel swarm
+agentBuilder({action: 'swarm', id: 'parallel-review', agents: ['code-reviewer', 'planner'], strategy: 'parallel'})
+
+// View stats
+agentBuilder({action: 'stats'})
+```
+
+**Next steps:**
+- Consider adding custom agent definitions with user-provided execute functions
+- Consider integrating with LLM for intelligent agent coordination
+
+---
+
 ## Day 69 — Plugin Development Toolkit (Claude Code Pattern) (2026-04-03)
 
 **What happened:**
