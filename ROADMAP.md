@@ -325,6 +325,17 @@ Planned improvements for evo.
 - [x] Statistics tracking — Track sessions enhanced, decision points requested, contribution rate
 - [x] Tests — Comprehensive tests for Learning Output Style functionality
 
+## Phase 40: PR Review Toolkit (Claude Code Pattern)
+- [x] PRReviewToolkitManager module — Manage comprehensive PR review with 6 specialized agents
+- [x] prReviewToolkit tool — Tool for running and managing PR reviews
+- [x] 6 specialized agents — comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier
+- [x] Confidence-based scoring — Filter false positives with configurable threshold (default 80)
+- [x] Review session management — Start, add findings, complete review sessions
+- [x] Review aspects — comments, tests, errors, types, code, simplify, all
+- [x] Finding tracking — Track findings by agent, aspect, confidence level
+- [x] Statistics tracking — Track reviews, findings, fixed/ignored issues
+- [x] Tests — Comprehensive tests for PR Review Toolkit functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

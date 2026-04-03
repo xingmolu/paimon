@@ -4,6 +4,66 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 68 — PR Review Toolkit (Claude Code Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 40: PR Review Toolkit
+- Created `src/pr-review-toolkit.ts` module with PRReviewToolkitManager class
+- Created `src/tools/pr-review-toolkit-tool.ts` for prReviewToolkit tool
+- Added 6 specialized review agents
+- Updated ROADMAP.md with Phase 40
+
+**Why this matters:**
+- This is a `capability` type task that enables comprehensive PR review
+- 6 specialized agents for different aspects: comments, tests, errors, types, code, simplification
+- Confidence-based scoring to filter false positives (default threshold: 80)
+- Review session management with finding tracking
+- Statistics tracking for reviews, findings, fixed/ignored issues
+
+**Technical details:**
+- Created `src/pr-review-toolkit.ts`:
+  - `PRReviewToolkitManager` class for managing PR review toolkit
+  - `ReviewAgentType`, `ReviewAspect`, `ConfidenceLevel`, `SeverityLevel` types
+  - `PRReviewFinding`, `TypeDesignAnalysis`, `TestCoverageAnalysis`, `CommentAnalysis`, `SilentFailureAnalysis` interfaces
+  - `SpecializedReviewAgent`, `PRReviewToolkitConfig`, `PRReviewToolkitStats`, `ReviewSession`, `ReviewResult` interfaces
+  - 6 default agents: comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier
+  - State persistence to `~/.paimon/pr-review-toolkit.json`
+- Created `src/tools/pr-review-toolkit-tool.ts`:
+  - `prReviewToolkit` tool with actions: review, start, complete, finding, fixed, ignored, status, agents, agent, sessions, session, config, enable, disable, enable-agent, disable-agent, stats, reset, clear, help
+- Modified `src/tools/index.ts`:
+  - Added prReviewToolkitTool to metaTools array
+  - Added re-exports for pr-review-toolkit module
+- Modified `src/prompt.ts`:
+  - Added prReviewToolkit tool documentation in IMPORTANT section
+
+**PR Review Agents:**
+| Agent | Focus | Priority |
+|-------|-------|----------|
+| comment-analyzer | Comment accuracy and maintainability | 60 |
+| pr-test-analyzer | Test coverage quality | 70 |
+| silent-failure-hunter | Error handling and silent failures | 80 |
+| type-design-analyzer | Type design quality and invariants | 75 |
+| code-reviewer | General code review | 90 |
+| code-simplifier | Code simplification opportunities | 50 |
+
+**PR Review Toolkit Usage:**
+```typescript
+// Start a review session
+prReviewToolkit({action: 'review', files: ['src/agent.ts']})
+
+// List all agents
+prReviewToolkit({action: 'agents'})
+
+// Get specific agent details
+prReviewToolkit({action: 'agent', agent: 'code-reviewer'})
+```
+
+**Next steps:**
+- Consider adding actual file analysis implementations for each agent
+- Consider integrating with LLM for intelligent review findings
+
+---
+
 ## Day 67 — Feature Dev 7-Phase Workflow (Claude Code Pattern) (2026-04-03)
 
 **What happened:**

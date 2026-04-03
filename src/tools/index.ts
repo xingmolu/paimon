@@ -37,6 +37,7 @@ import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
 import { pluginsTool } from "./plugins-tool.js";
+import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reflectTool } from "./reflect-tool.js";
@@ -93,6 +94,7 @@ export const metaTools: AgentTool[] = [
 	securityGuidanceTool,
 	learningOutputStyleTool,
 	featureDevTool,
+	prReviewToolkitTool,
 ];
 
 /**
@@ -290,3 +292,24 @@ export type {
 	FeatureDevConfig,
 	FeatureDevStats,
 } from "../feature-dev.js";
+export { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
+export {
+	getPRReviewToolkit,
+	PRReviewToolkitManager,
+} from "../pr-review-toolkit.js";
+export type {
+	ReviewAgentType,
+	ReviewAspect,
+	ConfidenceLevel,
+	SeverityLevel,
+	PRReviewFinding,
+	TypeDesignAnalysis,
+	TestCoverageAnalysis,
+	CommentAnalysis,
+	SilentFailureAnalysis,
+	SpecializedReviewAgent,
+	PRReviewToolkitConfig,
+	PRReviewToolkitStats,
+	ReviewSession,
+	ReviewResult,
+} from "../pr-review-toolkit.js";
