@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.42105263157895,
+    "current": 93.5064935064935,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.42105263157895,
+        "value": 93.5064935064935,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.42105263157895,
+    "weeklyAverage": 93.5064935064935,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.539473684210527,
+    "averageMinutes": 16.584415584415584,
     "byTaskType": {
-      "capability": 16.945205479452056,
+      "capability": 16.986486486486488,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.539473684210527,
+        "value": 16.584415584415584,
         "trend": "stable"
       }
     ],
@@ -28,9 +28,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 49,
+    "totalErrors": 50,
     "byType": {
-      "TS (fixed)": 3,
+      "TS (fixed)": 4,
       "lint (fixed)": 27,
       "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
@@ -39,6 +39,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: TS (fixed) in \"Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool\"",
       "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\"",
       "2026-04-03: lint (fixed) in \"Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool\"",
       "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\"",
@@ -47,13 +48,12 @@
       "2026-04-03: TS (fixed) in \"Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool\"",
       "2026-04-03: lint (fixed) in \"Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool\"",
       "2026-04-03: lint (fixed) in \"Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool\"",
-      "2026-04-03: lint (fixed) in \"Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents\"",
-      "2026-04-03: lint (fixed) in \"Plugin Development Toolkit (Claude Code Pattern) - 8-phase workflow for plugin development with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer)\""
+      "2026-04-03: lint (fixed) in \"Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 49,
+        "value": 50,
         "trend": "stable"
       }
     ],
@@ -68,9 +68,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 74,
-      "successRate": 93.24324324324324,
-      "averageTime": 16.783783783783782,
+      "usageCount": 75,
+      "successRate": 93.33333333333333,
+      "averageTime": 16.826666666666668,
       "trend": "improving"
     },
     {
@@ -142,17 +142,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 36.5
+        "value": 37
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 73,
-    "highImpactCount": 65,
-    "highImpactPercentage": 89.04109589041096
+    "totalCapabilities": 74,
+    "highImpactCount": 66,
+    "highImpactPercentage": 89.1891891891892
   },
-  "lastUpdated": "2026-04-03T15:18:19.334Z",
-  "iterationsAnalyzed": 76
+  "lastUpdated": "2026-04-03T17:00:26.487Z",
+  "iterationsAnalyzed": 77
 }

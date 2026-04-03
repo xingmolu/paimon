@@ -4,6 +4,83 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 80 — Evolution Session Replay (Mini-SWE-Agent Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 53: Evolution Session Replay
+- Created `src/session-replay.ts` module with SessionReplayManager class
+- Created `src/tools/session-replay-tool.ts` for sessionReplay tool
+- Updated ROADMAP.md with Phase 53
+
+**Why this matters:**
+- This is a `capability` type task that enables learning from past evolution sessions
+- Inspired by Mini-SWE-Agent trajectory replay and SWE-agent action replay
+- 4 replay modes: full, steps, actions, learning for different analysis needs
+- 6 pattern types: success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage
+- Session comparison to identify success/failure factors
+- Step-by-step walkthrough with learning points
+
+**Technical details:**
+- Created `src/session-replay.ts`:
+  - `SessionReplayManager` class for managing session replay
+  - `ReplayMode`, `PatternType`, `ExtractedPattern`, `SessionComparison`, `StepWalkthrough` types
+  - `replaySession()` - Replay session in specified mode
+  - `extractPatternsFromSession()` - Extract 6 pattern types from sessions
+  - `compareSessions()` - Compare two sessions to identify factors
+  - `getWalkthrough()` - Step-by-step walkthrough with context
+  - State persistence to `~/.paimon/session-replay.json`
+- Created `src/tools/session-replay-tool.ts`:
+  - `sessionReplay` tool with actions: replay, compare, walkthrough, sessions, patterns, pattern, success-patterns, failure-patterns, stats, config, reset, set-dir, help
+- Modified `src/tools/index.ts`:
+  - Added sessionReplayToolDef to metaTools array
+  - Added re-exports for session-replay module
+- Modified `src/prompt.ts`:
+  - Added sessionReplay tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 53: Evolution Session Replay
+
+**Replay Modes:**
+| Mode | Description |
+|------|-------------|
+| full | Full session replay with all details |
+| steps | Condensed step-by-step replay |
+| actions | Tool actions only |
+| learning | Pattern-focused learning replay |
+
+**Pattern Types:**
+| Type | Description |
+|------|-------------|
+| success-pattern | Patterns from successful sessions |
+| failure-pattern | Patterns from failed sessions |
+| tool-sequence | Tool usage sequences |
+| error-recovery | Error recovery patterns |
+| decision-point | Decision point patterns |
+| skill-usage | Skill usage patterns |
+
+**Session Replay Tool Usage:**
+```typescript
+// List available sessions
+sessionReplay({action: 'sessions'})
+
+// Replay in learning mode
+sessionReplay({action: 'replay', sessionName: 'traj-001.json', mode: 'learning'})
+
+// Compare sessions
+sessionReplay({action: 'compare', sessionA: 'success.json', sessionB: 'failed.json'})
+
+// Step walkthrough
+sessionReplay({action: 'walkthrough', sessionName: 'traj-001.json', stepIndex: 5})
+
+// View patterns
+sessionReplay({action: 'patterns', type: 'success-pattern'})
+```
+
+**Next steps:**
+- Consider integrating with LLM for pattern explanation
+- Consider adding automatic pattern application to new tasks
+
+---
+
 ## Day 79 — Self-Evaluation Stop Hook Integration (Recursive Pattern) (2026-04-03)
 
 **What happened:**

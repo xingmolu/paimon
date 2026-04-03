@@ -455,6 +455,15 @@ Planned improvements for evo.
 - [x] Automatic evaluation — Perform self-evaluation with 8 criteria on session stop
 - [x] Statistics tracking — Track iterations by task type, average duration, top skills
 
+## Phase 53: Evolution Session Replay (Mini-SWE-Agent Pattern)
+- [x] SessionReplayManager module — Replay and analyze past evolution sessions
+- [x] sessionReplay tool — Tool for session replay and pattern extraction
+- [x] 4 replay modes — full, steps, actions, learning for different analysis needs
+- [x] Pattern extraction — Extract 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage)
+- [x] Session comparison — Compare successful vs failed sessions to identify factors
+- [x] Step-by-step walkthrough — Detailed step analysis with learning points
+- [x] Statistics tracking — Track replays, patterns extracted, comparisons, walkthroughs
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -64,6 +64,7 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
+import { sessionReplayToolDef } from "./session-replay-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -117,6 +118,7 @@ export const metaTools: AgentTool[] = [
 	taskTrackingTool,
 	selfEvaluationToolDef,
 	watchToolDef,
+	sessionReplayToolDef,
 ];
 
 /**
@@ -529,3 +531,19 @@ export type {
 	IterationContext,
 	IterationContextConfig,
 } from "../iteration-context.js";
+export { sessionReplayToolDef } from "./session-replay-tool.js";
+export {
+	getSessionReplayManager,
+	initSessionReplayManager,
+	SessionReplayManager,
+} from "../session-replay.js";
+export type {
+	ReplayMode,
+	PatternType,
+	ExtractedPattern,
+	SessionComparison,
+	StepWalkthrough,
+	ReplayStats,
+	SessionReplayConfig,
+	ReplayResult,
+} from "../session-replay.js";
