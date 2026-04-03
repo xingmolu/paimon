@@ -4,6 +4,73 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 78 — Watch Mode/FileWatcher (Aider Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 51: Watch Mode/FileWatcher
+- Created `src/watch.ts` module with FileWatcher class
+- Created `src/tools/watch-tool.ts` for watch tool
+- Updated ROADMAP.md with Phase 51
+
+**Why this matters:**
+- This is a `capability` type task that enables continuous evolution from IDE
+- Inspired by Aider's watch.py FileWatcher class
+- Watch source files for AI comment markers
+- 6 action types: execute (!), question (?), review, explain, refactor, test
+- 40+ file extension support with language-specific comment markers
+- Gitignore pattern integration for ignoring unwanted files
+- Debounced change handling to prevent rapid-fire updates
+
+**Technical details:**
+- Created `src/watch.ts`:
+  - `FileWatcher` class for watching source files for AI comment changes
+  - `WatchActionType`, `AIComment`, `FileChange`, `WatchConfig`, `WatchStats` types
+  - AI comment detection with regex pattern for multiple comment styles
+  - Comment markers by file extension (Python: #, TypeScript: //, etc.)
+  - Action type classification from comment content
+  - Gitignore pattern integration
+  - State persistence and statistics tracking
+- Created `src/tools/watch-tool.ts`:
+  - `watch` tool with actions: start, stop, status, files, comments, pending, stats, config, clear, reset
+- Modified `src/tools/index.ts`:
+  - Added watchToolDef to metaTools array
+  - Added re-exports for watch module
+- Modified `src/prompt.ts`:
+  - Added watch tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 51: Watch Mode/FileWatcher
+
+**AI Comment Markers:**
+| Marker | Action Type | Example |
+|--------|-------------|---------|
+| ai! or ai!! | execute | `# ai! fix this bug` |
+| ai? or ai?? | question | `// ai? explain this` |
+| review keyword | review | `# ai review this code` |
+| explain keyword | explain | `// ai explain function` |
+| refactor keyword | refactor | `# ai refactor module` |
+| test keyword | test | `// ai add tests` |
+
+**Watch Tool Usage:**
+```typescript
+// Start watching a directory
+watch({action: 'start', root: '/path/to/project'})
+
+// Check status
+watch({action: 'status'})
+
+// Get AI comments from file
+watch({action: 'comments', path: 'src/agent.ts'})
+
+// View statistics
+watch({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with IDE plugins for seamless workflow
+- Consider adding file system event filtering for better performance
+
+---
+
 ## Day 77 — Self-Evaluation Tool (Recursive Pattern) (2026-04-03)
 
 **What happened:**

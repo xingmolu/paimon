@@ -436,6 +436,16 @@ Planned improvements for evo.
 - [x] Strength/weakness tracking — Track current strengths and weaknesses from recent evaluations
 - [x] Statistics tracking — Track evaluations, scores, trends, and capability gaps
 
+## Phase 51: Watch Mode/FileWatcher (Aider Pattern)
+- [x] FileWatcher module — Watch source files for changes and AI comment markers
+- [x] watch tool — Tool for managing file watching sessions
+- [x] AI comment detection — Detect markers like # ai!, // ai?, /* ai */
+- [x] Multiple comment styles — Support for #, //, /* */, --, ;; markers across 40+ file extensions
+- [x] Action type classification — execute (!), question (?), review, explain, refactor, test
+- [x] Gitignore integration — Respect .gitignore patterns for ignored files
+- [x] Debounced change handling — Prevent rapid-fire updates with configurable debounce interval
+- [x] Statistics tracking — Track files watched, changes detected, comments processed, actions triggered
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

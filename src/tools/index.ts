@@ -64,6 +64,7 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
+import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
 export const metaTools: AgentTool[] = [
@@ -115,6 +116,7 @@ export const metaTools: AgentTool[] = [
 	syntheticTaskGenToolDef,
 	taskTrackingTool,
 	selfEvaluationToolDef,
+	watchToolDef,
 ];
 
 /**
@@ -503,3 +505,18 @@ export type {
 	SelfEvaluationConfig,
 	SelfEvaluationStats,
 } from "../self-evaluation.js";
+export { watchToolDef } from "./watch-tool.js";
+export {
+	FileWatcher,
+	getFileWatcher,
+	initFileWatcher,
+	stopFileWatcher,
+	getWatchStats,
+} from "../watch.js";
+export type {
+	WatchActionType,
+	AIComment,
+	FileChange,
+	WatchConfig,
+	WatchStats,
+} from "../watch.js";
