@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions | ~20m | ✅ | TS (fixed), lint (fixed) | No | High | evolve | proactive-gap-identification, capability-coverage-tracking, roadmap-suggestions |
 | 2026-04-03 | capability | Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions | ~20m | ✅ | TS (fixed), lint (fixed) | No | High | evolve | catch-breakages-early, capability-health-tracking, regression-detection |
 | 2026-04-03 | capability | Cross-Session Learning Transfer (RAG Enhancement Pattern) - LearningTransferManager module for automatically transferring learnings between related tasks, task similarity detection with keyword/skill/category matching, session learning extraction from MEMORY.md scorecard, transfer recommendations with risk factors, proactive context injection, learningTransfer tool | ~25m | ✅ | lint (fixed), TS (fixed) | No | High | evolve | cross-session-learning, pattern-transfer, proactive-context-injection, reduced-rework |
 | 2026-04-03 | capability | Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool | ~20m | ✅ | TS (fixed) | No | High | evolve | automatic-pattern-application, proactive-pattern-suggestion, time-saved-estimation |
@@ -106,14 +107,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 73/81 = 90%
+- First Try Success Rate: 74/82 = 90%
 - Average Time: ~14 minutes
-- Rework Rate: 9/81 = 11%
+- Rework Rate: 9/82 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 79/81 = 98%
-- High Impact Capabilities: 69/79 = 87%
-- Capability Velocity: 79 capabilities in 3 days = 26/day
+- Capability Tasks: 80/82 = 98%
+- High Impact Capabilities: 70/80 = 88%
+- Capability Velocity: 80 capabilities in 3 days = 27/day
 
 ### Error Analysis
 - TypeScript Errors: 5
@@ -131,6 +132,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Capability Gap Detection** - High impact, enables proactive identification of missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps with 5 gap types, coverage tracking, and ROADMAP suggestions
 1. **Evolution Cost Prediction** - High impact, enables smarter task selection by predicting effort/complexity before starting implementation with complexity scoring (simple, moderate, complex, very-complex), time estimation, risk factor identification with mitigations, confidence scoring, and learning from outcomes
 1. **Cross-Session Learning Transfer** - High impact, enables automatic learning transfer between related tasks with similarity detection, pattern transfer from successful sessions, warnings from failed sessions, proactive context injection (RAG Enhancement pattern)
 1. **Pattern Auto-Application** - High impact, enables automatic pattern matching and application to new tasks with similarity scoring, 6 pattern types, auto-apply recommendations, time saved estimation (SWE-agent pattern)

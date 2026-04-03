@@ -4,6 +4,79 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 84 — Capability Gap Detection (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 58: Capability Gap Detection
+- Created `src/capability-gap.ts` module with CapabilityGapDetector class
+- Created `src/tools/capability-gap-tool.ts` for capabilityGap tool
+- Updated ROADMAP.md with Phase 58
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive identification of missing capabilities
+- Automatically detects gaps by analyzing ROADMAP.md, tool coverage, competitor patterns, and integrations
+- 5 gap types: missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap
+- Tracks capability coverage percentage by category
+- Generates ROADMAP suggestions from detected gaps
+- Reduces rework by identifying gaps before they cause issues
+
+**Technical details:**
+- Created `src/capability-gap.ts`:
+  - `CapabilityGapDetector` class for managing gap detection
+  - `CapabilityGap`, `CapabilityCoverage`, `GapDetectionStats`, `GapDetectionConfig`, `CompetitorPattern` types
+  - `detectRoadmapGaps()` - Detect incomplete ROADMAP items
+  - `detectToolGaps()` - Compare documented tools vs implemented tools
+  - `detectCompetitorGaps()` - Identify competitor patterns not implemented
+  - `detectIntegrationGaps()` - Detect missing integrations between modules
+  - `detectAllGaps()` - Run all detection methods
+  - `getCapabilityCoverage()` - Get coverage summary
+  - `suggestRoadmapItems()` - Generate ROADMAP suggestions
+  - State persistence to `~/.paimon/capability-gaps.json`
+  - 28 known competitor patterns from Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin
+- Created `src/tools/capability-gap-tool.ts`:
+  - `capabilityGap` tool with actions: detect, detect-all, roadmap, tools, competitor, integration, coverage, gaps, gap, by-type, by-severity, by-category, resolve, stats, suggest, config, enable, disable, clear, reset, help
+- Modified `src/tools/index.ts`:
+  - Added capabilityGapToolDef to metaTools array
+  - Added re-exports for capability-gap module
+- Modified `src/prompt.ts`:
+  - Added capabilityGap tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 58: Capability Gap Detection
+
+**Competitor Patterns Tracked:**
+| Source | Implemented | Partial | Missing |
+|--------|-------------|---------|---------|
+| Claude Code | 12 | 0 | 0 |
+| OpenHands | 3 | 0 | 0 |
+| Mini-SWE-Agent | 4 | 0 | 0 |
+| SWE-agent | 3 | 0 | 0 |
+| Cursor | 0 | 1 | 2 |
+| Devin | 0 | 1 | 1 |
+
+**Capability Gap Tool Usage:**
+```typescript
+// Detect all gaps
+capabilityGap({action: 'detect'})
+
+// Check tool coverage
+capabilityGap({action: 'tools'})
+
+// Get coverage summary
+capabilityGap({action: 'coverage'})
+
+// Get ROADMAP suggestions
+capabilityGap({action: 'suggest'})
+
+// View statistics
+capabilityGap({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks for proactive gap detection
+- Consider adding automatic ROADMAP generation from gaps
+
+---
+
 ## Day 83 — Evolution Regression Testing (2026-04-03)
 
 **What happened:**

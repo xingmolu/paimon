@@ -504,6 +504,17 @@ Planned improvements for evo.
 - [x] Change summary — Generate summary of test changes with recommendations
 - [x] Statistics tracking — Track runs, snapshots, capability health distribution, common failures
 
+## Phase 58: Capability Gap Detection
+- [x] CapabilityGapDetector module — Automatically identify missing capabilities
+- [x] capabilityGap tool — Tool for gap detection and analysis
+- [x] ROADMAP analysis — Detect incomplete ROADMAP items and phase gaps
+- [x] Tool coverage analysis — Compare documented tools vs implemented tools
+- [x] Competitor pattern detection — Identify competitor patterns not yet implemented
+- [x] Integration gap detection — Detect missing integrations between modules
+- [x] Capability coverage — Track coverage percentage by category
+- [x] ROADMAP suggestions — Generate ROADMAP items from detected gaps
+- [x] Statistics tracking — Track detections, resolutions, top gap categories
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

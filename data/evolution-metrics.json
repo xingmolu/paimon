@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.75,
+    "current": 93.82716049382715,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.75,
+        "value": 93.82716049382715,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.75,
+    "weeklyAverage": 93.82716049382715,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.775,
+    "averageMinutes": 16.814814814814813,
     "byTaskType": {
-      "capability": 17.16883116883117,
+      "capability": 17.205128205128204,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.775,
+        "value": 16.814814814814813,
         "trend": "stable"
       }
     ],
@@ -28,9 +28,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 53,
+    "totalErrors": 54,
     "byType": {
-      "TS (fixed), lint (fixed)": 1,
+      "TS (fixed), lint (fixed)": 2,
       "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
       "lint (fixed)": 27,
@@ -40,6 +40,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: TS (fixed), lint (fixed) in \"Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions\"",
       "2026-04-03: lint (fixed), TS (fixed) in \"Cross-Session Learning Transfer (RAG Enhancement Pattern) - LearningTransferManager module for automatically transferring learnings between related tasks, task similarity detection with keyword/skill/category matching, session learning extraction from MEMORY.md scorecard, transfer recommendations with risk factors, proactive context injection, learningTransfer tool\"",
       "2026-04-03: TS (fixed) in \"Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool\"",
@@ -48,13 +49,12 @@
       "2026-04-03: lint (fixed) in \"Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool\"",
       "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\"",
       "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\"",
-      "2026-04-03: TS (fixed) in \"Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool\"",
-      "2026-04-03: TS (fixed) in \"Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool\""
+      "2026-04-03: TS (fixed) in \"Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 53,
+        "value": 54,
         "trend": "stable"
       }
     ],
@@ -63,15 +63,15 @@
       "lint",
       "lint (fixed), test (fixed)",
       "ts (fixed)",
-      "lint (fixed), ts (fixed)"
+      "ts (fixed), lint (fixed)"
     ]
   },
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 78,
-      "successRate": 93.58974358974359,
-      "averageTime": 17.012820512820515,
+      "usageCount": 79,
+      "successRate": 93.67088607594937,
+      "averageTime": 17.050632911392405,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 38.5
+        "value": 39
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 77,
-    "highImpactCount": 69,
-    "highImpactPercentage": 89.6103896103896
+    "totalCapabilities": 78,
+    "highImpactCount": 70,
+    "highImpactPercentage": 89.74358974358975
   },
-  "lastUpdated": "2026-04-03T19:36:05.392Z",
-  "iterationsAnalyzed": 80
+  "lastUpdated": "2026-04-03T19:49:58.700Z",
+  "iterationsAnalyzed": 81
 }

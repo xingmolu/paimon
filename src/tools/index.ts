@@ -18,6 +18,7 @@ import { assessTool } from "./assess-tool.js";
 import { autoInvokeTool } from "./auto-invoke-tool.js";
 import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
+import { capabilityGapToolDef } from "./capability-gap-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
@@ -127,6 +128,7 @@ export const metaTools: AgentTool[] = [
 	learningTransferToolDef,
 	evolutionCostToolDef,
 	regressionTestingToolDef,
+	capabilityGapToolDef,
 ];
 
 /**
@@ -617,3 +619,15 @@ export type {
 	RegressionTestingStats,
 	RegressionTestingConfig,
 } from "../regression-testing.js";
+export {
+	getCapabilityGapDetector,
+	initCapabilityGapDetector,
+	CapabilityGapDetector,
+} from "../capability-gap.js";
+export type {
+	CapabilityGap,
+	CapabilityCoverage,
+	GapDetectionStats,
+	GapDetectionConfig,
+	CompetitorPattern,
+} from "../capability-gap.js";
