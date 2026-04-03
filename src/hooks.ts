@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
+import { getLearningManager } from "./learning-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 import { getSecurityGuidanceManager } from "./security-guidance.js";
@@ -113,6 +114,46 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 				return {
 					allow: true,
 					context: educationalContext,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-learning-output-style",
+		type: "SessionStart",
+		name: "Inject Learning Mode Context",
+		description:
+			"Injects interactive learning mode context for requesting meaningful code contributions at decision points (Claude Code learning-output-style pattern)",
+		enabled: true,
+		priority: 105, // After explanatory output style (110), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const manager = getLearningManager();
+			const config = manager.getConfig();
+
+			if (!config.enabled || !config.interactive) {
+				return { allow: true };
+			}
+
+			// Generate learning context for session mode
+			const sessionMode =
+				context.session?.mode === "evolve"
+					? "evolve"
+					: context.session?.mode === "chat"
+						? "chat"
+						: "feature";
+
+			const learningContext = manager.generateEducationalContext({
+				mode: sessionMode,
+				filesChanged: [],
+				skillsUsed: [],
+			});
+
+			if (learningContext) {
+				return {
+					allow: true,
+					context: learningContext,
 				};
 			}
 

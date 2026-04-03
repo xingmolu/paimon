@@ -303,6 +303,28 @@ Planned improvements for evo.
 - [x] Custom pattern support — Add custom security patterns
 - [x] Statistics tracking — Track scans, warnings, blocks, top patterns
 
+## Phase 38: Feature Dev 7-Phase Workflow (Claude Code Pattern)
+- [x] FeatureDevManager module — Manage 7-phase feature development workflow
+- [x] featureDev tool — Tool for managing feature development sessions
+- [x] 7-phase workflow — Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary
+- [x] Agent task management — Launch and track code-explorer, code-architect, code-reviewer agents
+- [x] Clarifying questions — Generate and track answers for requirement clarification
+- [x] Architecture approaches — Generate and select from multiple implementation approaches
+- [x] Review findings — Track and address code quality findings
+- [x] Session persistence — Save session state for resumption
+- [x] Statistics tracking — Track sessions, phases, agents, questions, reviews
+
+## Phase 39: Learning Output Style Pattern (Claude Code Pattern)
+- [x] LearningOutputStyleManager module — Interactive learning mode for requesting meaningful code contributions at decision points
+- [x] learningOutputStyle tool — Tool for detecting decision points and managing learning insights
+- [x] Decision point detection — Identify business logic, error handling, algorithm, architecture, security decision points
+- [x] Trade-off analysis — Show trade-offs for each decision category
+- [x] Auto-implementation detection — Distinguish auto-implementable code from code requiring user contribution
+- [x] SessionStart hook integration — Inject learning context automatically at session start
+- [x] Educational insights — 11 default insights about architecture, patterns, evolution, tools, skills, memory, safety
+- [x] Statistics tracking — Track sessions enhanced, decision points requested, contribution rate
+- [x] Tests — Comprehensive tests for Learning Output Style functionality
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

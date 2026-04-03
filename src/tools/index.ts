@@ -22,6 +22,7 @@ import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
+import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
 import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
@@ -29,6 +30,7 @@ import { httpTool } from "./http-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
+import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
@@ -89,6 +91,8 @@ export const metaTools: AgentTool[] = [
 	autoInvokeTool,
 	explanatoryOutputStyleTool,
 	securityGuidanceTool,
+	learningOutputStyleTool,
+	featureDevTool,
 ];
 
 /**
@@ -256,3 +260,33 @@ export type {
 	SecurityGuidanceStats,
 	SecurityGuidanceConfig,
 } from "../security-guidance.js";
+export {
+	getLearningManager,
+	LearningOutputStyleManager,
+} from "../learning-output-style.js";
+export type {
+	DecisionPointCategory,
+	DecisionPoint,
+	LearningInsight,
+	LearningOutputStyleConfig,
+	LearningOutputStyleStats,
+	SessionContext,
+} from "../learning-output-style.js";
+export { learningOutputStyleTool } from "./learning-output-style-tool.js";
+export { featureDevTool } from "./feature-dev-tool.js";
+export {
+	getFeatureDevManager,
+	FeatureDevManager,
+} from "../feature-dev.js";
+export type {
+	FeaturePhase,
+	AgentType,
+	AgentFocus,
+	AgentTask,
+	ClarifyingQuestion,
+	ArchitectureApproach,
+	ReviewFinding,
+	FeatureDevState,
+	FeatureDevConfig,
+	FeatureDevStats,
+} from "../feature-dev.js";

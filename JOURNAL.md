@@ -4,6 +4,66 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 67 — Feature Dev 7-Phase Workflow (Claude Code Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 38: Feature Dev 7-Phase Workflow
+- Created `src/feature-dev.ts` module with FeatureDevManager class
+- Created `src/tools/feature-dev-tool.ts` for featureDev tool
+- Added 39 tests for Feature Dev functionality
+- Updated ROADMAP.md with Phase 38
+
+**Why this matters:**
+- This is a `capability` type task that enables structured feature development
+- 7-phase workflow: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary
+- Orchestrates existing skills (explore-code, plan-architecture, review-changes) in structured approach
+- Agent task management for code-explorer, code-architect, code-reviewer agents
+- Architecture approach selection with trade-off analysis
+
+**Technical details:**
+- Created `src/feature-dev.ts`:
+  - `FeatureDevManager` class for managing the 7-phase workflow
+  - `FeaturePhase`, `AgentType`, `AgentFocus`, `AgentTask` types
+  - `ClarifyingQuestion`, `ArchitectureApproach`, `ReviewFinding`, `FeatureDevState` interfaces
+  - Phase-specific methods: `generateDiscoveryGuidance()`, `launchExplorationAgents()`, `generateClarifyingQuestions()`, `generateArchitectureApproaches()`, `generateReviewAgents()`, `generateSummary()`
+  - Session persistence to `~/.paimon/feature-dev.json`
+- Created `src/tools/feature-dev-tool.ts`:
+  - `featureDev` tool with actions: start, phase, progress, discovery, exploration, questions, answer, architecture, select, approve, implementation, review, finding, summary, status, sessions, stats, config, reset, cancel, help
+- Modified `src/tools/index.ts`:
+  - Added featureDevTool to metaTools array
+  - Added re-exports for feature-dev module
+- Modified `src/prompt.ts`:
+  - Added featureDev tool documentation in IMPORTANT section
+
+**Feature Dev Workflow:**
+| Phase | Description | Key Actions |
+|-------|-------------|--------------|
+| 1. Discovery | Understand what to build | Clarify request, identify constraints |
+| 2. Exploration | Explore codebase | Launch code-explorer agents |
+| 3. Questions | Fill gaps | Generate clarifying questions |
+| 4. Architecture | Design approaches | Design minimal/clean/pragmatic |
+| 5. Implementation | Build feature | Implement following chosen approach |
+| 6. Review | Quality check | Launch code-reviewer agents |
+| 7. Summary | Document | Summarize what was built |
+
+**Feature Dev Tool Usage:**
+```typescript
+// Start a feature development session
+featureDev({action: 'start', featureRequest: 'Add OAuth authentication'})
+
+// Progress through phases
+featureDev({action: 'progress'})
+
+// Check status
+featureDev({action: 'status'})
+```
+
+**Next steps:**
+- Consider integrating with existing skills for automatic agent execution
+- Consider adding auto-phase progression option
+
+---
+
 ## Day 66 — Security Guidance PreToolUse Hook (Claude Code Pattern) (2026-04-02)
 
 **What happened:**
