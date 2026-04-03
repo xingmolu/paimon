@@ -49,6 +49,7 @@ import { safetyGatesTool } from "./safety-gates-tool.js";
 import { sdkTool } from "./sdk-tool.js";
 import { searchTools } from "./search-tools.js";
 import { securityGuidanceTool } from "./security-guidance-tool.js";
+import { selfHealingToolWrapper } from "./self-healing-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
@@ -99,6 +100,7 @@ export const metaTools: AgentTool[] = [
 	prReviewToolkitTool,
 	pluginDevTool,
 	agentBuilderTool,
+	selfHealingToolWrapper,
 ];
 
 /**
@@ -359,3 +361,22 @@ export type {
 	AgentBuilderStats,
 	AgentBuilderConfig,
 } from "../agent-builder.js";
+export {
+	getSelfHealingManager,
+	initSelfHealingManager,
+	SelfHealingManager,
+	selfHealingTool,
+} from "../self-healing.js";
+export type {
+	SelfHealingCategory,
+	SelfHealingSeverity,
+	SelfHealingResult,
+	SelfHealingPattern,
+	SelfHealingFixStrategy,
+	SelfHealingContext,
+	SelfHealingFixResult,
+	SelfHealingStats,
+	SelfHealingDetection,
+	SelfHealingConfig,
+	SelfHealingToolArgs,
+} from "../self-healing.js";

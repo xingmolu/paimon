@@ -358,6 +358,16 @@ Planned improvements for evo.
 - [x] Built-in agents — evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence
 - [x] Statistics tracking — Track executions, success rates, top agents by usage
 
+## Phase 43: Self-Healing Code Patterns (OpenHands/Aider Pattern)
+- [x] SelfHealingManager module — Automatic detection and correction of common error patterns
+- [x] selfHealing tool — Tool for pattern detection, auto-fixing, and statistics
+- [x] 12 default patterns — TypeScript imports, lint rules (unused var, missing semicolon, prefer const), test errors (missing await, timeout), runtime errors, dependency issues
+- [x] 4 default fix strategies — Unused variable removal, prefer const, missing semicolon, missing await
+- [x] Confidence scoring — Pattern-specific confidence calculation based on context
+- [x] Auto-fix recommendations — Intelligent recommendations based on severity and confidence
+- [x] Statistics tracking — Track detections, fixes, failures by category and pattern
+- [x] Detection history — Track recent pattern detections
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
