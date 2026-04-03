@@ -190,8 +190,8 @@ export class SessionReplayManager {
 			confidenceThreshold: config.confidenceThreshold || 60,
 			savePatterns: config.savePatterns ?? true,
 		};
-		this.dataDir = this.config.dataDir!;
-		this.trajectoriesDir = this.config.trajectoriesDir!;
+		this.dataDir = this.config.dataDir as string;
+		this.trajectoriesDir = this.config.trajectoriesDir as string;
 		this.extractedPatterns = new Map();
 		this.stats = this.initStats();
 		this.loadState();
@@ -467,8 +467,8 @@ export class SessionReplayManager {
 		lines.push(`Total tool actions: ${toolSteps.length}\n`);
 
 		for (const step of toolSteps) {
-			lines.push(`**${step.toolCall!.name}**`);
-			lines.push(`Parameters: ${JSON.stringify(step.toolCall!.parameters)}`);
+			lines.push(`**${step.toolCall?.name}**`);
+			lines.push(`Parameters: ${JSON.stringify(step.toolCall?.parameters)}`);
 			if (step.isError) {
 				lines.push("⚠️ Error");
 			}
@@ -543,7 +543,7 @@ export class SessionReplayManager {
 		sessionName: string,
 	): ExtractedPattern[] {
 		const patterns: ExtractedPattern[] = [];
-		const maxPatterns = this.config.maxPatternsPerSession!;
+		const maxPatterns = this.config.maxPatternsPerSession as number;
 
 		// Extract tool sequence patterns
 		const toolSequencePattern = this.extractToolSequencePattern(trajectory, sessionName);
@@ -581,7 +581,7 @@ export class SessionReplayManager {
 		const toolSteps = trajectory.steps.filter((s) => s.toolCall);
 		if (toolSteps.length < 3) return null;
 
-		const sequence = toolSteps.slice(0, 5).map((s) => s.toolCall!.name);
+		const sequence = toolSteps.slice(0, 5).map((s) => s.toolCall?.name);
 		const id = `tool-seq-${sessionName}-${Date.now()}`;
 
 		return {
@@ -609,7 +609,7 @@ export class SessionReplayManager {
 		for (let i = 0; i < errorSteps.length; i++) {
 			const errorStep = errorSteps[i];
 			const nextSteps = trajectory.steps.slice(errorStep.step, errorStep.step + 3);
-			const recoveryTools = nextSteps.filter((s) => s.toolCall).map((s) => s.toolCall!.name);
+			const recoveryTools = nextSteps.filter((s) => s.toolCall).map((s) => s.toolCall?.name);
 
 			if (recoveryTools.length > 0) {
 				const id = `error-recovery-${sessionName}-${i}`;
@@ -794,8 +794,14 @@ export class SessionReplayManager {
 		}
 
 		// Calculate similarity
-		const tools1 = traj1.steps.filter((s) => s.toolCall).map((s) => s.toolCall!.name);
-		const tools2 = traj2.steps.filter((s) => s.toolCall).map((s) => s.toolCall!.name);
+		const tools1 = traj1.steps
+			.filter((s) => s.toolCall)
+			.map((s) => s.toolCall?.name)
+			.filter((n): n is string => n !== undefined);
+		const tools2 = traj2.steps
+			.filter((s) => s.toolCall)
+			.map((s) => s.toolCall?.name)
+			.filter((n): n is string => n !== undefined);
 		const commonTools = tools1.filter((t) => tools2.includes(t));
 		const similarityScore = commonTools.length / Math.max(tools1.length, tools2.length);
 
@@ -881,11 +887,13 @@ export class SessionReplayManager {
 		const previousActions = trajectory.steps
 			.slice(0, stepIndex)
 			.filter((s) => s.toolCall)
-			.map((s) => s.toolCall!.name);
+			.map((s) => s.toolCall?.name)
+			.filter((n): n is string => n !== undefined);
 		const nextActions = trajectory.steps
 			.slice(stepIndex + 1)
 			.filter((s) => s.toolCall)
-			.map((s) => s.toolCall!.name)
+			.map((s) => s.toolCall?.name)
+			.filter((n): n is string => n !== undefined)
 			.slice(0, 5);
 
 		const patterns = this.extractPatternsFromSession(trajectory, sessionName);

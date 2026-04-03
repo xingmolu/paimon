@@ -40,38 +40,26 @@ patternAutoApply({action: 'stats'})
 patternAutoApply({action: 'patterns', type: 'success-pattern'})`,
 	parameters: Type.Object({
 		action: Type.String({
-			description: "Action to perform: match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help",
+			description:
+				"Action to perform: match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help",
 		}),
 		taskType: Type.Optional(
 			Type.String({ description: "Task type for matching: capability, reliability, feature" }),
 		),
-		taskDescription: Type.Optional(
-			Type.String({ description: "Task description for matching" }),
-		),
-		files: Type.Optional(
-			Type.Array(Type.String(), { description: "Files being worked on" }),
-		),
-		toolsUsed: Type.Optional(
-			Type.Array(Type.String(), { description: "Tools used so far" }),
-		),
-		errors: Type.Optional(
-			Type.Array(Type.String(), { description: "Errors encountered" }),
-		),
-		keywords: Type.Optional(
-			Type.Array(Type.String(), { description: "Keywords from task" }),
-		),
-		patternId: Type.Optional(
-			Type.String({ description: "Pattern ID for apply/pattern actions" }),
-		),
+		taskDescription: Type.Optional(Type.String({ description: "Task description for matching" })),
+		files: Type.Optional(Type.Array(Type.String(), { description: "Files being worked on" })),
+		toolsUsed: Type.Optional(Type.Array(Type.String(), { description: "Tools used so far" })),
+		errors: Type.Optional(Type.Array(Type.String(), { description: "Errors encountered" })),
+		keywords: Type.Optional(Type.Array(Type.String(), { description: "Keywords from task" })),
+		patternId: Type.Optional(Type.String({ description: "Pattern ID for apply/pattern actions" })),
 		type: Type.Optional(
-			Type.String({ description: "Pattern type filter: success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage" }),
+			Type.String({
+				description:
+					"Pattern type filter: success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage",
+			}),
 		),
-		config: Type.Optional(
-			Type.Object({}, { description: "Configuration updates" }),
-		),
-		limit: Type.Optional(
-			Type.Number({ description: "Limit for history" }),
-		),
+		config: Type.Optional(Type.Object({}, { description: "Configuration updates" })),
+		limit: Type.Optional(Type.Number({ description: "Limit for history" })),
 	}),
 	execute: async (
 		_toolCallId: string,
@@ -143,21 +131,21 @@ function executePatternAutoApplyTool(args: {
 			const result = applier.applyPattern(args.patternId, context);
 			const lines = [
 				"## Pattern Application Result\n",
-				"**Pattern:** " + result.patternId,
-				"**Success:** " + (result.success ? "✅" : "❌"),
-				"**Confidence:** " + result.confidence + "%",
-				"**Time Saved:** ~" + result.timeSaved + " minutes\n",
+				`**Pattern:** ${result.patternId}`,
+				`**Success:** ${result.success ? "✅" : "❌"}`,
+				`**Confidence:** ${result.confidence}%`,
+				`**Time Saved:** ~${result.timeSaved} minutes\n`,
 			];
 			if (result.actionsTaken.length > 0) {
 				lines.push("**Actions Taken:**");
 				for (const action of result.actionsTaken) {
-					lines.push("- " + action);
+					lines.push(`- ${action}`);
 				}
 			}
 			if (result.errors.length > 0) {
 				lines.push("\n**Errors:**");
 				for (const error of result.errors) {
-					lines.push("- " + error);
+					lines.push(`- ${error}`);
 				}
 			}
 			return lines.join("\n");
@@ -169,19 +157,19 @@ function executePatternAutoApplyTool(args: {
 			if (results.length === 0) {
 				return "No patterns auto-applied. Either no matches found or confidence threshold not met.";
 			}
-			const lines = ["## Auto-Applied Patterns (" + results.length + ")\n"];
+			const lines = [`## Auto-Applied Patterns (${results.length})\n`];
 			let totalTimeSaved = 0;
 			for (const result of results) {
-				lines.push("### " + result.patternId);
-				lines.push("**Success:** " + (result.success ? "✅" : "❌"));
-				lines.push("**Time Saved:** ~" + result.timeSaved + " minutes");
+				lines.push(`### ${result.patternId}`);
+				lines.push(`**Success:** ${result.success ? "✅" : "❌"}`);
+				lines.push(`**Time Saved:** ~${result.timeSaved} minutes`);
 				totalTimeSaved += result.timeSaved;
 				if (result.actionsTaken.length > 0) {
-					lines.push("**Actions:** " + result.actionsTaken.join(", "));
+					lines.push(`**Actions:** ${result.actionsTaken.join(", ")}`);
 				}
 				lines.push("");
 			}
-			lines.push("**Total Time Saved:** ~" + totalTimeSaved + " minutes");
+			lines.push(`**Total Time Saved:** ~${totalTimeSaved} minutes`);
 			return lines.join("\n");
 		}
 
@@ -191,14 +179,16 @@ function executePatternAutoApplyTool(args: {
 				: applier.getAvailablePatterns();
 			if (patterns.length === 0) {
 				return args.type
-					? "No patterns found for type: " + args.type
+					? `No patterns found for type: ${args.type}`
 					: "No patterns available. Run session replay to extract patterns.";
 			}
-			const lines = ["## Available Patterns (" + patterns.length + ")\n"];
+			const lines = [`## Available Patterns (${patterns.length})\n`];
 			for (const pattern of patterns.slice(0, 20)) {
-				lines.push("- **" + pattern.id + "** (" + pattern.type + ")");
-				lines.push("  " + pattern.description);
-				lines.push("  Confidence: " + pattern.confidence + "%, Success: " + Math.round(pattern.successCorrelation * 100) + "%");
+				lines.push(`- **${pattern.id}** (${pattern.type})`);
+				lines.push(`  ${pattern.description}`);
+				lines.push(
+					`  Confidence: ${pattern.confidence}%, Success: ${Math.round(pattern.successCorrelation * 100)}%`,
+				);
 			}
 			return lines.join("\n");
 		}
@@ -210,18 +200,18 @@ function executePatternAutoApplyTool(args: {
 			const patterns = applier.getAvailablePatterns();
 			const pattern = patterns.find((p) => p.id === args.patternId);
 			if (!pattern) {
-				return "Pattern not found: " + args.patternId;
+				return `Pattern not found: ${args.patternId}`;
 			}
-			const lines = ["## Pattern: " + pattern.id + "\n"];
-			lines.push("**Type:** " + pattern.type);
-			lines.push("**Description:** " + pattern.description);
-			lines.push("**Confidence:** " + pattern.confidence + "%");
-			lines.push("**Success Correlation:** " + Math.round(pattern.successCorrelation * 100) + "%");
-			lines.push("**Found In:** " + pattern.foundIn.join(", "));
-			lines.push("**Suggested Application:** " + pattern.suggestedApplication);
+			const lines = [`## Pattern: ${pattern.id}\n`];
+			lines.push(`**Type:** ${pattern.type}`);
+			lines.push(`**Description:** ${pattern.description}`);
+			lines.push(`**Confidence:** ${pattern.confidence}%`);
+			lines.push(`**Success Correlation:** ${Math.round(pattern.successCorrelation * 100)}%`);
+			lines.push(`**Found In:** ${pattern.foundIn.join(", ")}`);
+			lines.push(`**Suggested Application:** ${pattern.suggestedApplication}`);
 			lines.push("\n**Details:**");
 			for (const [key, value] of Object.entries(pattern.details)) {
-				lines.push("- " + key + ": " + JSON.stringify(value));
+				lines.push(`- ${key}: ${JSON.stringify(value)}`);
 			}
 			return lines.join("\n");
 		}
@@ -231,16 +221,16 @@ function executePatternAutoApplyTool(args: {
 			if (history.length === 0) {
 				return "No application history.";
 			}
-			const lines = ["## Application History (" + history.length + ")\n"];
+			const lines = [`## Application History (${history.length})\n`];
 			for (const record of history) {
 				const resultIcon =
 					record.result === "success" ? "✅" : record.result === "partial" ? "⚠️" : "❌";
-				lines.push("### " + record.id + " " + resultIcon);
-				lines.push("**Pattern:** " + record.patternId);
-				lines.push("**Time:** " + record.timestamp);
-				lines.push("**Similarity:** " + record.similarityScore + "%");
+				lines.push(`### ${record.id} ${resultIcon}`);
+				lines.push(`**Pattern:** ${record.patternId}`);
+				lines.push(`**Time:** ${record.timestamp}`);
+				lines.push(`**Similarity:** ${record.similarityScore}%`);
 				if (record.notes.length > 0) {
-					lines.push("**Notes:** " + record.notes.join(", "));
+					lines.push(`**Notes:** ${record.notes.join(", ")}`);
 				}
 				lines.push("");
 			}
@@ -254,9 +244,9 @@ function executePatternAutoApplyTool(args: {
 		case "config": {
 			if (args.config) {
 				applier.updateConfig(args.config as Record<string, never>);
-				return "Configuration updated:\n" + JSON.stringify(applier.getConfig(), null, 2);
+				return `Configuration updated:\n${JSON.stringify(applier.getConfig(), null, 2)}`;
 			}
-			return "## Current Configuration\n\n```json\n" + JSON.stringify(applier.getConfig(), null, 2) + "\n```";
+			return `## Current Configuration\n\n\`\`\`json\n${JSON.stringify(applier.getConfig(), null, 2)}\n\`\`\``;
 		}
 
 		case "enable": {
@@ -319,7 +309,7 @@ Automatically match and apply learned patterns from past evolution sessions.
 		}
 
 		default:
-			return "Unknown action: " + args.action + ". Use 'help' for available actions.";
+			return `Unknown action: ${args.action}. Use 'help' for available actions.`;
 	}
 }
 

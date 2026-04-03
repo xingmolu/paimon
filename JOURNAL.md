@@ -4,6 +4,72 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 81 — Cross-Session Learning Transfer (RAG Enhancement Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 55: Cross-Session Learning Transfer
+- Created `src/learning-transfer.ts` module with LearningTransferManager class
+- Created `src/tools/learning-transfer-tool.ts` for learningTransfer tool
+- Updated ROADMAP.md with Phase 55
+
+**Why this matters:**
+- This is a `capability` type task that enables automatic learning transfer between related tasks
+- Automatically identifies related past tasks using semantic similarity
+- Calculates similarity score based on task type, keywords, skills, and category
+- Extracts session learnings from MEMORY.md scorecard automatically
+- Transfers patterns from similar successful sessions
+- Warns about patterns from similar failed sessions
+- Provides proactive context injection at task start
+
+**Technical details:**
+- Created `src/learning-transfer.ts`:
+  - `LearningTransferManager` class for managing cross-session learning transfer
+  - `TaskSignature`, `SessionLearning`, `SimilarityScore`, `TransferredLearning`, `TransferRecommendation` types
+  - `calculateSimilarity()` - Calculate similarity score between task signatures
+  - `findSimilarSessions()` - Find similar past sessions for a task
+  - `generateTransferRecommendation()` - Generate transfer recommendations
+  - `getProactiveContext()` - Get proactive context injection
+  - Automatic loading from MEMORY.md scorecard
+  - State persistence to `~/.paimon/learning-transfer.json`
+- Created `src/tools/learning-transfer-tool.ts`:
+  - `learningTransfer` tool with actions: transfer, similar, sessions, session, record, context, stats, config, update-config, clear, reset, help
+- Modified `src/tools/index.ts`:
+  - Added learningTransferToolDef to metaTools array
+  - Added re-exports for learning-transfer module
+- Modified `src/prompt.ts`:
+  - Added learningTransfer tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 55: Cross-Session Learning Transfer
+
+**Similarity Factors:**
+| Factor | Weight | Description |
+|--------|--------|-------------|
+| Task type match | 0.3 | Same task type (capability/reliability/feature) |
+| Keyword overlap | 0.4 | Jaccard similarity of keywords |
+| Skill overlap | 0.2 | Overlap of skills used |
+| Category match | 0.1 | Same category (evolution, intelligence, etc.) |
+
+**Learning Transfer Tool Usage:**
+```typescript
+// Get transfer recommendation
+learningTransfer({action: 'transfer', taskDescription: 'Add self-healing patterns'})
+
+// Find similar sessions
+learningTransfer({action: 'similar', taskDescription: 'Implement error recovery'})
+
+// Get proactive context
+learningTransfer({action: 'context', taskDescription: 'Add new capability'})
+
+// View statistics
+learningTransfer({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks for automatic context injection
+- Consider adding LLM-based semantic similarity for better matching
+
+---
+
 ## Day 80 — Evolution Session Replay (Mini-SWE-Agent Pattern) (2026-04-03)
 
 **What happened:**

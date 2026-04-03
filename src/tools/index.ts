@@ -34,6 +34,7 @@ import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
 import { learningOutputStyleTool } from "./learning-output-style-tool.js";
+import { getLearningTransferManager, learningTransferToolDef } from "./learning-transfer-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
@@ -121,6 +122,7 @@ export const metaTools: AgentTool[] = [
 	watchToolDef,
 	sessionReplayToolDef,
 	patternAutoApplyToolDef,
+	learningTransferToolDef,
 ];
 
 /**
@@ -563,3 +565,21 @@ export type {
 	PatternAutoApplyConfig,
 	AutoApplyStats,
 } from "../pattern-auto-apply.js";
+export {
+	getLearningTransferManager,
+	initLearningTransferManager,
+} from "../learning-transfer.js";
+export type {
+	TaskSignature,
+	SessionLearning,
+	SimilarityScore,
+	TransferredLearning,
+	TransferRecommendation,
+	LearningTransferConfig,
+	LearningTransferStats,
+	LearningTransferToolArgs,
+} from "../learning-transfer.js";
+export {
+	learningTransferToolDef,
+	getLearningTransferManager as getLearningTransferManagerFromTool,
+} from "./learning-transfer-tool.js";

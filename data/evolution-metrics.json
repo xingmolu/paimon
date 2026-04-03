@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.58974358974359,
+    "current": 93.67088607594937,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.58974358974359,
+        "value": 93.67088607594937,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.58974358974359,
+    "weeklyAverage": 93.67088607594937,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.628205128205128,
+    "averageMinutes": 16.734177215189874,
     "byTaskType": {
-      "capability": 17.026666666666667,
+      "capability": 17.13157894736842,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.628205128205128,
+        "value": 16.734177215189874,
         "trend": "stable"
       }
     ],
@@ -28,17 +28,18 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 51,
+    "totalErrors": 52,
     "byType": {
+      "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
       "lint (fixed)": 27,
       "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
-      "lint (fixed), TS (fixed)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: lint (fixed), TS (fixed) in \"Cross-Session Learning Transfer (RAG Enhancement Pattern) - LearningTransferManager module for automatically transferring learnings between related tasks, task similarity detection with keyword/skill/category matching, session learning extraction from MEMORY.md scorecard, transfer recommendations with risk factors, proactive context injection, learningTransfer tool\"",
       "2026-04-03: TS (fixed) in \"Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool\"",
       "2026-04-03: TS (fixed) in \"Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool\"",
       "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\"",
@@ -47,13 +48,12 @@
       "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\"",
       "2026-04-03: TS (fixed) in \"Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool\"",
       "2026-04-03: TS (fixed) in \"Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool\"",
-      "2026-04-03: lint (fixed) in \"Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool\"",
-      "2026-04-03: lint (fixed) in \"Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool\""
+      "2026-04-03: lint (fixed) in \"Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 51,
+        "value": 52,
         "trend": "stable"
       }
     ],
@@ -62,15 +62,15 @@
       "lint",
       "lint (fixed), test (fixed)",
       "ts (fixed)",
-      "ts"
+      "lint (fixed), ts (fixed)"
     ]
   },
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 76,
-      "successRate": 93.42105263157895,
-      "averageTime": 16.86842105263158,
+      "usageCount": 77,
+      "successRate": 93.5064935064935,
+      "averageTime": 16.974025974025974,
       "trend": "improving"
     },
     {
@@ -142,17 +142,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 37.5
+        "value": 38
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 75,
-    "highImpactCount": 67,
-    "highImpactPercentage": 89.33333333333333
+    "totalCapabilities": 76,
+    "highImpactCount": 68,
+    "highImpactPercentage": 89.47368421052632
   },
-  "lastUpdated": "2026-04-03T17:19:19.871Z",
-  "iterationsAnalyzed": 78
+  "lastUpdated": "2026-04-03T17:37:25.116Z",
+  "iterationsAnalyzed": 79
 }

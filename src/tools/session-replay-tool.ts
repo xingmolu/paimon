@@ -132,20 +132,20 @@ export function executeSessionReplayTool(args: {
 			}
 			const walkthrough = manager.getWalkthrough(args.sessionName, args.stepIndex);
 			if (!walkthrough) {
-				return "Walkthrough not available for step " + args.stepIndex;
+				return `Walkthrough not available for step ${args.stepIndex}`;
 			}
 
 			const lines: string[] = ["## Step Walkthrough\n"];
-			lines.push("**Step:** " + walkthrough.currentStep + " / " + walkthrough.totalSteps);
-			lines.push("**Current State:** " + walkthrough.context.currentState);
-			lines.push("**Previous Actions:** " + walkthrough.context.previousActions.join(" → "));
-			lines.push("**Next Actions:** " + walkthrough.context.nextActions.join(" → "));
+			lines.push(`**Step:** ${walkthrough.currentStep} / ${walkthrough.totalSteps}`);
+			lines.push(`**Current State:** ${walkthrough.context.currentState}`);
+			lines.push(`**Previous Actions:** ${walkthrough.context.previousActions.join(" → ")}`);
+			lines.push(`**Next Actions:** ${walkthrough.context.nextActions.join(" → ")}`);
 			lines.push("");
 
 			if (walkthrough.learningPoints.length > 0) {
 				lines.push("### Learning Points");
 				for (const point of walkthrough.learningPoints) {
-					lines.push("- " + point);
+					lines.push(`- ${point}`);
 				}
 				lines.push("");
 			}
@@ -153,7 +153,7 @@ export function executeSessionReplayTool(args: {
 			if (walkthrough.similarSuccessfulPatterns.length > 0) {
 				lines.push("### Similar Success Patterns");
 				for (const pattern of walkthrough.similarSuccessfulPatterns) {
-					lines.push("- " + pattern.description);
+					lines.push(`- ${pattern.description}`);
 				}
 				lines.push("");
 			}
@@ -161,7 +161,7 @@ export function executeSessionReplayTool(args: {
 			if (walkthrough.similarFailurePatterns.length > 0) {
 				lines.push("### Similar Failure Patterns");
 				for (const pattern of walkthrough.similarFailurePatterns) {
-					lines.push("- " + pattern.description);
+					lines.push(`- ${pattern.description}`);
 				}
 			}
 
@@ -177,20 +177,10 @@ export function executeSessionReplayTool(args: {
 			const lines: string[] = ["## Available Sessions\n"];
 			for (const session of sessions) {
 				const status = session.success ? "✅" : "❌";
-				lines.push(
-					"- " +
-						status +
-						" " +
-						session.name +
-						" (" +
-						session.steps +
-						" steps, " +
-						session.model +
-						")",
-				);
+				lines.push(`- ${status} ${session.name} (${session.steps} steps, ${session.model})`);
 			}
-			lines.push("\n**Total:** " + sessions.length + " sessions");
-			lines.push("**Directory:** " + manager.getTrajectoriesDir());
+			lines.push(`\n**Total:** ${sessions.length} sessions`);
+			lines.push(`**Directory:** ${manager.getTrajectoriesDir()}`);
 
 			return lines.join("\n");
 		}
@@ -211,7 +201,7 @@ export function executeSessionReplayTool(args: {
 			const patterns = manager.getPatterns();
 			const pattern = patterns.find((p) => p.id === args.patternId);
 			if (!pattern) {
-				return "Pattern not found: " + args.patternId;
+				return `Pattern not found: ${args.patternId}`;
 			}
 			return manager.formatPatterns([pattern]);
 		}
@@ -240,9 +230,9 @@ export function executeSessionReplayTool(args: {
 			const config = manager.getConfig();
 			if (args.configUpdates) {
 				manager.updateConfig(args.configUpdates);
-				return "Configuration updated:\n" + JSON.stringify(manager.getConfig(), null, 2);
+				return `Configuration updated:\n${JSON.stringify(manager.getConfig(), null, 2)}`;
 			}
-			return "## Configuration\n" + JSON.stringify(config, null, 2);
+			return `## Configuration\n${JSON.stringify(config, null, 2)}`;
 		}
 
 		case "reset": {
@@ -255,7 +245,7 @@ export function executeSessionReplayTool(args: {
 				return "Error: dirPath required for set-dir action";
 			}
 			manager.setTrajectoriesDir(args.dirPath);
-			return "Trajectories directory set to: " + args.dirPath;
+			return `Trajectories directory set to: ${args.dirPath}`;
 		}
 
 		case "help": {
@@ -313,7 +303,7 @@ export function executeSessionReplayTool(args: {
 		}
 
 		default:
-			return "Unknown action: " + args.action + ". Use 'help' action for available actions.";
+			return `Unknown action: ${args.action}. Use 'help' action for available actions.`;
 	}
 }
 
