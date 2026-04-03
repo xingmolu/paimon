@@ -416,6 +416,16 @@ Planned improvements for evo.
 - [x] Progress tracking — Percentage completion, time estimates, session summaries
 - [x] Statistics tracking — Track sessions, tasks, priorities, tags, dependency depth
 
+## Phase 49: Synthetic Task Generation (SWE-smith Pattern)
+- [x] SyntheticTaskGenerator module — Generate synthetic task instances for training
+- [x] syntheticTaskGen tool — Tool for generating and managing synthetic tasks
+- [x] 5 task types — bug-fix, feature-add, refactor, test-add, security-fix
+- [x] 3 difficulty levels — easy, medium, hard with complexity scoring
+- [x] Generation scenarios — 5 default scenarios with template-based problem generation
+- [x] Task validation — Validate generated tasks for quality
+- [x] Training data export — Export in SWE-bench, SWE-smith, or custom formats
+- [x] Statistics tracking — Track generations by type, difficulty, validation rates
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -56,6 +56,7 @@ import { securityGuidanceTool } from "./security-guidance-tool.js";
 import { selfHealingToolWrapper } from "./self-healing-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
+import { syntheticTaskGenToolDef } from "./synthetic-task-gen-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
 import { taskTrackingTool } from "./task-tracking-tool.js";
 import { tokenTrackingTool } from "./token-tracking-tool.js";
@@ -110,6 +111,7 @@ export const metaTools: AgentTool[] = [
 	frontendDesignTool,
 	remoteExecutionToolDef,
 	roleBasedAgentsToolDef,
+	syntheticTaskGenToolDef,
 	taskTrackingTool,
 ];
 
@@ -467,3 +469,20 @@ export type {
 	TaskSession,
 	TaskTrackingStats,
 } from "../task-tracking.js";
+export { syntheticTaskGenToolDef } from "./synthetic-task-gen-tool.js";
+export {
+	getSyntheticTaskGenerator,
+	SyntheticTaskGenerator,
+	syntheticTaskGenTool,
+} from "../synthetic-task-gen.js";
+export type {
+	SyntheticTaskType,
+	TaskDifficulty,
+	TaskCategory,
+	SyntheticTask,
+	GenerationScenario,
+	ValidationResult,
+	TrainingData,
+	SyntheticTaskGenConfig,
+	SyntheticTaskGenStats,
+} from "../synthetic-task-gen.js";

@@ -4,6 +4,74 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 75 — Synthetic Task Generation (SWE-smith Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 49: Synthetic Task Generation
+- Created `src/synthetic-task-gen.ts` module with SyntheticTaskGenerator class
+- Created `src/tools/synthetic-task-gen-tool.ts` for syntheticTaskGen tool
+- Added 5 task types with template-based problem generation
+- Updated ROADMAP.md with Phase 49
+
+**Why this matters:**
+- This is a `capability` type task that enables synthetic training data generation
+- Inspired by SWE-smith for generating synthetic task instances from code repositories
+- 5 task types: bug-fix, feature-add, refactor, test-add, security-fix
+- 3 difficulty levels: easy, medium, hard with complexity scoring
+- 5 default generation scenarios with template-based problem generation
+- Training data export in SWE-bench, SWE-smith, or custom formats
+
+**Technical details:**
+- Created `src/synthetic-task-gen.ts`:
+  - `SyntheticTaskGenerator` class for managing synthetic task generation
+  - `SyntheticTaskType`, `TaskDifficulty`, `TaskCategory` types
+  - `SyntheticTask`, `GenerationScenario`, `ValidationResult`, `TrainingData` interfaces
+  - 5 default scenarios with problem and hint templates
+  - Template-based problem generation with placeholder substitution
+  - Task validation with quality checking
+  - Training data export in multiple formats
+  - State persistence to `~/.paimon/synthetic-tasks.json`
+- Created `src/tools/synthetic-task-gen-tool.ts`:
+  - `syntheticTaskGen` tool with actions: generate, validate, scenarios, tasks, task, export, config, stats, reset, clear, add-scenario, remove
+- Modified `src/tools/index.ts`:
+  - Added syntheticTaskGenToolDef to metaTools array
+  - Added re-exports for synthetic-task-gen module
+- Modified `src/prompt.ts`:
+  - Added syntheticTaskGen tool documentation in IMPORTANT section
+
+**Task Types:**
+| Type | Description | Complexity |
+|------|-------------|------------|
+| bug-fix | Bug fix tasks | 3 |
+| feature-add | Feature addition tasks | 5 |
+| refactor | Refactoring tasks | 4 |
+| test-add | Test addition tasks | 2 |
+| security-fix | Security fix tasks | 6 |
+
+**Synthetic Task Generation Tool Usage:**
+```typescript
+// Generate 5 bug-fix tasks
+syntheticTaskGen({action: 'generate', type: 'bug-fix', difficulty: 'medium', count: 5})
+
+// View generation scenarios
+syntheticTaskGen({action: 'scenarios'})
+
+// Validate a task
+syntheticTaskGen({action: 'validate', taskId: 'synth-123'})
+
+// Export training data
+syntheticTaskGen({action: 'export', format: 'swe-bench'})
+
+// View statistics
+syntheticTaskGen({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with actual code analysis for realistic task generation
+- Consider adding LLM-based problem statement generation
+
+---
+
 ## Day 74 — Role-Based Multi-Agent Protocol (MetaGPT Pattern) (2026-04-03)
 
 **What happened:**
