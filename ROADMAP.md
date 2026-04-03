@@ -558,6 +558,16 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Updated suggested approach — Consider complexity level in suggestions
 - [x] Cost prediction stats in intelligence stats — Track predictions by complexity
 
+## Phase 63: Learning Transfer → RAG Integration
+- [x] Import RagModule into learning-transfer.ts — Get RAG search and enrichContext methods
+- [x] enrichWithRag method — Combine keyword similarity with RAG TF-IDF scoring
+- [x] RAG boost for session matching — Boost scores for sessions referenced in RAG documents
+- [x] rag-discovered sessions — Add sessions found via RAG that weren't in keyword results
+- [x] Combined confidence scoring — 70% keyword, 30% RAG weighting
+- [x] RAG insights in risk factors — Add reflection insights from RAG to risk factors
+- [x] Proactive RAG context — Enrich getProactiveContext with RAG document search
+- [x] RAG stats in learning transfer stats — Track enrichments, documents found, average RAG score
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

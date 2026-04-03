@@ -2,16 +2,22 @@
  * Cross-Session Learning Transfer (RAG Enhancement Pattern)
  *
  * Automatically transfers learnings between related tasks by:
- * 1. Identifying similar past tasks using semantic similarity
+ * 1. Identifying similar past tasks using semantic similarity + RAG enrichment
  * 2. Extracting relevant patterns from successful sessions
  * 3. Warning about patterns from failed sessions
  * 4. Injecting proactive context at task start
  *
  * This improves first-try success rate and reduces rework.
+ *
+ * RAG Integration (Phase 63):
+ * - Uses RagModule.search() for semantic search across MEMORY.md, JOURNAL.md, reflections
+ * - Combines RAG TF-IDF scores with keyword similarity for better session matching
+ * - Enriches transfer recommendations with RAG context from related documents
  */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { RagModule, type RagSearchResult } from "./rag.js";
 
 // Types for learning transfer
 
@@ -83,6 +89,10 @@ export interface LearningTransferStats {
 	topTransferredPatterns: { pattern: string; count: number }[];
 	sessionsProcessed: number;
 	lastTransferTime: string;
+	// RAG enrichment stats
+	ragEnrichments: number;
+	ragDocumentsFound: number;
+	averageRagScore: number;
 }
 
 // Default configuration
@@ -104,6 +114,7 @@ export class LearningTransferManager {
 	private sessions: Map<string, SessionLearning> = new Map();
 	private stats: LearningTransferStats;
 	private dataFile: string;
+	private ragModule = new RagModule();
 
 	constructor(configPath?: string) {
 		this.config = { ...DEFAULT_CONFIG };
@@ -115,6 +126,9 @@ export class LearningTransferManager {
 
 		// Load sessions from MEMORY.md scorecard
 		this.loadFromMemoryScorecard();
+
+		// Initialize RAG module
+		this.ragModule.initialize();
 	}
 
 	private getEmptyStats(): LearningTransferStats {
@@ -127,6 +141,10 @@ export class LearningTransferManager {
 			topTransferredPatterns: [],
 			sessionsProcessed: 0,
 			lastTransferTime: new Date().toISOString(),
+			// RAG enrichment stats
+			ragEnrichments: 0,
+			ragDocumentsFound: 0,
+			averageRagScore: 0,
 		};
 	}
 
@@ -442,17 +460,117 @@ export class LearningTransferManager {
 	}
 
 	/**
+	 * Enrich similarity search with RAG results.
+	 * Combines keyword-based similarity with RAG semantic search.
+	 */
+	enrichWithRag(
+		targetDescription: string,
+		keywordSimilarities: SimilarityScore[],
+	): {
+		enrichedSimilarities: SimilarityScore[];
+		ragResults: RagSearchResult[];
+		combinedConfidence: number;
+	} {
+		// Search RAG for related documents
+		const ragResults = this.ragModule.search({
+			query: targetDescription,
+			maxResults: 5,
+			types: ["learning", "journal", "reflection"],
+			includeSnippet: true,
+		});
+
+		// Create a map for quick lookup
+		const similarityMap = new Map<string, SimilarityScore>();
+		for (const sim of keywordSimilarities) {
+			similarityMap.set(sim.sessionId, sim);
+		}
+
+		// Boost scores for sessions that match RAG results
+		// RAG finds semantically related documents that may reference sessions
+		for (const ragResult of ragResults) {
+			// Check if RAG result references any session
+			const doc = ragResult.document;
+			const content = doc.content.toLowerCase();
+
+			// Look for session references in RAG documents
+			for (const [sessionId, session] of this.sessions) {
+				const sessionDesc = session.taskDescription.toLowerCase();
+				if (
+					content.includes(sessionDesc.slice(0, 30)) ||
+					sessionDesc.includes(doc.title.toLowerCase().slice(0, 30))
+				) {
+					// Boost the similarity score for this session
+					const existing = similarityMap.get(sessionId);
+					if (existing) {
+						// Add RAG boost factor (up to 0.2 additional score)
+						existing.score = Math.min(existing.score + ragResult.score * 0.1, 1);
+						existing.matchingFactors.push("rag-match");
+					} else if (ragResult.score > 0.2) {
+						// Add new session from RAG match
+						similarityMap.set(sessionId, {
+							sessionId,
+							taskDescription: session.taskDescription,
+							score: ragResult.score * 0.5, // Scale RAG score for new entries
+							success: session.success,
+							matchingFactors: ["rag-discovered"],
+						});
+					}
+				}
+			}
+		}
+
+		// Convert back to array and sort
+		const enrichedSimilarities = Array.from(similarityMap.values())
+			.sort((a, b) => b.score - a.score)
+			.slice(0, this.config.maxSessionsToConsider);
+
+		// Calculate combined confidence
+		const keywordAvg =
+			keywordSimilarities.length > 0
+				? keywordSimilarities.reduce((sum: number, s: SimilarityScore) => sum + s.score, 0) /
+					keywordSimilarities.length
+				: 0;
+		const ragAvg =
+			ragResults.length > 0
+				? ragResults.reduce((sum: number, r: RagSearchResult) => sum + r.score, 0) /
+					ragResults.length
+				: 0;
+		const combinedConfidence = keywordAvg * 0.7 + ragAvg * 0.3; // Weight keyword higher
+
+		// Update stats
+		this.stats.ragEnrichments++;
+		this.stats.ragDocumentsFound += ragResults.length;
+		this.stats.averageRagScore = ragAvg;
+
+		return {
+			enrichedSimilarities,
+			ragResults,
+			combinedConfidence,
+		};
+	}
+
+	/**
 	 * Generate transfer recommendations for a target task
 	 */
 	generateTransferRecommendation(
 		targetTaskDescription: string,
 		targetSignature: TaskSignature,
 	): TransferRecommendation {
-		const similarSessions = this.findSimilarSessions(targetSignature);
+		// Get keyword-based similar sessions
+		const keywordSimilarSessions = this.findSimilarSessions(targetSignature);
+
+		// Enrich with RAG search
+		const { enrichedSimilarities, ragResults, combinedConfidence } = this.enrichWithRag(
+			targetTaskDescription,
+			keywordSimilarSessions,
+		);
+
+		// Use enriched similarities
+		const similarSessions = enrichedSimilarities;
 
 		// Separate successful and failed sessions
-		const successfulSessions = similarSessions.filter((s) => s.success);
-		const failedSessions = similarSessions.filter((s) => !s.success);
+		const successfulSessions = similarSessions.filter((s: SimilarityScore) => s.success);
+		const failedSessions = similarSessions.filter((s: SimilarityScore) => !s.success);
 
 		// Extract patterns from successful sessions
 		const transferredLearning: TransferredLearning[] = [];
@@ -492,11 +610,8 @@ export class LearningTransferManager {
 			learning.avoidPatterns = [...learning.avoidPatterns, ...avoidPatterns];
 		}
 
-		// Calculate overall confidence
-		const overallConfidence =
-			similarSessions.length > 0
-				? similarSessions.reduce((sum, s) => sum + s.score, 0) / similarSessions.length
-				: 0;
+		// Calculate overall confidence using combined confidence from RAG enrichment
+		const overallConfidence = similarSessions.length > 0 ? combinedConfidence : 0;
 
 		// Generate recommended approach
 		const recommendedApproach = this.generateRecommendedApproach(
@@ -507,11 +622,18 @@ export class LearningTransferManager {
 		// Generate risk factors
 		const riskFactors = this.generateRiskFactors(failedSessions);
 
+		// Add RAG-sourced insights to risk factors if relevant
+		for (const ragResult of ragResults.slice(0, 2)) {
+			if (ragResult.document.type === "reflection") {
+				riskFactors.push(`RAG insight: ${ragResult.snippet.slice(0, 80)}...`);
+			}
+		}
+
 		// Update stats
 		this.stats.totalTransfers++;
 		if (transferredLearning.length > 0) {
 			this.stats.patternsTransferred += transferredLearning.reduce(
-				(sum, l) => sum + l.patterns.length,
+				(sum: number, l: TransferredLearning) => sum + l.patterns.length,
 				0,
 			);
 		}
@@ -591,6 +713,11 @@ export class LearningTransferManager {
 		const recommendation = this.generateTransferRecommendation(taskDescription, signature);
 
 		if (recommendation.similarSessions.length === 0) {
+			// Still try RAG enrichment for context even without similar sessions
+			const ragContext = this.ragModule.enrichContext(taskDescription, 3);
+			if (ragContext) {
+				return ragContext;
+			}
 			return "";
 		}
 
@@ -617,6 +744,12 @@ export class LearningTransferManager {
 
 		if (recommendation.riskFactors.length > 0) {
 			contextParts.push(`\n### Risk Factors\n${recommendation.riskFactors.join("\n")}`);
+		}
+
+		// Add RAG-enriched context from MEMORY.md, JOURNAL.md, reflections
+		const ragContext = this.ragModule.enrichContext(taskDescription, 2);
+		if (ragContext) {
+			contextParts.push(`\n${ragContext}`);
 		}
 
 		return contextParts.join("\n");
@@ -886,6 +1019,13 @@ export function learningTransferTool(args: LearningTransferToolArgs): string {
 			output += `**Average Similarity Score:** ${avgConf}%\n`;
 			output += `**Sessions Processed:** ${stats.sessionsProcessed}\n`;
 			output += `**Last Transfer:** ${stats.lastTransferTime}\n`;
+
+			// RAG enrichment stats
+			output += "\n### RAG Enrichment\n";
+			output += `**RAG Enrichments:** ${stats.ragEnrichments}\n`;
+			output += `**RAG Documents Found:** ${stats.ragDocumentsFound}\n`;
+			const avgRag = (stats.averageRagScore * 100).toFixed(0);
+			output += `**Average RAG Score:** ${avgRag}%\n`;
 
 			if (stats.topTransferredPatterns.length > 0) {
 				output += "\n### Top Transferred Patterns\n";
