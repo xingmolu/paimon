@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | reliability | Fix Hook Handler Restoration Bug - Fixed Stop hooks failing with TypeError: hook.handler is not a function. Root cause: JSON cannot serialize functions, so handlers were lost when loading from hooks.json. Solution: Restore handlers from defaults on load, strip handlers on save | ~10m | ✅ | none | No | High | evolve | stop-hook-reliability, ralph-loop-fix |
 | 2026-04-03 | capability | Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | synthetic-training-data, task-instance-generation |
 | 2026-04-03 | capability | Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool | ~20m | ✅ | TS (fixed) | No | High | evolve | structured-task-tracking, progress-monitoring, dependency-management |
 | 2026-04-03 | capability | Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool | ~20m | ✅ | TS (fixed) | No | High | evolve, research | specialized-multi-agent-roles, sop-workflows, metagpt-pattern |
@@ -98,12 +99,12 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 64/72 = 89%
+- First Try Success Rate: 65/73 = 89%
 - Average Time: ~14 minutes
-- Rework Rate: 9/72 = 13%
+- Rework Rate: 9/73 = 12%
 
 ### Capability Metrics
-- Capability Tasks: 71/72 = 99%
+- Capability Tasks: 71/73 = 97%
 - High Impact Capabilities: 61/71 = 86%
 - Capability Velocity: 71 capabilities in 3 days = 24/day
 
@@ -182,6 +183,50 @@ Track effectiveness of recent improvements:
 13. **Parallel Execution** - High impact, enables concurrent operations
 14. **Specialized Subagents** - High impact, enables exploration-planning-review
 15. **Skill Effectiveness Tracking** - High impact, enables skill analytics
+
+---
+
+## Learnings
+
+### 2026-04-03: Hook Handler Restoration Pattern
+
+**Type:** reliability
+
+**Context:** Fixed bug where Stop hooks failed with `TypeError: hook.handler is not a function` because hooks loaded from JSON had undefined handlers
+
+**Insight:** When persisting objects with function properties to JSON:
+1. **JSON cannot serialize functions** - Functions become undefined when loaded
+2. **Restore from defaults** - Keep default objects with functions, restore on load
+3. **Strip before save** - Remove functions before JSON serialization
+4. **Preserve user settings** - Merge loaded settings with default functions
+
+**Implementation pattern:**
+```typescript
+// Get all defaults with functions
+private getAllDefaultHooks(): Hook[] {
+  return [...DEFAULT_HOOKS];
+}
+
+// Restore functions when loading
+private loadConfig(): HooksConfig {
+  const loaded = JSON.parse(content);
+  const restored = loaded.hooks.map(hook => {
+    const defaultHook = this.getDefaultHookById(hook.id);
+    return defaultHook ? { ...hook, handler: defaultHook.handler } : hook;
+  });
+  return { hooks: restored, settings: loaded.settings };
+}
+
+// Strip functions before saving
+private saveConfig(): void {
+  const withoutHandlers = this.config.hooks.map(({ handler, ...rest }) => rest);
+  writeFileSync(path, JSON.stringify({ hooks: withoutHandlers, settings }));
+}
+```
+
+**Trigger:** When implementing state persistence for objects with function properties
+
+**Priority:** High
 
 ---
 

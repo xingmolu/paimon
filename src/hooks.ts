@@ -586,13 +586,52 @@ export class HookManager {
 	}
 
 	/**
+	 * All default hooks with their handlers
+	 * Used to restore handlers when loading from JSON (which can't serialize functions)
+	 */
+	private getAllDefaultHooks(): Hook[] {
+		return [...DEFAULT_SESSION_START_HOOKS, ...DEFAULT_STOP_HOOKS, ...DEFAULT_SECURITY_HOOKS];
+	}
+
+	/**
+	 * Get default hook by ID with handler
+	 */
+	private getDefaultHookById(id: string): Hook | undefined {
+		return this.getAllDefaultHooks().find((h) => h.id === id);
+	}
+
+	/**
 	 * Load hooks configuration from file
+	 * Restores handler functions for default hooks (JSON can't serialize functions)
 	 */
 	private loadConfig(): HooksConfig {
+		// Get all default hooks with handlers
+		const defaultHooks = this.getAllDefaultHooks();
+
 		if (existsSync(this.configPath)) {
 			try {
 				const content = readFileSync(this.configPath, "utf-8");
-				return JSON.parse(content);
+				const loadedConfig = JSON.parse(content) as HooksConfig;
+
+				// Restore handlers for default hooks from the loaded config
+				const restoredHooks: Hook[] = loadedConfig.hooks.map((loadedHook) => {
+					// Find the matching default hook with handler
+					const defaultHook = this.getDefaultHookById(loadedHook.id);
+					if (defaultHook) {
+						// Restore handler while preserving loaded settings (enabled/disabled state)
+						return {
+							...loadedHook,
+							handler: defaultHook.handler,
+						};
+					}
+					// Custom hook without default - keep as-is (may have no handler)
+					return loadedHook as Hook;
+				});
+
+				return {
+					hooks: restoredHooks,
+					settings: loadedConfig.settings,
+				};
 			} catch {
 				// Invalid config, use defaults
 			}
@@ -600,7 +639,7 @@ export class HookManager {
 
 		// Create default config with all hook types
 		return {
-			hooks: [...DEFAULT_SESSION_START_HOOKS, ...DEFAULT_STOP_HOOKS, ...DEFAULT_SECURITY_HOOKS],
+			hooks: defaultHooks,
 			settings: {
 				enabled: true,
 				defaultBehavior: "allow",
@@ -610,13 +649,37 @@ export class HookManager {
 
 	/**
 	 * Save hooks configuration to file
+	 * Strips handler functions (JSON can't serialize them)
 	 */
 	private saveConfig(): void {
 		const dir = join(homedir(), ".paimon");
 		if (!existsSync(dir)) {
 			mkdirSync(dir, { recursive: true });
 		}
-		writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), "utf-8");
+
+		// Strip handlers before saving (they can be restored from defaults on load)
+		const hooksWithoutHandlers = this.config.hooks.map((hook) => ({
+			id: hook.id,
+			type: hook.type,
+			name: hook.name,
+			description: hook.description,
+			enabled: hook.enabled,
+			priority: hook.priority,
+			// handler is intentionally omitted
+		}));
+
+		writeFileSync(
+			this.configPath,
+			JSON.stringify(
+				{
+					hooks: hooksWithoutHandlers,
+					settings: this.config.settings,
+				},
+				null,
+				2,
+			),
+			"utf-8",
+		);
 	}
 
 	/**

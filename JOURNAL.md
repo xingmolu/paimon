@@ -4,6 +4,50 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 76 — Fix Hook Handler Restoration Bug (2026-04-03)
+
+**What happened:**
+- Fixed critical bug in `src/hooks.ts` where Stop hooks were failing with `TypeError: hook.handler is not a function`
+- Root cause: `loadConfig()` loaded hooks from JSON but JSON cannot serialize functions
+- When `hooks.json` existed from a previous session, the `handler` property was undefined
+
+**Why this matters:**
+- This is a `reliability` type task that fixes Stop hook execution failures
+- Affects Ralph Loop pattern (capability that depends on Stop hooks)
+- Affects token tracking and tool cache persistence on session stop
+- All 851 tests now pass without Stop hook errors
+
+**Technical details:**
+- Modified `loadConfig()` in `src/hooks.ts`:
+  - Added `getAllDefaultHooks()` method to get all default hooks with handlers
+  - Added `getDefaultHookById()` method to find default hook by ID
+  - Modified `loadConfig()` to restore handlers from default hooks when loading from JSON
+  - Preserves user settings (enabled/disabled state) while restoring function handlers
+- Modified `saveConfig()` in `src/hooks.ts`:
+  - Strips handler functions before saving to JSON (they can't be serialized)
+  - Handlers are restored from defaults on next load
+
+**Before fix:**
+```
+Hook stop-token-tracking failed: TypeError: hook.handler is not a function
+Hook stop-tool-cache-save failed: TypeError: hook.handler is not a function
+```
+
+**After fix:**
+```
+✓ src/agent.test.ts (395 tests) 8821ms
+Test Files  16 passed (16)
+Tests  851 passed (851)
+```
+
+**Lesson learned:** When persisting objects with function properties to JSON, must restore functions from defaults on load since JSON cannot serialize functions.
+
+**Next steps:**
+- Consider adding tests for hook persistence and restoration
+- Consider documenting the handler restoration pattern for other modules
+
+---
+
 ## Day 75 — Synthetic Task Generation (SWE-smith Pattern) (2026-04-03)
 
 **What happened:**

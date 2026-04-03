@@ -1,7 +1,7 @@
 [
   {
     "modelId": "model-a",
-    "selections": 464,
+    "selections": 474,
     "successes": 0,
     "failures": 0,
     "avgResponseTime": 0,
@@ -9,7 +9,7 @@
   },
   {
     "modelId": "model-b",
-    "selections": 681,
+    "selections": 696,
     "successes": 0,
     "failures": 0,
     "avgResponseTime": 0,

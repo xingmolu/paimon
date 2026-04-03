@@ -13,8 +13,18 @@
       "firstTryRate": 100,
       "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 25,
+      "sampleSize": 26,
       "examples": [
+        {
+          "taskDescription": "Fix Hook Handler Restoration Bug - Fixed Stop hooks failing with TypeError: hook.handler is not a function. Root cause: JSON cannot serialize functions, so handlers were lost when loading from hooks.json. Solution: Restore handlers from defaults on load, strip handlers on save",
+          "date": "2026-04-03",
+          "time": 10,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool",
           "date": "2026-04-03",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Learning Output Style Tool Integration (Claude Code Pattern) - Converted learningOutputStyleTool to AgentTool interface, integrated into metaTools, 11 default insights, 8 decision categories, SessionStart hook",
-          "date": "2026-04-03",
-          "time": 15,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.553Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.553Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.553Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.553Z"
     },
     {
       "id": "task-type-capability",
@@ -250,16 +250,16 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.554Z"
     },
     {
       "id": "time-pattern-quick",
       "type": "time-pattern",
-      "description": "Tasks under 9min have 100% success",
+      "description": "Tasks under 8min have 100% success",
       "characteristics": {
         "timeRange": {
           "min": 0,
-          "max": 9
+          "max": 8
         }
       },
       "successRate": 100,
@@ -299,7 +299,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.554Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -351,9 +351,35 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:25:06.747Z"
+      "lastUpdated": "2026-04-03T13:30:27.553Z"
+    },
+    {
+      "id": "task-type-reliability",
+      "type": "task-type-success",
+      "description": "reliability tasks: 100% success, 33% high impact",
+      "characteristics": {
+        "taskType": "reliability"
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 7,
+      "confidence": 49,
+      "sampleSize": 3,
+      "examples": [
+        {
+          "taskDescription": "Fix Hook Handler Restoration Bug - Fixed Stop hooks failing with TypeError: hook.handler is not a function. Root cause: JSON cannot serialize functions, so handlers were lost when loading from hooks.json. Solution: Restore handlers from defaults on load, strip handlers on save",
+          "date": "2026-04-03",
+          "time": 10,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-03T13:30:27.554Z"
     }
   ],
-  "lastUpdated": "2026-04-03T13:25:06.747Z",
-  "sessionCount": 72
+  "lastUpdated": "2026-04-03T13:30:27.554Z",
+  "sessionCount": 73
 }
