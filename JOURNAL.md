@@ -4,6 +4,85 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 82 — Evolution Cost Prediction (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 56: Evolution Cost Prediction
+- Created `src/evolution-cost.ts` module with EvolutionCostPredictor class
+- Created `src/tools/evolution-cost-tool.ts` for evolutionCost tool
+- Updated ROADMAP.md with Phase 56
+
+**Why this matters:**
+- This is a `capability` type task that enables smarter task selection
+- Predicts effort/complexity of implementing a capability before starting
+- Complexity scoring with 4 levels: simple (5-15m), moderate (15-30m), complex (30-60m), very-complex (60-120m)
+- Time estimation based on historical data and cost factors
+- Risk factor identification with impact scores and mitigations
+- Confidence scoring based on similar past tasks and factors
+- Learning from outcomes to improve future predictions
+
+**Technical details:**
+- Created `src/evolution-cost.ts`:
+  - `EvolutionCostPredictor` class for managing cost predictions
+  - `ComplexityLevel`, `RiskFactorType`, `CostFactors`, `RiskFactor`, `CostPrediction`, `HistoricalTask`, `EvolutionCostStats`, `EvolutionCostConfig` types
+  - Cost factor analysis: newModule, hookIntegration, toolChainChanges, fileCount, dependencies, testingRequired, statePersistence, apiIntegration, errorHandling, similarTasks
+  - Complexity weights for scoring: newModule (3), hookIntegration (2), toolChainChanges (2), fileCount (0.5/file), dependencies (0.3/dep), testingRequired (2), statePersistence (1.5), apiIntegration (2), errorHandling (1)
+  - `predict()` - Full cost prediction with complexity, time, confidence, risks, recommendations
+  - `quickCheck()` - Fast cost check for quick estimates
+  - `recordOutcome()` - Record actual outcomes for learning
+  - State persistence to `~/.paimon/evolution-cost-history.json`
+- Created `src/tools/evolution-cost-tool.ts`:
+  - `evolutionCost` tool with actions: predict, quick-check, record, history, factors, risks, similar, stats, accuracy, config, update-config, clear, enable, disable, weights, estimates, help
+- Modified `src/tools/index.ts`:
+  - Added evolutionCostToolDef to metaTools array
+  - Added re-exports for evolution-cost module
+- Modified `src/prompt.ts`:
+  - Added evolutionCost tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 56: Evolution Cost Prediction
+
+**Cost Factors:**
+| Factor | Weight | Description |
+|--------|--------|-------------|
+| newModule | 3 | Creating new module |
+| hookIntegration | 2 | Hook system integration |
+| toolChainChanges | 2 | Tool chain modifications |
+| fileCount | 0.5/file | Files to modify |
+| dependencies | 0.3/dep | Dependencies |
+| testingRequired | 2 | Comprehensive tests |
+| statePersistence | 1.5 | State persistence |
+| apiIntegration | 2 | API/tool integration |
+| errorHandling | 1 | Error handling |
+
+**Complexity Levels:**
+| Level | Score | Time Range |
+|-------|-------|------------|
+| simple | ≤3 | 5-15 minutes |
+| moderate | ≤7 | 15-30 minutes |
+| complex | ≤12 | 30-60 minutes |
+| very-complex | >12 | 60-120 minutes |
+
+**Evolution Cost Tool Usage:**
+```typescript
+// Predict cost for a task
+evolutionCost({action: 'predict', taskDescription: 'Add new tool', taskType: 'capability'})
+
+// Quick check
+evolutionCost({action: 'quick-check', taskDescription: 'Fix bug', taskType: 'reliability'})
+
+// Record outcome for learning
+evolutionCost({action: 'record', taskDescription: 'Add tool', taskType: 'capability', actualTimeMinutes: 20, success: true, errors: ['lint']})
+
+// View statistics
+evolutionCost({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with taskPredictor for combined intelligence
+- Consider integrating with SessionStart hooks for proactive cost estimation
+
+---
+
 ## Day 81 — Cross-Session Learning Transfer (RAG Enhancement Pattern) (2026-04-03)
 
 **What happened:**

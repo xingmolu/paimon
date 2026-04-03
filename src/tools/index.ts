@@ -67,6 +67,7 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
+import { evolutionCostToolDef } from "./evolution-cost-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -123,6 +124,7 @@ export const metaTools: AgentTool[] = [
 	sessionReplayToolDef,
 	patternAutoApplyToolDef,
 	learningTransferToolDef,
+	evolutionCostToolDef,
 ];
 
 /**
@@ -583,3 +585,19 @@ export {
 	learningTransferToolDef,
 	getLearningTransferManager as getLearningTransferManagerFromTool,
 } from "./learning-transfer-tool.js";
+export { evolutionCostToolDef, handleEvolutionCostToolCall } from "./evolution-cost-tool.js";
+export {
+	getEvolutionCostPredictor,
+	resetEvolutionCostPredictor,
+	EvolutionCostPredictor,
+} from "../evolution-cost.js";
+export type {
+	ComplexityLevel,
+	CostFactors,
+	RiskFactor,
+	RiskFactorType,
+	CostPrediction,
+	HistoricalTask,
+	EvolutionCostStats,
+	EvolutionCostConfig,
+} from "../evolution-cost.js";

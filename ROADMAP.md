@@ -484,6 +484,16 @@ Planned improvements for evo.
 - [x] Warning generation — Warn about patterns from similar failed sessions
 - [x] Statistics tracking — Track transfers, patterns transferred, warnings generated, similarity scores
 
+## Phase 56: Evolution Cost Prediction
+- [x] EvolutionCostPredictor module — Predict effort/complexity before starting implementation
+- [x] evolutionCost tool — Tool for cost prediction and analysis
+- [x] Complexity scoring — Calculate complexity score from cost factors (new module, hook integration, file count, etc.)
+- [x] Complexity levels — simple (5-15m), moderate (15-30m), complex (30-60m), very-complex (60-120m)
+- [x] Time estimation — Estimate time based on complexity level and historical data
+- [x] Risk factor identification — Identify risk factors with impact scores and mitigations
+- [x] Historical learning — Record actual outcomes to improve future predictions
+- [x] Statistics tracking — Track predictions, accuracy, complexity distribution, top risk factors
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
