@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getErrorPatternLearner } from "./error-patterns.js";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
 import { getEvolutionIntelligence } from "./intelligence.js";
 import { getIterationContextManager } from "./iteration-context.js";
@@ -222,6 +223,35 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 				return {
 					allow: true,
 					context: contextMessage,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-error-pattern-injection",
+		type: "SessionStart",
+		name: "Inject Proactive Error Patterns",
+		description:
+			"Injects top learned error patterns with solutions at session start to prevent known errors (Error Pattern Learning Pattern)",
+		enabled: true,
+		priority: 94, // After intelligence recommendations (95), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const errorLearner = getErrorPatternLearner();
+
+			// Only inject in evolve mode
+			if (context.session?.mode !== "evolve") {
+				return { allow: true };
+			}
+
+			// Get top patterns for proactive injection (max 5 patterns)
+			const proactiveWarning = errorLearner.formatTopPatternsForInjection(5);
+
+			if (proactiveWarning) {
+				return {
+					allow: true,
+					context: proactiveWarning,
 				};
 			}
 

@@ -4,6 +4,59 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 90 — Proactive Error Pattern Injection at SessionStart (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 64: Proactive Error Pattern Injection at SessionStart
+- Added getTopPatternsForInjection and formatTopPatternsForInjection methods to error-patterns.ts
+- Added SessionStart hook for injecting top error patterns
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive error prevention
+- Top learned error patterns with solutions are now injected at session start
+- Filters by high confidence (≥70%) to only show reliable patterns
+- Only injects in evolve mode to reduce noise in chat mode
+- Helps prevent known errors before they occur
+- Improves iteration success rate by warning about patterns that have caused failures in the past
+
+**Technical details:**
+- Modified `src/error-patterns.ts`:
+  - Added `getTopPatternsForInjection(maxPatterns)` - Returns top patterns sorted by confidence and occurrences
+  - Added `formatTopPatternsForInjection(maxPatterns)` - Formats patterns as proactive warning message
+  - Filters to high-confidence patterns (≥70%)
+  - Returns pattern id, type, description, solution, and confidence
+- Modified `src/hooks.ts`:
+  - Added import for `getErrorPatternLearner` from error-patterns module
+  - Added `session-error-pattern-injection` SessionStart hook at priority 94
+  - Only injects in evolve mode
+  - Calls formatTopPatternsForInjection to get proactive warning
+- Updated `ROADMAP.md`:
+  - Added Phase 64: Proactive Error Pattern Injection at SessionStart
+
+**Proactive Error Pattern Injection Output:**
+```
+## ⚠️ Known Error Patterns (Proactive Warning)
+
+These patterns have been learned from past sessions. Watch out for them:
+
+**typescript: Missing property on type**
+- Solution: Add the missing property to the type definition, or use optional chaining (?.) if the property might be undefined.
+- Confidence: 90%
+
+**typescript: Type mismatch in assignment**
+- Solution: Convert the type using 'as' assertion, or fix the source type to match the target type.
+- Confidence: 85%
+
+Use errorPatterns({action: 'suggest', error: 'your error message'}) when encountering errors.
+```
+
+**Next steps:**
+- Consider integrating with Self-Healing for automatic error prevention
+- Consider adding task-specific pattern filtering (show patterns relevant to current task type)
+
+---
+
 ## Day 89 — Learning Transfer → RAG Integration (2026-04-03)
 
 **What happened:**

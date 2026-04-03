@@ -568,6 +568,15 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Proactive RAG context — Enrich getProactiveContext with RAG document search
 - [x] RAG stats in learning transfer stats — Track enrichments, documents found, average RAG score
 
+## Phase 64: Proactive Error Pattern Injection at SessionStart
+- [x] getTopPatternsForInjection method — Get top patterns by confidence and occurrences
+- [x] formatTopPatternsForInjection method — Format patterns for proactive context
+- [x] SessionStart error pattern hook — Inject top error patterns at session start
+- [x] Proactive warning message — Show known error patterns with solutions
+- [x] High-confidence filtering — Only inject patterns with ≥70% confidence
+- [x] Evolve mode only — Only inject in evolve mode to reduce noise
+- [x] Integration with existing hooks — Priority 94, after intelligence recommendations
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
