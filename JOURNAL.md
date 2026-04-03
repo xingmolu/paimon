@@ -4,6 +4,52 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 87 — SessionStart Intelligence Integration (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 61: SessionStart Intelligence Integration
+- Added Intelligence SessionStart hook to inject proactive recommendations at session start
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive intelligence at session start
+- Intelligence recommendations are now automatically injected when a session begins
+- Shows available patterns with success rates, RAG context, and error patterns learned
+- Reduces need for manual intelligence tool invocation
+- Improves iteration success rate by making intelligence proactively available
+
+**Technical details:**
+- Modified `src/hooks.ts`:
+  - Added import for `getEvolutionIntelligence` from intelligence module
+  - Added `session-intelligence-recommendations` SessionStart hook with priority 95
+  - Hook retrieves intelligence stats (patterns, RAG, error patterns)
+  - Builds context message with session mode, combined accuracy, and available sources
+  - Provides guidance on using intelligence tools
+- Updated `ROADMAP.md`:
+  - Added Phase 61: SessionStart Intelligence Integration
+
+**Intelligence SessionStart Hook Output:**
+```
+## Intelligence Ready
+
+Session mode: evolve
+Combined accuracy: 87%
+
+Available intelligence sources:
+- 8 patterns available with 98% avg success rate
+- 24 documents indexed for context enrichment
+- 12 error patterns learned for risk avoidance
+
+Use intelligence({action: 'recommend'}) for task-specific recommendations.
+Use intelligence({action: 'analyze', taskDescription: '...'}) for detailed analysis.
+```
+
+**Next steps:**
+- Consider integrating with learningTransfer for automatic similar session warnings
+- Consider integrating with capabilityGap for gap notifications
+
+---
+
 ## Day 86 — Regression Testing → Assess Integration (2026-04-03)
 
 **What happened:**

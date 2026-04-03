@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
+import { getEvolutionIntelligence } from "./intelligence.js";
 import { getIterationContextManager } from "./iteration-context.js";
 import { getLearningManager } from "./learning-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
@@ -156,6 +157,71 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 				return {
 					allow: true,
 					context: learningContext,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-intelligence-recommendations",
+		type: "SessionStart",
+		name: "Inject Intelligence Recommendations",
+		description:
+			"Injects proactive intelligence recommendations at session start for smarter task selection (Unified Intelligence Pattern)",
+		enabled: true,
+		priority: 95, // After learning output style (105), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const intelligence = getEvolutionIntelligence();
+
+			// Get session mode for context
+			const sessionMode = context.session?.mode || "evolve";
+
+			// Get intelligence stats
+			const stats = intelligence.getStats();
+
+			// Get proactive recommendations based on session mode
+			const recommendations: string[] = [];
+
+			// Add pattern recommendations
+			if (stats.patternStats.totalPatterns > 0) {
+				recommendations.push(
+					`- ${stats.patternStats.totalPatterns} patterns available with ${stats.patternStats.averageSuccessRate}% avg success rate`,
+				);
+			}
+
+			// Add RAG context
+			if (stats.ragStats.totalDocuments > 0) {
+				recommendations.push(
+					`- ${stats.ragStats.totalDocuments} documents indexed for context enrichment`,
+				);
+			}
+
+			// Add error pattern warnings
+			if (stats.errorPatternStats.totalPatterns > 0) {
+				recommendations.push(
+					`- ${stats.errorPatternStats.totalPatterns} error patterns learned for risk avoidance`,
+				);
+			}
+
+			// Build context message
+			if (recommendations.length > 0) {
+				const contextMessage = [
+					"## Intelligence Ready",
+					"",
+					`Session mode: ${sessionMode}`,
+					`Combined accuracy: ${stats.combinedAccuracy}%`,
+					"",
+					"Available intelligence sources:",
+					...recommendations,
+					"",
+					"Use intelligence({action: 'recommend'}) for task-specific recommendations.",
+					"Use intelligence({action: 'analyze', taskDescription: '...'}) for detailed analysis.",
+				].join("\n");
+
+				return {
+					allow: true,
+					context: contextMessage,
 				};
 			}
 

@@ -538,6 +538,15 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Regression summary in output — Show detailed regression analysis
 - [x] Statistics tracking — Track regression checks performed
 
+## Phase 61: SessionStart Intelligence Integration
+- [x] Intelligence SessionStart hook — Inject intelligence recommendations at session start
+- [x] Proactive pattern notification — Show available patterns with success rates
+- [x] RAG context notification — Show indexed documents for context enrichment
+- [x] Error pattern notification — Show learned error patterns for risk avoidance
+- [x] Combined accuracy display — Show overall intelligence accuracy
+- [x] Session mode context — Adapt recommendations to session mode (evolve/chat)
+- [x] Integration with existing hooks — Priority 95, between learning output style and memory load
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
