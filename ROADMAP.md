@@ -387,6 +387,15 @@ Planned improvements for evo.
 - [x] Bold design choices — Guidance on distinctive typography, intentional color, meaningful animations
 - [x] Statistics tracking — Track guidance provided, principles shown, contexts detected
 
+## Phase 46: Remote Execution Environment (SWE-ReX Pattern)
+- [x] RemoteExecutionManager module — Manage remote execution environments for sandboxed evolution
+- [x] remoteExecution tool — Tool for executing commands in various environments
+- [x] Environment adapters — Local, Docker, Modal, Remote execution support
+- [x] Shell session management — Interactive sessions for ipython, gdb, and other tools
+- [x] Docker environment support — Execute commands in Docker containers
+- [x] Multiple shell sessions — Run multiple interactive sessions in parallel
+- [x] Statistics tracking — Track executions, sessions, success rates by environment type
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

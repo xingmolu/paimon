@@ -45,6 +45,7 @@ import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reflectTool } from "./reflect-tool.js";
+import { remoteExecutionToolDef } from "./remote-execution-tool.js";
 import { repomapTool } from "./repomap-tool.js";
 import { rouletteTool } from "./roulette-tool.js";
 import { safetyGatesTool } from "./safety-gates-tool.js";
@@ -105,6 +106,7 @@ export const metaTools: AgentTool[] = [
 	selfHealingToolWrapper,
 	contextImportanceTool,
 	frontendDesignTool,
+	remoteExecutionToolDef,
 ];
 
 /**
@@ -411,3 +413,24 @@ export type {
 	FrontendDesignConfig,
 	FrontendDesignStats,
 } from "../frontend-design.js";
+export { remoteExecutionToolDef } from "./remote-execution-tool.js";
+export {
+	remoteExecutionTool,
+	getRemoteExecutionManager,
+	initRemoteExecutionManager,
+} from "../remote-execution.js";
+export type {
+	EnvironmentType,
+	ShellSessionState,
+	ExecutionResult,
+	ShellSession,
+	RemoteEnvironmentConfig,
+	RemoteEnvironment,
+	RemoteExecutionStats,
+	RemoteExecutionConfig,
+	EnvironmentAdapter,
+	LocalEnvironmentAdapter,
+	DockerEnvironmentAdapter,
+	RemoteExecutionManager,
+	RemoteExecutionToolArgs,
+} from "../remote-execution.js";

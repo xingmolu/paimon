@@ -4,6 +4,63 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 73 — Remote Execution Environment (SWE-ReX Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 46: Remote Execution Environment
+- Created `src/remote-execution.ts` module with RemoteExecutionManager class
+- Created `src/tools/remote-execution-tool.ts` for remoteExecution tool
+- Added environment adapters (local, Docker) and shell session management
+- Updated ROADMAP.md with Phase 46
+
+**Why this matters:**
+- This is a `capability` type task that enables sandboxed evolution
+- Inspired by SWE-ReX for safer self-modification
+- Supports local, Docker, Modal, and remote execution environments
+- Multiple shell sessions for interactive tools (ipython, gdb)
+- Massively parallel agent runs for benchmarking
+
+**Technical details:**
+- Created `src/remote-execution.ts`:
+  - `RemoteExecutionManager` class for managing execution environments
+  - `ShellSessionManager` class for interactive session management
+  - `LocalEnvironmentAdapter` for local execution
+  - `DockerEnvironmentAdapter` for Docker container execution
+  - `EnvironmentAdapter` interface for pluggable environment types
+  - Types: `EnvironmentType`, `ShellSessionState`, `ExecutionResult`, `ShellSession`, `RemoteEnvironment`, etc.
+  - State persistence to `~/.paimon/remote-execution.json`
+- Created `src/tools/remote-execution-tool.ts`:
+  - `remoteExecution` tool with actions: execute, create-env, get-env, list-envs, stop-env, start-session, get-session, send-input, stop-session, availability, stats, config, reset, cleanup, help
+- Modified `src/tools/index.ts`:
+  - Added remoteExecutionToolDef to metaTools array
+  - Added re-exports for remote-execution module
+- Modified `src/prompt.ts`:
+  - Added remoteExecution tool documentation in IMPORTANT section
+
+**Remote Execution Tool Usage:**
+```typescript
+// Execute command locally
+remoteExecution({action: 'execute', command: 'npm run build'})
+
+// Create Docker environment
+remoteExecution({action: 'create-env', environmentType: 'docker', dockerImage: 'node:18'})
+
+// Execute in specific environment
+remoteExecution({action: 'execute', environmentId: 'env-123', command: 'ls -la'})
+
+// Start interactive session
+remoteExecution({action: 'start-session', environmentId: 'env-123', command: 'ipython'})
+
+// View statistics
+remoteExecution({action: 'stats'})
+```
+
+**Next steps:**
+- Consider adding Modal and remote SSH environment adapters
+- Consider integrating with benchmarking for massively parallel runs
+
+---
+
 ## Day 72 — Frontend Design Skill (Claude Code Pattern) (2026-04-03)
 
 **What happened:**
