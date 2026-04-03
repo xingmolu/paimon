@@ -144,7 +144,14 @@ export interface SessionReplayConfig {
 	confidenceThreshold?: number;
 	/** Enable automatic pattern saving */
 	savePatterns?: boolean;
+	/** Enable proactive pattern feeding to auto-apply */
+	proactivePatternFeeding?: boolean;
 }
+
+/**
+ * Pattern feed callback type
+ */
+export type PatternFeedCallback = (patterns: ExtractedPattern[]) => void;
 
 /**
  * Replay result
@@ -181,6 +188,7 @@ export class SessionReplayManager {
 	private config: SessionReplayConfig;
 	private stats: ReplayStats;
 	private extractedPatterns: Map<string, ExtractedPattern>;
+	private patternFeedCallbacks: PatternFeedCallback[];
 
 	constructor(config: SessionReplayConfig = {}) {
 		this.config = {
@@ -189,10 +197,12 @@ export class SessionReplayManager {
 			maxPatternsPerSession: config.maxPatternsPerSession || 10,
 			confidenceThreshold: config.confidenceThreshold || 60,
 			savePatterns: config.savePatterns ?? true,
+			proactivePatternFeeding: config.proactivePatternFeeding ?? true,
 		};
 		this.dataDir = this.config.dataDir as string;
 		this.trajectoriesDir = this.config.trajectoriesDir as string;
 		this.extractedPatterns = new Map();
+		this.patternFeedCallbacks = [];
 		this.stats = this.initStats();
 		this.loadState();
 	}
@@ -564,11 +574,74 @@ export class SessionReplayManager {
 		patterns.push(...skillPatterns);
 
 		// Store patterns
-		for (const pattern of patterns.slice(0, maxPatterns)) {
+		const finalPatterns = patterns.slice(0, maxPatterns);
+		for (const pattern of finalPatterns) {
 			this.extractedPatterns.set(pattern.id, pattern);
 		}
 
-		return patterns.slice(0, maxPatterns);
+		// Proactively feed patterns to registered callbacks (for auto-apply integration)
+		if (this.config.proactivePatternFeeding && finalPatterns.length > 0) {
+			this.feedPatternsToCallbacks(finalPatterns);
+		}
+
+		return finalPatterns;
+	}
+
+	/**
+	 * Register a callback to receive patterns when extracted
+	 */
+	registerPatternFeedCallback(callback: PatternFeedCallback): void {
+		this.patternFeedCallbacks.push(callback);
+	}
+
+	/**
+	 * Unregister a pattern feed callback
+	 */
+	unregisterPatternFeedCallback(callback: PatternFeedCallback): void {
+		const index = this.patternFeedCallbacks.indexOf(callback);
+		if (index !== -1) {
+			this.patternFeedCallbacks.splice(index, 1);
+		}
+	}
+
+	/**
+	 * Feed patterns to all registered callbacks
+	 */
+	private feedPatternsToCallbacks(patterns: ExtractedPattern[]): void {
+		for (const callback of this.patternFeedCallbacks) {
+			try {
+				callback(patterns);
+			} catch {
+				// Ignore callback errors
+			}
+		}
+	}
+
+	/**
+	 * Feed all stored patterns to callbacks (for initialization)
+	 */
+	feedAllPatternsToCallbacks(): void {
+		if (!this.config.proactivePatternFeeding) return;
+
+		const allPatterns = Array.from(this.extractedPatterns.values());
+		if (allPatterns.length > 0) {
+			this.feedPatternsToCallbacks(allPatterns);
+		}
+	}
+
+	/**
+	 * Check if proactive pattern feeding is enabled
+	 */
+	isProactivePatternFeedingEnabled(): boolean {
+		return this.config.proactivePatternFeeding ?? false;
+	}
+
+	/**
+	 * Enable or disable proactive pattern feeding
+	 */
+	setProactivePatternFeeding(enabled: boolean): void {
+		this.config.proactivePatternFeeding = enabled;
+		this.saveState();
 	}
 
 	/**

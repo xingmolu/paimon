@@ -4,6 +4,76 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 85 — Session Replay → Auto-Apply Integration (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 59: Session Replay → Auto-Apply Integration
+- Added pattern feed callback system to SessionReplayManager
+- Updated PatternAutoApplier to receive patterns proactively
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables proactive pattern application
+- Creates a powerful feedback loop where patterns extracted from session replay are automatically fed to pattern auto-apply
+- When session replay extracts patterns from analyzing past sessions, they are now proactively pushed to the auto-apply system
+- This enables automatic pattern matching and suggestion at the start of new tasks
+- Reduces rework by reusing successful patterns from past sessions
+
+**Technical details:**
+- Modified `src/session-replay.ts`:
+  - Added `PatternFeedCallback` type for pattern push callbacks
+  - Added `proactivePatternFeeding` config option (default: true)
+  - Added `patternFeedCallbacks` array to store registered callbacks
+  - Added `registerPatternFeedCallback()` — Register to receive patterns when extracted
+  - Added `unregisterPatternFeedCallback()` — Unregister a callback
+  - Added `feedPatternsToCallbacks()` — Push patterns to all registered callbacks
+  - Added `feedAllPatternsToCallbacks()` — Feed all stored patterns (for initialization)
+  - Modified `extractPatternsFromSession()` — Now calls callbacks after extraction
+- Modified `src/pattern-auto-apply.ts`:
+  - Added `receivedPatterns` array to store patterns received from session replay
+  - Added `registerForPatternFeeds()` — Auto-register with session replay on construction
+  - Added `receivePatterns()` — Accept patterns from session replay
+  - Updated `matchPatterns()` — Now matches against both stored and received patterns
+  - Updated `loadState()` / `saveState()` — Persist received patterns
+  - Updated `getAvailablePatterns()` — Returns combined patterns from both sources
+- Updated `ROADMAP.md`:
+  - Added Phase 59: Session Replay → Auto-Apply Integration
+
+**Integration Flow:**
+```
+Session Replay               Pattern Auto-Apply
+     |                              |
+     | extractPatternsFromSession() |
+     |----------------------------->|
+     |      receivePatterns()       |
+     |<-----------------------------|
+     |                              |
+     |  matchPatterns(context)      |
+     |  (includes received patterns)|
+     |                              |
+```
+
+**Pattern Feed API Usage:**
+```typescript
+// Register for pattern feeds
+const replayManager = getSessionReplayManager();
+replayManager.registerPatternFeedCallback((patterns) => {
+  console.log(`Received ${patterns.length} patterns`);
+});
+
+// Feed all stored patterns
+replayManager.feedAllPatternsToCallbacks();
+
+// Check if proactive feeding is enabled
+replayManager.isProactivePatternFeedingEnabled();
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks for automatic pattern feeding
+- Consider adding LLM-based pattern quality scoring
+
+---
+
 ## Day 84 — Capability Gap Detection (2026-04-03)
 
 **What happened:**

@@ -166,13 +166,57 @@ export class PatternAutoApplier {
 	private dataPath: string;
 	private stats: AutoApplyStats;
 	private applicationHistory: PatternApplicationRecord[];
+	private receivedPatterns: ExtractedPattern[];
 
 	constructor(config?: Partial<PatternAutoApplyConfig>) {
 		this.config = { ...DEFAULT_CONFIG, ...config };
 		this.dataPath = join(homedir(), ".paimon", "pattern-auto-apply.json");
 		this.applicationHistory = [];
+		this.receivedPatterns = [];
 		this.stats = this.initStats();
 		this.loadState();
+		this.registerForPatternFeeds();
+	}
+
+	/**
+	 * Register to receive patterns from session replay
+	 */
+	private registerForPatternFeeds(): void {
+		// Lazy import to avoid circular dependency
+		try {
+			const replayManager = getSessionReplayManager();
+			replayManager.registerPatternFeedCallback((patterns) => {
+				this.receivePatterns(patterns);
+			});
+		} catch {
+			// Session replay not available yet
+		}
+	}
+
+	/**
+	 * Receive patterns from session replay
+	 */
+	receivePatterns(patterns: ExtractedPattern[]): void {
+		for (const pattern of patterns) {
+			// Only store high-confidence patterns
+			if (pattern.confidence >= this.config.autoApplyConfidenceThreshold) {
+				// Check if pattern already exists
+				const existingIndex = this.receivedPatterns.findIndex((p) => p.id === pattern.id);
+				if (existingIndex === -1) {
+					this.receivedPatterns.push(pattern);
+				} else {
+					// Update existing pattern with new data
+					this.receivedPatterns[existingIndex] = pattern;
+				}
+			}
+		}
+
+		// Keep only last 100 patterns
+		if (this.receivedPatterns.length > 100) {
+			this.receivedPatterns = this.receivedPatterns.slice(-100);
+		}
+
+		this.saveState();
 	}
 
 	/**
@@ -214,6 +258,9 @@ export class PatternAutoApplier {
 				if (state.applicationHistory) {
 					this.applicationHistory = state.applicationHistory;
 				}
+				if (state.receivedPatterns) {
+					this.receivedPatterns = state.receivedPatterns;
+				}
 				if (state.config) {
 					this.config = { ...this.config, ...state.config };
 				}
@@ -236,6 +283,7 @@ export class PatternAutoApplier {
 				config: this.config,
 				stats: this.stats,
 				applicationHistory: this.applicationHistory.slice(-100), // Keep last 100
+				receivedPatterns: this.receivedPatterns.slice(-100), // Keep last 100
 			};
 			writeFileSync(this.dataPath, JSON.stringify(state, null, 2));
 		} catch {
@@ -254,13 +302,21 @@ export class PatternAutoApplier {
 		const replayManager = getSessionReplayManager();
 		const allPatterns = replayManager.getPatterns();
 
-		if (allPatterns.length === 0) {
+		// Also include patterns received from proactive feeding
+		const combinedPatterns = [...allPatterns];
+		for (const receivedPattern of this.receivedPatterns) {
+			if (!combinedPatterns.find((p) => p.id === receivedPattern.id)) {
+				combinedPatterns.push(receivedPattern);
+			}
+		}
+
+		if (combinedPatterns.length === 0) {
 			return [];
 		}
 
 		const matches: PatternMatch[] = [];
 
-		for (const pattern of allPatterns) {
+		for (const pattern of combinedPatterns) {
 			const matchResult = this.calculatePatternMatch(pattern, context);
 			if (matchResult.similarityScore >= this.config.minSimilarityScore) {
 				matches.push(matchResult);
@@ -578,7 +634,16 @@ export class PatternAutoApplier {
 	 */
 	getAvailablePatterns(): ExtractedPattern[] {
 		const replayManager = getSessionReplayManager();
-		return replayManager.getPatterns();
+		const patterns = replayManager.getPatterns();
+
+		// Include patterns received from proactive feeding
+		for (const receivedPattern of this.receivedPatterns) {
+			if (!patterns.find((p) => p.id === receivedPattern.id)) {
+				patterns.push(receivedPattern);
+			}
+		}
+
+		return patterns;
 	}
 
 	/**

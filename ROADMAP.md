@@ -518,3 +518,16 @@ Planned improvements for evo.
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+## Phase 59: Session Replay → Auto-Apply Integration
+- [x] Pattern feed callback system — Register callbacks to receive patterns when extracted
+- [x] proactivePatternFeeding config option — Enable/disable automatic pattern feeding
+- [x] feedPatternsToCallbacks method — Push patterns to registered callbacks
+- [x] feedAllPatternsToCallbacks method — Feed all stored patterns (for initialization)
+- [x] PatternAutoApplier.receivePatterns method — Accept patterns from session replay
+- [x] Combined pattern matching — Match against both stored and received patterns
+- [x] Persistence of received patterns — Save received patterns to state
+- [x] Statistics tracking — Track patterns fed and received
+
+---
+
+Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
