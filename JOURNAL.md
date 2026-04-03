@@ -4,6 +4,73 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 83 — Evolution Regression Testing (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 57: Evolution Regression Testing
+- Created `src/regression-testing.ts` module with EvolutionRegressionTester class
+- Created `src/tools/regression-testing-tool.ts` for regressionTesting tool
+- Updated ROADMAP.md with Phase 57
+
+**Why this matters:**
+- This is a `capability` type task that enables catching breakages early after evolution changes
+- With 79 capabilities implemented, ensuring new capabilities don't break existing ones is critical
+- Runs all tests after evolution changes and creates snapshots of results
+- Tracks capability health (healthy/degraded/broken) based on test pass rates
+- Compares test results before/after changes to identify regressions
+- Reduces rework by catching breakages early
+
+**Technical details:**
+- Created `src/regression-testing.ts`:
+  - `EvolutionRegressionTester` class for managing regression testing
+  - `RegressionTestResult`, `CapabilityHealth`, `RegressionSnapshot`, `SnapshotComparison`, `RegressionTestingStats`, `RegressionTestingConfig` types
+  - `runTests()` - Run all tests and create snapshot
+  - `runAfterEvolution()` - Run tests after evolution iteration with comparison
+  - `getCapabilityHealth()` - Get health status for a capability
+  - `compareSnapshots()` - Compare two snapshots to identify regressions
+  - State persistence to `~/.paimon/regression-testing.json`
+- Created `src/tools/regression-testing-tool.ts`:
+  - `regressionTesting` tool with actions: run, run-after-evolution, health, health-all, health-by-status, snapshot, snapshots, compare, stats, config, update-config, clear, enable, disable, help
+- Modified `src/tools/index.ts`:
+  - Added regressionTestingToolDef to metaTools array
+  - Added re-exports for regression-testing module
+- Modified `src/prompt.ts`:
+  - Added regressionTesting tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 57: Evolution Regression Testing
+
+**Capability Health Status:**
+| Status | Pass Rate | Description |
+|--------|-----------|-------------|
+| healthy | ≥ 90% | Capability working well |
+| degraded | 70-89% | Some issues, needs attention |
+| broken | < 70% | Major issues, needs fix |
+| unknown | N/A | Not yet tested |
+
+**Regression Testing Tool Usage:**
+```typescript
+// Run all tests
+regressionTesting({action: 'run'})
+
+// Run after evolution iteration
+regressionTesting({action: 'run-after-evolution', iterationId: 'iter-123', taskDescription: 'Add capability', changes: ['src/new.ts']})
+
+// Get all capability health
+regressionTesting({action: 'health-all'})
+
+// Compare snapshots
+regressionTesting({action: 'compare', beforeId: 'snapshot-1', afterId: 'snapshot-2'})
+
+// View statistics
+regressionTesting({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with assess tool for automatic regression testing
+- Consider adding Stop hook for automatic test run after evolution
+
+---
+
 ## Day 82 — Evolution Cost Prediction (2026-04-03)
 
 **What happened:**

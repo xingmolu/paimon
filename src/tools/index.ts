@@ -23,6 +23,7 @@ import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { contextImportanceTool } from "./context-importance-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
+import { evolutionCostToolDef } from "./evolution-cost-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
@@ -47,6 +48,7 @@ import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reflectTool } from "./reflect-tool.js";
+import { regressionTestingToolDef } from "./regression-testing-tool.js";
 import { remoteExecutionToolDef } from "./remote-execution-tool.js";
 import { repomapTool } from "./repomap-tool.js";
 import { roleBasedAgentsToolDef } from "./role-based-agents-tool.js";
@@ -67,7 +69,6 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
-import { evolutionCostToolDef } from "./evolution-cost-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -125,6 +126,7 @@ export const metaTools: AgentTool[] = [
 	patternAutoApplyToolDef,
 	learningTransferToolDef,
 	evolutionCostToolDef,
+	regressionTestingToolDef,
 ];
 
 /**
@@ -601,3 +603,17 @@ export type {
 	EvolutionCostStats,
 	EvolutionCostConfig,
 } from "../evolution-cost.js";
+export { regressionTestingToolDef } from "./regression-testing-tool.js";
+export {
+	getRegressionTester,
+	initRegressionTester,
+	EvolutionRegressionTester,
+} from "../regression-testing.js";
+export type {
+	RegressionTestResult,
+	CapabilityHealth,
+	RegressionSnapshot,
+	SnapshotComparison,
+	RegressionTestingStats,
+	RegressionTestingConfig,
+} from "../regression-testing.js";

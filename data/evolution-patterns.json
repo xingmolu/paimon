@@ -16,9 +16,9 @@
       "sampleSize": 32,
       "examples": [
         {
-          "taskDescription": "Evolution Cost Prediction - EvolutionCostPredictor module for predicting effort/complexity before starting implementation, complexity scoring (simple, moderate, complex, very-complex), time estimation based on historical data, risk factor identification with mitigations, confidence scoring, learning from outcomes, evolutionCost tool",
+          "taskDescription": "Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions",
           "date": "2026-04-03",
-          "time": 25,
+          "time": 20,
           "skillsUsed": [
             "evolve"
           ],
@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "task-type-capability",
@@ -218,9 +218,9 @@
       "sampleSize": 77,
       "examples": [
         {
-          "taskDescription": "Evolution Cost Prediction - EvolutionCostPredictor module for predicting effort/complexity before starting implementation, complexity scoring (simple, moderate, complex, very-complex), time estimation based on historical data, risk factor identification with mitigations, confidence scoring, learning from outcomes, evolutionCost tool",
+          "taskDescription": "Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions",
           "date": "2026-04-03",
-          "time": 25,
+          "time": 20,
           "skillsUsed": [
             "evolve"
           ],
@@ -248,7 +248,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "time-pattern-quick",
@@ -297,7 +297,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -349,7 +349,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     },
     {
       "id": "task-type-reliability",
@@ -375,9 +375,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T19:19:14.328Z"
+      "lastUpdated": "2026-04-03T19:36:05.525Z"
     }
   ],
-  "lastUpdated": "2026-04-03T19:19:14.328Z",
+  "lastUpdated": "2026-04-03T19:36:05.525Z",
   "sessionCount": 80
 }

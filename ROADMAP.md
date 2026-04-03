@@ -494,6 +494,16 @@ Planned improvements for evo.
 - [x] Historical learning — Record actual outcomes to improve future predictions
 - [x] Statistics tracking — Track predictions, accuracy, complexity distribution, top risk factors
 
+## Phase 57: Evolution Regression Testing
+- [x] EvolutionRegressionTester module — Run regression tests after evolution changes
+- [x] regressionTesting tool — Tool for running tests and tracking capability health
+- [x] Test runner — Run all tests and create snapshot of results
+- [x] Capability health tracking — Track pass rate, last tested, status (healthy/degraded/broken)
+- [x] Snapshot comparison — Compare test results before/after changes
+- [x] Regression detection — Identify new failures, fixed tests, regressed tests
+- [x] Change summary — Generate summary of test changes with recommendations
+- [x] Statistics tracking — Track runs, snapshots, capability health distribution, common failures
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
