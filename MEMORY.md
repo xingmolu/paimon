@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact | ~15m | ✅ | TS (fixed) | No | High | evolve | automatic-self-evaluation, recursive-improvement, iteration-tracking |
 | 2026-04-03 | capability | Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | continuous-evolution-from-ide, ai-comment-detection, natural-workflow-integration |
 | 2026-04-03 | capability | Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool | ~20m | ✅ | lint (fixed) | No | High | evolve | recursive-improvement, meta-cognition, performance-tracking |
 | 2026-04-03 | reliability | Fix Hook Handler Restoration Bug - Fixed Stop hooks failing with TypeError: hook.handler is not a function. Root cause: JSON cannot serialize functions, so handlers were lost when loading from hooks.json. Solution: Restore handlers from defaults on load, strip handlers on save | ~10m | ✅ | none | No | High | evolve | stop-hook-reliability, ralph-loop-fix |
@@ -101,14 +102,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 67/75 = 89%
+- First Try Success Rate: 68/76 = 89%
 - Average Time: ~14 minutes
-- Rework Rate: 9/75 = 12%
+- Rework Rate: 9/76 = 12%
 
 ### Capability Metrics
-- Capability Tasks: 73/75 = 97%
-- High Impact Capabilities: 63/73 = 86%
-- Capability Velocity: 73 capabilities in 3 days = 24/day
+- Capability Tasks: 74/76 = 97%
+- High Impact Capabilities: 64/74 = 86%
+- Capability Velocity: 74 capabilities in 3 days = 25/day
 
 ### Error Analysis
 - TypeScript Errors: 4
@@ -126,6 +127,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Self-Evaluation Stop Hook Integration** - High impact, enables recursive improvement through automatic self-evaluation after each iteration via Stop hooks, iteration context tracking with task type/description/duration/errors/skills (Recursive Pattern)
 1. **Watch Mode/FileWatcher** - High impact, enables continuous evolution from IDE by detecting AI comment markers (# ai!, // ai?, etc.) in code files with 40+ language support, 6 action types, gitignore integration, debounced change handling (Aider watch pattern)
 1. **Self-Evaluation Tool** - High impact, enables recursive improvement through agent self-evaluation after iterations with 8 evaluation criteria, performance trends tracking, strength/weakness identification, capability gap detection (Recursive Pattern)
 1. **Synthetic Task Generation** - High impact, enables synthetic training data generation for SWE-agent training with 5 task types, 3 difficulty levels, template-based problem generation, training data export (SWE-smith pattern)

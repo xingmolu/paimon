@@ -215,6 +215,21 @@ export class SelfEvaluationManager {
 	}
 
 	/**
+	 * Check if self-evaluation is enabled
+	 */
+	isEnabled(): boolean {
+		return this.config.enabled;
+	}
+
+	/**
+	 * Enable or disable self-evaluation
+	 */
+	setEnabled(enabled: boolean): void {
+		this.config.enabled = enabled;
+		this.saveState();
+	}
+
+	/**
 	 * Score each evaluation criterion
 	 */
 	private scoreCriteria(iterationData: {

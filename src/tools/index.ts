@@ -520,3 +520,12 @@ export type {
 	WatchConfig,
 	WatchStats,
 } from "../watch.js";
+export {
+	getIterationContextManager,
+	initIterationContextManager,
+	IterationContextManager,
+} from "../iteration-context.js";
+export type {
+	IterationContext,
+	IterationContextConfig,
+} from "../iteration-context.js";

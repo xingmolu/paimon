@@ -4,6 +4,73 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 79 — Self-Evaluation Stop Hook Integration (Recursive Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 52: Self-Evaluation Stop Hook Integration
+- Created `src/iteration-context.ts` module with IterationContextManager class
+- Added Self-Evaluation Stop hook to hooks.ts
+- Updated ROADMAP.md with Phase 52
+
+**Why this matters:**
+- This is a `capability` type task that enables recursive improvement through automatic self-evaluation
+- Self-evaluation is now automatically triggered after each evolution iteration via Stop hooks
+- Iteration context tracking captures task type, description, duration, errors, skills used
+- Enables meta-cognition: agent can evaluate its own performance and improve
+
+**Technical details:**
+- Created `src/iteration-context.ts`:
+  - `IterationContextManager` class for tracking iteration data during sessions
+  - `IterationContext` interface with iterationId, startTime, endTime, taskType, taskDescription, etc.
+  - `startIteration()` - Start tracking a new iteration
+  - `endIteration()` - End iteration and calculate duration
+  - `recordError()`, `recordSkillUsed()`, `addNote()` - Record iteration events
+  - State persistence to `~/.paimon/iteration-context.json`
+- Updated `src/hooks.ts`:
+  - Added `self-evaluation-trigger` Stop hook with priority 200 (highest)
+  - Imports `getIterationContextManager` and `getSelfEvaluationManager`
+  - Hook triggers automatic self-evaluation on session stop
+  - Returns evaluation summary with score, strengths, weaknesses, gaps
+- Updated `src/self-evaluation.ts`:
+  - Added `isEnabled()` method for checking if self-evaluation is enabled
+  - Added `setEnabled()` method for enabling/disabling
+- Updated `src/tools/index.ts`:
+  - Added exports for iteration-context module
+- Updated `ROADMAP.md`:
+  - Added Phase 52: Self-Evaluation Stop Hook Integration
+
+**Self-Evaluation Stop Hook:**
+```typescript
+// Hook triggers automatically on session stop
+{
+  id: "self-evaluation-trigger",
+  type: "Stop",
+  name: "Trigger Self-Evaluation",
+  priority: 200, // Highest priority
+  handler: (context) => {
+    // End iteration and get context
+    // Perform self-evaluation with 8 criteria
+    // Return evaluation summary
+  }
+}
+```
+
+**Iteration Context Tracking:**
+| Method | Description |
+|--------|-------------|
+| startIteration() | Start tracking new iteration |
+| endIteration() | End iteration, calculate duration |
+| recordError() | Record error during iteration |
+| recordSkillUsed() | Record skill used during iteration |
+| getCurrentIteration() | Get current iteration context |
+| getRecentIterations() | Get recent completed iterations |
+
+**Next steps:**
+- Consider integrating with SessionStart hooks to automatically start iteration tracking
+- Consider adding LLM-based qualitative evaluation
+
+---
+
 ## Day 78 — Watch Mode/FileWatcher (Aider Pattern) (2026-04-03)
 
 **What happened:**

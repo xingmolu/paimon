@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.33333333333333,
+    "current": 93.42105263157895,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.33333333333333,
+        "value": 93.42105263157895,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.33333333333333,
+    "weeklyAverage": 93.42105263157895,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.56,
+    "averageMinutes": 16.539473684210527,
     "byTaskType": {
-      "capability": 16.97222222222222,
+      "capability": 16.945205479452056,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.56,
+        "value": 16.539473684210527,
         "trend": "stable"
       }
     ],
@@ -28,10 +28,10 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 48,
+    "totalErrors": 49,
     "byType": {
+      "TS (fixed)": 3,
       "lint (fixed)": 27,
-      "TS (fixed)": 2,
       "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
       "lint (fixed), TS (fixed)": 1,
@@ -39,6 +39,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\"",
       "2026-04-03: lint (fixed) in \"Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool\"",
       "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\"",
       "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\"",
@@ -47,13 +48,12 @@
       "2026-04-03: lint (fixed) in \"Frontend Design Skill (Claude Code Pattern) - Guidance for distinctive frontend interfaces with 12 design principles (typography, color, spacing, animation, layout, interaction, accessibility, performance), context detection, anti-pattern warnings, frontendDesign tool\"",
       "2026-04-03: lint (fixed) in \"Self-Healing Code Patterns (OpenHands/Aider Pattern) - SelfHealingManager module for automatic detection and correction of common error patterns, 12 default patterns, 4 fix strategies, confidence scoring, selfHealing tool\"",
       "2026-04-03: lint (fixed) in \"Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) - Composable agent definitions with typed arguments, agent chaining, multi-agent swarms (parallel/sequential/race/all-to-all), lifecycle hooks, and built-in agents\"",
-      "2026-04-03: lint (fixed) in \"Plugin Development Toolkit (Claude Code Pattern) - 8-phase workflow for plugin development with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer)\"",
-      "2026-04-03: lint (fixed) in \"PR Review Toolkit (Claude Code Pattern) - Comprehensive PR review with 6 specialized agents: comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier with confidence-based scoring\""
+      "2026-04-03: lint (fixed) in \"Plugin Development Toolkit (Claude Code Pattern) - 8-phase workflow for plugin development with 7 specialized skills (hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev) and 3 agents (plugin-validator, agent-creator, skill-reviewer)\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 48,
+        "value": 49,
         "trend": "stable"
       }
     ],
@@ -68,9 +68,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 73,
-      "successRate": 93.15068493150685,
-      "averageTime": 16.80821917808219,
+      "usageCount": 74,
+      "successRate": 93.24324324324324,
+      "averageTime": 16.783783783783782,
       "trend": "improving"
     },
     {
@@ -142,17 +142,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 36
+        "value": 36.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 72,
-    "highImpactCount": 64,
-    "highImpactPercentage": 88.88888888888889
+    "totalCapabilities": 73,
+    "highImpactCount": 65,
+    "highImpactPercentage": 89.04109589041096
   },
-  "lastUpdated": "2026-04-03T15:02:49.257Z",
-  "iterationsAnalyzed": 75
+  "lastUpdated": "2026-04-03T15:13:57.942Z",
+  "iterationsAnalyzed": 76
 }

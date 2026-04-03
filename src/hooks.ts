@@ -2,10 +2,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
+import { getIterationContextManager } from "./iteration-context.js";
 import { getLearningManager } from "./learning-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 import { getSecurityGuidanceManager } from "./security-guidance.js";
+import { getSelfEvaluationManager } from "./self-evaluation.js";
 
 /**
  * Hook system for intercepting and validating tool calls
@@ -214,6 +216,66 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
  * Default Stop hooks for cleanup
  */
 const DEFAULT_STOP_HOOKS: Hook[] = [
+	{
+		id: "self-evaluation-trigger",
+		type: "Stop",
+		name: "Trigger Self-Evaluation",
+		description:
+			"Automatically triggers self-evaluation after each evolution iteration for recursive improvement (Recursive Pattern)",
+		enabled: true,
+		priority: 200, // Highest priority - runs first to capture evaluation
+		handler: (context: HookContext): HookResult => {
+			const selfEvalManager = getSelfEvaluationManager();
+			const iterContextManager = getIterationContextManager();
+
+			// Check if auto-evaluation is enabled
+			if (!selfEvalManager.isEnabled() || !iterContextManager.isEnabled()) {
+				return { allow: true };
+			}
+
+			// Check if there's a current iteration to evaluate
+			const currentIteration = iterContextManager.getCurrentIteration();
+			if (!currentIteration) {
+				return { allow: true };
+			}
+
+			// Determine success from stop reason
+			const isSuccess = !context.reason?.toLowerCase().includes("fail");
+			const isUserStop = context.reason?.toLowerCase().includes("user");
+
+			// End the iteration and get final context
+			const finalContext = iterContextManager.endIteration({
+				success: isSuccess,
+				firstTry: currentIteration.errors.length === 0 && isSuccess,
+				rework: currentIteration.notes.some((n) => n.toLowerCase().includes("rework")),
+				impact: "Medium", // Default, would be set by agent in real implementation
+			});
+
+			if (!finalContext) {
+				return { allow: true };
+			}
+
+			// Perform self-evaluation
+			const evaluation = selfEvalManager.evaluate({
+				iterationId: finalContext.iterationId,
+				taskType: finalContext.taskType,
+				taskDescription: finalContext.taskDescription,
+				durationMinutes: finalContext.durationMinutes || 0,
+				success: finalContext.success || false,
+				errors: finalContext.errors,
+				skillsUsed: finalContext.skillsUsed,
+				firstTry: finalContext.firstTry || false,
+				rework: finalContext.rework || false,
+				impact: finalContext.impact || "Medium",
+			});
+
+			// Return evaluation summary
+			return {
+				allow: true,
+				context: `Self-Evaluation: Score ${evaluation.overallScore}/100 (${evaluation.strengths.length} strengths, ${evaluation.weaknesses.length} weaknesses, ${evaluation.capabilityGaps.length} gaps identified)`,
+			};
+		},
+	},
 	{
 		id: "ralph-loop-intercept",
 		type: "Stop",

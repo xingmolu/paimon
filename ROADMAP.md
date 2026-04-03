@@ -446,6 +446,15 @@ Planned improvements for evo.
 - [x] Debounced change handling — Prevent rapid-fire updates with configurable debounce interval
 - [x] Statistics tracking — Track files watched, changes detected, comments processed, actions triggered
 
+## Phase 52: Self-Evaluation Stop Hook Integration (Recursive Pattern)
+- [x] IterationContext module — Track iteration data during evolution sessions (task type, description, duration, errors, skills used)
+- [x] Self-Evaluation Stop hook — Automatically trigger self-evaluation after each iteration
+- [x] Iteration tracking — Start/end iteration with success status, first try, rework, impact tracking
+- [x] Error recording — Record errors encountered during iteration
+- [x] Skill tracking — Track skills used during iteration
+- [x] Automatic evaluation — Perform self-evaluation with 8 criteria on session stop
+- [x] Statistics tracking — Track iterations by task type, average duration, top skills
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
