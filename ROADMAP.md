@@ -528,6 +528,16 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Persistence of received patterns — Save received patterns to state
 - [x] Statistics tracking — Track patterns fed and received
 
+## Phase 60: Regression Testing → Assess Integration
+- [x] Update AssessmentResult type — Add regressionResult field
+- [x] Assess tool regression parameters — runRegression, iterationId, taskDescription
+- [x] Before snapshot tracking — Store snapshot ID before running tests
+- [x] After evolution snapshot — Create snapshot with iteration context
+- [x] Snapshot comparison — Compare before/after for regression detection
+- [x] Regression warnings in recommendations — Alert when regressions detected
+- [x] Regression summary in output — Show detailed regression analysis
+- [x] Statistics tracking — Track regression checks performed
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

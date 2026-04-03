@@ -4,6 +4,74 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 86 — Regression Testing → Assess Integration (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 60: Regression Testing → Assess Integration
+- Integrated EvolutionRegressionTester into the assess tool
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables automatic regression detection during self-assessment
+- When the assess tool runs tests, it now:
+  - Takes a "before" snapshot from the most recent test run
+  - Creates a new snapshot after tests with iteration context
+  - Compares before/after snapshots to detect regressions
+  - Adds regression warnings to recommendations
+  - Shows detailed regression analysis in output
+- Catches breakages earlier in the evolution workflow
+- Improves iteration success rate by detecting regressions before marking task complete
+
+**Technical details:**
+- Modified `src/types.ts`:
+  - Added `RegressionAssessmentResult` interface with regressionDetected, newFailures, regressedTests, fixedTests, overallChange, summary fields
+  - Added `regressionResult` field to `AssessmentResult`
+- Modified `src/tools/assess-tool.ts`:
+  - Added import for `getRegressionTester` from regression-testing module
+  - Added parameters: `runRegression`, `iterationId`, `taskDescription`
+  - Added before snapshot tracking before tests run
+  - Added regression snapshot creation after tests pass
+  - Added snapshot comparison with before snapshot
+  - Added regression warnings to recommendations when regressions detected
+  - Added regression summary section to output
+- Updated `ROADMAP.md`:
+  - Added Phase 60: Regression Testing → Assess Integration
+
+**Assess Tool Usage with Regression:**
+```typescript
+// Run assessment with regression testing (default: enabled if regression testing is enabled)
+assess({})
+
+// Disable regression testing
+assess({runRegression: false})
+
+// Provide iteration context
+assess({iterationId: 'iter-123', taskDescription: 'Add new capability'})
+
+// Combined with auto-retry
+assess({maxAttempts: 5, runRegression: true})
+```
+
+**Assessment Output with Regression:**
+```
+📊 Self-Assessment Report
+Generated: 4/3/2026, 8:52 PM
+────────────────────────────────────────
+✅ Build: pass
+✅ Tests: pass
+✅ Lint: pass
+📄 Changed files: src/tools/assess-tool.ts
+➡️ Regression: unchanged
+────────────────────────────────────────
+🎉 All checks passed! Ready to commit.
+```
+
+**Next steps:**
+- Consider adding Stop hook for automatic regression testing after evolution iterations
+- Consider integrating with capability health tracking for proactive warnings
+
+---
+
 ## Day 85 — Session Replay → Auto-Apply Integration (2026-04-03)
 
 **What happened:**

@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.90243902439023,
+    "current": 93.97590361445783,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.90243902439023,
+        "value": 93.97590361445783,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.90243902439023,
+    "weeklyAverage": 93.97590361445783,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.79268292682927,
+    "averageMinutes": 16.771084337349397,
     "byTaskType": {
-      "capability": 17.17721518987342,
+      "capability": 17.15,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.79268292682927,
+        "value": 16.771084337349397,
         "trend": "stable"
       }
     ],
@@ -28,18 +28,19 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 54,
+    "totalErrors": 55,
     "byType": {
+      "lint (fixed)": 28,
       "TS (fixed), lint (fixed)": 2,
       "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
-      "lint (fixed)": 27,
       "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: lint (fixed) in \"Regression Testing → Assess Integration - EvolutionRegressionTester integration with assess tool, before/after snapshot comparison, regression detection during self-assessment, regression warnings in recommendations, RegressionAssessmentResult type, runRegression/iterationId/taskDescription parameters\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions\"",
       "2026-04-03: lint (fixed), TS (fixed) in \"Cross-Session Learning Transfer (RAG Enhancement Pattern) - LearningTransferManager module for automatically transferring learnings between related tasks, task similarity detection with keyword/skill/category matching, session learning extraction from MEMORY.md scorecard, transfer recommendations with risk factors, proactive context injection, learningTransfer tool\"",
@@ -48,13 +49,12 @@
       "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\"",
       "2026-04-03: lint (fixed) in \"Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool\"",
       "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\"",
-      "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\"",
-      "2026-04-03: TS (fixed) in \"Task Tracking Tool (OpenHands SDK Pattern) - TaskTrackingManager module for tracking task progress, dependencies, completion state with 18 actions (start, add, update, complete, fail, get, list, dependencies, subtasks, progress, summary, next, sessions, set-session, clear, clear-all, stats), automatic blocking/unblocking of dependent tasks, subtask support, time tracking, taskTracking tool\""
+      "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 54,
+        "value": 55,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 80,
-      "successRate": 93.75,
-      "averageTime": 17.025,
+      "usageCount": 81,
+      "successRate": 93.82716049382715,
+      "averageTime": 17,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 39.5
+        "value": 40
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 79,
-    "highImpactCount": 71,
-    "highImpactPercentage": 89.87341772151899
+    "totalCapabilities": 80,
+    "highImpactCount": 72,
+    "highImpactPercentage": 90
   },
-  "lastUpdated": "2026-04-03T20:46:58.399Z",
-  "iterationsAnalyzed": 82
+  "lastUpdated": "2026-04-03T20:56:07.829Z",
+  "iterationsAnalyzed": 83
 }

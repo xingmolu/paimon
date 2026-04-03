@@ -22,6 +22,24 @@ export interface PlanState {
 }
 
 /**
+ * Regression testing result for assessment
+ */
+export interface RegressionAssessmentResult {
+	/** Whether a regression was detected */
+	regressionDetected: boolean;
+	/** Number of new test failures */
+	newFailures: number;
+	/** Number of regressed tests (previously passing, now failing) */
+	regressedTests: number;
+	/** Number of fixed tests */
+	fixedTests: number;
+	/** Overall change indicator */
+	overallChange: "improved" | "degraded" | "unchanged" | "mixed" | "none";
+	/** Summary message */
+	summary: string;
+}
+
+/**
  * Assessment result for self-review
  */
 export interface AssessmentResult {
@@ -33,6 +51,8 @@ export interface AssessmentResult {
 	recommendations: string[];
 	attempts: number;
 	errorPatterns?: ErrorPattern[];
+	/** Regression testing results (if enabled) */
+	regressionResult?: RegressionAssessmentResult;
 }
 
 /**
