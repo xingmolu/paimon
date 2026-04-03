@@ -37,6 +37,7 @@ import { parallelTool } from "./parallel-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
 import { pluginsTool } from "./plugins-tool.js";
+import { pluginDevTool } from "./plugin-dev-tool.js";
 import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
@@ -95,6 +96,7 @@ export const metaTools: AgentTool[] = [
 	learningOutputStyleTool,
 	featureDevTool,
 	prReviewToolkitTool,
+	pluginDevTool,
 ];
 
 /**
@@ -313,3 +315,20 @@ export type {
 	ReviewSession,
 	ReviewResult,
 } from "../pr-review-toolkit.js";
+export { pluginDevTool } from "./plugin-dev-tool.js";
+export {
+	PluginDevManager,
+} from "../plugin-dev.js";
+export type {
+	PluginDevPhase,
+	PluginSkillType,
+	PluginAgentType,
+	PluginComponentType,
+	PluginComponentSpec,
+	PhaseState,
+	PluginDevState,
+	PluginSkillDef,
+	PluginAgentDef,
+	PluginDevConfig,
+	PluginDevStats,
+} from "../plugin-dev.js";

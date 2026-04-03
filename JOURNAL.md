@@ -4,6 +4,71 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 69 — Plugin Development Toolkit (Claude Code Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 41: Plugin Development Toolkit
+- Created `src/plugin-dev.ts` module with PluginDevManager class
+- Created `src/tools/plugin-dev-tool.ts` for pluginDev tool
+- Added 7 specialized skills and 3 agents
+- Updated ROADMAP.md with Phase 41
+
+**Why this matters:**
+- This is a `capability` type task that enables creating new capabilities
+- 8-phase workflow for structured plugin development: Discovery → Component Planning → Detailed Design → Structure Creation → Component Implementation → Validation → Testing → Documentation
+- 7 specialized skills: hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev
+- 3 agents: plugin-validator, agent-creator, skill-reviewer
+- Component management for commands, agents, skills, hooks, and MCP servers
+
+**Technical details:**
+- Created `src/plugin-dev.ts`:
+  - `PluginDevManager` class for managing plugin development workflow
+  - `PluginDevPhase`, `PluginSkillType`, `PluginAgentType`, `PluginComponentType` types
+  - `PluginComponentSpec`, `PhaseState`, `PluginDevState` interfaces
+  - `PluginSkillDef`, `PluginAgentDef`, `PluginDevConfig`, `PluginDevStats` interfaces
+  - 7 default skills with trigger phrases and core topics
+  - 3 default agents with inputs/outputs
+  - State persistence to `~/.paimon/plugin-dev.json`
+- Created `src/tools/plugin-dev-tool.ts`:
+  - `pluginDev` tool with actions: start, phase, progress, status, sessions, skills, skill, agents, agent, guidance, stats, config, reset, clear, help
+- Modified `src/tools/index.ts`:
+  - Added pluginDevTool to metaTools array
+  - Added re-exports for plugin-dev module
+- Modified `src/prompt.ts`:
+  - Added pluginDev tool documentation in IMPORTANT section
+
+**Plugin Development Skills:**
+| Skill | Description | Triggers |
+|-------|-------------|----------|
+| hook-dev | Advanced hooks API | create a hook, PreToolUse hook |
+| mcp-integration | MCP server integration | add MCP server, .mcp.json |
+| plugin-structure | Plugin organization | plugin structure, plugin.json |
+| plugin-settings | Configuration patterns | plugin settings, .local.md |
+| command-dev | Slash commands | create a slash command |
+| agent-dev | Agent creation | create an agent |
+| skill-dev | Skill development | create a skill, SKILL.md |
+
+**Plugin Development Toolkit Usage:**
+```typescript
+// Start a plugin development session
+pluginDev({action: 'start', description: 'Create a todo management plugin'})
+
+// Progress through phases
+pluginDev({action: 'progress'})
+
+// View all skills
+pluginDev({action: 'skills'})
+
+// View all agents
+pluginDev({action: 'agents'})
+```
+
+**Next steps:**
+- Consider integrating with LLM for intelligent guidance
+- Consider adding validation scripts for plugin structure
+
+---
+
 ## Day 68 — PR Review Toolkit (Claude Code Pattern) (2026-04-03)
 
 **What happened:**
