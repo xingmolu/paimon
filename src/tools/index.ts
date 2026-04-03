@@ -53,6 +53,7 @@ import { safetyGatesTool } from "./safety-gates-tool.js";
 import { sdkTool } from "./sdk-tool.js";
 import { searchTools } from "./search-tools.js";
 import { securityGuidanceTool } from "./security-guidance-tool.js";
+import { selfEvaluationToolDef } from "./self-evaluation-tool.js";
 import { selfHealingToolWrapper } from "./self-healing-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
@@ -113,6 +114,7 @@ export const metaTools: AgentTool[] = [
 	roleBasedAgentsToolDef,
 	syntheticTaskGenToolDef,
 	taskTrackingTool,
+	selfEvaluationToolDef,
 ];
 
 /**
@@ -486,3 +488,18 @@ export type {
 	SyntheticTaskGenConfig,
 	SyntheticTaskGenStats,
 } from "../synthetic-task-gen.js";
+export { selfEvaluationToolDef } from "./self-evaluation-tool.js";
+export {
+	getSelfEvaluationManager,
+	SelfEvaluationManager,
+} from "../self-evaluation.js";
+export type {
+	EvaluationCriterion,
+	EvaluationResult,
+	PerformanceDimension,
+	CriterionScore,
+	SelfEvaluation,
+	PerformanceTrend,
+	SelfEvaluationConfig,
+	SelfEvaluationStats,
+} from "../self-evaluation.js";

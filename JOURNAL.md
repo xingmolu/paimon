@@ -4,6 +4,90 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 77 — Self-Evaluation Tool (Recursive Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 50: Self-Evaluation Tool
+- Created `src/self-evaluation.ts` module with SelfEvaluationManager class
+- Created `src/tools/self-evaluation-tool.ts` for selfEvaluation tool
+- Added 24 tests for SelfEvaluation functionality
+- Updated ROADMAP.md with Phase 50
+
+**Why this matters:**
+- This is a `capability` type task that enables recursive improvement through agent self-evaluation
+- Agent evaluates its own performance after each evolution iteration
+- 8 evaluation criteria: task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality
+- 5 result categories: excellent (≥90), good (≥75), adequate (≥60), needs_improvement (≥40), poor (<40)
+- Performance trends tracking across 7 dimensions
+- Strength/weakness identification from recent evaluations
+- Capability gap detection for self-awareness
+- Recommendations for improvement
+
+**Technical details:**
+- Created `src/self-evaluation.ts`:
+  - `SelfEvaluationManager` class for managing agent self-evaluation
+  - `EvaluationCriterion`, `EvaluationResult`, `PerformanceDimension` types
+  - `CriterionScore`, `SelfEvaluation`, `PerformanceTrend` interfaces
+  - 8 criterion scoring methods with weighted calculation
+  - `evaluate()` - Perform comprehensive self-evaluation after iteration
+  - `getPerformanceTrends()` - Track trends over time
+  - `getCurrentStrengths()`, `getCurrentWeaknesses()` - Identify patterns
+  - State persistence to `~/.paimon/self-evaluation.json`
+- Created `src/tools/self-evaluation-tool.ts`:
+  - `selfEvaluation` tool with actions: evaluate, history, evaluation, strengths, weaknesses, recommendations, trends, stats, config, update-config, clear, reset, enable, disable, help
+- Modified `src/tools/index.ts`:
+  - Added selfEvaluationToolDef to metaTools array
+  - Added re-exports for self-evaluation module
+- Modified `src/prompt.ts`:
+  - Added selfEvaluation tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 50: Self-Evaluation Tool
+
+**Evaluation Criteria:**
+| Criterion | Description |
+|-----------|-------------|
+| task_success | Task completion success (first try bonus) |
+| time_efficiency | Duration vs expected time |
+| error_handling | Error count and rework |
+| skill_usage | Skill selection effectiveness |
+| code_quality | Output code quality |
+| learning_quality | Learning capture quality |
+| capability_gap | Capability coverage |
+| planning_quality | Planning effectiveness |
+
+**Self-Evaluation Tool Usage:**
+```typescript
+// Evaluate after iteration
+selfEvaluation({
+  action: 'evaluate',
+  iterationId: 'iter-123',
+  taskType: 'capability',
+  taskDescription: 'Add self-evaluation tool',
+  durationMinutes: 20,
+  success: true,
+  errors: ['lint'],
+  skillsUsed: ['evolve'],
+  firstTry: true,
+  rework: false,
+  impact: 'High'
+})
+
+// View statistics
+selfEvaluation({action: 'stats'})
+
+// Get strengths
+selfEvaluation({action: 'strengths'})
+
+// View performance trends
+selfEvaluation({action: 'trends'})
+```
+
+**Next steps:**
+- Consider integrating with Stop hooks for automatic evaluation after each iteration
+- Consider adding LLM-based qualitative evaluation
+
+---
+
 ## Day 76 — Fix Hook Handler Restoration Bug (2026-04-03)
 
 **What happened:**

@@ -13,8 +13,18 @@
       "firstTryRate": 100,
       "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 26,
+      "sampleSize": 27,
       "examples": [
+        {
+          "taskDescription": "Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool",
+          "date": "2026-04-03",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Fix Hook Handler Restoration Bug - Fixed Stop hooks failing with TypeError: hook.handler is not a function. Root cause: JSON cannot serialize functions, so handlers were lost when loading from hooks.json. Solution: Restore handlers from defaults on load, strip handlers on save",
           "date": "2026-04-03",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Context Importance Scoring (Aider ChatSummary Pattern) - Intelligent message importance scoring for smarter truncation, 8 importance factors, content type classification, truncation recommendations with estimated savings, contextImportance tool",
-          "date": "2026-04-03",
-          "time": 20,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.553Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.553Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.553Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.553Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,18 @@
       "firstTryRate": 93,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 70,
+      "sampleSize": 71,
       "examples": [
+        {
+          "taskDescription": "Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool",
+          "date": "2026-04-03",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool",
           "date": "2026-04-03",
@@ -237,29 +247,18 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Role-Based Multi-Agent Protocol (MetaGPT Pattern) - Specialized agent roles (ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer) with SOP-based workflow coordination, 3 default workflows, artifact management, roleBasedAgents tool",
-          "date": "2026-04-03",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.554Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "time-pattern-quick",
       "type": "time-pattern",
-      "description": "Tasks under 8min have 100% success",
+      "description": "Tasks under 9min have 100% success",
       "characteristics": {
         "timeRange": {
           "min": 0,
-          "max": 8
+          "max": 9
         }
       },
       "successRate": 100,
@@ -299,7 +298,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.554Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -351,7 +350,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.553Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     },
     {
       "id": "task-type-reliability",
@@ -377,9 +376,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T13:30:27.554Z"
+      "lastUpdated": "2026-04-03T13:53:24.801Z"
     }
   ],
-  "lastUpdated": "2026-04-03T13:30:27.554Z",
-  "sessionCount": 73
+  "lastUpdated": "2026-04-03T13:53:24.801Z",
+  "sessionCount": 74
 }

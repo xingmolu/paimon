@@ -426,6 +426,16 @@ Planned improvements for evo.
 - [x] Training data export — Export in SWE-bench, SWE-smith, or custom formats
 - [x] Statistics tracking — Track generations by type, difficulty, validation rates
 
+## Phase 50: Self-Evaluation Tool (Recursive Pattern)
+- [x] SelfEvaluationManager module — Agent self-evaluation for recursive improvement
+- [x] selfEvaluation tool — Tool for evaluating own performance after iterations
+- [x] 8 evaluation criteria — task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality
+- [x] Result categories — excellent, good, adequate, needs_improvement, poor with configurable thresholds
+- [x] Performance trends — Track trends across 7 dimensions over time
+- [x] Capability gap detection — Identify missing capabilities from iteration analysis
+- [x] Strength/weakness tracking — Track current strengths and weaknesses from recent evaluations
+- [x] Statistics tracking — Track evaluations, scores, trends, and capability gaps
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
