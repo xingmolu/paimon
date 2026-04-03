@@ -13,8 +13,8 @@
  */
 
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { homedir } from "node:os";
+import { join } from "node:path";
 import type { Trajectory, TrajectoryStep } from "./trajectory.js";
 
 /**
@@ -426,9 +426,8 @@ export class SessionReplayManager {
 				lines.push(`**Parameters:** ${JSON.stringify(step.toolCall.parameters, null, 0)}`);
 			}
 			if (step.toolOutput) {
-				const output = step.toolOutput.length > 300
-					? `${step.toolOutput.slice(0, 300)}...`
-					: step.toolOutput;
+				const output =
+					step.toolOutput.length > 300 ? `${step.toolOutput.slice(0, 300)}...` : step.toolOutput;
 				lines.push(`**Output:** ${output}`);
 			}
 			if (step.isError) {
@@ -445,7 +444,9 @@ export class SessionReplayManager {
 	 */
 	private formatStepsReplay(trajectory: Trajectory): string {
 		const lines: string[] = ["## Steps Replay\n"];
-		lines.push(`Session: ${trajectory.metadata.success ? "✅" : "❌"} | ${trajectory.metadata.totalSteps} steps\n`);
+		lines.push(
+			`Session: ${trajectory.metadata.success ? "✅" : "❌"} | ${trajectory.metadata.totalSteps} steps\n`,
+		);
 
 		for (const step of trajectory.steps) {
 			const status = step.isError ? "⚠️" : "→";
@@ -537,7 +538,10 @@ export class SessionReplayManager {
 	/**
 	 * Extract patterns from a session
 	 */
-	private extractPatternsFromSession(trajectory: Trajectory, sessionName: string): ExtractedPattern[] {
+	private extractPatternsFromSession(
+		trajectory: Trajectory,
+		sessionName: string,
+	): ExtractedPattern[] {
 		const patterns: ExtractedPattern[] = [];
 		const maxPatterns = this.config.maxPatternsPerSession!;
 
@@ -570,7 +574,10 @@ export class SessionReplayManager {
 	/**
 	 * Extract tool sequence pattern
 	 */
-	private extractToolSequencePattern(trajectory: Trajectory, sessionName: string): ExtractedPattern | null {
+	private extractToolSequencePattern(
+		trajectory: Trajectory,
+		sessionName: string,
+	): ExtractedPattern | null {
 		const toolSteps = trajectory.steps.filter((s) => s.toolCall);
 		if (toolSteps.length < 3) return null;
 
@@ -592,7 +599,10 @@ export class SessionReplayManager {
 	/**
 	 * Extract error recovery patterns
 	 */
-	private extractErrorRecoveryPatterns(trajectory: Trajectory, sessionName: string): ExtractedPattern[] {
+	private extractErrorRecoveryPatterns(
+		trajectory: Trajectory,
+		sessionName: string,
+	): ExtractedPattern[] {
 		const patterns: ExtractedPattern[] = [];
 		const errorSteps = trajectory.steps.filter((s) => s.isError);
 
@@ -626,14 +636,17 @@ export class SessionReplayManager {
 	/**
 	 * Extract decision point patterns
 	 */
-	private extractDecisionPointPatterns(trajectory: Trajectory, sessionName: string): ExtractedPattern[] {
+	private extractDecisionPointPatterns(
+		trajectory: Trajectory,
+		sessionName: string,
+	): ExtractedPattern[] {
 		const patterns: ExtractedPattern[] = [];
 		const decisionKeywords = ["select", "choose", "decide", "which", "best", "optimal"];
 
 		for (const step of trajectory.steps) {
 			if (step.assistantResponse) {
 				const hasDecision = decisionKeywords.some((k) =>
-					step.assistantResponse.toLowerCase().includes(k)
+					step.assistantResponse.toLowerCase().includes(k),
 				);
 				if (hasDecision) {
 					const id = `decision-${sessionName}-${step.step}`;
@@ -660,14 +673,17 @@ export class SessionReplayManager {
 	/**
 	 * Extract skill usage patterns
 	 */
-	private extractSkillUsagePatterns(trajectory: Trajectory, sessionName: string): ExtractedPattern[] {
+	private extractSkillUsagePatterns(
+		trajectory: Trajectory,
+		sessionName: string,
+	): ExtractedPattern[] {
 		const patterns: ExtractedPattern[] = [];
 		const skillKeywords = ["skill", "evolve", "research", "self-improve"];
 
 		for (const step of trajectory.steps) {
 			if (step.assistantResponse) {
 				const usedSkills = skillKeywords.filter((k) =>
-					step.assistantResponse.toLowerCase().includes(k)
+					step.assistantResponse.toLowerCase().includes(k),
 				);
 				if (usedSkills.length > 0) {
 					const id = `skill-${sessionName}-${step.step}`;
@@ -741,7 +757,7 @@ export class SessionReplayManager {
 		for (const step of trajectory.steps) {
 			if (step.assistantResponse) {
 				const hasDecision = decisionKeywords.some((k) =>
-					step.assistantResponse.toLowerCase().includes(k)
+					step.assistantResponse.toLowerCase().includes(k),
 				);
 				if (hasDecision) {
 					points.push({
@@ -823,7 +839,9 @@ export class SessionReplayManager {
 				successFactors.push(`Common sequence: ${seq.join(" → ")}`);
 			}
 			for (const point of divergencePoints.slice(0, 3)) {
-				failureFactors.push(`Divergence at step ${point.step}: ${point.session2Action} vs ${point.session1Action}`);
+				failureFactors.push(
+					`Divergence at step ${point.step}: ${point.session2Action} vs ${point.session1Action}`,
+				);
 			}
 		} else if (!traj1.metadata.success && traj2.metadata.success) {
 			// Session 1 failed, session 2 succeeded
@@ -831,7 +849,9 @@ export class SessionReplayManager {
 				successFactors.push(`Common sequence: ${seq.join(" → ")}`);
 			}
 			for (const point of divergencePoints.slice(0, 3)) {
-				failureFactors.push(`Divergence at step ${point.step}: ${point.session1Action} vs ${point.session2Action}`);
+				failureFactors.push(
+					`Divergence at step ${point.step}: ${point.session1Action} vs ${point.session2Action}`,
+				);
 			}
 		}
 

@@ -3043,3 +3043,82 @@ assess({confidenceThreshold: 50})
 
 **Next steps:**
 - ROADMAP Phase 5: Parallel task execution (final item)
+---
+
+## Day 81 — Pattern Auto-Application (SWE-agent Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 54: Pattern Auto-Application
+- Created `src/pattern-auto-apply.ts` module with PatternAutoApplier class
+- Created `src/tools/pattern-auto-apply-tool.ts` for patternAutoApply tool
+- Updated ROADMAP.md with Phase 54
+
+**Why this matters:**
+- This is a `capability` type task that enables automatic pattern matching and application
+- Session Replay extracts patterns but doesn't apply them - this closes the loop
+- Pattern similarity scoring based on task type, description, files, errors, keywords
+- Auto-apply recommendations for high-confidence patterns
+- Time saved estimation tracks value of pattern application
+
+**Technical details:**
+- Created `src/pattern-auto-apply.ts`:
+  - `PatternAutoApplier` class for managing pattern matching and application
+  - `PatternMatch`, `AutoApplyResult`, `PatternContext`, `PatternApplicationRecord` types
+  - `AutoApplyStats`, `PatternAutoApplyConfig` interfaces
+  - `matchPatterns()` - Match patterns against current context
+  - `applyPattern()` - Apply specific pattern and track results
+  - `autoApplyPatterns()` - Auto-apply best matching patterns
+  - Similarity scoring: task type (25pts), keywords (25pts), tool sequence (25pts), error recovery (30pts), success correlation (15pts), confidence (10pts)
+  - State persistence to `~/.paimon/pattern-auto-apply.json`
+- Created `src/tools/pattern-auto-apply-tool.ts`:
+  - `patternAutoApply` tool with 14 actions: match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help
+- Modified `src/tools/index.ts`:
+  - Added patternAutoApplyToolDef to metaTools array
+  - Added re-exports for pattern-auto-apply module
+- Modified `src/prompt.ts`:
+  - Added patternAutoApply tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 54: Pattern Auto-Application
+
+**Pattern Similarity Scoring:**
+| Factor | Score | Description |
+|--------|-------|-------------|
+| Task type match | 25 | Task type matches pattern task type |
+| Keywords | 25 | Matching keywords from description |
+| Tool sequence | 25 | Tools used match pattern sequence |
+| Error recovery | 30 | Similar error patterns |
+| Success correlation | 15 | High success rate pattern |
+| Confidence | 10 | High confidence pattern |
+
+**Pattern Auto-Apply Tool Usage:**
+```typescript
+// Match patterns for current task
+patternAutoApply({
+  action: 'match',
+  taskType: 'capability',
+  taskDescription: 'Add new API endpoint',
+  keywords: ['api', 'http', 'endpoint']
+})
+
+// Apply specific pattern
+patternAutoApply({
+  action: 'apply',
+  patternId: 'tool-seq-session-123',
+  taskDescription: 'Add user authentication'
+})
+
+// Auto-apply best matches
+patternAutoApply({
+  action: 'auto-apply',
+  taskType: 'capability',
+  taskDescription: 'Implement caching'
+})
+
+// View statistics
+patternAutoApply({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks to auto-suggest patterns at session start
+- Consider adding LLM-based pattern explanation for better recommendations
+

@@ -13,8 +13,18 @@
       "firstTryRate": 100,
       "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 29,
+      "sampleSize": 30,
       "examples": [
+        {
+          "taskDescription": "Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool",
+          "date": "2026-04-03",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool",
           "date": "2026-04-03",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool",
-          "date": "2026-04-03",
-          "time": 20,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,18 @@
       "firstTryRate": 93,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 74,
+      "sampleSize": 75,
       "examples": [
+        {
+          "taskDescription": "Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool",
+          "date": "2026-04-03",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool",
           "date": "2026-04-03",
@@ -236,20 +246,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool",
-          "date": "2026-04-03",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "time-pattern-quick",
@@ -298,7 +297,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -350,7 +349,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     },
     {
       "id": "task-type-reliability",
@@ -376,9 +375,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T17:00:26.629Z"
+      "lastUpdated": "2026-04-03T17:19:20.003Z"
     }
   ],
-  "lastUpdated": "2026-04-03T17:00:26.629Z",
-  "sessionCount": 77
+  "lastUpdated": "2026-04-03T17:19:20.003Z",
+  "sessionCount": 78
 }

@@ -37,6 +37,7 @@ import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { parallelTool } from "./parallel-tool.js";
+import { patternAutoApplyToolDef } from "./pattern-auto-apply-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
 import { planTool } from "./plan-tool.js";
 import { pluginDevTool } from "./plugin-dev-tool.js";
@@ -55,6 +56,7 @@ import { searchTools } from "./search-tools.js";
 import { securityGuidanceTool } from "./security-guidance-tool.js";
 import { selfEvaluationToolDef } from "./self-evaluation-tool.js";
 import { selfHealingToolWrapper } from "./self-healing-tool.js";
+import { sessionReplayToolDef } from "./session-replay-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { syntheticTaskGenToolDef } from "./synthetic-task-gen-tool.js";
@@ -64,7 +66,6 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
-import { sessionReplayToolDef } from "./session-replay-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -119,6 +120,7 @@ export const metaTools: AgentTool[] = [
 	selfEvaluationToolDef,
 	watchToolDef,
 	sessionReplayToolDef,
+	patternAutoApplyToolDef,
 ];
 
 /**
@@ -547,3 +549,17 @@ export type {
 	SessionReplayConfig,
 	ReplayResult,
 } from "../session-replay.js";
+export { patternAutoApplyToolDef } from "./pattern-auto-apply-tool.js";
+export {
+	getPatternAutoApplier,
+	initPatternAutoApplier,
+	PatternAutoApplier,
+} from "../pattern-auto-apply.js";
+export type {
+	PatternMatch,
+	AutoApplyResult,
+	PatternContext,
+	PatternApplicationRecord,
+	PatternAutoApplyConfig,
+	AutoApplyStats,
+} from "../pattern-auto-apply.js";

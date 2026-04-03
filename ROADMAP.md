@@ -464,6 +464,16 @@ Planned improvements for evo.
 - [x] Step-by-step walkthrough — Detailed step analysis with learning points
 - [x] Statistics tracking — Track replays, patterns extracted, comparisons, walkthroughs
 
+## Phase 54: Pattern Auto-Application (SWE-agent Pattern)
+- [x] PatternAutoApplier module — Automatically match and apply learned patterns to new tasks
+- [x] patternAutoApply tool — Tool for pattern matching and auto-application
+- [x] Pattern similarity scoring — Calculate similarity based on task type, description, files, errors, keywords
+- [x] Auto-apply recommendations — Suggest or auto-apply high-confidence patterns
+- [x] 6 pattern type support — success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage
+- [x] Application tracking — Track pattern applications with success rates
+- [x] Time saved estimation — Estimate time saved from applying patterns
+- [x] Statistics tracking — Track matches, applications, success rates, time saved
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

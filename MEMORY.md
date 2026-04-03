@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool | ~20m | ✅ | TS (fixed) | No | High | evolve | automatic-pattern-application, proactive-pattern-suggestion, time-saved-estimation |
 | 2026-04-03 | capability | Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool | ~20m | ✅ | TS (fixed) | No | High | evolve | learning-from-sessions, pattern-extraction, session-comparison |
 | 2026-04-03 | capability | Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact | ~15m | ✅ | TS (fixed) | No | High | evolve | automatic-self-evaluation, recursive-improvement, iteration-tracking |
 | 2026-04-03 | capability | Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool | ~20m | ✅ | lint (fixed) | No | High | evolve, research | continuous-evolution-from-ide, ai-comment-detection, natural-workflow-integration |
@@ -103,14 +104,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 69/77 = 90%
+- First Try Success Rate: 70/78 = 90%
 - Average Time: ~14 minutes
-- Rework Rate: 9/77 = 12%
+- Rework Rate: 9/78 = 12%
 
 ### Capability Metrics
-- Capability Tasks: 75/77 = 97%
-- High Impact Capabilities: 65/75 = 87%
-- Capability Velocity: 75 capabilities in 3 days = 25/day
+- Capability Tasks: 76/78 = 97%
+- High Impact Capabilities: 66/76 = 87%
+- Capability Velocity: 76 capabilities in 3 days = 25/day
 
 ### Error Analysis
 - TypeScript Errors: 4
@@ -128,6 +129,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Pattern Auto-Application** - High impact, enables automatic pattern matching and application to new tasks with similarity scoring, 6 pattern types, auto-apply recommendations, time saved estimation (SWE-agent pattern)
 1. **Evolution Session Replay** - High impact, enables learning from past evolution sessions by replaying sessions, extracting 6 pattern types, comparing successful vs failed sessions, step-by-step walkthroughs with learning points (Mini-SWE-Agent trajectory replay pattern)
 1. **Self-Evaluation Stop Hook Integration** - High impact, enables recursive improvement through automatic self-evaluation after each iteration via Stop hooks, iteration context tracking with task type/description/duration/errors/skills (Recursive Pattern)
 1. **Watch Mode/FileWatcher** - High impact, enables continuous evolution from IDE by detecting AI comment markers (# ai!, // ai?, etc.) in code files with 40+ language support, 6 action types, gitignore integration, debounced change handling (Aider watch pattern)

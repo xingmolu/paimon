@@ -12,10 +12,10 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import {
-	getSessionReplayManager,
 	type PatternType,
 	type ReplayMode,
 	type SessionReplayConfig,
+	getSessionReplayManager,
 } from "../session-replay.js";
 
 // Tool definition
@@ -47,10 +47,15 @@ sessionReplay({action: 'walkthrough', sessionName: 'traj-001.json', stepIndex: 5
 sessionReplay({action: 'stats'})`,
 	parameters: Type.Object({
 		action: Type.String({
-			description: "Action to perform: replay, compare, walkthrough, sessions, patterns, pattern, success-patterns, failure-patterns, stats, config, reset, set-dir, help",
+			description:
+				"Action to perform: replay, compare, walkthrough, sessions, patterns, pattern, success-patterns, failure-patterns, stats, config, reset, set-dir, help",
 		}),
-		sessionName: Type.Optional(Type.String({ description: "Session name for replay/walkthrough actions" })),
-		mode: Type.Optional(Type.String({ description: "Replay mode: full, steps, actions, learning" })),
+		sessionName: Type.Optional(
+			Type.String({ description: "Session name for replay/walkthrough actions" }),
+		),
+		mode: Type.Optional(
+			Type.String({ description: "Replay mode: full, steps, actions, learning" }),
+		),
 		sessionA: Type.Optional(Type.String({ description: "First session for comparison" })),
 		sessionB: Type.Optional(Type.String({ description: "Second session for comparison" })),
 		stepIndex: Type.Optional(Type.Number({ description: "Step index for walkthrough" })),
@@ -172,7 +177,17 @@ export function executeSessionReplayTool(args: {
 			const lines: string[] = ["## Available Sessions\n"];
 			for (const session of sessions) {
 				const status = session.success ? "✅" : "❌";
-				lines.push("- " + status + " " + session.name + " (" + session.steps + " steps, " + session.model + ")");
+				lines.push(
+					"- " +
+						status +
+						" " +
+						session.name +
+						" (" +
+						session.steps +
+						" steps, " +
+						session.model +
+						")",
+				);
 			}
 			lines.push("\n**Total:** " + sessions.length + " sessions");
 			lines.push("**Directory:** " + manager.getTrajectoriesDir());
