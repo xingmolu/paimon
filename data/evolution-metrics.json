@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 94.04761904761905,
+    "current": 94.11764705882352,
     "points": [
       {
         "date": "2026-W14",
-        "value": 94.04761904761905,
+        "value": 94.11764705882352,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.04761904761905,
+    "weeklyAverage": 94.11764705882352,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.69047619047619,
+    "averageMinutes": 16.67058823529412,
     "byTaskType": {
-      "capability": 17.061728395061728,
+      "capability": 17.036585365853657,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.69047619047619,
+        "value": 16.67058823529412,
         "trend": "stable"
       }
     ],
@@ -28,18 +28,19 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 55,
+    "totalErrors": 56,
     "byType": {
+      "lint (fixed), test (fixed)": 7,
       "lint (fixed)": 28,
       "TS (fixed), lint (fixed)": 2,
       "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
-      "lint (fixed), test (fixed)": 6,
       "TS (file corruption)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-03: lint (fixed), test (fixed) in \"Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output\"",
       "2026-04-03: lint (fixed) in \"Regression Testing → Assess Integration - EvolutionRegressionTester integration with assess tool, before/after snapshot comparison, regression detection during self-assessment, regression warnings in recommendations, RegressionAssessmentResult type, runRegression/iterationId/taskDescription parameters\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions\"",
@@ -48,13 +49,12 @@
       "2026-04-03: TS (fixed) in \"Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool\"",
       "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\"",
       "2026-04-03: lint (fixed) in \"Watch Mode/FileWatcher (Aider Pattern) - FileWatcher module for watching source files for AI comment markers, 6 action types (execute, question, review, explain, refactor, test), 40+ file extension support, gitignore integration, debounced change handling, watch tool\"",
-      "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\"",
-      "2026-04-03: lint (fixed) in \"Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool\""
+      "2026-04-03: lint (fixed) in \"Self-Evaluation Tool (Recursive Pattern) - SelfEvaluationManager module for agent self-evaluation after iterations, 8 evaluation criteria (task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality), performance trends tracking, strength/weakness tracking, selfEvaluation tool\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 55,
+        "value": 56,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 82,
-      "successRate": 93.90243902439023,
-      "averageTime": 16.914634146341463,
+      "usageCount": 83,
+      "successRate": 93.97590361445783,
+      "averageTime": 16.89156626506024,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 40.5
+        "value": 41
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 81,
-    "highImpactCount": 73,
-    "highImpactPercentage": 90.12345679012346
+    "totalCapabilities": 82,
+    "highImpactCount": 74,
+    "highImpactPercentage": 90.2439024390244
   },
-  "lastUpdated": "2026-04-03T21:03:20.235Z",
-  "iterationsAnalyzed": 84
+  "lastUpdated": "2026-04-03T22:51:56.469Z",
+  "iterationsAnalyzed": 85
 }

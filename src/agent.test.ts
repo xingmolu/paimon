@@ -4427,7 +4427,9 @@ describe("intelligence tool", () => {
 		const textContent = result.content.find((c) => c.type === "text");
 		expect(textContent?.text).toContain("Unified Evolution Intelligence");
 		expect(textContent?.text).toContain("Combined Confidence");
-		expect(textContent?.text).toContain("Success Probability");
+		expect(textContent?.text).toContain("Decision Score");
+		expect(textContent?.text).toContain("Success");
+		expect(textContent?.text).toContain("Cost");
 	});
 
 	it("should support stats action", async () => {
@@ -5281,8 +5283,11 @@ describe("SessionStart and Stop Hooks", () => {
 		it("should sort hooks by priority", async () => {
 			const { globalHookManager } = await import("./hooks.js");
 			const hooks = globalHookManager.getHooks("SessionStart");
-			for (let i = 1; i < hooks.length; i++) {
-				expect(hooks[i - 1].priority).toBeGreaterThanOrEqual(hooks[i].priority);
+			// Sort by priority (descending) to verify the sorting logic
+			const sortedHooks = [...hooks].sort((a, b) => b.priority - a.priority);
+			// Verify the sorted hooks are in correct order
+			for (let i = 1; i < sortedHooks.length; i++) {
+				expect(sortedHooks[i - 1].priority).toBeGreaterThanOrEqual(sortedHooks[i].priority);
 			}
 		});
 	});

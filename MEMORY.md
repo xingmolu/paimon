@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-03 | capability | Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output | ~15m | ✅ | lint (fixed), test (fixed) | No | High | evolve | smarter-task-decisions, cost-success-combination, unified-decision-score |
 | 2026-04-03 | capability | SessionStart Intelligence Integration - Intelligence SessionStart hook for injecting proactive intelligence recommendations at session start, pattern/RAG/error pattern notifications, combined accuracy display, session mode context adaptation, integration with existing hooks at priority 95 | ~10m | ✅ | none | No | High | evolve | proactive-intelligence-injection, automatic-task-recommendations, session-start-context |
 | 2026-04-03 | capability | Regression Testing → Assess Integration - EvolutionRegressionTester integration with assess tool, before/after snapshot comparison, regression detection during self-assessment, regression warnings in recommendations, RegressionAssessmentResult type, runRegression/iterationId/taskDescription parameters | ~15m | ✅ | lint (fixed) | No | High | evolve | automatic-regression-detection, early-breakage-warning, iteration-success-improvement |
 | 2026-04-03 | capability | Session Replay → Auto-Apply Integration - Pattern feed callback system for proactive pattern feeding from session replay to pattern auto-apply, receivePatterns method, combined pattern matching, automatic pattern push on extraction | ~15m | ✅ | none | No | High | evolve | proactive-pattern-application, pattern-reuse, reduced-rework |
@@ -110,19 +111,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 77/85 = 91%
+- First Try Success Rate: 78/86 = 91%
 - Average Time: ~14 minutes
-- Rework Rate: 9/85 = 11%
+- Rework Rate: 9/86 = 10%
 
 ### Capability Metrics
-- Capability Tasks: 83/85 = 98%
-- High Impact Capabilities: 73/83 = 88%
-- Capability Velocity: 83 capabilities in 3 days = 28/day
+- Capability Tasks: 84/86 = 98%
+- High Impact Capabilities: 74/84 = 88%
+- Capability Velocity: 84 capabilities in 3 days = 28/day
 
 ### Error Analysis
 - TypeScript Errors: 5
 - Test Failures: 0
-- Lint Issues: 24
+- Lint Issues: 25
 - Runtime Errors: 0
 - File Corruption Issues: 1
 
@@ -135,6 +136,7 @@ Track effectiveness of recent improvements:
 6. **verification-before-completion** - Used in 1 iteration, quality check
 
 ### Top Capabilities (by Impact)
+1. **Evolution Cost → Task Predictor Integration** - High impact, enables smarter task decisions by combining cost prediction with success prediction into unified decision score (60% success, 40% cost), recommendation levels (highly-recommended, recommended, consider, avoid), decision breakdown table showing success/cost factors
 1. **SessionStart Intelligence Integration** - High impact, enables proactive intelligence recommendations at session start by injecting pattern/RAG/error pattern notifications, combined accuracy display, session mode adaptation, improves task selection without manual invocation
 1. **Regression Testing → Assess Integration** - High impact, enables automatic regression detection during self-assessment by comparing before/after test snapshots, catching breakages earlier in evolution workflow
 1. **Session Replay → Auto-Apply Integration** - High impact, enables proactive pattern feeding from session replay to pattern auto-apply for automatic pattern matching at task start, reduces rework by reusing successful patterns from past sessions

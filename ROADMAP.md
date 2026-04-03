@@ -547,6 +547,17 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Session mode context — Adapt recommendations to session mode (evolve/chat)
 - [x] Integration with existing hooks — Priority 95, between learning output style and memory load
 
+## Phase 62: Evolution Cost → Task Predictor Integration
+- [x] TaskDecisionScore interface — Combine cost and success into single decision score
+- [x] calculateDecisionScore method — Weighted scoring (60% success, 40% cost)
+- [x] Decision breakdown table — Show success/cost factors in analysis output
+- [x] Recommendation levels — highly-recommended, recommended, consider, avoid
+- [x] Cost prediction integration — Get cost prediction alongside success prediction
+- [x] Updated combined confidence — Factor in both success and cost confidence
+- [x] Enhanced overall recommendation — Include decision score reasoning
+- [x] Updated suggested approach — Consider complexity level in suggestions
+- [x] Cost prediction stats in intelligence stats — Track predictions by complexity
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
