@@ -219,6 +219,36 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 ## IMPORTANT
 - Do NOT run git commit or git push - the evolution script handles this
 - Just say "DONE" when your work is complete
+- For multi-step tasks, use \`plan({action: 'create', steps: ['Step 1', 'Step 2']})\` to create a structured plan. Use \`plan({action: 'update', stepId: '...', status: 'completed'})\` to mark progress
+- Before saying DONE, use \`assess({})\` to run self-assessment (build, tests, lint). Use \`assess({maxAttempts: 5})\` for automatic retry on failures
+- For safer experiments, use \`checkpoint({action: 'create', description: '...'})\` to save a snapshot before risky changes. Use \`checkpoint({action: 'restore', checkpointId: '...'})\` to rollback
+- Run multiple independent commands concurrently with \`parallel({tasks: [{name: 'lint', command: 'npm run lint'}]})\` - improves efficiency
+- Manage hooks with \`hook({action: 'list'})\` to view all hooks, \`hook({action: 'enable', hookId: '...'})\` or \`hook({action: 'disable', hookId: '...'})\` to toggle
+- For codebase understanding, use \`repomap({action: 'generate', maxTokens: 2048})\` to get a structured map of definitions (Aider RepoMap pattern)
+- Get personalized guidance with \`tom({action: 'consult', currentContext: '...'})\` based on user profile (OpenHands ToM-SWE pattern)
+- View execution trajectories with \`trajectory({action: 'list'})\` to analyze past runs (Mini-SWE-Agent pattern)
+- Generate bug reports with \`bugReport({action: 'generate', taskDescription: '...', errorMessage: '...'})\` from failed sessions
+- Generate commit messages with \`commitMsg({action: 'generate'})\` from git diffs (Aider pattern)
+- Switch models randomly with \`roulette({action: 'select'})\` for improved performance (Mini-SWE-Agent pattern)
+- Manage plugins with \`plugins({action: 'list'})\` to view, \`plugins({action: 'enable', name: '...'})\` to toggle (Claude Code pattern)
+- Track metrics with \`metrics({action: 'dashboard'})\` to view success rates, time metrics, skill effectiveness
+- Predict task success with \`taskPredictor({action: 'predict', taskDescription: '...', taskType: 'capability'})\`
+- Get unified intelligence with \`intelligence({action: 'analyze', taskDescription: '...', taskType: 'capability'})\`
+- Programmatic evolution with \`sdk({action: 'start'})\`, \`sdk({action: 'run', sessionId: '...'})\`, \`sdk({action: 'batch', iterations: 5})\`
+- Run benchmarks with \`benchmark({action: 'load', filePath: '...'})\`, \`benchmark({action: 'run', taskId: '...'})\` (SWE-bench pattern)
+- Scan for dangerous patterns with \`safetyGates({action: 'scan', content: '...'})\` before applying changes
+- Two-agent pattern with \`multiAgent({action: 'init'})\` for initializer + coder coordination (Claude Quickstart pattern)
+- Track tokens with \`tokenTracking({action: 'start', model: '...'})\`, \`tokenTracking({action: 'stats'})\` (Aider pattern)
+- Manage cache with \`toolCache({action: 'stats'})\`, \`toolCache({action: 'clear'})\`
+- Manage journal with \`journal({action: 'stats'})\`, \`journal({action: 'truncate', maxEntries: 30})\`
+- Auto-fix errors with \`selfHealing({action: 'detect', errorContent: '...'})\`, \`selfHealing({action: 'auto-fix', errorContent: '...'})\` (OpenHands/Aider pattern)
+- Analyze diffs with \`diffAwarePlan({action: 'analyze', files: ['...']})\` for safer implementation (Devin Pattern)
+- Cross-file context with \`multiFileContext({action: 'change-impact', file: '...'})\` (Cursor Pattern)
+- Progress tracking with \`visual-progress({action: 'start', taskType: 'capability', taskDescription: '...'})\` (Devin Pattern)
+- IDE context with \`ideIntegration({action: 'detect'})\`, \`ideIntegration({action: 'suggest', ...})\` (Cursor Pattern)
+- Code completion with \`codeCompletion({action: 'complete', filePath: '...', cursorLine: 10})\` (Cursor Pattern)
+- Reasoning memory with \`reasoningMemory({action: 'start', taskDescription: '...'})\` to store chains across iterations
+- Tool analytics with \`toolUsageAnalytics({action: 'stats'})\` to track usage patterns and get recommendations
 - When stuck in a loop, use \`stuck({action: 'check'})\` then \`stuck({action: 'recover', recoveryOption: N})\`
 - On failures, use \`reflect({taskDescription: "...", errorPatterns: [...]})\` to capture lessons
 - Before modifying code, check self-authorship with \`singularity({action: 'check', file: 'path'})\` - be more confident with bot-authored code

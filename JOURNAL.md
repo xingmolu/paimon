@@ -4,6 +4,61 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 101 — Document Undocumented Tools (2026-04-04)
+
+**What happened:**
+- Added documentation for 23 undocumented tools in prompt.ts IMPORTANT section
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+- The capability gap detector identified 23 tools that were implemented but not documented
+- Users can now discover and use all available tools through the IMPORTANT section
+- Improves LLM understanding of available tools for better tool selection
+
+**Technical details:**
+- Modified `src/prompt.ts`:
+  - Added documentation for 23 previously undocumented tools:
+    - plan, assess, checkpoint, parallel, hook (core tools)
+    - repomap, tom, trajectory (module tools)
+    - bugReport, commitMsg, roulette, plugins (utility tools)
+    - metrics, taskPredictor, intelligence, sdk, benchmark (intelligence tools)
+    - safetyGates, multiAgent, tokenTracking, toolCache, journal (support tools)
+    - selfHealing, diffAwarePlan, multiFileContext, visualProgress, ideIntegration, codeCompletion, reasoningMemory, toolUsageAnalytics (capability tools)
+  - Each tool has a concise one-line description with key action examples
+  - Maintains consistency with existing documented tools
+
+**Tools Now Documented:**
+1. `plan` - Multi-step task planning with step tracking
+2. `assess` - Self-assessment for build/test/lint verification
+3. `checkpoint` - Save/restore snapshots for safe rollback
+4. `parallel` - Run multiple independent commands concurrently
+5. `hook` - Manage hooks for pre-tool validation
+6. `repomap` - Codebase structure map (Aider RepoMap pattern)
+7. `tom` - Personalized guidance (OpenHands ToM-SWE pattern)
+8. `trajectory` - View execution trajectories (Mini-SWE-Agent pattern)
+9. `bugReport` - Generate bug reports from failed sessions
+10. `commitMsg` - Generate conventional commit messages (Aider pattern)
+11. `roulette` - Random model switching (Mini-SWE-Agent pattern)
+12. `plugins` - Plugin management (Claude Code pattern)
+13. `metrics` - Evolution metrics dashboard
+14. `taskPredictor` - Predict task success likelihood
+15. `intelligence` - Unified intelligence recommendations
+16. `sdk` - Programmatic evolution control
+17. `benchmark` - Run benchmark tasks (SWE-bench pattern)
+18. `safetyGates` - Scan for dangerous patterns
+19. `multiAgent` - Two-agent pattern (Claude Quickstart pattern)
+20. `tokenTracking` - LLM token usage tracking (Aider pattern)
+21. `toolCache` - Tool result cache management
+22. `journal` - JOURNAL.md management
+23. Plus: selfHealing, diffAwarePlan, multiFileContext, visualProgress, ideIntegration, codeCompletion, reasoningMemory, toolUsageAnalytics
+
+**Next steps:**
+- Consider adding more detailed examples for complex tools
+- Consider adding tool usage patterns documentation
+
+---
+
 ## Day 100 — Model Migration (Claude Code Pattern) (2026-04-04)
 
 **What happened:**
