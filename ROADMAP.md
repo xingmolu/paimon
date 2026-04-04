@@ -635,6 +635,17 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Integration with RepoMap — Uses RepoMap for multi-file context analysis
 - [x] Statistics tracking — Track edit analyses via hook execution
 
+## Phase 70: IDE Integration (Cursor Pattern)
+- [x] IDEIntegrationManager module — Manage IDE context detection and inline suggestions
+- [x] IDE detection — Detect VSCode, JetBrains, Vim, Neovim, Emacs, Sublime, Atom, Cursor via environment variables
+- [x] IDEContext interface — Track detected IDE, open files, active file, cursor position
+- [x] InlineSuggestion generation — Generate suggestions from evolution context, error patterns, competitor patterns
+- [x] IDENotification system — Send notifications to IDE for evolution events
+- [x] Open files management — Track and manage open files in IDE context
+- [x] SessionStart hook integration — Inject IDE context at session start with priority 93
+- [x] ideIntegration tool — Tool with 20 actions for IDE integration management
+- [x] Statistics tracking — Track sessions, suggestions, notifications by IDE type
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

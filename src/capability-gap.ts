@@ -293,7 +293,7 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		source: "cursor",
 		category: "ide",
 		description: "IDE integration for inline suggestions",
-		implementationStatus: "missing",
+		implementationStatus: "implemented",
 		priority: 7,
 	},
 	{

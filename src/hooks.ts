@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { getDiffAwarePlanningManager } from "./diff-aware-planning.js";
 import { getErrorPatternLearner } from "./error-patterns.js";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
+import { getIDEIntegrationManager } from "./ide-integration.js";
 import { getEvolutionIntelligence } from "./intelligence.js";
 import { getIterationContextManager } from "./iteration-context.js";
 import { getLearningManager } from "./learning-output-style.js";
@@ -275,6 +276,42 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 					context: "Session started in evolve mode. MEMORY.md should be loaded for context.",
 				};
 			}
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-ide-integration",
+		type: "SessionStart",
+		name: "Inject IDE Integration Context",
+		description:
+			"Detects IDE environment and injects inline suggestion context at session start (Cursor Pattern)",
+		enabled: true,
+		priority: 93, // After error pattern injection (94), before context budget (90)
+		handler: (context: HookContext): HookResult => {
+			const ideManager = getIDEIntegrationManager();
+
+			if (!ideManager.isEnabled() || !ideManager.getConfig().injectContextAtStart) {
+				return { allow: true };
+			}
+
+			// Detect IDE environment
+			const ide = ideManager.detectIDE();
+
+			if (!ide) {
+				// No IDE detected, return without context
+				return { allow: true };
+			}
+
+			// Get IDE context for session start
+			const ideContext = ideManager.getSessionStartContext();
+
+			if (ideContext) {
+				return {
+					allow: true,
+					context: ideContext,
+				};
+			}
+
 			return { allow: true };
 		},
 	},

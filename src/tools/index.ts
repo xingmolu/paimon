@@ -33,6 +33,7 @@ import { frontendDesignTool } from "./frontend-design-tool.js";
 import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
+import { ideIntegrationTool } from "./ide-integration-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
@@ -135,6 +136,7 @@ export const metaTools: AgentTool[] = [
 	diffAwarePlanTool,
 	multiFileContextTool,
 	visualProgressTool,
+	ideIntegrationTool,
 ];
 
 /**
@@ -670,3 +672,17 @@ export type {
 	VisualProgressStats,
 } from "../visual-progress.js";
 export { visualProgressTool } from "./visual-progress-tool.js";
+export { ideIntegrationTool } from "./ide-integration-tool.js";
+export {
+	getIDEIntegrationManager,
+	initIDEIntegrationManager,
+	IDEIntegrationManager,
+} from "../ide-integration.js";
+export type {
+	IDEContext,
+	DetectedIDE,
+	InlineSuggestion,
+	IDENotification,
+	IDEIntegrationStats,
+	IDEIntegrationConfig,
+} from "../ide-integration.js";
