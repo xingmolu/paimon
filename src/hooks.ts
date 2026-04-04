@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getDiffAwarePlanningManager } from "./diff-aware-planning.js";
 import { getErrorPatternLearner } from "./error-patterns.js";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
 import { getEvolutionIntelligence } from "./intelligence.js";
@@ -722,6 +723,52 @@ const DEFAULT_SECURITY_HOOKS: Hook[] = [
 					allow: true,
 					warning: `Safety Gates detected high-risk patterns:\n${messages.map((m) => `  - ${m}`).join("\n")}`,
 					context: `File: ${file || "unknown"}\nPatterns: ${highRisk.length} high-risk`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "diff-aware-edit-analysis",
+		type: "PreToolUse",
+		name: "Diff-Aware Edit Analysis",
+		description:
+			"Analyzes git diff impact before edit operations using Diff-Aware Planning module (Devin Pattern)",
+		enabled: true,
+		priority: 75, // After safety gates (85), lower priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			if (context.tool !== "edit" || !context.params?.path) {
+				return { allow: true };
+			}
+
+			const filePath = String(context.params.path);
+			const diffManager = getDiffAwarePlanningManager();
+			const config = diffManager.getConfig();
+
+			// Check if auto-analyze is enabled
+			if (!config.enabled || !config.autoAnalyzeBeforeEdit) {
+				return { allow: true };
+			}
+
+			// Analyze the diff for this specific file
+			const safetyCheck = diffManager.areChangesSafe([filePath]);
+
+			// If there are blockers, show them but don't block (informational)
+			if (safetyCheck.blockers.length > 0) {
+				return {
+					allow: true,
+					warning: `Diff-Aware Analysis: Potential issues detected:\n${safetyCheck.blockers.map((b) => `  ⚠️ ${b}`).join("\n")}\n\nUse diffAwarePlan({action: 'analyze', files: ['${filePath}']}) for detailed analysis.`,
+					context: `File: ${filePath}\nBlockers: ${safetyCheck.blockers.length}`,
+				};
+			}
+
+			// If there are warnings, show them
+			if (safetyCheck.warnings.length > 0) {
+				return {
+					allow: true,
+					warning: `Diff-Aware Analysis: Consider reviewing:\n${safetyCheck.warnings.map((w) => `  💡 ${w}`).join("\n")}`,
+					context: `File: ${filePath}\nWarnings: ${safetyCheck.warnings.length}`,
 				};
 			}
 

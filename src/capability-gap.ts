@@ -615,7 +615,7 @@ export class CapabilityGapDetector {
 			{
 				modules: ["diff-aware-planning", "edit-tool"],
 				description: "Diff-aware planning should integrate with edit tool for automatic analysis",
-				implemented: false,
+				implemented: true, // Phase 66 implemented
 			},
 		];
 

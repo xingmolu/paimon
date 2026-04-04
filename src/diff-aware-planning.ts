@@ -72,7 +72,7 @@ export interface DiffAwarePlanningConfig {
 
 const DEFAULT_CONFIG: DiffAwarePlanningConfig = {
 	enabled: true,
-	autoAnalyzeBeforeEdit: false,
+	autoAnalyzeBeforeEdit: true, // Enabled by default for PreToolUse hook integration
 	maxFilesToAnalyze: 50,
 	riskThreshold: "medium",
 };

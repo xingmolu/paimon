@@ -4,6 +4,64 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 93 — Diff-Aware Planning → Edit Tool Integration (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 66: Diff-Aware Planning → Edit Tool Integration
+- Added PreToolUse hook for automatic diff analysis before edit operations
+- Enabled autoAnalyzeBeforeEdit by default in diff-aware-planning module
+- Updated capability gap detector to mark integration as implemented
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables safer edit operations
+- Automatically analyzes git diff impact before each edit operation
+- Warns about potential issues (blockers and warnings) before edits are applied
+- Integrates Phase 65 Diff-Aware Planning with the core edit tool
+- Reduces risk of breaking changes by proactive analysis
+
+**Technical details:**
+- Modified `src/hooks.ts`:
+  - Added import for `getDiffAwarePlanningManager` from diff-aware-planning module
+  - Added `diff-aware-edit-analysis` PreToolUse hook at priority 75
+  - Hook checks if tool is "edit" and auto-analyze is enabled
+  - Calls `areChangesSafe()` for the target file
+  - Returns warning messages with blockers and warnings
+  - Shows actionable guidance with `diffAwarePlan({action: 'analyze'})` suggestion
+- Modified `src/diff-aware-planning.ts`:
+  - Changed `autoAnalyzeBeforeEdit` from `false` to `true` in DEFAULT_CONFIG
+- Modified `src/capability-gap.ts`:
+  - Updated integration gap for diff-aware-planning → edit-tool to `implemented: true`
+- Updated `ROADMAP.md`:
+  - Added Phase 66: Diff-Aware Planning → Edit Tool Integration
+
+**Hook Execution Flow:**
+```
+1. User calls edit tool
+2. PreToolUse hooks execute (priority order)
+3. diff-aware-edit-analysis hook (priority 75) runs:
+   - Checks if autoAnalyzeBeforeEdit is enabled
+   - Calls areChangesSafe([filePath])
+   - Returns warning with blockers/warnings if any
+4. If warning, user sees potential issues before edit
+5. Edit proceeds after user acknowledges warning
+```
+
+**Hook Warning Output Example:**
+```
+Diff-Aware Analysis: Potential issues detected:
+  ⚠️ src/agent.ts: Large change (150 lines) - higher risk
+  ⚠️ src/types.ts: File is deleted but may be imported by other files
+
+Use diffAwarePlan({action: 'analyze', files: ['src/agent.ts']}) for detailed analysis.
+```
+
+**Next steps:**
+- Consider adding configurable risk thresholds for blocking vs warning
+- Consider integrating with write tool for new file creation analysis
+
+---
+
 ## Day 92 — Fix Capability Gap Detector Bugs (2026-04-04)
 
 **What happened:**

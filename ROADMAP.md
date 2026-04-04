@@ -590,6 +590,15 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] diffAwarePlan tool — Tool for analyzing diffs and planning safe implementation
 - [x] Statistics tracking — Track analyses run, conflicts detected, recommendations provided
 
+## Phase 66: Diff-Aware Planning → Edit Tool Integration
+- [x] autoAnalyzeBeforeEdit config — Enable automatic analysis before edits by default
+- [x] Diff-aware edit PreToolUse hook — Analyze diffs before edit operations
+- [x] Safety check integration — Use areChangesSafe() for blocker/warning detection
+- [x] Warning messages — Show potential issues before edits are applied
+- [x] File-specific analysis — Analyze specific file being edited
+- [x] Hook priority configuration — Priority 75, after safety gates
+- [x] Statistics tracking — Track edit analyses via diff-aware planning stats
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
