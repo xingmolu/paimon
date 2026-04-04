@@ -4,6 +4,86 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 103 — Evolution Timeline Generator (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 76: Evolution Timeline Generator
+- Created EvolutionTimelineGenerator module for generating visual timelines of evolution history
+- Created evolutionTimeline tool with 6 actions for timeline management
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that provides self-awareness about the evolution journey
+- Parses MEMORY.md scorecard to extract timeline events
+- Groups events into evolution phases based on capability counts
+- Identifies milestones (first capability, 10, 50, 100 capabilities)
+- Calculates trends (velocity, success rate, time efficiency)
+- Provides day-by-day breakdown of capabilities added
+- Helps understand evolution progress and patterns
+
+**Technical details:**
+- Created `src/evolution-timeline.ts`:
+  - `EvolutionTimelineGenerator` class for managing timeline generation
+  - `TimelineEvent`, `TimelineDay`, `TimelinePhase`, `TimelineMilestone`, `EvolutionTimeline` interfaces
+  - Scorecard parsing to extract events
+  - Phase identification (groups of ~10 capabilities)
+  - Milestone detection (first, 10, 50, 100 capabilities)
+  - Trend calculation (velocity, success, time)
+  - Markdown formatting for visual output
+- Created `src/tools/evolution-timeline-tool.ts`:
+  - `evolutionTimeline` tool with 6 actions:
+    - generate, format, stats, config, reset, help
+- Updated `src/tools/index.ts`:
+  - Added evolutionTimelineToolDefinition to metaTools array
+  - Added re-exports for evolution-timeline module
+- Updated `ROADMAP.md`:
+  - Added Phase 76: Evolution Timeline Generator
+
+**Evolution Timeline Tool Usage:**
+```typescript
+// Generate and display the timeline
+evolutionTimeline({action: 'generate'})
+
+// Generate without phases
+evolutionTimeline({action: 'generate', includePhases: false})
+
+// View statistics
+evolutionTimeline({action: 'stats'})
+
+// View configuration
+evolutionTimeline({action: 'config'})
+```
+
+**Timeline Output Example:**
+```
+# Evolution Timeline
+
+**Period:** 2026-03-30 to 2026-04-04 (5 days)
+
+## Summary
+| Metric | Value |
+|--------|-------|
+| Total Capabilities | 96 |
+| Total Reliability | 10 |
+| Overall Success Rate | 91% |
+| Average Velocity | 19 caps/day |
+
+## Milestones
+### 🚀 First Capability
+- **Date:** 2026-03-30
+- **Significance:** Beginning of evolution journey
+
+### 🎯 10 Capabilities
+- **Date:** 2026-03-30
+- **Significance:** Foundation building phase complete
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hook for automatic timeline display
+- Consider adding chart visualization for timeline data
+
+---
+
 ## Day 102 — Evolution Strategy Planner (Meta-Capability) (2026-04-04)
 
 **What happened:**

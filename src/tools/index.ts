@@ -28,6 +28,7 @@ import { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { evolutionCostToolDef } from "./evolution-cost-tool.js";
 import { evolutionStrategyTool } from "./evolution-strategy-tool.js";
+import { evolutionTimelineToolDefinition } from "./evolution-timeline-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
@@ -147,6 +148,7 @@ export const metaTools: AgentTool[] = [
 	toolUsageAnalyticsTool,
 	modelMigrationToolDefinition,
 	evolutionStrategyTool,
+	evolutionTimelineToolDefinition,
 ];
 
 /**
@@ -766,3 +768,20 @@ export type {
 	StrategyAnalysisResult,
 } from "../evolution-strategy.js";
 export { evolutionStrategyTool } from "./evolution-strategy-tool.js";
+export {
+	getEvolutionTimelineGenerator,
+	initEvolutionTimelineGenerator,
+	EvolutionTimelineGenerator,
+	evolutionTimelineTool,
+} from "../evolution-timeline.js";
+export type {
+	TimelineEvent,
+	TimelineDay,
+	TimelinePhase,
+	TimelineMilestone,
+	EvolutionTimeline,
+	TimelineGeneratorConfig,
+	TimelineGeneratorStats,
+	EvolutionTimelineToolArgs,
+} from "../evolution-timeline.js";
+export { evolutionTimelineToolDefinition } from "./evolution-timeline-tool.js";
