@@ -54,6 +54,7 @@ import { planTool } from "./plan-tool.js";
 import { pluginDevTool } from "./plugin-dev-tool.js";
 import { pluginsTool } from "./plugins-tool.js";
 import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
+import { predictiveErrorPreventionTool } from "./predictive-error-prevention-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reasoningMemoryTool } from "./reasoning-memory-tool.js";
@@ -151,6 +152,7 @@ export const metaTools: AgentTool[] = [
 	evolutionStrategyTool,
 	evolutionTimelineToolDefinition,
 	adaptiveReasoningToolDefinition,
+	predictiveErrorPreventionTool,
 ];
 
 /**
@@ -802,3 +804,16 @@ export type {
 	AdaptiveReasoningConfig,
 } from "../adaptive-reasoning.js";
 export { adaptiveReasoningToolDefinition } from "./adaptive-reasoning-tool.js";
+export { predictiveErrorPreventionTool } from "./predictive-error-prevention-tool.js";
+export {
+	getPredictiveErrorPreventionManager,
+	initPredictiveErrorPreventionManager,
+	PredictiveErrorPreventionManager,
+} from "../predictive-error-prevention.js";
+export type {
+	ErrorPrediction,
+	PredictionContext,
+	ErrorPattern,
+	PredictionStats,
+	PredictiveErrorPreventionConfig,
+} from "../predictive-error-prevention.js";

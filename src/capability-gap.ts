@@ -323,6 +323,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 5,
 	},
+	{
+		name: "predictive-error-prevention",
+		source: "other",
+		category: "error-prevention",
+		description:
+			"Proactively predicts errors BEFORE they occur based on task context, files, tools, and historical patterns with probability and confidence scoring",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

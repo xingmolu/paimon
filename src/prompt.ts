@@ -254,6 +254,7 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Before modifying code, check self-authorship with \`singularity({action: 'check', file: 'path'})\` - be more confident with bot-authored code
 - Before starting a complex task, search for relevant past context with \`rag({action: 'search', query: 'task description'})\` - reduces rework by finding similar solutions
 - When encountering errors, use \`errorPatterns({action: 'match', error: 'error message'})\` to find known solutions from past sessions
+- For proactive error prevention, use \`predictiveErrorPrevention({action: 'predict', taskType: 'capability', files: ['src/agent.ts'], toolsUsed: ['edit']})\` to predict errors BEFORE they occur based on task context, files, tools, and historical patterns. Use \`predictiveErrorPrevention({action: 'warnings', taskType: 'capability', taskDescription: 'Add new tool'})\` to get proactive warnings before starting a task. Unlike reactive errorPatterns tool, this predicts errors proactively to prevent them from happening
 - Before task selection, use \`patternMiner({action: 'recommend', taskType: 'capability'})\` to get pattern-based recommendations for optimal approach
 - Monitor context usage with \`contextBudget({action: 'check'})\` - proactively manage context before hitting limits
 - For risky operations, use \`interactiveApproval({action: 'request', tool: '...', toolParams: {...}, description: '...'})\` to request approval before proceeding

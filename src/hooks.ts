@@ -9,6 +9,7 @@ import { getIDEIntegrationManager } from "./ide-integration.js";
 import { getEvolutionIntelligence } from "./intelligence.js";
 import { getIterationContextManager } from "./iteration-context.js";
 import { getLearningManager } from "./learning-output-style.js";
+import { getPredictiveErrorPreventionManager } from "./predictive-error-prevention.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
 import { RepoMap } from "./repomap.js";
 import { getSafetyGateManager } from "./safety-gates.js";
@@ -278,6 +279,64 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 				};
 			}
 			return { allow: true };
+		},
+	},
+	{
+		id: "session-predictive-error-prevention",
+		type: "SessionStart",
+		name: "Inject Predictive Error Warnings",
+		description:
+			"Injects proactive error predictions at session start based on task context, files, tools, and historical patterns (Predictive Error Prevention Pattern)",
+		enabled: true,
+		priority: 93, // After error pattern injection (94), before IDE integration (93)
+		handler: (context: HookContext): HookResult => {
+			const predictiveManager = getPredictiveErrorPreventionManager();
+
+			// Only inject in evolve mode
+			if (context.session?.mode !== "evolve") {
+				return { allow: true };
+			}
+
+			// Check if session start predictions are enabled
+			if (
+				!predictiveManager.isEnabled() ||
+				!predictiveManager.getConfig().sessionStartPredictions
+			) {
+				return { allow: true };
+			}
+
+			// Get general predictions for session start
+			const predictions = predictiveManager.getSessionStartPredictions();
+
+			if (predictions.length === 0) {
+				return { allow: true };
+			}
+
+			// Format predictions for context
+			const lines = [
+				"## Proactive Error Predictions",
+				"",
+				"The following errors are predicted based on historical patterns:",
+				"",
+			];
+
+			for (const pred of predictions.slice(0, 3)) {
+				const probStr = Math.round(pred.probability * 100);
+				lines.push(`- **${pred.predictedErrorType}**: ${probStr}% probability`);
+				if (pred.preventionSuggestions.length > 0) {
+					lines.push(`  Prevention: ${pred.preventionSuggestions[0]}`);
+				}
+			}
+
+			lines.push("");
+			lines.push(
+				"Use predictiveErrorPrevention({action: 'predict', ...}) for detailed predictions.",
+			);
+
+			return {
+				allow: true,
+				context: lines.join("\n"),
+			};
 		},
 	},
 	{
