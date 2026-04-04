@@ -19,6 +19,7 @@ import { assessTool } from "./assess-tool.js";
 import { autoInvokeTool } from "./auto-invoke-tool.js";
 import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
+import { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
 import { capabilityGapToolDef } from "./capability-gap-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { codeCompletionTool } from "./code-completion-tool.js";
@@ -47,6 +48,7 @@ import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
 import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { getLearningTransferManager, learningTransferToolDef } from "./learning-transfer-tool.js";
+import { mcpTool } from "./mcp-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { modelMigrationToolDefinition } from "./model-migration-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
@@ -163,6 +165,8 @@ export const metaTools: AgentTool[] = [
 	conversationSharingToolDefinition,
 	imageContextTool,
 	integrationTool,
+	cacheWarmerToolDefinition,
+	mcpTool,
 ];
 
 /**
@@ -892,3 +896,31 @@ export type {
 	NotificationConfig,
 	IntegrationConfig,
 } from "../integration-manager.js";
+export { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
+export {
+	getCacheWarmer,
+	CacheWarmer,
+	resetCacheWarmerInstance,
+} from "../cache-warmer.js";
+export type {
+	CacheWarmerConfig,
+	CacheWarmingStats,
+	CacheWarmingSession,
+} from "../cache-warmer.js";
+export { mcpTool } from "./mcp-tool.js";
+export {
+	getMCPClient,
+	initMCPClient,
+	MCPClient,
+} from "../mcp-client.js";
+export type {
+	MCPServerConfig,
+	MCPTool as MCPToolType,
+	MCPResource,
+	MCPPrompt,
+	MCPClientStats,
+	MCPToolCallResult,
+	MCPResourceContent,
+	MCPServerStatus,
+	MCPClientConfig,
+} from "../mcp-client.js";

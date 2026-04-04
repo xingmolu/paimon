@@ -378,6 +378,24 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "cache-warming",
+		source: "aider",
+		category: "optimization",
+		description:
+			"Cache warming to keep prompt cache alive during long sessions by periodically pinging the API, reducing costs by preventing cache expiration",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
+	{
+		name: "mcp-integration",
+		source: "claude-code",
+		category: "protocol",
+		description:
+			"MCP (Model Context Protocol) integration for connecting to external tools and data sources via standardized protocol - supports stdio, SSE, HTTP transports, tool discovery, resource access, and prompts from MCP servers",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

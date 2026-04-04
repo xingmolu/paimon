@@ -4,6 +4,95 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 113 — MCP Integration (Model Context Protocol) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 85: MCP (Model Context Protocol) Integration
+- Created MCPClient module in src/mcp-client.ts
+- Created mcp tool with 24 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Model Context Protocol standard
+- Enables connecting to external tools and data sources via standardized protocol
+- Supports stdio transport (SSE and HTTP are placeholders)
+- Tool discovery from connected MCP servers
+- Resource access and prompt support
+- 6 sample MCP servers pre-configured (filesystem, git, fetch, memory, sequential-thinking, time)
+- MCP is becoming the industry standard for AI agent tool integration
+
+**Technical details:**
+- Created `src/mcp-client.ts`:
+  - `MCPClient` class for managing MCP server connections
+  - `MCPServerConfig`, `MCPTool`, `MCPResource`, `MCPPrompt` interfaces
+  - `StdioMCPServerConnection` for stdio transport
+  - JSON-RPC 2.0 protocol implementation
+  - Tool/resource/prompt discovery
+  - Server management (add, remove, enable, disable, connect, disconnect)
+  - State persistence to `~/.paimon/mcp-config.json`
+- Created `src/tools/mcp-tool.ts`:
+  - `mcp` tool with 24 actions:
+    - add, get, list, remove, enable, disable
+    - connect, disconnect, connect-all, disconnect-all
+    - tools, tool, call-tool
+    - resources, resource, read-resource
+    - prompts, prompt, get-prompt
+    - status, stats, samples, reset, config, help
+  - TypeBox-based parameter schema
+- Updated `src/tools/index.ts`:
+  - Added mcpTool to metaTools array
+  - Added re-exports for mcp-client module
+- Updated `src/prompt.ts`:
+  - Added documentation for mcp tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `mcp-integration` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 85: MCP Integration (Model Context Protocol)
+
+**MCP Tool Usage:**
+```typescript
+// Add a filesystem MCP server
+mcp({
+  action: 'add',
+  name: 'filesystem',
+  transport: 'stdio',
+  command: 'mcp-server-filesystem',
+  args: ['--root', '/path/to/project']
+})
+
+// Connect to a server
+mcp({action: 'connect', name: 'filesystem'})
+
+// List available tools
+mcp({action: 'tools'})
+
+// Call a tool
+mcp({action: 'call-tool', toolName: 'filesystem_read_file', arguments: {path: 'README.md'}})
+
+// Read a resource
+mcp({action: 'read-resource', uri: 'file:///path/to/file.txt'})
+
+// Get statistics
+mcp({action: 'stats'})
+```
+
+**Sample MCP Servers:**
+| Server | Description |
+|--------|-------------|
+| filesystem | File system operations with configurable access controls |
+| git | Git repository operations |
+| fetch | Web content fetching and conversion |
+| memory | Knowledge graph-based persistent memory |
+| sequential-thinking | Dynamic problem-solving through thought sequences |
+| time | Time and timezone conversion |
+
+**Context:**
+- ROADMAP Phase 1-85: All complete ✅
+- 30 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider, MCP)
+- All 875 tests pass
+
+---
+
 ## Day 112 — Integration Manager (OpenHands Cloud Pattern) (2026-04-04)
 
 **What happened:**
@@ -5195,3 +5284,78 @@ patternAutoApply({action: 'stats'})
 - Consider integrating with SessionStart hooks to auto-suggest patterns at session start
 - Consider adding LLM-based pattern explanation for better recommendations
 
+
+---
+
+## Day 113 — Cache Warming (Aider Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 84: Cache Warming (Aider Pattern)
+- Created CacheWarmer module in src/cache-warmer.ts
+- Created cacheWarmer tool with 12 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Aider's cache warming implementation
+- Keeps prompt cache alive during long evolution sessions
+- Reduces API costs by preventing cache expiration
+- Estimated 90% cost savings on cache hit tokens
+- Background thread periodically pings the API to keep cached tokens alive
+
+**Technical details:**
+- Created `src/cache-warmer.ts`:
+  - `CacheWarmer` class for managing cache warming sessions
+  - `CacheWarmerConfig`, `CacheWarmingStats`, `CacheWarmingSession` interfaces
+  - Background warming thread with configurable intervals (default 5 minutes)
+  - Cache hit token tracking and cost savings estimation
+  - Manual ping support for on-demand cache warming
+  - Pause/resume support for warming sessions
+  - State persistence to `~/.paimon/cache-warmer.json`
+- Created `src/tools/cache-warmer-tool.ts`:
+  - `cacheWarmer` tool with 12 actions:
+    - start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help
+- Updated `src/tools/index.ts`:
+  - Added cacheWarmerToolDefinition to metaTools array
+  - Added re-exports for cache-warmer module
+- Updated `src/prompt.ts`:
+  - Added documentation for cacheWarmer tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `cache-warming` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 84: Cache Warming (Aider Pattern)
+
+**Cache Warmer Tool Usage:**
+```typescript
+// Start cache warming
+cacheWarmer({ action: 'start' })
+
+// Check status
+cacheWarmer({ action: 'status' })
+
+// View statistics
+cacheWarmer({ action: 'stats' })
+
+// Update configuration
+cacheWarmer({ action: 'config', keepAliveDelay: 600000 }) // 10 minutes
+
+// Manual ping
+cacheWarmer({ action: 'ping' })
+
+// Stop cache warming
+cacheWarmer({ action: 'stop' })
+```
+
+**How It Works:**
+Cache warming prevents prompt cache expiration by periodically sending minimal API requests to keep cached tokens alive. This is especially useful for:
+- Long evolution sessions
+- Sessions with large context windows
+- Reducing API costs by reusing cached content
+
+**Cost Savings:**
+- Cache hit tokens are ~90% cheaper than new tokens
+- Example: 100K cache hit tokens saved = ~$0.27 (at Claude pricing)
+
+**Context:**
+- ROADMAP Phase 1-84: All complete ✅
+- 30 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider)
+- All 875 tests pass

@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "task-type-capability",
@@ -215,12 +215,12 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 103,
+      "sampleSize": 105,
       "examples": [
         {
-          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
+          "taskDescription": "MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
-          "time": 20,
+          "time": 25,
           "skillsUsed": [
             "evolve",
             "research"
@@ -229,7 +229,7 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
+          "taskDescription": "Cache Warming (Aider Pattern) - CacheWarmer module for keeping prompt cache alive during long sessions, cacheWarmer tool with 12 actions (start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help), background warming thread with configurable intervals (default 5 min), cache hit token tracking, cost savings estimation (~90% cheaper on cache hits), manual ping support, pause/resume sessions, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
           "time": 15,
           "skillsUsed": [
@@ -240,9 +240,9 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts",
+          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
-          "time": 25,
+          "time": 20,
           "skillsUsed": [
             "evolve",
             "research"
@@ -251,7 +251,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "time-pattern-quick",
@@ -300,28 +300,28 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "skill-combo-evo-res",
       "type": "skill-combination",
-      "description": "Skills evolve + research have 88% success rate",
+      "description": "Skills evolve + research have 89% success rate",
       "characteristics": {
         "skills": [
           "evolve",
           "research"
         ]
       },
-      "successRate": 88,
-      "firstTryRate": 88,
+      "successRate": 89,
+      "firstTryRate": 89,
       "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 34,
+      "sampleSize": 36,
       "examples": [
         {
-          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
+          "taskDescription": "MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
-          "time": 20,
+          "time": 25,
           "skillsUsed": [
             "evolve",
             "research"
@@ -330,7 +330,7 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
+          "taskDescription": "Cache Warming (Aider Pattern) - CacheWarmer module for keeping prompt cache alive during long sessions, cacheWarmer tool with 12 actions (start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help), background warming thread with configurable intervals (default 5 min), cache hit token tracking, cost savings estimation (~90% cheaper on cache hits), manual ping support, pause/resume sessions, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
           "time": 15,
           "skillsUsed": [
@@ -341,9 +341,9 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts",
+          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
-          "time": 25,
+          "time": 20,
           "skillsUsed": [
             "evolve",
             "research"
@@ -352,7 +352,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     },
     {
       "id": "task-type-reliability",
@@ -398,9 +398,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T20:47:41.603Z"
+      "lastUpdated": "2026-04-04T21:22:42.650Z"
     }
   ],
-  "lastUpdated": "2026-04-04T20:47:41.603Z",
-  "sessionCount": 113
+  "lastUpdated": "2026-04-04T21:22:42.650Z",
+  "sessionCount": 115
 }

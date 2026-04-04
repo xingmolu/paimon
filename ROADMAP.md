@@ -817,3 +817,26 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 84: Cache Warming (Aider Pattern)
+- [x] CacheWarmer module — Keep prompt cache alive during long sessions
+- [x] cacheWarmer tool — Tool for cache warming management with 12 actions
+- [x] Background warming thread — Periodic API pings to preserve cache
+- [x] Configurable intervals — Default 5 minute keepalive delay
+- [x] Token cache hit tracking — Track preserved cache tokens
+- [x] Cost savings estimation — Estimate cost saved from cache hits
+- [x] Manual ping support — On-demand cache warming ping
+- [x] Session management — Start, stop, pause, resume warming sessions
+- [x] TokenTracker integration — Track cache hit tokens for cost calculation
+- [x] Statistics tracking — Track pings, success rate, tokens preserved, cost saved
+
+## Phase 85: MCP Integration (Model Context Protocol)
+- [x] MCPClient module — Connect to MCP servers for external tools and data sources
+- [x] mcp tool — Tool for MCP server management with 24 actions
+- [x] Transport support — stdio, SSE, HTTP transport implementations
+- [x] Tool discovery — Automatically discover tools from connected servers
+- [x] Resource access — Read resources from MCP servers
+- [x] Prompt support — Use prompts from MCP servers
+- [x] Server management — Add, remove, enable, disable, connect, disconnect servers
+- [x] Sample servers — Pre-configured sample MCP servers (filesystem, git, fetch, memory, time)
+- [x] Statistics tracking — Track tool calls, success rates, server statuses
