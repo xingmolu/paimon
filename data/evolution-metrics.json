@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 94.25287356321839,
+    "current": 93.18181818181817,
     "points": [
       {
         "date": "2026-W14",
-        "value": 94.25287356321839,
+        "value": 93.18181818181817,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.25287356321839,
+    "weeklyAverage": 93.18181818181817,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.57471264367816,
+    "averageMinutes": 16.613636363636363,
     "byTaskType": {
-      "capability": 16.928571428571427,
+      "capability": 16.96470588235294,
       "reliability": 6.666666666666667
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.57471264367816,
+        "value": 16.613636363636363,
         "trend": "stable"
       }
     ],
@@ -28,10 +28,10 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 58,
+    "totalErrors": 59,
     "byType": {
+      "TS (fixed), lint (fixed)": 4,
       "lint (fixed)": 29,
-      "TS (fixed), lint (fixed)": 3,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
@@ -40,6 +40,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-04: TS (fixed), lint (fixed) in \"Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions\"",
       "2026-04-03: lint (fixed) in \"Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations\"",
       "2026-04-03: TS (fixed), lint (fixed) in \"Learning Transfer → RAG Integration - RagModule integration for semantic search enrichment, enrichWithRag method combining TF-IDF + keyword similarity, RAG boost for session matching, rag-discovered sessions, combined confidence scoring (70/30), RAG insights in risk factors, proactive RAG context\"",
       "2026-04-03: lint (fixed), test (fixed) in \"Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output\"",
@@ -48,13 +49,12 @@
       "2026-04-03: TS (fixed), lint (fixed) in \"Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions\"",
       "2026-04-03: lint (fixed), TS (fixed) in \"Cross-Session Learning Transfer (RAG Enhancement Pattern) - LearningTransferManager module for automatically transferring learnings between related tasks, task similarity detection with keyword/skill/category matching, session learning extraction from MEMORY.md scorecard, transfer recommendations with risk factors, proactive context injection, learningTransfer tool\"",
       "2026-04-03: TS (fixed) in \"Pattern Auto-Application (SWE-agent Pattern) - PatternAutoApplier module for automatically matching and applying learned patterns, pattern similarity scoring based on task context, 14 actions (match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help), application tracking with time saved estimation, patternAutoApply tool\"",
-      "2026-04-03: TS (fixed) in \"Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool\"",
-      "2026-04-03: TS (fixed) in \"Self-Evaluation Stop Hook Integration (Recursive Pattern) - IterationContext module for tracking session iteration data, Self-Evaluation Stop hook for automatic evaluation after each iteration, iteration tracking with success/firstTry/rework/impact\""
+      "2026-04-03: TS (fixed) in \"Evolution Session Replay (Mini-SWE-Agent Pattern) - SessionReplayManager module for replaying and analyzing past evolution sessions, 4 replay modes (full, steps, actions, learning), 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage), session comparison, step-by-step walkthrough, sessionReplay tool\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 58,
+        "value": 59,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 85,
-      "successRate": 94.11764705882352,
-      "averageTime": 16.788235294117648,
+      "usageCount": 86,
+      "successRate": 93.02325581395348,
+      "averageTime": 16.825581395348838,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 42
+        "value": 42.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 84,
-    "highImpactCount": 76,
-    "highImpactPercentage": 90.47619047619048
+    "totalCapabilities": 85,
+    "highImpactCount": 77,
+    "highImpactPercentage": 90.58823529411765
   },
-  "lastUpdated": "2026-04-03T23:23:16.796Z",
-  "iterationsAnalyzed": 87
+  "lastUpdated": "2026-04-04T02:51:33.401Z",
+  "iterationsAnalyzed": 88
 }

@@ -3,18 +3,28 @@
     {
       "id": "skill-combo-evo",
       "type": "skill-combination",
-      "description": "Skills evolve have 100% success rate",
+      "description": "Skills evolve have 98% success rate",
       "characteristics": {
         "skills": [
           "evolve"
         ]
       },
-      "successRate": 100,
-      "firstTryRate": 100,
+      "successRate": 98,
+      "firstTryRate": 98,
       "averageTime": 15,
       "confidence": 95,
-      "sampleSize": 39,
+      "sampleSize": 40,
       "examples": [
+        {
+          "taskDescription": "Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions",
+          "date": "2026-04-04",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": false,
+          "firstTry": false
+        },
         {
           "taskDescription": "Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations",
           "date": "2026-04-03",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output",
-          "date": "2026-04-03",
-          "time": 15,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,20 +202,20 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 94% success, 89% high impact",
+      "description": "capability tasks: 93% success, 89% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 94,
-      "firstTryRate": 94,
+      "successRate": 93,
+      "firstTryRate": 93,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 84,
+      "sampleSize": 85,
       "examples": [
         {
           "taskDescription": "Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations",
@@ -248,7 +248,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "time-pattern-quick",
@@ -297,7 +297,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -349,7 +349,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     },
     {
       "id": "task-type-reliability",
@@ -375,9 +375,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-03T23:23:16.954Z"
+      "lastUpdated": "2026-04-04T02:51:33.554Z"
     }
   ],
-  "lastUpdated": "2026-04-03T23:23:16.954Z",
-  "sessionCount": 87
+  "lastUpdated": "2026-04-04T02:51:33.554Z",
+  "sessionCount": 88
 }

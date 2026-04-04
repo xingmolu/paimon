@@ -577,6 +577,19 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Evolve mode only — Only inject in evolve mode to reduce noise
 - [x] Integration with existing hooks — Priority 94, after intelligence recommendations
 
+## Phase 65: Diff-Aware Planning (Devin Pattern)
+- [x] DiffAwarePlanningManager module — Manage git diff analysis for impact prediction
+- [x] DiffAnalysis interface — Track files, additions, deletions, impact score, risk level
+- [x] analyzeDiff method — Analyze current git diff for impact prediction
+- [x] predictImpact method — Predict impact of proposed changes on files
+- [x] getSafeImplementationPlan method — Get phased implementation plan
+- [x] areChangesSafe method — Check if changes are safe to apply
+- [x] Conflict detection — Identify potential import, export, dependency conflicts
+- [x] Impact scoring — Calculate impact score based on file changes and conflicts
+- [x] Risk levels — low, medium, high, critical based on impact score
+- [x] diffAwarePlan tool — Tool for analyzing diffs and planning safe implementation
+- [x] Statistics tracking — Track analyses run, conflicts detected, recommendations provided
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

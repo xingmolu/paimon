@@ -23,6 +23,7 @@ import { checkpointTool } from "./checkpoint-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { contextImportanceTool } from "./context-importance-tool.js";
+import { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { evolutionCostToolDef } from "./evolution-cost-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
@@ -129,6 +130,7 @@ export const metaTools: AgentTool[] = [
 	evolutionCostToolDef,
 	regressionTestingToolDef,
 	capabilityGapToolDef,
+	diffAwarePlanTool,
 ];
 
 /**
@@ -631,3 +633,14 @@ export type {
 	GapDetectionConfig,
 	CompetitorPattern,
 } from "../capability-gap.js";
+export { getDiffAwarePlanningManager } from "../diff-aware-planning.js";
+export type {
+	DiffAnalysis,
+	FileChange as DiffPlanningFileChange,
+	Hunk,
+	Conflict,
+	ImpactPrediction,
+	DiffAwarePlanningStats,
+	DiffAwarePlanningConfig,
+} from "../diff-aware-planning.js";
+export { diffAwarePlanTool } from "./diff-aware-planning-tool.js";

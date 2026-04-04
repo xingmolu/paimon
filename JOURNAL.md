@@ -4,6 +4,89 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 91 — Diff-Aware Planning (Devin Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 65: Diff-Aware Planning (Devin Pattern)
+- Created `src/diff-aware-planning.ts` module with DiffAwarePlanningManager class
+- Created `src/tools/diff-aware-planning-tool.ts` for diffAwarePlan tool
+- Updated ROADMAP.md with Phase 65
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables safer changes through git diff analysis
+- Analyzes diffs before making changes to predict impact and reduce rework
+- Provides risk levels (low/medium/high/critical) based on impact score
+- Detects potential conflicts (imports, exports, dependencies)
+- Suggests phased implementation plans for complex changes
+- Helps avoid breaking changes by proactive analysis
+
+**Technical details:**
+- Created `src/diff-aware-planning.ts`:
+  - `DiffAwarePlanningManager` class for managing diff analysis
+  - `DiffAnalysis`, `FileChange`, `Hunk`, `Conflict`, `ImpactPrediction` types
+  - `analyzeDiff()` - Analyze current git diff for impact prediction
+  - `predictImpact()` - Predict impact of proposed changes
+  - `getSafeImplementationPlan()` - Get phased implementation plan
+  - `areChangesSafe()` - Check if changes are safe to apply
+  - Impact scoring: file count, line changes, conflicts, affected modules
+  - Risk levels: low (0-24), medium (25-49), high (50-74), critical (75+)
+  - State persistence to `~/.paimon/diff-aware-planning.json`
+- Created `src/tools/diff-aware-planning-tool.ts`:
+  - `diffAwarePlan` tool with 8 actions: analyze, predict, plan, check, stats, config, reset, help
+- Modified `src/tools/index.ts`:
+  - Added diffAwarePlanTool to metaTools array
+  - Added re-exports for diff-aware-planning module
+- Updated `ROADMAP.md`:
+  - Added Phase 65: Diff-Aware Planning (Devin Pattern)
+
+**Diff-Aware Planning Tool Usage:**
+```typescript
+// Analyze current git diff
+diffAwarePlan({action: 'analyze'})
+
+// Analyze specific files
+diffAwarePlan({action: 'analyze', files: ['src/agent.ts', 'src/types.ts']})
+
+// Predict impact of changes
+diffAwarePlan({action: 'predict', files: ['src/agent.ts'], changes: ['export removal']})
+
+// Get safe implementation plan
+diffAwarePlan({action: 'plan', files: ['src/agent.ts']})
+
+// Check if changes are safe
+diffAwarePlan({action: 'check', files: ['src/agent.ts']})
+
+// View statistics
+diffAwarePlan({action: 'stats'})
+```
+
+**Risk Level Output:**
+```
+## Diff Analysis
+
+**Files Changed:** 3
+**Additions:** 150
+**Deletions:** 20
+**Impact Score:** 45/100
+**Risk Level:** MEDIUM
+
+### Changed Files
+- modified: src/agent.ts (+100/-10)
+- modified: src/types.ts (+30/-5)
+- added: src/new-feature.ts (+20/-5)
+
+### Recommendations
+- Review changes carefully before committing
+- Run affected tests to verify functionality
+```
+
+**Next steps:**
+- Consider integrating with edit tool for automatic diff analysis
+- Consider adding PreToolUse hook for automatic impact warning
+
+---
+
 ## Day 90 — Proactive Error Pattern Injection at SessionStart (2026-04-03)
 
 **What happened:**
