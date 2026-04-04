@@ -657,6 +657,17 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] codeCompletion tool — Tool with 12 actions for code completion management
 - [x] Statistics tracking — Track completions, patterns used, confidence levels
 
+## Phase 72: Agentic Reasoning Memory
+- [x] ReasoningMemoryManager module — Store and recall reasoning chains across iterations
+- [x] Reasoning chain tracking — Track reasoning steps (analysis, decision, action, observation, conclusion)
+- [x] Pattern extraction — Extract successful reasoning patterns from past iterations
+- [x] Similar chain retrieval — Find similar past chains based on task description
+- [x] Reasoning guidance — Get guidance for new tasks based on past reasoning
+- [x] 4 default reasoning patterns — Standard Implementation, Exploration-First, Debug Cycle, Research Integration
+- [x] Keyword and tag extraction — Extract keywords and tags from task descriptions
+- [x] reasoningMemory tool — Tool with 16 actions for reasoning memory management
+- [x] Statistics tracking — Track chains, patterns, success rates, average steps per chain
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

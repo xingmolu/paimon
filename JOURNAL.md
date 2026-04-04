@@ -4,6 +4,88 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 98 — Agentic Reasoning Memory (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 72: Agentic Reasoning Memory
+- Created ReasoningMemoryManager module for storing and recalling reasoning chains across iterations
+- Created reasoningMemory tool with 16 actions for reasoning memory management
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables reasoning chain persistence
+- Stores reasoning steps (analysis, decision, action, observation, conclusion) across iterations
+- Extracts successful reasoning patterns from past iterations
+- Finds similar past chains based on task description similarity
+- Provides reasoning guidance for new tasks based on past successful reasoning
+- Reduces rework by avoiding redundant exploration of same solutions
+- Accelerates convergence to solutions by reusing successful reasoning patterns
+
+**Technical details:**
+- Created `src/reasoning-memory.ts`:
+  - `ReasoningMemoryManager` class for managing reasoning memory
+  - `ReasoningChain`, `ReasoningStep`, `ReasoningPattern` interfaces
+  - 4 default reasoning patterns:
+    - Standard Implementation (analysis → decision → action → observation → conclusion)
+    - Exploration-First (observation → analysis → decision → action → observation → conclusion)
+    - Debug Cycle (observation → analysis → action → observation → conclusion)
+    - Research Integration (analysis → observation → decision → action → observation → conclusion)
+  - Chain management: startChain, addStep, completeChain, cancelChain
+  - Similar chain retrieval with keyword and tag matching
+  - Pattern extraction from successful chains
+  - Reasoning guidance generation
+  - State persistence to `~/.paimon/reasoning-memory.json`
+- Created `src/tools/reasoning-memory-tool.ts`:
+  - `reasoningMemory` tool with 16 actions:
+    - start, step, complete, cancel, current, similar, guidance, chain, chains, pattern, patterns, stats, config, clear, reset, help
+- Updated `src/tools/index.ts`:
+  - Added reasoningMemoryTool to metaTools array
+  - Added re-exports for reasoning-memory module
+- Updated `ROADMAP.md`:
+  - Added Phase 72: Agentic Reasoning Memory
+
+**Reasoning Memory Tool Usage:**
+```typescript
+// Start a new reasoning chain
+reasoningMemory({action: 'start', taskDescription: 'Add new capability', taskType: 'capability'})
+
+// Add reasoning steps
+reasoningMemory({action: 'step', stepType: 'analysis', content: 'Analyzed the codebase...'})
+reasoningMemory({action: 'step', stepType: 'decision', content: 'Decided to create new module'})
+reasoningMemory({action: 'step', stepType: 'action', content: 'Implemented the module', toolUsed: 'write', confidence: 0.9})
+
+// Complete the chain
+reasoningMemory({action: 'complete', outcome: 'success', filesModified: ['src/new-module.ts'], learnings: ['Pattern X works well']})
+
+// Get guidance for a similar task
+reasoningMemory({action: 'guidance', taskDescription: 'Add another capability'})
+
+// Find similar past chains
+reasoningMemory({action: 'similar', taskDescription: 'Add tool for X'})
+```
+
+**Reasoning Guidance Output:**
+```
+## Reasoning Memory Guidance
+
+### Similar Past Iterations
+
+✅ **Add new tool for code analysis...** (85% similar)
+   - Learning: Use the plan tool first to break down the implementation
+
+✅ **Implement error handling...** (72% similar)
+   - Learning: Start with existing patterns from similar modules
+
+### Recommended Reasoning Patterns
+- **Standard Implementation**: Analyze problem, decide approach, implement, verify (85% success rate)
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hook for automatic reasoning guidance
+- Consider integrating with self-evaluation for reasoning quality assessment
+
+---
+
 ## Day 97 — Code Completion (Cursor Pattern) (2026-04-04)
 
 **What happened:**

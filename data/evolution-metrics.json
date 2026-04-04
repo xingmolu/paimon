@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 93.75,
+    "current": 93.81443298969072,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.75,
+        "value": 93.81443298969072,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.75,
+    "weeklyAverage": 93.81443298969072,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.322916666666668,
+    "averageMinutes": 16.309278350515463,
     "byTaskType": {
-      "capability": 16.78021978021978,
+      "capability": 16.76086956521739,
       "reliability": 8
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.322916666666668,
+        "value": 16.309278350515463,
         "trend": "stable"
       }
     ],
@@ -28,9 +28,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 62,
+    "totalErrors": 63,
     "byType": {
-      "lint (fixed)": 32,
+      "lint (fixed)": 33,
       "TS (fixed), lint (fixed)": 4,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
@@ -40,6 +40,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-04: lint (fixed) in \"Agentic Reasoning Memory - ReasoningMemoryManager module for storing and recalling reasoning chains across iterations, 4 default reasoning patterns, similar chain retrieval, reasoning guidance, reasoningMemory tool with 16 actions\"",
       "2026-04-04: lint (fixed) in \"Code Completion (Cursor Pattern) - CodeCompletionManager module for intelligent code completion based on codebase analysis, codeCompletion tool with 12 actions, pattern-based completions, import/signature extraction, multi-language support\"",
       "2026-04-04: lint (fixed) in \"Multi-File Context → Edit Tool Integration (Phase 68) - PreToolUse hook for cross-file dependency analysis before edit operations, risk level warnings, imported-by notification, shared types notification, edit order recommendations, priority 70 after diff-aware-edit-analysis, RepoMap integration\"",
       "2026-04-04: lint (fixed) in \"Multi-File Context (Cursor Pattern) - SymbolUsage interface for cross-file symbol tracking, ChangeImpact interface for impact prediction, RelatedFiles interface for related file suggestions, buildSymbolUsages/buildFileDependencies methods, getSymbolUsages/analyzeChangeImpact/getRelatedFiles methods, risk level calculation, multiFileContext tool with 5 actions\"",
@@ -48,13 +49,12 @@
       "2026-04-03: TS (fixed), lint (fixed) in \"Learning Transfer → RAG Integration - RagModule integration for semantic search enrichment, enrichWithRag method combining TF-IDF + keyword similarity, RAG boost for session matching, rag-discovered sessions, combined confidence scoring (70/30), RAG insights in risk factors, proactive RAG context\"",
       "2026-04-03: lint (fixed), test (fixed) in \"Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output\"",
       "2026-04-03: lint (fixed) in \"Regression Testing → Assess Integration - EvolutionRegressionTester integration with assess tool, before/after snapshot comparison, regression detection during self-assessment, regression warnings in recommendations, RegressionAssessmentResult type, runRegression/iterationId/taskDescription parameters\"",
-      "2026-04-03: TS (fixed), lint (fixed) in \"Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions\"",
-      "2026-04-03: TS (fixed), lint (fixed) in \"Evolution Regression Testing (Regression Testing Pattern) - EvolutionRegressionTester module for running regression tests after evolution changes, capability health tracking (healthy/degraded/broken), snapshot comparison (before/after changes), regression detection, regressionTesting tool with 14 actions\""
+      "2026-04-03: TS (fixed), lint (fixed) in \"Capability Gap Detection - CapabilityGapDetector module for automatically identifying missing capabilities by analyzing ROADMAP, tools, competitor patterns, and integration gaps, 5 gap types (missing-tool, missing-module, roadmap-gap, competitor-pattern, integration-gap), capability coverage tracking, ROADMAP suggestions from gaps, capabilityGap tool with 20 actions\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 62,
+        "value": 63,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 94,
-      "successRate": 93.61702127659575,
-      "averageTime": 16.51063829787234,
+      "usageCount": 95,
+      "successRate": 93.6842105263158,
+      "averageTime": 16.49473684210526,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 45.5
+        "value": 46
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 91,
-    "highImpactCount": 85,
-    "highImpactPercentage": 93.4065934065934
+    "totalCapabilities": 92,
+    "highImpactCount": 86,
+    "highImpactPercentage": 93.47826086956522
   },
-  "lastUpdated": "2026-04-04T08:02:05.226Z",
-  "iterationsAnalyzed": 96
+  "lastUpdated": "2026-04-04T08:58:40.611Z",
+  "iterationsAnalyzed": 97
 }

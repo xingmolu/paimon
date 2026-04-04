@@ -52,6 +52,7 @@ import { pluginsTool } from "./plugins-tool.js";
 import { prReviewToolkitTool } from "./pr-review-toolkit-tool.js";
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
+import { reasoningMemoryTool } from "./reasoning-memory-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { regressionTestingToolDef } from "./regression-testing-tool.js";
 import { remoteExecutionToolDef } from "./remote-execution-tool.js";
@@ -139,6 +140,7 @@ export const metaTools: AgentTool[] = [
 	visualProgressTool,
 	ideIntegrationTool,
 	codeCompletionTool,
+	reasoningMemoryTool,
 ];
 
 /**
@@ -703,3 +705,16 @@ export type {
 	CodeCompletionStats,
 	CodeCompletionConfig,
 } from "../code-completion.js";
+export {
+	getReasoningMemoryManager,
+	initReasoningMemoryManager,
+	ReasoningMemoryManager,
+} from "../reasoning-memory.js";
+export type {
+	ReasoningStep,
+	ReasoningChain,
+	ReasoningPattern,
+	ReasoningMemoryConfig,
+	ReasoningMemoryStats,
+	SimilarChainResult,
+} from "../reasoning-memory.js";
