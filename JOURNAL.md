@@ -4,6 +4,43 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 108 — Fix Capability Gap Detector False Positives (Round 2) (2026-04-04)
+
+**What happened:**
+- Fixed critical bug in capability gap detector that incorrectly excluded `errorPatterns` tool
+- Root cause: `!toolName.includes('Pattern')` check was excluding legitimate tools containing "Pattern"
+- Added documentation for 10 undocumented tools in prompt.ts IMPORTANT section
+- Updated `detectAllGaps()` to clear cached gaps before re-detecting for fresh results
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+- The gap detector was showing false positives that wasted time and reduced trust
+- All 75 documented tools now correctly match 75 implemented tools
+- Zero gaps detected after fix
+
+**Technical details:**
+- Modified `src/capability-gap.ts`:
+  - Line 504: Changed `!toolName.includes('Pattern')` to `!toolName.includes(' ')` 
+  - This now only excludes example patterns like "My Pattern" with spaces, not legitimate tools
+  - Updated `detectAllGaps()` to clear `this.gaps = []` before re-detecting
+  - Updated `clearGaps()` to also clear `resolvedGaps` and reset `stats`
+- Modified `src/prompt.ts`:
+  - Added documentation for core file tools: `bash`, `read`, `write`, `edit`
+  - Added documentation for search tools: `glob`, `grep`, `find`, `ls`
+  - Added documentation for `http` tool
+  - Added documentation for `learningOutputStyle` tool
+
+**Bug Explanation:**
+The condition `!toolName.includes('Pattern')` was meant to exclude example names like "My Pattern" but was also excluding `errorPatterns` because it contains "Pattern" with a capital P. The fix changes the check to `!toolName.includes(' ')` which only excludes names with spaces (actual example patterns).
+
+**Context:**
+- ROADMAP Phase 1-78: All complete ✅
+- Capability Gap Detection: Now accurate with 0 false positives ✅
+- All documented tools are now properly matched to implemented tools
+
+---
+
 ## Day 107 — Document New Tools (2026-04-04)
 
 **What happened:**

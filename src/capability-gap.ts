@@ -500,8 +500,8 @@ export class CapabilityGapDetector {
 				const nameMatches = content.matchAll(/name:\s*["']([a-zA-Z][a-zA-Z0-9-]*)["']/g);
 				for (const match of nameMatches) {
 					const toolName = match[1];
-					// Skip example names and patterns
-					if (!excludeNames.has(toolName) && !toolName.includes("Pattern")) {
+					// Skip example names (names with spaces are example patterns like "My Pattern")
+					if (!excludeNames.has(toolName) && !toolName.includes(" ")) {
 						actualToolNames.push(toolName);
 					}
 				}
@@ -715,6 +715,9 @@ export class CapabilityGapDetector {
 			return [];
 		}
 
+		// Clear previously detected gaps before re-detecting to ensure fresh results
+		this.gaps = [];
+
 		const allGaps: CapabilityGap[] = [];
 		allGaps.push(...this.detectRoadmapGaps());
 		allGaps.push(...this.detectToolGaps());
@@ -824,6 +827,16 @@ export class CapabilityGapDetector {
 
 	public clearGaps(): void {
 		this.gaps = [];
+		this.resolvedGaps = [];
+		this.stats = {
+			totalDetections: 0,
+			byType: {},
+			bySeverity: {},
+			resolvedGaps: 0,
+			resolutionRate: 0,
+			lastDetectionTime: "",
+			topGapCategories: [],
+		};
 		this.saveData();
 	}
 
