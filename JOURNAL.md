@@ -4,6 +4,86 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 94 — Multi-File Context (Cursor Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 67: Multi-File Context (Cursor Pattern)
+- Enhanced RepoMap module with cross-file symbol tracking and impact prediction
+- Created multiFileContext tool for easy access to multi-file analysis
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables cross-file understanding
+- Symbol usage tracking shows where each symbol is used across all files
+- Change impact analysis predicts which files are affected by changes
+- Related files suggestion identifies files that should be edited together
+- Helps prevent cross-file dependency errors and reduces rework
+
+**Technical details:**
+- Added to `src/repomap.ts`:
+  - `SymbolUsage` interface - Track symbol usages across files
+  - `ChangeImpact` interface - Predict change impact with risk levels
+  - `RelatedFiles` interface - Suggest related files with edit order
+  - `buildSymbolUsages()` method - Build symbol usage map from imports
+  - `buildFileDependencies()` method - Build file dependency graph
+  - `getSymbolUsages()` method - Get symbol usages with optional filter
+  - `analyzeChangeImpact()` method - Analyze change impact for a file
+  - `getRelatedFiles()` method - Get related files with edit order
+  - Risk levels: low, medium, high, critical based on dependent files
+- Created `src/tools/multi-file-context-tool.ts`:
+  - `multiFileContext` tool with 5 actions:
+    - `symbol-usages` - Get symbol usages across files
+    - `change-impact` - Analyze change impact for a file
+    - `related-files` - Get related files suggestions
+    - `top-symbols` - Get top most used symbols
+    - `high-risk-files` - Get high risk files with many dependents
+- Updated `ROADMAP.md`:
+  - Added Phase 67: Multi-File Context (Cursor Pattern)
+
+**Multi-File Context Tool Usage:**
+```typescript
+// Get symbol usages
+multiFileContext({action: 'symbol-usages', symbol: 'RepoMap'})
+
+// Analyze change impact
+multiFileContext({action: 'change-impact', file: 'src/repomap.ts'})
+
+// Get related files
+multiFileContext({action: 'related-files', file: 'src/agent.ts'})
+
+// Get top symbols
+multiFileContext({action: 'top-symbols', topN: 10})
+
+// Get high risk files
+multiFileContext({action: 'high-risk-files', topN: 10})
+```
+
+**Change Impact Analysis Output:**
+```
+## Change Impact Analysis
+
+**File:** src/types.ts
+**Risk Level:** HIGH
+
+Changing src/types.ts affects 15 symbol(s) and 23 dependent file(s). Risk level: high
+
+### Affected Symbols (15)
+- AgentConfig (interface)
+- ToolCall (interface)
+- ...
+
+### Dependent Files (23)
+- src/agent.ts (high risk) - Imports 8 symbol(s) from this file
+- src/tools/index.ts (high risk) - Imports 6 symbol(s) from this file
+- ...
+```
+
+**Next steps:**
+- Consider integrating with edit tool for automatic impact warnings
+- Consider adding SessionStart hook for high-risk file warnings
+
+---
+
 ## Day 93 — Diff-Aware Planning → Edit Tool Integration (2026-04-04)
 
 **What happened:**

@@ -599,6 +599,18 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Hook priority configuration — Priority 75, after safety gates
 - [x] Statistics tracking — Track edit analyses via diff-aware planning stats
 
+## Phase 67: Multi-File Context (Cursor Pattern)
+- [x] SymbolUsage interface — Track where each symbol is used across all files
+- [x] ChangeImpact interface — Predict which files are affected by changes
+- [x] RelatedFiles interface — Suggest files that should be edited together
+- [x] buildSymbolUsages method — Build map of symbol usages across codebase
+- [x] buildFileDependencies method — Build file dependency graph from imports
+- [x] getSymbolUsages method — Get symbol usages with optional name filter
+- [x] analyzeChangeImpact method — Analyze impact of changes to a file
+- [x] getRelatedFiles method — Get related files with edit order suggestions
+- [x] Risk level calculation — low, medium, high, critical based on dependent files
+- [x] multiFileContext tool — Tool for cross-file analysis with 5 actions
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

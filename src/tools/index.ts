@@ -40,6 +40,7 @@ import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { getLearningTransferManager, learningTransferToolDef } from "./learning-transfer-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
+import { multiFileContextTool } from "./multi-file-context-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternAutoApplyToolDef } from "./pattern-auto-apply-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
@@ -131,6 +132,7 @@ export const metaTools: AgentTool[] = [
 	regressionTestingToolDef,
 	capabilityGapToolDef,
 	diffAwarePlanTool,
+	multiFileContextTool,
 ];
 
 /**
@@ -644,3 +646,10 @@ export type {
 	DiffAwarePlanningConfig,
 } from "../diff-aware-planning.js";
 export { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
+export { multiFileContextTool } from "./multi-file-context-tool.js";
+export { RepoMap } from "../repomap.js";
+export type {
+	SymbolUsage,
+	ChangeImpact,
+	RelatedFiles,
+} from "../repomap.js";
