@@ -40,6 +40,7 @@ import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
 import { ideIntegrationTool } from "./ide-integration-tool.js";
+import { imageContextTool } from "./image-context-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
@@ -159,6 +160,7 @@ export const metaTools: AgentTool[] = [
 	gitWorkflowTool,
 	voiceToCodeToolDefinition,
 	conversationSharingToolDefinition,
+	imageContextTool,
 ];
 
 /**
@@ -868,3 +870,12 @@ export type {
 	SharingStats,
 	ConversationSharingConfig,
 } from "../conversation-sharing.js";
+export { imageContextTool } from "./image-context-tool.js";
+export { getManager as getImageContextManager, ImageContextManager } from "../image-context.js";
+export type {
+	ImageInfo,
+	WebPageInfo,
+	VisionModel,
+	ImageContextStats,
+	ImageContextConfig,
+} from "../image-context.js";

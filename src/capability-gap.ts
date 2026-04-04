@@ -360,6 +360,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "image-context",
+		source: "aider",
+		category: "context",
+		description:
+			"Image context support for adding images/screenshots to chat for visual context, UI mockups, screenshot error messages, web page scraping for documentation, vision-capable model detection",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

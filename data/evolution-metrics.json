@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 94.5945945945946,
+    "current": 94.64285714285714,
     "points": [
       {
         "date": "2026-W14",
-        "value": 94.5945945945946,
+        "value": 94.64285714285714,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.5945945945946,
+    "weeklyAverage": 94.64285714285714,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.504504504504503,
+    "averageMinutes": 16.491071428571427,
     "byTaskType": {
-      "capability": 17.14851485148515,
+      "capability": 17.127450980392158,
       "reliability": 10
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.504504504504503,
+        "value": 16.491071428571427,
         "trend": "stable"
       }
     ],
@@ -28,10 +28,10 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 67,
+    "totalErrors": 68,
     "byType": {
+      "lint (fixed)": 37,
       "TS (fixed), lint (fixed)": 5,
-      "lint (fixed)": 36,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
       "TS (fixed)": 5,
@@ -40,6 +40,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-04: lint (fixed) in \"Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: TS (fixed), lint (fixed) in \"Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Predictive Error Prevention - PredictiveErrorPreventionManager module for proactively predicting errors BEFORE they occur, 8 default error patterns (TypeScript imports, lint errors, test timeouts, file not found, hook handlers, context overflow, regex patterns, git conflicts), probability and confidence scoring, prevention suggestions, SessionStart hook integration, predictiveErrorPrevention tool with 13 actions, competitor pattern added to capability-gap.ts\"",
@@ -48,13 +49,12 @@
       "2026-04-04: lint (fixed) in \"Code Completion (Cursor Pattern) - CodeCompletionManager module for intelligent code completion based on codebase analysis, codeCompletion tool with 12 actions, pattern-based completions, import/signature extraction, multi-language support\"",
       "2026-04-04: lint (fixed) in \"Multi-File Context → Edit Tool Integration (Phase 68) - PreToolUse hook for cross-file dependency analysis before edit operations, risk level warnings, imported-by notification, shared types notification, edit order recommendations, priority 70 after diff-aware-edit-analysis, RepoMap integration\"",
       "2026-04-04: lint (fixed) in \"Multi-File Context (Cursor Pattern) - SymbolUsage interface for cross-file symbol tracking, ChangeImpact interface for impact prediction, RelatedFiles interface for related file suggestions, buildSymbolUsages/buildFileDependencies methods, getSymbolUsages/analyzeChangeImpact/getRelatedFiles methods, risk level calculation, multiFileContext tool with 5 actions\"",
-      "2026-04-04: TS (fixed), lint (fixed) in \"Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions\"",
-      "2026-04-03: lint (fixed) in \"Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations\""
+      "2026-04-04: TS (fixed), lint (fixed) in \"Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 67,
+        "value": 68,
         "trend": "stable"
       }
     ],
@@ -69,16 +69,16 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 109,
-      "successRate": 94.4954128440367,
-      "averageTime": 16.6697247706422,
+      "usageCount": 110,
+      "successRate": 94.54545454545455,
+      "averageTime": 16.654545454545456,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 33,
-      "successRate": 87.87878787878788,
-      "averageTime": 19.393939393939394,
+      "usageCount": 34,
+      "successRate": 88.23529411764706,
+      "averageTime": 19.264705882352942,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 50.5
+        "value": 51
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 101,
-    "highImpactCount": 98,
-    "highImpactPercentage": 97.02970297029702
+    "totalCapabilities": 102,
+    "highImpactCount": 99,
+    "highImpactPercentage": 97.05882352941177
   },
-  "lastUpdated": "2026-04-04T19:07:54.121Z",
-  "iterationsAnalyzed": 111
+  "lastUpdated": "2026-04-04T19:22:19.183Z",
+  "iterationsAnalyzed": 112
 }

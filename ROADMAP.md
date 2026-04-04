@@ -532,6 +532,21 @@ Planned improvements for evo.
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 83: Image Context Support (Aider Pattern)
+- [x] ImageContextManager module — Manage images and web pages for visual context
+- [x] imageContext tool — Tool with 22 actions for image and web page management
+- [x] Image operations — Add from file, paste from clipboard (base64), get, list, remove
+- [x] Web page scraping — Scrape URLs for documentation content
+- [x] Vision model detection — Check if models support vision (GPT-4o, Claude 3.x, Gemini)
+- [x] Format conversion — Base64 encoding, data URL generation
+- [x] Context formatting — Format images and pages for LLM context
+- [x] Statistics tracking — Track images added, pages scraped, bytes processed
+- [x] Competitor pattern — Added to capability-gap.ts as aider pattern
+
+---
+
+Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
 ## Phase 59: Session Replay → Auto-Apply Integration
 - [x] Pattern feed callback system — Register callbacks to receive patterns when extracted
 - [x] proactivePatternFeeding config option — Enable/disable automatic pattern feeding

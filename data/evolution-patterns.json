@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,19 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 101,
+      "sampleSize": 102,
       "examples": [
+        {
+          "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-04",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
@@ -238,28 +249,18 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts",
-          "date": "2026-04-04",
-          "time": 20,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "time-pattern-quick",
       "type": "time-pattern",
-      "description": "Tasks under 9min have 100% success",
+      "description": "Tasks under 8min have 100% success",
       "characteristics": {
         "timeRange": {
           "min": 0,
-          "max": 9
+          "max": 8
         }
       },
       "successRate": 100,
@@ -299,7 +300,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -313,10 +314,21 @@
       },
       "successRate": 88,
       "firstTryRate": 88,
-      "averageTime": 20,
+      "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 32,
+      "sampleSize": 33,
       "examples": [
+        {
+          "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-04",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
@@ -338,20 +350,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Model Migration (Claude Code Pattern) - ModelMigrationManager module for model version migrations between LLM versions, 12 default migration rules for Claude/GPT/DeepSeek, file/directory scanning, migration planning with previews, execution with backup support, rollback capability, beta header and API endpoint migrations, modelMigration tool with 13 actions",
-          "date": "2026-04-04",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     },
     {
       "id": "task-type-reliability",
@@ -397,9 +398,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:07:54.292Z"
+      "lastUpdated": "2026-04-04T19:22:19.353Z"
     }
   ],
-  "lastUpdated": "2026-04-04T19:07:54.293Z",
-  "sessionCount": 111
+  "lastUpdated": "2026-04-04T19:22:19.353Z",
+  "sessionCount": 112
 }
