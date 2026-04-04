@@ -369,6 +369,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "integration-manager",
+		source: "openhands",
+		category: "integration",
+		description:
+			"External integration manager for Slack, Jira, Linear, GitHub, Discord, and webhooks - enables notifications for evolution events, collaboration features, and feedback capture",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

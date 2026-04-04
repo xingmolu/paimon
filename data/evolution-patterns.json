@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,19 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 102,
+      "sampleSize": 103,
       "examples": [
+        {
+          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-04",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
@@ -238,29 +249,18 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Voice-to-Code (Aider Pattern) - VoiceToCodeManager module for hands-free coding via voice commands, voiceToCode tool with 20 actions (start, stop, pause, resume, status, transcribe, parse, execute, history, sessions, session, commands, add-command, remove-command, config, stats, clear, reset, help), 12 default voice commands for file operations/git/testing/planning, Whisper API integration, local whisper.cpp fallback, voice session management, command history and statistics, competitor pattern added to capability-gap.ts with \"aider\" source type",
-          "date": "2026-04-04",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "time-pattern-quick",
       "type": "time-pattern",
-      "description": "Tasks under 8min have 100% success",
+      "description": "Tasks under 9min have 100% success",
       "characteristics": {
         "timeRange": {
           "min": 0,
-          "max": 8
+          "max": 9
         }
       },
       "successRate": 100,
@@ -300,7 +300,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -316,8 +316,19 @@
       "firstTryRate": 88,
       "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 33,
+      "sampleSize": 34,
       "examples": [
+        {
+          "taskDescription": "Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-04",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
@@ -339,20 +350,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Voice-to-Code (Aider Pattern) - VoiceToCodeManager module for hands-free coding via voice commands, voiceToCode tool with 20 actions (start, stop, pause, resume, status, transcribe, parse, execute, history, sessions, session, commands, add-command, remove-command, config, stats, clear, reset, help), 12 default voice commands for file operations/git/testing/planning, Whisper API integration, local whisper.cpp fallback, voice session management, command history and statistics, competitor pattern added to capability-gap.ts with \"aider\" source type",
-          "date": "2026-04-04",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     },
     {
       "id": "task-type-reliability",
@@ -398,9 +398,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T19:22:19.353Z"
+      "lastUpdated": "2026-04-04T20:47:41.603Z"
     }
   ],
-  "lastUpdated": "2026-04-04T19:22:19.353Z",
-  "sessionCount": 112
+  "lastUpdated": "2026-04-04T20:47:41.603Z",
+  "sessionCount": 113
 }

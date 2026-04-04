@@ -4,6 +4,85 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 112 — Integration Manager (OpenHands Cloud Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 83: Integration Manager (OpenHands Cloud Pattern)
+- Created IntegrationManager module in src/integration-manager.ts
+- Created integration tool with 19 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from OpenHands Cloud's integration features
+- Enables external notifications for evolution events
+- Supports 6 integration types: Slack, Jira, Linear, GitHub, Discord, Webhook
+- 8 event types: session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone
+- Enables collaboration through external platforms
+- Also documented imageContext tool that was implemented but undocumented
+
+**Technical details:**
+- Created `src/integration-manager.ts`:
+  - `IntegrationManager` class for managing external integrations
+  - `Integration`, `IntegrationEvent`, `NotificationConfig`, `IntegrationConfig` interfaces
+  - 6 integration types with specific implementations (Slack, Jira, Linear, GitHub, Discord, Webhook)
+  - Event sending to multiple integrations simultaneously
+  - Event formatting with emojis and colors per event type
+  - Webhook support for custom integrations
+  - State persistence to `~/.paimon/integrations.json`
+- Created `src/tools/integration-tool.ts`:
+  - `integration` tool with 19 actions:
+    - add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help
+- Updated `src/tools/index.ts`:
+  - Added integrationTool to metaTools array
+  - Added re-exports for integration-manager module
+- Updated `src/prompt.ts`:
+  - Added documentation for integration tool and imageContext tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `integration-manager` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 83: Integration Manager (OpenHands Cloud Pattern)
+
+**Integration Tool Usage:**
+```typescript
+// Add a Slack integration
+integration({
+  action: 'add',
+  type: 'slack',
+  name: 'Team Slack',
+  config: { webhookUrl: 'https://hooks.slack.com/...' }
+})
+
+// Send a notification
+integration({
+  action: 'send',
+  eventType: 'task_complete',
+  data: { taskType: 'capability', taskDescription: 'Add tool' }
+})
+
+// List integrations
+integration({ action: 'list' })
+
+// Test an integration
+integration({ action: 'test', id: 'slack-123' })
+```
+
+**Supported Integrations:**
+| Type | Description | Config Required |
+|------|-------------|-----------------|
+| Slack | Send notifications to Slack channels | webhookUrl |
+| Jira | Create comments on Jira issues | baseUrl, apiToken, email |
+| Linear | Create comments on Linear issues | apiKey, teamId |
+| GitHub | Create comments on GitHub issues | token, owner, repo |
+| Discord | Send notifications to Discord channels | webhookUrl |
+| Webhook | Custom webhook for any service | url, headers (optional) |
+
+**Context:**
+- ROADMAP Phase 1-83: All complete ✅
+- 29 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider)
+- All 875 tests pass
+
+---
+
 ## Day 111 — Conversation Sharing (OpenHands Pattern) (2026-04-04)
 
 **What happened:**

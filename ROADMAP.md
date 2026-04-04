@@ -533,6 +533,18 @@ Planned improvements for evo.
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
 
+## Phase 83: Integration Manager (OpenHands Cloud Pattern)
+- [x] IntegrationManager module — Manage external integrations for notifications
+- [x] integration tool — Tool for managing integrations with 19 actions
+- [x] 6 integration types — Slack, Jira, Linear, GitHub, Discord, Webhook
+- [x] Event types — 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone)
+- [x] Integration management — Add, get, list, update, remove, enable, disable, test
+- [x] Event sending — Send events to all enabled integrations
+- [x] Event history — Track all sent events with status
+- [x] Notification config — Per-integration notification settings
+- [x] Statistics tracking — Track integrations, events, success rates
+- [x] State persistence — Save integrations to ~/.paimon/integrations.json
+
 ## Phase 83: Image Context Support (Aider Pattern)
 - [x] ImageContextManager module — Manage images and web pages for visual context
 - [x] imageContext tool — Tool with 22 actions for image and web page management

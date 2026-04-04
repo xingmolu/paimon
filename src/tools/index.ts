@@ -41,6 +41,7 @@ import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
 import { ideIntegrationTool } from "./ide-integration-tool.js";
 import { imageContextTool } from "./image-context-tool.js";
+import { integrationTool } from "./integration-tool.js";
 import { intelligenceTool } from "./intelligence-tool.js";
 import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
@@ -161,6 +162,7 @@ export const metaTools: AgentTool[] = [
 	voiceToCodeToolDefinition,
 	conversationSharingToolDefinition,
 	imageContextTool,
+	integrationTool,
 ];
 
 /**
@@ -879,3 +881,14 @@ export type {
 	ImageContextStats,
 	ImageContextConfig,
 } from "../image-context.js";
+export { integrationTool } from "./integration-tool.js";
+export {
+	getIntegrationManager,
+	IntegrationManager,
+} from "../integration-manager.js";
+export type {
+	Integration,
+	IntegrationEvent,
+	NotificationConfig,
+	IntegrationConfig,
+} from "../integration-manager.js";
