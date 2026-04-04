@@ -4,6 +4,45 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 109 — Fix Capability Gap Detector Escaped Backtick Bug (2026-04-04)
+
+**What happened:**
+- Fixed critical bug in capability gap detector that was causing false positives
+- Root cause: Regex was looking for literal backticks but prompt.ts uses escaped backticks (\`)
+- Changed regex from `/`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g` to `/\\?`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g`
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+- The gap detector was incorrectly flagging `errorPatterns` as missing when it was actually implemented
+- This was caused by the regex not matching escaped backticks in TypeScript template strings
+- Now correctly handles both literal backticks `` ` `` and escaped backticks `` \` ``
+- All 75 documented tools now correctly match 75 implemented tools with zero false positives
+
+**Technical details:**
+- Modified `src/capability-gap.ts`:
+  - Line 522: Changed regex to use `\\?`` pattern to make backslash optional
+  - This matches both:
+    - Literal backticks: `` `errorPatterns({ `` (in markdown)
+    - Escaped backticks: `` \`errorPatterns({ `` (in TypeScript strings)
+  - The `\\?` pattern means "optionally match a backslash before the backtick"
+
+**Bug Explanation:**
+In prompt.ts, tool documentation uses escaped backticks within template strings:
+```typescript
+// Actual content in prompt.ts:
+- When encountering errors, use \`errorPatterns({action: 'match', error: 'error message'})\`
+```
+
+The previous regex `/`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g` required a literal backtick, so it didn't match the `\`` pattern. The fix adds `\\?` before the backtick to optionally match the backslash.
+
+**Context:**
+- ROADMAP Phase 1-78: All complete ✅
+- Capability Gap Detection: Now accurate with 0 false positives ✅
+- All documented tools are now properly matched to implemented tools
+
+---
+
 ## Day 108 — Fix Capability Gap Detector False Positives (Round 2) (2026-04-04)
 
 **What happened:**

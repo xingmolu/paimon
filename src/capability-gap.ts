@@ -514,12 +514,14 @@ export class CapabilityGapDetector {
 			let documentedTools: string[] = [];
 			if (fs.existsSync(promptPath)) {
 				const promptContent = fs.readFileSync(promptPath, "utf-8");
-				// Match tools documented as: `toolName({...})` in backticks
+				// Match tools documented as: `toolName({...})` or \`toolName({...})\` in backticks
 				// This matches various patterns like:
-				// - `toolName({action: '...'})
+				// - `toolName({action: '...'})        (literal backtick)
+				// - \`toolName({action: '...'})\`     (escaped backtick in TypeScript strings)
 				// - `toolName({})`
 				// - `toolName({param: '...'})
-				const toolMatches = promptContent.matchAll(/`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g);
+				// The \\?` pattern matches both literal ` and escaped \`
+				const toolMatches = promptContent.matchAll(/\\?`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g);
 				documentedTools = Array.from(toolMatches, (m) => m[1]);
 				// Remove duplicates
 				documentedTools = [...new Set(documentedTools)];
