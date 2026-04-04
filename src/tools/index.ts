@@ -25,6 +25,7 @@ import { codeCompletionTool } from "./code-completion-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { contextImportanceTool } from "./context-importance-tool.js";
+import { conversationSharingToolDefinition } from "./conversation-sharing-tool.js";
 import { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { evolutionCostToolDef } from "./evolution-cost-tool.js";
@@ -157,6 +158,7 @@ export const metaTools: AgentTool[] = [
 	predictiveErrorPreventionTool,
 	gitWorkflowTool,
 	voiceToCodeToolDefinition,
+	conversationSharingToolDefinition,
 ];
 
 /**
@@ -849,3 +851,20 @@ export type {
 	VoiceCommandMapping,
 	VoiceToCodeStats,
 } from "../voice-to-code.js";
+export {
+	conversationSharingToolDefinition,
+	conversationSharingTool,
+} from "./conversation-sharing-tool.js";
+export {
+	getConversationSharingManager,
+	ConversationSharingManager,
+} from "../conversation-sharing.js";
+export type {
+	SharedSession,
+	SharedMessage,
+	SessionMetadata,
+	ExportOptions,
+	ImportResult,
+	SharingStats,
+	ConversationSharingConfig,
+} from "../conversation-sharing.js";

@@ -351,6 +351,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "conversation-sharing",
+		source: "openhands",
+		category: "collaboration",
+		description:
+			"Conversation sharing for exporting, importing, and sharing evolution sessions in multiple formats (JSON, Markdown, HTML, CSV) with anonymization support",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;
