@@ -692,6 +692,19 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] modelMigration tool — Tool with 13 actions for migration management
 - [x] Statistics tracking — Track migrations, files modified, changes applied
 
+## Phase 75: Evolution Strategy Planner (Meta-Capability)
+- [x] EvolutionStrategyPlanner module — Meta-capability for planning optimal evolution strategies
+- [x] State analysis — Analyze current capability coverage, success rate, velocity
+- [x] Strategy recommendations — Recommend next evolution strategies with priorities and confidence
+- [x] 8 strategy types — fill-gaps, improve-reliability, add-new-capability, optimize-existing, integration-improvement, research-competitors, memory-enhancement, tool-chain-improvement
+- [x] Capability enablers — Predict which capabilities enable others for multiplier effects
+- [x] Strategic direction — Determine current strategic direction (expand, stabilize, integrate, optimize, evolve, maintain)
+- [x] Next phase suggestion — Suggest next ROADMAP phase based on analysis
+- [x] Strategic guidance — Get guidance for specific tasks with risk assessment
+- [x] Capability dependency graph — Track which capabilities enable others
+- [x] evolutionStrategy tool — Tool with 10 actions for strategy management
+- [x] Statistics tracking — Track analyses, recommendations, enablers identified
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

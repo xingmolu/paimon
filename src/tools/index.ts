@@ -27,6 +27,7 @@ import { contextImportanceTool } from "./context-importance-tool.js";
 import { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
 import { evolutionCostToolDef } from "./evolution-cost-tool.js";
+import { evolutionStrategyTool } from "./evolution-strategy-tool.js";
 import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
@@ -145,6 +146,7 @@ export const metaTools: AgentTool[] = [
 	reasoningMemoryTool,
 	toolUsageAnalyticsTool,
 	modelMigrationToolDefinition,
+	evolutionStrategyTool,
 ];
 
 /**
@@ -750,3 +752,17 @@ export type {
 	ModelMigrationConfig,
 	ModelMigrationStats,
 } from "../model-migration.js";
+export {
+	getEvolutionStrategyPlanner,
+	resetEvolutionStrategyPlanner,
+	EvolutionStrategyPlanner,
+} from "../evolution-strategy.js";
+export type {
+	EvolutionState,
+	StrategyRecommendation,
+	StrategyType,
+	CapabilityEnabler,
+	EvolutionStrategyConfig,
+	StrategyAnalysisResult,
+} from "../evolution-strategy.js";
+export { evolutionStrategyTool } from "./evolution-strategy-tool.js";
