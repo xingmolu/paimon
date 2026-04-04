@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getGlobalContextBudgetManager } from "./context-budget.js";
 import { getDiffAwarePlanningManager } from "./diff-aware-planning.js";
 import { getErrorPatternLearner } from "./error-patterns.js";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
@@ -881,6 +882,73 @@ const DEFAULT_SECURITY_HOOKS: Hook[] = [
 				// If analysis fails, allow the edit without warning
 				return { allow: true };
 			}
+		},
+	},
+	{
+		id: "context-budget-monitor",
+		type: "PreToolUse",
+		name: "Context Budget Monitor",
+		description:
+			"Monitors context budget during long sessions and provides proactive warnings before context overflow (Proactive Context Management Pattern)",
+		enabled: true,
+		priority: 65, // After multi-file-edit-analysis (70), low priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			// Skip for trivial operations
+			if (!context.tool) {
+				return { allow: true };
+			}
+
+			const budgetManager = getGlobalContextBudgetManager();
+			const config = budgetManager.getConfig();
+
+			if (!config.enabled) {
+				return { allow: true };
+			}
+
+			// Check if we should run a budget check (rate limited)
+			const stats = budgetManager.getStats();
+			const lastCheck = stats.lastCheckTimestamp;
+
+			// Only check every 10 seconds to avoid overhead
+			if (lastCheck && Date.now() - lastCheck < 10000) {
+				return { allow: true };
+			}
+
+			// Check budget
+			const usage = budgetManager.checkBudget("pre-tool-use");
+
+			// If overflow detected, show critical warning
+			if (usage.healthStatus === "overflow") {
+				const suggestions = budgetManager.getAutoExecutableSuggestions();
+				return {
+					allow: true,
+					warning: `🚨 CRITICAL: Context overflow detected (${Math.round(usage.usagePercent)}% used)!\n\nImmediate actions:\n${suggestions.map((s) => `  - ${s.description} (~${s.estimatedSavings} tokens)`).join("\n")}\n\nUse contextBudget({action: 'check'}) for details.`,
+					context: `Context: ${usage.currentTokens}/${usage.maxAvailableTokens} tokens (${Math.round(usage.usagePercent)}%)`,
+				};
+			}
+
+			// If critical threshold reached, show warning
+			if (usage.healthStatus === "critical") {
+				const suggestions = budgetManager.getAutoExecutableSuggestions();
+				return {
+					allow: true,
+					warning: `⚠️ WARNING: Context usage at ${Math.round(usage.usagePercent)}% (critical level).\n\nSuggested actions:\n${suggestions
+						.slice(0, 3)
+						.map((s) => `  - ${s.description}`)
+						.join("\n")}\n\nUse contextBudget({action: 'suggestions'}) for more options.`,
+					context: `Context: ${usage.currentTokens}/${usage.maxAvailableTokens} tokens`,
+				};
+			}
+
+			// If warning threshold reached, show informational message
+			if (usage.healthStatus === "warning") {
+				return {
+					allow: true,
+					context: `📊 Context usage: ${Math.round(usage.usagePercent)}% (${usage.currentTokens}/${usage.maxAvailableTokens} tokens). Consider proactive context management.`,
+				};
+			}
+
+			return { allow: true };
 		},
 	},
 ];

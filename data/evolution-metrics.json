@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 94.1747572815534,
+    "current": 94.23076923076923,
     "points": [
       {
         "date": "2026-W14",
-        "value": 94.1747572815534,
+        "value": 94.23076923076923,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.1747572815534,
+    "weeklyAverage": 94.23076923076923,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.37864077669903,
+    "averageMinutes": 16.46153846153846,
     "byTaskType": {
-      "reliability": 9.285714285714286,
-      "capability": 16.895833333333332
+      "capability": 16.97938144329897,
+      "reliability": 9.285714285714286
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.37864077669903,
+        "value": 16.46153846153846,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 101,
-      "successRate": 94.05940594059405,
-      "averageTime": 16.554455445544555,
+      "usageCount": 102,
+      "successRate": 94.11764705882352,
+      "averageTime": 16.637254901960784,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 48
+        "value": 48.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 96,
-    "highImpactCount": 91,
-    "highImpactPercentage": 94.79166666666666
+    "totalCapabilities": 97,
+    "highImpactCount": 92,
+    "highImpactPercentage": 94.84536082474226
   },
-  "lastUpdated": "2026-04-04T13:25:45.341Z",
-  "iterationsAnalyzed": 103
+  "lastUpdated": "2026-04-04T14:05:05.741Z",
+  "iterationsAnalyzed": 104
 }

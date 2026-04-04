@@ -4,6 +4,125 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 106 — Adaptive Reasoning Strategy Selection (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 78: Adaptive Reasoning Strategy Selection
+- Created AdaptiveReasoningManager module in src/adaptive-reasoning.ts
+- Created adaptiveReasoning tool with 12 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that improves iteration success rate through smarter strategy selection
+- Automatically selects optimal reasoning strategies based on task context
+- Learns from historical success rates which strategies work best for different task types
+- 7 reasoning strategies: analytical, creative, systematic, exploratory, diagnostic, architectural, iterative
+- Each strategy has detailed profiles with strengths, weaknesses, optimal contexts
+- Supports strategy adaptation during task execution
+- Records outcomes to improve future selections
+
+**Technical details:**
+- Created `src/adaptive-reasoning.ts`:
+  - `AdaptiveReasoningManager` class for managing strategy selection
+  - `ReasoningStrategy`, `TaskContext`, `StrategyProfile` interfaces
+  - 7 reasoning strategies with optimal task types and contexts
+  - Context detection from task description
+  - Historical success tracking per strategy
+  - Learned preferences storage (context-taskType → strategy → score)
+  - Adaptation triggers for strategy changes
+- Created `src/tools/adaptive-reasoning-tool.ts`:
+  - `adaptiveReasoning` tool with 12 actions:
+    - select, adapt, record, context, strategies, profile, recommend, stats, config, enable, disable, reset, help
+- Updated `src/tools/index.ts`:
+  - Added adaptiveReasoningToolDefinition to metaTools array
+  - Added re-exports for adaptive-reasoning module
+- Updated `ROADMAP.md`:
+  - Added Phase 78: Adaptive Reasoning Strategy Selection
+
+**Strategy Types:**
+| Strategy | Description | Optimal For |
+|----------|-------------|-------------|
+| analytical | Systematic breakdown with logical deduction | Debugging, verification, review |
+| creative | Exploratory with novel solutions | Architecture, implementation |
+| systematic | Step-by-step methodical approach | Implementation, verification, planning |
+| exploratory | Broad exploration before converging | Code-exploration, research, architecture |
+| diagnostic | Focused investigation for root causes | Debugging, verification |
+| architectural | High-level design thinking | Architecture, planning |
+| iterative | Rapid cycles of implementation | Implementation, verification |
+
+**Tool Usage:**
+```typescript
+// Select optimal strategy
+adaptiveReasoning({action: 'select', taskType: 'capability', taskDescription: 'Add new tool'})
+
+// Record outcome for learning
+adaptiveReasoning({action: 'record', strategy: 'systematic', taskType: 'capability', success: true})
+
+// Get recommendations
+adaptiveReasoning({action: 'recommend', taskType: 'capability'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hook for proactive strategy selection
+- Consider adding PreTaskSelection hook for automatic strategy alignment
+
+**What happened:**
+- Implemented ROADMAP Phase 77: Context Budget PreToolUse Hook
+- Added context-budget-monitor PreToolUse hook to src/hooks.ts
+- Hook monitors context budget during long sessions and provides proactive warnings
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that prevents context overflow failures proactively
+- Monitors context usage during long evolution sessions
+- Provides warnings when approaching critical thresholds (70%, 85%, 100%)
+- Suggests context reduction actions automatically
+- Rate-limited checking (every 10 seconds) to avoid performance overhead
+- Integrates with existing ContextBudgetManager module
+
+**Technical details:**
+- Added to `src/hooks.ts`:
+  - New PreToolUse hook `context-budget-monitor` with priority 65
+  - Rate-limited context checking (10 second minimum interval)
+  - Three warning levels: warning (70%), critical (85%), overflow (100%)
+  - Auto-executable suggestions when context is overflow
+  - Integration with getGlobalContextBudgetManager() from context-budget.ts
+
+**Hook Behavior:**
+- **Overflow (>100%):** Critical warning with auto-executable suggestions
+- **Critical (>85%):** Warning with context reduction actions
+- **Warning (>70%):** Informational context usage report
+- **Rate-limited:** Only checks every 10 seconds to avoid overhead
+
+**Hook Output Examples:**
+```
+🚨 CRITICAL: Context overflow detected (102% used)!
+
+Immediate actions:
+  - Truncate large tool outputs (~15000 tokens)
+  - Summarize old conversation messages (~25000 tokens)
+  - Clear tool result cache (~500 tokens)
+
+Use contextBudget({action: 'check'}) for details.
+```
+
+```
+⚠️ WARNING: Context usage at 87% (critical level).
+
+Suggested actions:
+  - Truncate large tool outputs
+  - Summarize old conversation messages
+  - Archive old memory entries
+
+Use contextBudget({action: 'suggestions'}) for more options.
+```
+
+**Next steps:**
+- Consider integrating with agent run loop for automatic token tracking
+- Consider adding PostToolUse hook for automatic token updates
+
+---
+
 ## Day 104 — Fix Capability Gap Detector False Positives (2026-04-04)
 
 **What happened:**

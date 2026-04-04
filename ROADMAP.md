@@ -715,6 +715,27 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] evolutionTimeline tool — Tool with 6 actions (generate, format, stats, config, reset, help)
 - [x] Statistics tracking — Track timelines generated, events processed, phases identified
 
+## Phase 77: Context Budget PreToolUse Hook (Proactive Context Management Pattern)
+- [x] ContextBudgetPreToolUseHook — Monitor context budget during long sessions
+- [x] PreToolUse hook integration — Automatic context monitoring before tool operations
+- [x] Rate-limited checking — Only check every 10 seconds to avoid overhead
+- [x] Overflow detection — Critical warning when context exceeds 100%
+- [x] Warning thresholds — Alert at critical (85%) and warning (70%) levels
+- [x] Auto-executable suggestions — Show context reduction actions when overflow detected
+- [x] Context health status — Report usage percentage and token counts
+- [x] Integration with contextBudget tool — Uses existing ContextBudgetManager module
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 78: Adaptive Reasoning Strategy Selection
+- [x] AdaptiveReasoningManager module — Automatically selects optimal reasoning strategies
+- [x] adaptiveReasoning tool — Tool for strategy selection, adaptation, and outcome recording
+- [x] 7 reasoning strategies — analytical, creative, systematic, exploratory, diagnostic, architectural, iterative
+- [x] Context detection — Automatic detection of task context from description
+- [x] Strategy profiles — Detailed profiles with strengths, weaknesses, optimal contexts
+- [x] Historical success tracking — Learn which strategies work best for different task types
+- [x] Learned preferences — Store and apply learned strategy preferences per context/task type
+- [x] Adaptation triggers — Warnings when strategy may need to change
+- [x] Statistics tracking — Track strategy performance across sessions

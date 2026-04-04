@@ -12,6 +12,7 @@
 
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 
+import { adaptiveReasoningToolDefinition } from "./adaptive-reasoning-tool.js";
 import { agentBuilderTool } from "./agent-builder-tool.js";
 // Import extracted tool modules
 import { assessTool } from "./assess-tool.js";
@@ -149,6 +150,7 @@ export const metaTools: AgentTool[] = [
 	modelMigrationToolDefinition,
 	evolutionStrategyTool,
 	evolutionTimelineToolDefinition,
+	adaptiveReasoningToolDefinition,
 ];
 
 /**
@@ -785,3 +787,18 @@ export type {
 	EvolutionTimelineToolArgs,
 } from "../evolution-timeline.js";
 export { evolutionTimelineToolDefinition } from "./evolution-timeline-tool.js";
+export {
+	getAdaptiveReasoningManager,
+	initAdaptiveReasoningManager,
+	AdaptiveReasoningManager,
+} from "../adaptive-reasoning.js";
+export type {
+	ReasoningStrategy,
+	TaskContext,
+	StrategyProfile,
+	StrategySelection,
+	StrategyOutcome,
+	AdaptiveReasoningStats,
+	AdaptiveReasoningConfig,
+} from "../adaptive-reasoning.js";
+export { adaptiveReasoningToolDefinition } from "./adaptive-reasoning-tool.js";
