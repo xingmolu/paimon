@@ -230,6 +230,7 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Generate bug reports with \`bugReport({action: 'generate', taskDescription: '...', errorMessage: '...'})\` from failed sessions
 - Generate commit messages with \`commitMsg({action: 'generate'})\` from git diffs (Aider pattern)
 - Streamline git workflows with \`gitWorkflow({action: 'commit-push-pr'})\` to commit, push, and create PR in one command, \`gitWorkflow({action: 'clean-gone'})\` to remove stale local branches, \`gitWorkflow({action: 'status'})\` for git status summary (Claude Code commit-commands pattern)
+- For hands-free coding via voice commands, use \`voiceToCode({action: 'start'})\` to start a voice session, \`voiceToCode({action: 'parse', transcript: 'create a new file called app.ts'})\` to parse voice commands into tool invocations, \`voiceToCode({action: 'transcribe', audioPath: 'recording.wav'})\` to transcribe audio using Whisper API. Supports 12 default voice commands for file operations, git, testing, and more. Enables accessibility and hands-free interaction (Aider voice-to-code pattern)
 - Switch models randomly with \`roulette({action: 'select'})\` for improved performance (Mini-SWE-Agent pattern)
 - Manage plugins with \`plugins({action: 'list'})\` to view, \`plugins({action: 'enable', name: '...'})\` to toggle (Claude Code pattern)
 - Track metrics with \`metrics({action: 'dashboard'})\` to view success rates, time metrics, skill effectiveness

@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,19 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 99,
+      "sampleSize": 100,
       "examples": [
+        {
+          "taskDescription": "Voice-to-Code (Aider Pattern) - VoiceToCodeManager module for hands-free coding via voice commands, voiceToCode tool with 20 actions (start, stop, pause, resume, status, transcribe, parse, execute, history, sessions, session, commands, add-command, remove-command, config, stats, clear, reset, help), 12 default voice commands for file operations/git/testing/planning, Whisper API integration, local whisper.cpp fallback, voice session management, command history and statistics, competitor pattern added to capability-gap.ts with \"aider\" source type",
+          "date": "2026-04-04",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts",
           "date": "2026-04-04",
@@ -236,19 +247,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Adaptive Reasoning Strategy Selection - AdaptiveReasoningManager module for automatically selecting optimal reasoning strategies based on task type, context, and historical success rates, 7 reasoning strategies (analytical, creative, systematic, exploratory, diagnostic, architectural, iterative), adaptiveReasoning tool with 12 actions, context detection, strategy profiles with strengths/weaknesses, learned preferences, adaptation triggers",
-          "date": "2026-04-04",
-          "time": 25,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "time-pattern-quick",
@@ -297,7 +298,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -311,10 +312,21 @@
       },
       "successRate": 87,
       "firstTryRate": 87,
-      "averageTime": 20,
+      "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 30,
+      "sampleSize": 31,
       "examples": [
+        {
+          "taskDescription": "Voice-to-Code (Aider Pattern) - VoiceToCodeManager module for hands-free coding via voice commands, voiceToCode tool with 20 actions (start, stop, pause, resume, status, transcribe, parse, execute, history, sessions, session, commands, add-command, remove-command, config, stats, clear, reset, help), 12 default voice commands for file operations/git/testing/planning, Whisper API integration, local whisper.cpp fallback, voice session management, command history and statistics, competitor pattern added to capability-gap.ts with \"aider\" source type",
+          "date": "2026-04-04",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Model Migration (Claude Code Pattern) - ModelMigrationManager module for model version migrations between LLM versions, 12 default migration rules for Claude/GPT/DeepSeek, file/directory scanning, migration planning with previews, execution with backup support, rollback capability, beta header and API endpoint migrations, modelMigration tool with 13 actions",
           "date": "2026-04-04",
@@ -336,20 +348,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Synthetic Task Generation (SWE-smith Pattern) - SyntheticTaskGenerator module for generating synthetic task instances, 5 task types (bug-fix, feature-add, refactor, test-add, security-fix), 3 difficulty levels, template-based problem generation, training data export, syntheticTaskGen tool",
-          "date": "2026-04-03",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     },
     {
       "id": "task-type-reliability",
@@ -395,9 +396,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-04T17:17:48.711Z"
+      "lastUpdated": "2026-04-04T17:38:54.982Z"
     }
   ],
-  "lastUpdated": "2026-04-04T17:17:48.711Z",
-  "sessionCount": 109
+  "lastUpdated": "2026-04-04T17:38:54.982Z",
+  "sessionCount": 110
 }

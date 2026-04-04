@@ -83,6 +83,7 @@ import { toolCacheTool } from "./tool-cache-tool.js";
 import { toolUsageAnalyticsTool } from "./tool-usage-analytics-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
 import { visualProgressTool } from "./visual-progress-tool.js";
+import { voiceToCodeToolDefinition } from "./voice-to-code-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -155,6 +156,7 @@ export const metaTools: AgentTool[] = [
 	adaptiveReasoningToolDefinition,
 	predictiveErrorPreventionTool,
 	gitWorkflowTool,
+	voiceToCodeToolDefinition,
 ];
 
 /**
@@ -831,3 +833,19 @@ export type {
 	WorkflowResult,
 	GitWorkflowConfig,
 } from "../git-workflow.js";
+export {
+	voiceToCodeToolDefinition,
+	voiceToCodeToolDefinition as voiceToCodeTool,
+} from "./voice-to-code-tool.js";
+export {
+	getVoiceToCodeManager,
+	VoiceToCodeManager,
+} from "../voice-to-code.js";
+export type {
+	VoiceCommand,
+	ParsedAction,
+	VoiceSession,
+	VoiceToCodeConfig,
+	VoiceCommandMapping,
+	VoiceToCodeStats,
+} from "../voice-to-code.js";

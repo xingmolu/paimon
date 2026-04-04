@@ -4,6 +4,94 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 110 — Voice-to-Code (Aider Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 81: Voice-to-Code (Aider Pattern)
+- Created VoiceToCodeManager module in src/voice-to-code.ts
+- Created voiceToCode tool with 20 actions for hands-free coding via voice commands
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Aider's voice-to-code feature
+- Enables hands-free coding through voice commands
+- Improves accessibility for users who cannot type
+- Supports 12 default voice commands for file operations, git, testing, planning
+- Integrates with Whisper API for speech recognition
+- Unique feature not commonly implemented in other AI coding agents
+
+**Technical details:**
+- Created `src/voice-to-code.ts`:
+  - `VoiceToCodeManager` class for managing voice sessions and commands
+  - `VoiceCommand`, `ParsedAction`, `VoiceSession`, `VoiceToCodeConfig`, `VoiceCommandMapping` interfaces
+  - 12 default voice commands with regex patterns:
+    - "Create a new file called X"
+    - "Read the file X"
+    - "Edit X to change Y with Z"
+    - "Run X"
+    - "Search for X in Y"
+    - "List files in X"
+    - "Commit changes with message X"
+    - "Run tests"
+    - "Build the project"
+    - "Start a plan for X"
+    - "Assess changes"
+    - "Create a checkpoint"
+  - Voice session management (start, stop, pause, resume)
+  - Whisper API integration for transcription
+  - Local whisper.cpp fallback
+  - Command history and statistics tracking
+  - State persistence to `~/.paimon/voice-to-code.json`
+- Created `src/tools/voice-to-code-tool.ts`:
+  - `voiceToCode` tool with 20 actions:
+    - start, stop, pause, resume, status, transcribe, parse, execute, history, sessions, session, commands, add-command, remove-command, config, stats, clear, reset, help
+- Updated `src/tools/index.ts`:
+  - Added voiceToCodeToolDefinition to metaTools array
+  - Added re-exports for voice-to-code module
+- Updated `src/prompt.ts`:
+  - Added documentation for voiceToCode tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added "aider" to CompetitorPattern source types
+  - Added `voice-to-code` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 81: Voice-to-Code (Aider Pattern)
+
+**Voice-to-Code Tool Usage:**
+```typescript
+// Start a voice session
+voiceToCode({action: 'start'})
+
+// Parse a voice transcript
+voiceToCode({action: 'parse', transcript: 'create a new file called app.ts'})
+
+// Transcribe audio
+voiceToCode({action: 'transcribe', audioPath: 'recording.wav'})
+
+// View available commands
+voiceToCode({action: 'commands'})
+
+// View history
+voiceToCode({action: 'history'})
+
+// View statistics
+voiceToCode({action: 'stats'})
+```
+
+**Example Commands:**
+- "Create a new file called app.ts"
+- "Read the file src/index.ts"
+- "Run npm test"
+- "Build the project"
+- "Commit changes with message fix bug"
+- "Start a plan for adding authentication"
+
+**Context:**
+- ROADMAP Phase 1-81: All complete ✅
+- 27 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider)
+- All 875 tests pass
+
+---
+
 ## Day 109 — Fix Capability Gap Detector Escaped Backtick Bug (2026-04-04)
 
 **What happened:**

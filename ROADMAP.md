@@ -767,6 +767,16 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] GitHub CLI integration — Requires gh CLI for PR creation
 - [x] Statistics tracking — Track workflow operations performed
 
+## Phase 81: Voice-to-Code (Aider Pattern)
+- [x] VoiceToCodeManager module — Hands-free coding via voice commands
+- [x] voiceToCode tool — Tool for voice session management with 20 actions
+- [x] 12 default voice commands — File operations, git, testing, planning, checkpoints
+- [x] Voice session management — Start, stop, pause, resume sessions
+- [x] Speech recognition integration — Whisper API support for transcription
+- [x] Voice command parsing — Parse voice transcripts into tool invocations
+- [x] Confidence scoring — Match confidence for command recognition
+- [x] History and statistics — Track voice commands, sessions, success rates
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

@@ -70,6 +70,7 @@ export interface CompetitorPattern {
 		| "swe-agent"
 		| "cursor"
 		| "devin"
+		| "aider"
 		| "other";
 	category: string;
 	description: string;
@@ -338,6 +339,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		category: "git",
 		description:
 			"Git workflow automation for committing, pushing, creating PRs, and cleaning up stale branches - commit-push-pr, clean-gone, status, branch-status actions",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
+	{
+		name: "voice-to-code",
+		source: "aider",
+		category: "accessibility",
+		description:
+			"Voice-to-code capability for hands-free coding via voice commands, speech recognition integration, voice command parsing for tool invocations",
 		implementationStatus: "implemented",
 		priority: 8,
 	},
