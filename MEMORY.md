@@ -24,6 +24,7 @@ Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
 |------|-----------|-----------------|------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-04 | reliability | Fix Capability Gap Detector Bugs - Fixed regex pattern to match actual tool documentation format (backticks), added tool name normalization for hyphenated vs camelCase comparison, updated integration gaps (Phase 62, 63, 64 marked as implemented), added new integration gap for diff-aware-planning → edit-tool | ~15m | ✅ | none | No | High | evolve | accurate-gap-detection, reduced-false-positives |
 | 2026-04-04 | capability | Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions | ~20m | ❌ | TS (fixed), lint (fixed) | Yes | High | evolve | safer-changes, impact-prediction, conflict-detection |
 | 2026-04-03 | capability | Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations | ~10m | ✅ | lint (fixed) | No | High | evolve | proactive-error-prevention, iteration-success-improvement, known-error-avoidance |
 | 2026-04-03 | capability | Learning Transfer → RAG Integration - RagModule integration for semantic search enrichment, enrichWithRag method combining TF-IDF + keyword similarity, RAG boost for session matching, rag-discovered sessions, combined confidence scoring (70/30), RAG insights in risk factors, proactive RAG context | ~15m | ✅ | TS (fixed), lint (fixed) | No | High | evolve | better-session-matching, rag-enriched-transfers, improved-first-try-rate |
@@ -114,14 +115,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 80/89 = 90%
+- First Try Success Rate: 81/90 = 90%
 - Average Time: ~14 minutes
-- Rework Rate: 10/89 = 11%
+- Rework Rate: 10/90 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 87/89 = 98%
-- High Impact Capabilities: 77/87 = 89%
-- Capability Velocity: 87 capabilities in 3 days = 29/day
+- Capability Tasks: 88/90 = 98%
+- High Impact Capabilities: 78/88 = 89%
+- Capability Velocity: 88 capabilities in 3 days = 29/day
 
 ### Error Analysis
 - TypeScript Errors: 7

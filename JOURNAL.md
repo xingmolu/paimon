@@ -4,6 +4,43 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 92 — Fix Capability Gap Detector Bugs (2026-04-04)
+
+**What happened:**
+- Fixed bugs in the Capability Gap Detector that caused false positives
+- Updated integration gap status for Phase 62, 63, 64
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+- Fixed regex pattern to match actual tool documentation format in prompt.ts (backticks not bullet points)
+- Added tool name normalization to handle hyphenated vs camelCase comparison (e.g., `agent-builder` vs `agentBuilder`)
+- Updated integration gaps that were marked as "not implemented" but were actually implemented in Phase 62, 63, 64
+- Reduces false positive noise in gap detection output
+
+**Technical details:**
+- Modified `src/capability-gap.ts`:
+  - Changed regex from `/- ([a-zA-Z-]+):/g` to `` /`([a-zA-Z][a-zA-Z0-9]*)\(\{action:/g `` to match actual format
+  - Added `normalizeToolName()` function to handle hyphenated vs camelCase tool names
+  - Updated comparison logic to use normalized names for matching
+  - Updated integration gaps:
+    - `evolution-cost` + `task-predictor` → `implemented: true` (Phase 62)
+    - `learning-transfer` + `rag` → `implemented: true` (Phase 63)
+    - `error-patterns` + `session-start` → `implemented: true` (Phase 64)
+  - Added new integration gap: `diff-aware-planning` + `edit-tool` → `implemented: false`
+
+**Gap Detection Results:**
+- 29 tools correctly identified as both documented and implemented
+- 30 tools correctly identified as implemented but not documented (legitimate gaps)
+- 5 competitor patterns identified (multi-file-context, ide-integration, code-completion, diff-aware-planning, visual-progress)
+- 1 integration gap identified (diff-aware-planning → edit-tool)
+
+**Next steps:**
+- Consider documenting the 30 undocumented tools in prompt.ts
+- Consider implementing diff-aware-planning integration with edit tool
+
+---
+
 ## Day 91 — Diff-Aware Planning (Devin Pattern) (2026-04-04)
 
 **What happened:**

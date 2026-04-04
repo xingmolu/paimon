@@ -474,15 +474,34 @@ export class CapabilityGapDetector {
 			let documentedTools: string[] = [];
 			if (fs.existsSync(promptPath)) {
 				const promptContent = fs.readFileSync(promptPath, "utf-8");
-				const toolMatches = promptContent.matchAll(/- ([a-zA-Z-]+):/g);
+				// Match tools documented as: `toolName({action: '...'})` in backticks
+				const toolMatches = promptContent.matchAll(/`([a-zA-Z][a-zA-Z0-9]*)\(\{action:/g);
 				documentedTools = Array.from(toolMatches, (m) => m[1]);
+				// Remove duplicates
+				documentedTools = [...new Set(documentedTools)];
 			}
 
 			const implementedSet = new Set(toolFiles.map((t) => t.toLowerCase()));
 			const documentedSet = new Set(documentedTools.map((t) => t.toLowerCase()));
 
+			// Normalize tool names for comparison (handle hyphenated vs camelCase)
+			const normalizeToolName = (name: string): string[] => {
+				const results = [name.toLowerCase()];
+				// Convert hyphenated to camelCase: error-patterns -> errorpatterns
+				const noHyphens = name.replace(/-/g, "").toLowerCase();
+				if (!results.includes(noHyphens)) results.push(noHyphens);
+				// Also try removing 's' suffix and 'tool' suffix
+				const noSuffix = name.replace(/s$/, "").replace(/tool$/, "").toLowerCase();
+				if (!results.includes(noSuffix)) results.push(noSuffix);
+				return results;
+			};
+
 			for (const tool of documentedSet) {
-				if (!implementedSet.has(tool) && !implementedSet.has(tool.replace(/-/g, ""))) {
+				const normalizedDoc = normalizeToolName(tool);
+				const isImplemented = [...implementedSet].some((impl) =>
+					normalizeToolName(impl).some((n) => normalizedDoc.includes(n)),
+				);
+				if (!isImplemented) {
 					gaps.push({
 						id: `tool-missing-${tool}-${Date.now()}`,
 						type: "missing-tool",
@@ -497,8 +516,11 @@ export class CapabilityGapDetector {
 			}
 
 			for (const tool of implementedSet) {
-				const normalizedName = tool.replace(/s$/, "").replace(/tool$/, "");
-				if (!documentedSet.has(tool) && !documentedSet.has(normalizedName)) {
+				const normalizedImpl = normalizeToolName(tool);
+				const isDocumented = [...documentedSet].some((doc) =>
+					normalizeToolName(doc).some((n) => normalizedImpl.includes(n)),
+				);
+				if (!isDocumented) {
 					gaps.push({
 						id: `tool-undocumented-${tool}-${Date.now()}`,
 						type: "missing-tool",
@@ -578,11 +600,21 @@ export class CapabilityGapDetector {
 			{
 				modules: ["evolution-cost", "task-predictor"],
 				description: "Evolution cost prediction should integrate with task predictor",
-				implemented: false,
+				implemented: true, // Phase 62 implemented
 			},
 			{
 				modules: ["learning-transfer", "rag"],
 				description: "Learning transfer should use RAG for enrichment",
+				implemented: true, // Phase 63 implemented
+			},
+			{
+				modules: ["error-patterns", "session-start"],
+				description: "Error patterns should inject proactive warnings at session start",
+				implemented: true, // Phase 64 implemented
+			},
+			{
+				modules: ["diff-aware-planning", "edit-tool"],
+				description: "Diff-aware planning should integrate with edit tool for automatic analysis",
 				implemented: false,
 			},
 		];
