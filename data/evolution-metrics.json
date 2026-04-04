@@ -1,30 +1,30 @@
 {
   "successRate": {
-    "current": 93.47826086956522,
+    "current": 93.54838709677419,
     "points": [
       {
         "date": "2026-W14",
-        "value": 93.47826086956522,
+        "value": 93.54838709677419,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 93.47826086956522,
+    "weeklyAverage": 93.54838709677419,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.434782608695652,
+    "averageMinutes": 16.311827956989248,
     "byTaskType": {
-      "capability": 16.78409090909091,
-      "reliability": 8.75
+      "reliability": 8,
+      "capability": 16.78409090909091
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.434782608695652,
+        "value": 16.311827956989248,
         "trend": "stable"
       }
     ],
-    "fastestTask": "Fix Singularity git log format bug - Enable self-awareness tracking",
+    "fastestTask": "Update Competitor Pattern Status - Mark multi-file-context and diff-aware-planning as implemented in KNOWN_COMPETITOR_PATTERNS, add multi-file-context → edit-tool integration gap as implemented (Phase 68), reduces false positives in capability gap detection, accurate self-awareness",
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 90,
-      "successRate": 93.33333333333333,
-      "averageTime": 16.633333333333333,
+      "usageCount": 91,
+      "successRate": 93.4065934065934,
+      "averageTime": 16.505494505494507,
       "trend": "improving"
     },
     {
@@ -151,9 +151,9 @@
       }
     ],
     "totalCapabilities": 88,
-    "highImpactCount": 81,
-    "highImpactPercentage": 92.04545454545455
+    "highImpactCount": 82,
+    "highImpactPercentage": 93.18181818181817
   },
-  "lastUpdated": "2026-04-04T05:46:09.970Z",
-  "iterationsAnalyzed": 92
+  "lastUpdated": "2026-04-04T05:54:10.049Z",
+  "iterationsAnalyzed": 93
 }

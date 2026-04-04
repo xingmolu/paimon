@@ -4,6 +4,40 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 95 — Update Competitor Pattern Status (2026-04-04)
+
+**What happened:**
+- Updated KNOWN_COMPETITOR_PATTERNS in capability-gap.ts to reflect actual implementation status
+- Marked multi-file-context (Phase 67-68) and diff-aware-planning (Phase 65-66) as "implemented"
+- Added multi-file-context → edit-tool integration gap as implemented (Phase 68)
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that ensures accurate self-awareness
+- The capability gap detector was incorrectly showing these patterns as "partial" when they were fully implemented
+- Reduces noise in gap detection output
+- Ensures the system has an accurate view of its own capabilities
+
+**Technical details:**
+- Modified `src/capability-gap.ts`:
+  - Moved `multi-file-context` from "partial" to "implemented" in KNOWN_COMPETITOR_PATTERNS
+  - Moved `diff-aware-planning` from "partial" to "implemented" in KNOWN_COMPETITOR_PATTERNS
+  - Updated descriptions to reflect actual implementation features
+  - Added multi-file-context → edit-tool integration to expectedIntegrations with `implemented: true`
+
+**Gap Detection Results (after fix):**
+- Competitor gaps now correctly show only actual missing patterns:
+  - ide-integration from cursor (missing)
+  - code-completion from cursor (missing)
+  - visual-progress from devin (missing)
+- No more false "partial" warnings for implemented patterns
+
+**Next steps:**
+- Consider implementing cursor ide-integration or code-completion patterns
+- Consider implementing devin visual-progress pattern
+
+---
+
 ## Day 94 — Multi-File Context (Cursor Pattern) (2026-04-04)
 
 **What happened:**

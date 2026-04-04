@@ -268,15 +268,26 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
-	// Missing/partial patterns to detect
+	// Implemented patterns (previously partial/missing, now implemented)
 	{
 		name: "multi-file-context",
 		source: "cursor",
 		category: "context",
-		description: "Multi-file context management",
-		implementationStatus: "partial",
+		description:
+			"Multi-file context management with symbol usage tracking, change impact analysis, and related files suggestions",
+		implementationStatus: "implemented",
 		priority: 6,
 	},
+	{
+		name: "diff-aware-planning",
+		source: "devin",
+		category: "planning",
+		description:
+			"Diff-aware planning for changes with impact prediction, conflict detection, and safe implementation planning",
+		implementationStatus: "implemented",
+		priority: 7,
+	},
+	// Missing/partial patterns to detect
 	{
 		name: "ide-integration",
 		source: "cursor",
@@ -292,14 +303,6 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		description: "Intelligent code completion",
 		implementationStatus: "missing",
 		priority: 6,
-	},
-	{
-		name: "diff-aware-planning",
-		source: "devin",
-		category: "planning",
-		description: "Diff-aware planning for changes",
-		implementationStatus: "partial",
-		priority: 7,
 	},
 	{
 		name: "visual-progress",
@@ -616,6 +619,12 @@ export class CapabilityGapDetector {
 				modules: ["diff-aware-planning", "edit-tool"],
 				description: "Diff-aware planning should integrate with edit tool for automatic analysis",
 				implemented: true, // Phase 66 implemented
+			},
+			{
+				modules: ["multi-file-context", "edit-tool"],
+				description:
+					"Multi-file context should integrate with edit tool for cross-file dependency warnings",
+				implemented: true, // Phase 68 implemented
 			},
 		];
 
