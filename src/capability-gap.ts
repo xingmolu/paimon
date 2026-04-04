@@ -308,8 +308,9 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		name: "visual-progress",
 		source: "devin",
 		category: "visualization",
-		description: "Visual progress tracking",
-		implementationStatus: "missing",
+		description:
+			"Visual progress tracking during evolution iterations with progress bars, time estimates, and historical timing",
+		implementationStatus: "implemented",
 		priority: 5,
 	},
 ];

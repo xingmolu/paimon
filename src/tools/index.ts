@@ -72,6 +72,7 @@ import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
+import { visualProgressTool } from "./visual-progress-tool.js";
 import { watchToolDef } from "./watch-tool.js";
 
 // Meta tools that have been extracted
@@ -133,6 +134,7 @@ export const metaTools: AgentTool[] = [
 	capabilityGapToolDef,
 	diffAwarePlanTool,
 	multiFileContextTool,
+	visualProgressTool,
 ];
 
 /**
@@ -653,3 +655,18 @@ export type {
 	ChangeImpact,
 	RelatedFiles,
 } from "../repomap.js";
+export {
+	getVisualProgressManager,
+	VisualProgressManager,
+	resetVisualProgressManager,
+} from "../visual-progress.js";
+export type {
+	ProgressPhase,
+	StepStatus,
+	ProgressStep,
+	ProgressSession,
+	HistoricalTiming,
+	VisualProgressConfig,
+	VisualProgressStats,
+} from "../visual-progress.js";
+export { visualProgressTool } from "./visual-progress-tool.js";

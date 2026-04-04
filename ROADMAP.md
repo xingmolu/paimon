@@ -517,6 +517,20 @@ Planned improvements for evo.
 
 ---
 
+## Phase 69: Visual Progress (Devin Pattern)
+- [x] VisualProgressManager module — Manage progress visualization during evolution iterations
+- [x] visualProgress tool — Tool for tracking and visualizing progress
+- [x] Progress phases — context-gathering, task-selection, planning, implementation, verification, completion
+- [x] Step tracking — Track individual steps with status and duration
+- [x] Progress bar visualization — Visual progress indicator with percentage
+- [x] Time estimation — Estimate remaining time based on historical data
+- [x] Historical timing storage — Learn from past sessions to improve estimates
+- [x] Tool usage tracking — Record which tools are used for each step
+- [x] Session management — Start, update, complete progress sessions
+- [x] Statistics tracking — Track sessions, durations, success rates
+
+---
+
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
 ## Phase 59: Session Replay → Auto-Apply Integration
 - [x] Pattern feed callback system — Register callbacks to receive patterns when extracted

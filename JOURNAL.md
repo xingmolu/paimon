@@ -4,6 +4,88 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 96 — Visual Progress (Devin Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 69: Visual Progress (Devin Pattern)
+- Created VisualProgressManager module for progress visualization during evolution iterations
+- Created visualProgress tool with 15 actions for tracking progress
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that provides real-time progress feedback during evolution iterations
+- Shows progress bars with percentage completion
+- Tracks individual steps with status (pending, in_progress, completed, failed, skipped)
+- Estimates remaining time based on historical data
+- Stores historical timing for learning from past sessions
+- Records tool usage for each step
+- Reduces user confusion about what the agent is doing during long-running operations
+
+**Technical details:**
+- Created `src/visual-progress.ts`:
+  - `VisualProgressManager` class for managing progress visualization
+  - `ProgressSession`, `ProgressStep`, `HistoricalTiming` interfaces
+  - Progress phases: context-gathering, task-selection, planning, implementation, verification, completion
+  - Step tracking with status, duration, error messages
+  - Progress bar visualization with percentage
+  - Time estimation from historical data
+  - State persistence to `~/.paimon/visual-progress.json`
+  - Historical timing storage to `~/.paimon/progress-timing.json`
+- Created `src/tools/visual-progress-tool.ts`:
+  - `visualProgress` tool with 15 actions:
+    - start, step, update, phase, tool, complete, status, sessions, session, estimate, stats, config, reset, clear, help
+- Updated `src/tools/index.ts`:
+  - Added visualProgressTool to metaTools array
+  - Added re-exports for visual-progress module
+- Updated `src/capability-gap.ts`:
+  - Marked visual-progress as implemented in KNOWN_COMPETITOR_PATTERNS
+- Updated `ROADMAP.md`:
+  - Added Phase 69: Visual Progress (Devin Pattern)
+
+**Visual Progress Tool Usage:**
+```typescript
+// Start a progress session
+visualProgress({action: 'start', taskType: 'capability', taskDescription: 'Add visual progress'})
+
+// Add a step
+visualProgress({action: 'step', description: 'Implement progress manager', estimatedDuration: 300})
+
+// Update step status
+visualProgress({action: 'update', stepId: 'step-1', status: 'completed'})
+
+// Set current phase
+visualProgress({action: 'phase', phase: 'implementation'})
+
+// Complete the session
+visualProgress({action: 'complete', success: true, summary: 'Successfully implemented'})
+```
+
+**Progress Output Example:**
+```
+## Evolution Progress
+
+**Task:** Add visual progress
+**Type:** capability
+**Phase:** implementation
+
+Progress: [████████████░░░░░░░░] 60%
+
+**Elapsed:** 8m
+**Remaining:** ~5m
+
+### Steps
+✅ Read types.ts (30s)
+🔄 Implement progress manager
+⏳ Create tool definition
+   ... 2 more pending steps
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hook for automatic progress tracking
+- Consider adding PreToolUse hook for automatic step progression
+
+---
+
 ## Day 95 — Update Competitor Pattern Status (2026-04-04)
 
 **What happened:**
