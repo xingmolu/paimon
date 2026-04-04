@@ -300,8 +300,9 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		name: "code-completion",
 		source: "cursor",
 		category: "completion",
-		description: "Intelligent code completion",
-		implementationStatus: "missing",
+		description:
+			"Intelligent code completion with pattern analysis, import suggestions, and signature help",
+		implementationStatus: "implemented",
 		priority: 6,
 	},
 	{

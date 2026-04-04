@@ -20,6 +20,7 @@ import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { capabilityGapToolDef } from "./capability-gap-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
+import { codeCompletionTool } from "./code-completion-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { contextImportanceTool } from "./context-importance-tool.js";
@@ -137,6 +138,7 @@ export const metaTools: AgentTool[] = [
 	multiFileContextTool,
 	visualProgressTool,
 	ideIntegrationTool,
+	codeCompletionTool,
 ];
 
 /**
@@ -686,3 +688,18 @@ export type {
 	IDEIntegrationStats,
 	IDEIntegrationConfig,
 } from "../ide-integration.js";
+export { codeCompletionTool } from "./code-completion-tool.js";
+export {
+	getCodeCompletionManager,
+	initCodeCompletionManager,
+	CodeCompletionManager,
+} from "../code-completion.js";
+export type {
+	CodeCompletion,
+	CodeContext,
+	CodePattern,
+	ImportSuggestion,
+	FunctionSignature,
+	CodeCompletionStats,
+	CodeCompletionConfig,
+} from "../code-completion.js";

@@ -4,6 +4,82 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 97 — Code Completion (Cursor Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 71: Code Completion (Cursor Pattern)
+- Created CodeCompletionManager module for intelligent code completion based on codebase analysis
+- Created codeCompletion tool with 12 actions for completion management
+- Updated capability-gap.ts to mark code-completion as implemented
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables intelligent code completion suggestions
+- Provides code pattern analysis for snippet suggestions
+- Extracts imports and function signatures from codebase for context-aware completions
+- Supports multiple languages: TypeScript, JavaScript, Markdown, etc.
+- Helps users write code faster with AI-powered suggestions
+
+**Technical details:**
+- Created `src/code-completion.ts`:
+  - `CodeCompletionManager` class for managing code completion
+  - `CodeCompletion`, `CodeContext`, `CodePattern`, `ImportSuggestion`, `FunctionSignature` interfaces
+  - 12 default code patterns for TypeScript/JavaScript and Markdown
+  - Language detection from file extension
+  - Import extraction with named, default, and namespace import support
+  - Function signature extraction with parameter types
+  - Pattern-based completion triggering
+  - Codebase analysis for imports and signatures
+  - State persistence to `~/.paimon/code-completion.json`
+- Created `src/tools/code-completion-tool.ts`:
+  - `codeCompletion` tool with 12 actions:
+    - complete, analyze, patterns, pattern, add-pattern, remove-pattern, stats, config, enable, disable, reset, help
+- Updated `src/tools/index.ts`:
+  - Added codeCompletionTool to metaTools array
+  - Added re-exports for code-completion module
+- Updated `src/capability-gap.ts`:
+  - Marked `code-completion` as `implemented` in KNOWN_COMPETITOR_PATTERNS
+- Updated `ROADMAP.md`:
+  - Added Phase 71: Code Completion (Cursor Pattern)
+
+**Code Completion Tool Usage:**
+```typescript
+// Get completions for a file at cursor position
+codeCompletion({action: 'complete', filePath: 'src/agent.ts', cursorLine: 10, cursorColumn: 20})
+
+// Analyze codebase to extract imports and signatures
+codeCompletion({action: 'analyze', rootPath: './src'})
+
+// List all available code patterns
+codeCompletion({action: 'patterns'})
+
+// Add a custom pattern
+codeCompletion({action: 'add-pattern', pattern: {id: 'my-pattern', name: 'My Pattern', template: '...'}})
+```
+
+**Completion Output Example:**
+```
+## Code Completions
+
+### Async Function
+- **Type:** pattern
+- **Confidence:** 90%
+- **Description:** Async function with Promise return type
+- **Trigger:** async 
+
+```
+async function ${name}(${params}): Promise<${returnType}> {
+	${body}
+}
+```
+```
+
+**Next steps:**
+- Consider integrating with IDE integration for real-time completions
+- Consider adding PreToolUse hook for automatic completion suggestions
+
+---
+
 ## Day 96 — Visual Progress (Devin Pattern) (2026-04-04)
 
 **What happened:**
