@@ -479,41 +479,80 @@ export class CapabilityGapDetector {
 				return gaps;
 			}
 
+			// Extract actual tool names from tool files by parsing name: "toolName" patterns
+			const actualToolNames: string[] = [];
 			const toolFiles = fs
 				.readdirSync(toolsDir)
-				.filter((f) => f.endsWith(".ts") && !f.includes("index"))
-				.map((f) => f.replace("-tool.ts", "").replace(".ts", ""));
+				.filter((f) => f.endsWith(".ts") && !f.includes("index"));
+
+			// Names to exclude (example names, not real tools)
+			const excludeNames = new Set([
+				"block-dangerous-rm",
+				"plugin-name",
+				"My Pattern",
+				"my-pattern",
+			]);
+
+			for (const file of toolFiles) {
+				const filePath = path.join(toolsDir, file);
+				const content = fs.readFileSync(filePath, "utf-8");
+				// Match name: "toolName" patterns
+				const nameMatches = content.matchAll(/name:\s*["']([a-zA-Z][a-zA-Z0-9-]*)["']/g);
+				for (const match of nameMatches) {
+					const toolName = match[1];
+					// Skip example names and patterns
+					if (!excludeNames.has(toolName) && !toolName.includes("Pattern")) {
+						actualToolNames.push(toolName);
+					}
+				}
+			}
+
+			// Remove duplicates
+			const implementedSet = new Set([...new Set(actualToolNames)].map((t) => t.toLowerCase()));
 
 			const promptPath = path.resolve(this.config.promptPath);
 			let documentedTools: string[] = [];
 			if (fs.existsSync(promptPath)) {
 				const promptContent = fs.readFileSync(promptPath, "utf-8");
-				// Match tools documented as: `toolName({action: '...'})` in backticks
-				const toolMatches = promptContent.matchAll(/`([a-zA-Z][a-zA-Z0-9]*)\(\{action:/g);
+				// Match tools documented as: `toolName({...})` in backticks
+				// This matches various patterns like:
+				// - `toolName({action: '...'})
+				// - `toolName({})`
+				// - `toolName({param: '...'})
+				const toolMatches = promptContent.matchAll(/`([a-zA-Z][a-zA-Z0-9-]*)\(\{/g);
 				documentedTools = Array.from(toolMatches, (m) => m[1]);
 				// Remove duplicates
 				documentedTools = [...new Set(documentedTools)];
 			}
 
-			const implementedSet = new Set(toolFiles.map((t) => t.toLowerCase()));
 			const documentedSet = new Set(documentedTools.map((t) => t.toLowerCase()));
 
 			// Normalize tool names for comparison (handle hyphenated vs camelCase)
 			const normalizeToolName = (name: string): string[] => {
-				const results = [name.toLowerCase()];
-				// Convert hyphenated to camelCase: error-patterns -> errorpatterns
-				const noHyphens = name.replace(/-/g, "").toLowerCase();
+				const results: string[] = [];
+				const lower = name.toLowerCase();
+				results.push(lower);
+				// Convert hyphenated to no-hyphen: error-patterns -> errorpatterns
+				const noHyphens = lower.replace(/-/g, "");
 				if (!results.includes(noHyphens)) results.push(noHyphens);
-				// Also try removing 's' suffix and 'tool' suffix
-				const noSuffix = name.replace(/s$/, "").replace(/tool$/, "").toLowerCase();
-				if (!results.includes(noSuffix)) results.push(noSuffix);
 				return results;
 			};
 
+			// Check if two sets of normalized names have any intersection
+			const hasMatch = (names1: string[], names2: string[]): boolean => {
+				for (const n1 of names1) {
+					for (const n2 of names2) {
+						if (n1 === n2) return true;
+					}
+				}
+				return false;
+			};
+
+			// Find documented tools that are not implemented
 			for (const tool of documentedSet) {
 				const normalizedDoc = normalizeToolName(tool);
 				const isImplemented = [...implementedSet].some((impl) =>
-					normalizeToolName(impl).some((n) => normalizedDoc.includes(n)),
+					hasMatch(normalizedDoc, normalizeToolName(impl)),
 				);
 				if (!isImplemented) {
 					gaps.push({
@@ -529,10 +568,11 @@ export class CapabilityGapDetector {
 				}
 			}
 
+			// Find implemented tools that are not documented
 			for (const tool of implementedSet) {
 				const normalizedImpl = normalizeToolName(tool);
 				const isDocumented = [...documentedSet].some((doc) =>
-					normalizeToolName(doc).some((n) => normalizedImpl.includes(n)),
+					hasMatch(normalizedImpl, normalizeToolName(doc)),
 				);
 				if (!isDocumented) {
 					gaps.push({
