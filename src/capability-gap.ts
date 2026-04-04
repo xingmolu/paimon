@@ -270,6 +270,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 	},
 	// Implemented patterns (previously partial/missing, now implemented)
 	{
+		name: "model-migration",
+		source: "claude-code",
+		category: "migration",
+		description:
+			"Model migration capability for transitioning between LLM versions - handles model strings, beta headers, API endpoints, and prompt adjustments",
+		implementationStatus: "implemented",
+		priority: 7,
+	},
+	{
 		name: "multi-file-context",
 		source: "cursor",
 		category: "context",

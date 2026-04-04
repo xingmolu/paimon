@@ -41,6 +41,7 @@ import { journalTool } from "./journal-tool.js";
 import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { getLearningTransferManager, learningTransferToolDef } from "./learning-transfer-tool.js";
 import { metricsTool } from "./metrics-tool.js";
+import { modelMigrationToolDefinition } from "./model-migration-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { multiFileContextTool } from "./multi-file-context-tool.js";
 import { parallelTool } from "./parallel-tool.js";
@@ -143,6 +144,7 @@ export const metaTools: AgentTool[] = [
 	codeCompletionTool,
 	reasoningMemoryTool,
 	toolUsageAnalyticsTool,
+	modelMigrationToolDefinition,
 ];
 
 /**
@@ -735,3 +737,16 @@ export type {
 	ToolUsageAnalyticsStats,
 } from "../tool-usage-analytics.js";
 export { toolUsageAnalyticsTool } from "./tool-usage-analytics-tool.js";
+export {
+	getModelMigrationManager,
+	initModelMigrationManager,
+	ModelMigrationManager,
+	modelMigrationTool,
+} from "../model-migration.js";
+export type {
+	ModelMigration,
+	ModelChange,
+	MigrationRule,
+	ModelMigrationConfig,
+	ModelMigrationStats,
+} from "../model-migration.js";

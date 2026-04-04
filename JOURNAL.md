@@ -4,6 +4,99 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 100 — Model Migration (Claude Code Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 74: Model Migration (Claude Code Pattern)
+- Created ModelMigrationManager module for migrating between LLM model versions
+- Created modelMigration tool with 13 actions for migration management
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Claude Code's claude-opus-4-5-migration plugin
+- Enables smooth transitions between LLM model versions
+- Handles model string updates (e.g., "claude-3-sonnet" → "claude-sonnet-4")
+- Updates beta headers for new model versions
+- Migrates API endpoints for deprecated APIs
+- Provides backup and rollback support for safe migrations
+- Supports Claude, GPT, and DeepSeek model families
+
+**Technical details:**
+- Created `src/model-migration.ts`:
+  - `ModelMigrationManager` class for managing model migrations
+  - `ModelMigration`, `ModelChange`, `MigrationRule` interfaces
+  - 12 default migration rules for common model transitions:
+    - Claude 3.x → Claude 4.x
+    - GPT-3.5 → GPT-4o
+    - DeepSeek Coder → DeepSeek Chat
+  - File scanning with regex pattern matching
+  - Directory scanning with recursive support
+  - Migration planning with change previews
+  - Execution with backup support
+  - Rollback capability from backups
+  - State persistence to `~/.paimon/model-migrations.json`
+- Created `src/tools/model-migration-tool.ts`:
+  - `modelMigration` tool with 13 actions:
+    - scan, create, execute, list, status, rollback, rules, add-rule, remove-rule, stats, config, migrations, help
+- Updated `src/tools/index.ts`:
+  - Added modelMigrationToolDefinition to metaTools array
+  - Added re-exports for model-migration module
+- Updated `src/prompt.ts`:
+  - Added documentation for modelMigration tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `model-migration` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 74: Model Migration (Claude Code Pattern)
+
+**Model Migration Tool Usage:**
+```typescript
+// Scan a directory for migration opportunities
+modelMigration({action: 'scan', path: 'src/'})
+
+// Create a migration plan
+modelMigration({action: 'create', fromModel: 'claude-3', toModel: 'claude-4', path: '.'})
+
+// Execute a migration
+modelMigration({action: 'execute', migrationId: 'migration-123'})
+
+// Rollback a migration
+modelMigration({action: 'rollback', migrationId: 'migration-123'})
+
+// View migration rules
+modelMigration({action: 'rules'})
+```
+
+**Migration Scan Output Example:**
+```
+## Migration Scan Results
+
+Found 5 potential changes:
+
+### src/config.ts
+- L10: `claude-3-sonnet` -> `claude-sonnet-4`
+  Migrate Claude 3 Sonnet to Sonnet 4
+- L15: `gpt-3.5-turbo` -> `gpt-4o-mini`
+  Migrate GPT-3.5-Turbo to GPT-4o-Mini
+
+### src/api.ts
+- L20: `anthropic-beta: max-tokens-3-5-sonnet` -> `anthropic-beta: max-tokens-4-sonnet`
+  Update beta header for Sonnet 4
+```
+
+**Supported Migrations:**
+- claude-3-to-4
+- claude-3.5-to-4
+- openai-gpt3.5-to-4o
+- openai-gpt4-to-turbo
+- deepseek-coder-to-chat
+
+**Next steps:**
+- Consider adding more model families (Gemini, Llama, Mistral)
+- Consider adding prompt adjustment rules for new model capabilities
+- Consider integrating with SessionStart hook for proactive migration detection
+
+---
+
 ## Day 99 — Tool Usage Analytics (2026-04-04)
 
 **What happened:**
