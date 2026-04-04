@@ -4,6 +4,44 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 107 — Document New Tools (2026-04-04)
+
+**What happened:**
+- Added documentation for 4 newly implemented tools in prompt.ts IMPORTANT section
+- Tools documented: adaptiveReasoning, evolutionStrategy, evolutionTimeline, taskTracking
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+- The capability gap detector identified these tools as implemented but not documented
+- Users can now discover and use these advanced tools through the IMPORTANT section
+- Improves LLM understanding of available tools for better tool selection
+- ROADMAP is complete with all 78 phases implemented
+- All competitor patterns from Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent are implemented
+
+**Technical details:**
+- Modified `src/prompt.ts`:
+  - Added documentation for 4 tools:
+    - `adaptiveReasoning` - Adaptive reasoning strategy selection based on task context
+    - `evolutionStrategy` - Evolution strategy planning for optimal task selection
+    - `evolutionTimeline` - Visual timeline of evolution history with milestones
+    - `taskTracking` - Structured task tracking with dependencies
+  - Each tool has a concise description with key action examples
+  - Maintains consistency with existing documented tools
+
+**Tools Now Documented:**
+1. `adaptiveReasoning` - Select optimal reasoning strategies (7 strategies: analytical, creative, systematic, exploratory, diagnostic, architectural, iterative)
+2. `evolutionStrategy` - Meta-capability for planning optimal evolution strategies (8 strategy types)
+3. `evolutionTimeline` - Visual timeline of evolution history with phases, milestones, and trends
+4. `taskTracking` - Structured task tracking with dependencies, subtasks, and progress monitoring
+
+**Context:**
+- ROADMAP Phase 1-78: All complete ✅
+- Competitor Patterns: All implemented ✅
+- Next steps: Research new competitor patterns from emerging tools
+
+---
+
 ## Day 106 — Adaptive Reasoning Strategy Selection (2026-04-04)
 
 **What happened:**
