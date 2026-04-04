@@ -34,6 +34,7 @@ import { explanatoryOutputStyleTool } from "./explanatory-output-style-tool.js";
 import { featureDevTool } from "./feature-dev-tool.js";
 import { fileTools } from "./file-tools.js";
 import { frontendDesignTool } from "./frontend-design-tool.js";
+import { gitWorkflowTool } from "./git-workflow-tool.js";
 import { hookTool } from "./hook-tool.js";
 import { hookifyTool } from "./hookify-tool.js";
 import { httpTool } from "./http-tool.js";
@@ -153,6 +154,7 @@ export const metaTools: AgentTool[] = [
 	evolutionTimelineToolDefinition,
 	adaptiveReasoningToolDefinition,
 	predictiveErrorPreventionTool,
+	gitWorkflowTool,
 ];
 
 /**
@@ -817,3 +819,15 @@ export type {
 	PredictionStats,
 	PredictiveErrorPreventionConfig,
 } from "../predictive-error-prevention.js";
+export { gitWorkflowTool } from "./git-workflow-tool.js";
+export {
+	getGitWorkflowManager,
+	GitWorkflowManager,
+	gitWorkflowTool as gitWorkflowToolImpl,
+} from "../git-workflow.js";
+export type {
+	BranchStatus,
+	PullRequestInfo,
+	WorkflowResult,
+	GitWorkflowConfig,
+} from "../git-workflow.js";

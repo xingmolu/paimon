@@ -229,6 +229,7 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - View execution trajectories with \`trajectory({action: 'list'})\` to analyze past runs (Mini-SWE-Agent pattern)
 - Generate bug reports with \`bugReport({action: 'generate', taskDescription: '...', errorMessage: '...'})\` from failed sessions
 - Generate commit messages with \`commitMsg({action: 'generate'})\` from git diffs (Aider pattern)
+- Streamline git workflows with \`gitWorkflow({action: 'commit-push-pr'})\` to commit, push, and create PR in one command, \`gitWorkflow({action: 'clean-gone'})\` to remove stale local branches, \`gitWorkflow({action: 'status'})\` for git status summary (Claude Code commit-commands pattern)
 - Switch models randomly with \`roulette({action: 'select'})\` for improved performance (Mini-SWE-Agent pattern)
 - Manage plugins with \`plugins({action: 'list'})\` to view, \`plugins({action: 'enable', name: '...'})\` to toggle (Claude Code pattern)
 - Track metrics with \`metrics({action: 'dashboard'})\` to view success rates, time metrics, skill effectiveness

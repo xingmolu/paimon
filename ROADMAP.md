@@ -750,6 +750,23 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Learning from outcomes — Learn from errors that occur to improve predictions
 - [x] Statistics tracking — Track predictions, accuracy, prevention success rate
 
+## Phase 80: Git Workflow Automation (Claude Code commit-commands Pattern)
+- [x] GitWorkflowManager module — Streamlined git operations for evolution workflow
+- [x] gitWorkflow tool — Tool for git automation with 9 actions
+- [x] commit action — Generate commit message and commit staged/all changes
+- [x] commit-push-pr action — Full workflow: commit → push → create PR in one command
+- [x] clean-gone action — Remove stale local branches whose remote has been deleted
+- [x] status action — Get comprehensive git status summary
+- [x] branch-status action — Get detailed status for a specific branch
+- [x] branches action — List all local branches with sync status
+- [x] pr-status action — Get PR status for current/specified branch
+- [x] push action — Push current branch to remote
+- [x] create-branch action — Create and switch to new branch
+- [x] Branch status tracking — ahead/behind counts, gone detection, worktree detection
+- [x] PR description generation — Auto-generate PR descriptions from commit history
+- [x] GitHub CLI integration — Requires gh CLI for PR creation
+- [x] Statistics tracking — Track workflow operations performed
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

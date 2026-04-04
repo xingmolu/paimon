@@ -332,6 +332,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "git-workflow",
+		source: "claude-code",
+		category: "git",
+		description:
+			"Git workflow automation for committing, pushing, creating PRs, and cleaning up stale branches - commit-push-pr, clean-gone, status, branch-status actions",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

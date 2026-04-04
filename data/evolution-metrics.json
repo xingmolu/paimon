@@ -1,26 +1,26 @@
 {
   "successRate": {
-    "current": 94.44444444444444,
+    "current": 94.4954128440367,
     "points": [
       {
         "date": "2026-W14",
-        "value": 94.44444444444444,
+        "value": 94.4954128440367,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.44444444444444,
+    "weeklyAverage": 94.4954128440367,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 16.40740740740741,
+    "averageMinutes": 16.440366972477065,
     "byTaskType": {
-      "capability": 17.06122448979592,
+      "capability": 17.09090909090909,
       "reliability": 10
     },
     "points": [
       {
         "date": "2026-W14",
-        "value": 16.40740740740741,
+        "value": 16.440366972477065,
         "trend": "stable"
       }
     ],
@@ -28,9 +28,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 65,
+    "totalErrors": 66,
     "byType": {
-      "lint (fixed)": 35,
+      "lint (fixed)": 36,
       "TS (fixed), lint (fixed)": 4,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
@@ -40,6 +40,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-04: lint (fixed) in \"Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Predictive Error Prevention - PredictiveErrorPreventionManager module for proactively predicting errors BEFORE they occur, 8 default error patterns (TypeScript imports, lint errors, test timeouts, file not found, hook handlers, context overflow, regex patterns, git conflicts), probability and confidence scoring, prevention suggestions, SessionStart hook integration, predictiveErrorPrevention tool with 13 actions, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Model Migration (Claude Code Pattern) - ModelMigrationManager module for model version migrations between LLM versions, 12 default migration rules for Claude/GPT/DeepSeek, file/directory scanning, migration planning with previews, execution with backup support, rollback capability, beta header and API endpoint migrations, modelMigration tool with 13 actions\"",
       "2026-04-04: lint (fixed) in \"Agentic Reasoning Memory - ReasoningMemoryManager module for storing and recalling reasoning chains across iterations, 4 default reasoning patterns, similar chain retrieval, reasoning guidance, reasoningMemory tool with 16 actions\"",
@@ -48,13 +49,12 @@
       "2026-04-04: lint (fixed) in \"Multi-File Context (Cursor Pattern) - SymbolUsage interface for cross-file symbol tracking, ChangeImpact interface for impact prediction, RelatedFiles interface for related file suggestions, buildSymbolUsages/buildFileDependencies methods, getSymbolUsages/analyzeChangeImpact/getRelatedFiles methods, risk level calculation, multiFileContext tool with 5 actions\"",
       "2026-04-04: TS (fixed), lint (fixed) in \"Diff-Aware Planning (Devin Pattern) - DiffAwarePlanningManager module for git diff analysis, impact prediction with risk levels (low/medium/high/critical), conflict detection, safe implementation planning with phases, diffAwarePlan tool with 8 actions\"",
       "2026-04-03: lint (fixed) in \"Proactive Error Pattern Injection at SessionStart - getTopPatternsForInjection method for retrieving top patterns by confidence/occurrences, formatTopPatternsForInjection for formatting proactive warnings, SessionStart hook for injecting top error patterns with solutions at session start, high-confidence filtering (≥70%), evolve-mode only injection, priority 94 after intelligence recommendations\"",
-      "2026-04-03: TS (fixed), lint (fixed) in \"Learning Transfer → RAG Integration - RagModule integration for semantic search enrichment, enrichWithRag method combining TF-IDF + keyword similarity, RAG boost for session matching, rag-discovered sessions, combined confidence scoring (70/30), RAG insights in risk factors, proactive RAG context\"",
-      "2026-04-03: lint (fixed), test (fixed) in \"Evolution Cost → Task Predictor Integration - TaskDecisionScore interface combining cost and success into unified decision score, weighted scoring (60% success, 40% cost), decision breakdown table, recommendation levels (highly-recommended/recommended/consider/avoid), enhanced intelligence analysis output\""
+      "2026-04-03: TS (fixed), lint (fixed) in \"Learning Transfer → RAG Integration - RagModule integration for semantic search enrichment, enrichWithRag method combining TF-IDF + keyword similarity, RAG boost for session matching, rag-discovered sessions, combined confidence scoring (70/30), RAG insights in risk factors, proactive RAG context\""
     ],
     "points": [
       {
         "date": "2026-W14",
-        "value": 65,
+        "value": 66,
         "trend": "stable"
       }
     ],
@@ -69,9 +69,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 106,
-      "successRate": 94.33962264150944,
-      "averageTime": 16.57547169811321,
+      "usageCount": 107,
+      "successRate": 94.39252336448598,
+      "averageTime": 16.60747663551402,
       "trend": "improving"
     },
     {
@@ -143,17 +143,17 @@
     "points": [
       {
         "date": "2026-W14",
-        "value": 49
+        "value": 49.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 98,
-    "highImpactCount": 95,
-    "highImpactPercentage": 96.93877551020408
+    "totalCapabilities": 99,
+    "highImpactCount": 96,
+    "highImpactPercentage": 96.96969696969697
   },
-  "lastUpdated": "2026-04-04T16:59:34.353Z",
-  "iterationsAnalyzed": 108
+  "lastUpdated": "2026-04-04T17:17:48.534Z",
+  "iterationsAnalyzed": 109
 }
