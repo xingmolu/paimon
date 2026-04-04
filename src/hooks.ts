@@ -8,6 +8,7 @@ import { getEvolutionIntelligence } from "./intelligence.js";
 import { getIterationContextManager } from "./iteration-context.js";
 import { getLearningManager } from "./learning-output-style.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
+import { RepoMap } from "./repomap.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 import { getSecurityGuidanceManager } from "./security-guidance.js";
 import { getSelfEvaluationManager } from "./self-evaluation.js";
@@ -773,6 +774,76 @@ const DEFAULT_SECURITY_HOOKS: Hook[] = [
 			}
 
 			return { allow: true };
+		},
+	},
+	{
+		id: "multi-file-edit-analysis",
+		type: "PreToolUse",
+		name: "Multi-File Edit Analysis",
+		description:
+			"Analyzes cross-file dependencies before edit operations using Multi-File Context module (Cursor Pattern)",
+		enabled: true,
+		priority: 70, // After diff-aware-edit-analysis (75), lower priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			if (context.tool !== "edit" || !context.params?.path) {
+				return { allow: true };
+			}
+
+			const filePath = String(context.params.path);
+
+			try {
+				// Use RepoMap for multi-file context analysis
+				const repoMap = new RepoMap({ root: "." });
+
+				// Analyze change impact for this file
+				const impact = repoMap.analyzeChangeImpact(filePath);
+
+				// Get related files
+				const related = repoMap.getRelatedFiles(filePath);
+
+				// Build warnings based on analysis
+				const warnings: string[] = [];
+
+				// High risk files have many dependents
+				if (impact.riskLevel === "high" || impact.riskLevel === "critical") {
+					warnings.push(`⚠️ High risk file: ${impact.dependentFiles.length} files depend on this`);
+				}
+
+				// Files that import this file may need updates
+				const importedBy = related.related.filter((r) => r.relation === "imported-by");
+				if (importedBy.length > 0) {
+					const topImportedBy = importedBy.slice(0, 3);
+					warnings.push(
+						`📋 Files that import this: ${topImportedBy.map((f) => f.file).join(", ")}${importedBy.length > 3 ? ` (+${importedBy.length - 3} more)` : ""}`,
+					);
+				}
+
+				// Files with shared types may need updates
+				const sharedTypes = related.related.filter((r) => r.relation === "shared-types");
+				if (sharedTypes.length > 0) {
+					warnings.push(`🔗 Files with shared types: ${sharedTypes.map((f) => f.file).join(", ")}`);
+				}
+
+				// Recommended edit order for multi-file changes
+				if (related.editOrder.length > 1) {
+					warnings.push(
+						`📝 Recommended edit order: ${related.editOrder.slice(0, 4).join(" → ")}${related.editOrder.length > 4 ? ` (+${related.editOrder.length - 4} more)` : ""}`,
+					);
+				}
+
+				if (warnings.length > 0) {
+					return {
+						allow: true,
+						warning: `Multi-File Context Analysis:\n${warnings.map((w) => `  ${w}`).join("\n")}\n\nUse multiFileContext({action: 'change-impact', file: '${filePath}'}) for detailed analysis.`,
+						context: `File: ${filePath}\nRisk: ${impact.riskLevel}\nDependents: ${impact.dependentFiles.length}\nRelated: ${related.related.length}`,
+					};
+				}
+
+				return { allow: true };
+			} catch {
+				// If analysis fails, allow the edit without warning
+				return { allow: true };
+			}
 		},
 	},
 ];
