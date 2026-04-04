@@ -668,6 +668,17 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] reasoningMemory tool — Tool with 16 actions for reasoning memory management
 - [x] Statistics tracking — Track chains, patterns, success rates, average steps per chain
 
+## Phase 73: Tool Usage Analytics
+- [x] ToolUsageAnalyticsManager module — Track and analyze tool usage patterns across sessions
+- [x] Tool usage recording — Record tool usage events with success/failure, duration, task type
+- [x] Tool statistics — Track usage counts, success rates, average durations per tool
+- [x] Tool combinations analysis — Identify frequently used tool combinations
+- [x] Usage insights — Generate insights (underutilized, high failure, optimal, recommended)
+- [x] Tool recommendations — Get tool recommendations based on task type
+- [x] Recommended tools per task type — Default recommendations for capability, reliability, feature tasks
+- [x] toolUsageAnalytics tool — Tool with 12 actions for analytics management
+- [x] Statistics tracking — Track records, unique tools, sessions, insights generated
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!

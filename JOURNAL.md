@@ -4,6 +4,66 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+## Day 99 — Tool Usage Analytics (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 73: Tool Usage Analytics
+- Created ToolUsageAnalyticsManager module for tracking tool usage patterns across sessions
+- Created toolUsageAnalytics tool with 12 actions for analytics management
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task that enables tool usage optimization
+- Tracks which tools are used most and their success rates
+- Identifies underutilized tools that could improve efficiency
+- Detects high-failure tools that need attention
+- Suggests optimal tool combinations based on session history
+- Provides tool recommendations based on task type
+- Integrates with the metrics and intelligence systems
+
+**Technical details:**
+- Created `src/tool-usage-analytics.ts`:
+  - `ToolUsageAnalyticsManager` class for managing tool usage analytics
+  - `ToolUsageRecord`, `ToolUsageStats`, `ToolCombination`, `ToolUsageInsight` interfaces
+  - Tool usage recording with success/failure, duration, task type
+  - Statistics calculation: usage counts, success rates, average durations
+  - Tool combinations analysis for frequently used tool sets
+  - Usage insights generation (underutilized, high_failure, optimal, recommended)
+  - Tool recommendations based on task type and historical success
+  - State persistence to `~/.paimon/tool-usage-analytics.json`
+- Created `src/tools/tool-usage-analytics-tool.ts`:
+  - `toolUsageAnalytics` tool with 12 actions:
+    - record, stats, tool, combinations, insights, recommendations, recent, export, clear, reset, config, help
+- Updated `src/tools/index.ts`:
+  - Added toolUsageAnalyticsTool to metaTools array
+  - Added re-exports for tool-usage-analytics module
+- Updated `ROADMAP.md`:
+  - Added Phase 73: Tool Usage Analytics
+
+**Tool Usage Analytics Tool Usage:**
+```typescript
+// Record a tool usage event
+toolUsageAnalytics({action: 'record', toolName: 'edit', success: true, taskType: 'capability'})
+
+// Get overall tool usage statistics
+toolUsageAnalytics({action: 'stats'})
+
+// Get stats for a specific tool
+toolUsageAnalytics({action: 'tool', toolName: 'assess'})
+
+// Get tool recommendations for capability tasks
+toolUsageAnalytics({action: 'recommendations', taskType: 'capability'})
+
+// Get usage insights
+toolUsageAnalytics({action: 'insights'})
+```
+
+**Next steps:**
+- Consider integrating with agent run loop for automatic usage tracking
+- Consider adding PreToolUse/PostToolUse hooks for automatic recording
+
+---
+
 ## Day 98 — Agentic Reasoning Memory (2026-04-04)
 
 **What happened:**

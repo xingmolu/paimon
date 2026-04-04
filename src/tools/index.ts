@@ -74,6 +74,7 @@ import { taskTrackingTool } from "./task-tracking-tool.js";
 import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
+import { toolUsageAnalyticsTool } from "./tool-usage-analytics-tool.js";
 import { trajectoryTool } from "./trajectory-tool.js";
 import { visualProgressTool } from "./visual-progress-tool.js";
 import { watchToolDef } from "./watch-tool.js";
@@ -141,6 +142,7 @@ export const metaTools: AgentTool[] = [
 	ideIntegrationTool,
 	codeCompletionTool,
 	reasoningMemoryTool,
+	toolUsageAnalyticsTool,
 ];
 
 /**
@@ -718,3 +720,18 @@ export type {
 	ReasoningMemoryStats,
 	SimilarChainResult,
 } from "../reasoning-memory.js";
+export {
+	getToolUsageAnalyticsManager,
+	initToolUsageAnalyticsManager,
+	resetToolUsageAnalyticsManager,
+	ToolUsageAnalyticsManager,
+} from "../tool-usage-analytics.js";
+export type {
+	ToolUsageRecord,
+	ToolUsageStats,
+	ToolCombination,
+	ToolUsageInsight,
+	ToolUsageAnalyticsConfig,
+	ToolUsageAnalyticsStats,
+} from "../tool-usage-analytics.js";
+export { toolUsageAnalyticsTool } from "./tool-usage-analytics-tool.js";
