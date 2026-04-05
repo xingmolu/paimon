@@ -1,6 +1,90 @@
 
 ---
 
+## Day 115 — Reasoning Model Support (Aider Pattern) (2026-04-05)
+
+**What happened:**
+- Implemented ROADMAP Phase 89: Reasoning Model Support (Aider Pattern)
+- Created ReasoningModelSupportManager module in src/reasoning-model-support.ts
+- Created reasoningModel tool with 11 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Aider's reasoning model configuration
+- Enables proper configuration of advanced reasoning models (OpenAI o1/o3, DeepSeek R1, Claude Extended Thinking)
+- Supports reasoning_effort (low/medium/high) for OpenAI o-series
+- Supports thinking_tokens budget for Anthropic Claude
+- Supports reasoning tag parsing for DeepSeek R1 ( ...  tags)
+- Handles model-specific limitations (temperature, streaming, system prompt)
+- Validates settings against model capabilities
+- Improves ability to use advanced reasoning models for complex tasks
+
+**Technical details:**
+- Created `src/reasoning-model-support.ts`:
+  - `ReasoningModelSupportManager` class for managing reasoning model configurations
+  - `ReasoningModelConfig`, `ReasoningSettings`, `ReasoningModelStats` interfaces
+  - 12 default reasoning models pre-configured:
+    - OpenAI: o3-mini, o3, o1, o1-preview, o1-mini
+    - Anthropic: claude-3-7-sonnet, claude-sonnet-4
+    - DeepSeek: deepseek-r1, deepseek-reasoner
+    - Fireworks/OpenRouter variants
+  - Model detection from name patterns
+  - Settings validation against model capabilities
+  - Thinking tokens parsing/formatting (e.g., "8k" → 8192)
+  - Reasoning content parsing from tags
+  - API parameter generation
+  - State persistence to `~/.paimon/reasoning-models.json`
+- Created `src/tools/reasoning-model-tool.ts`:
+  - `reasoningModel` tool with 11 actions:
+    - detect, config, models, add, remove, validate
+    - limitations, params, parse, stats, help
+  - TypeBox-based parameter schema
+  - Full execute implementation
+- Updated `src/tools/index.ts`:
+  - Added reasoningModelToolDefinition to metaTools array
+  - Added re-exports for reasoning-model-support module
+- Updated `src/prompt.ts`:
+  - Added documentation for reasoningModel tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `reasoning-model-support` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 89: Reasoning Model Support (Aider Pattern)
+
+**Reasoning Model Tool Usage:**
+```typescript
+// Detect if a model is a reasoning model
+reasoningModel({action: 'detect', model: 'o3-mini'})
+
+// Configure o3-mini with high reasoning effort
+reasoningModel({action: 'config', model: 'o3-mini', reasoningEffort: 'high'})
+
+// Configure Claude with 8k thinking tokens
+reasoningModel({action: 'config', model: 'claude-3-7-sonnet', thinkingTokens: '8k'})
+
+// Get model limitations
+reasoningModel({action: 'limitations', model: 'o1'})
+
+// Parse reasoning content
+reasoningModel({action: 'parse', output: '<think>reasoning...</think> actual response'})
+
+// List all supported models
+reasoningModel({action: 'models'})
+```
+
+**Supported Models:**
+| Provider | Models | Settings |
+|----------|--------|----------|
+| OpenAI | o3-mini, o3, o1 | reasoning_effort (low/medium/high) |
+| Anthropic | claude-3-7-sonnet, claude-sonnet-4 | thinking_tokens budget |
+| DeepSeek | deepseek-r1, deepseek-reasoner | reasoning in  tags |
+
+**Context:**
+- ROADMAP Phase 1-89: All complete ✅
+- 33 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider, MCP)
+- All 875 tests pass
+
+---
+
 ## Day 114 — Copy/Paste to Web Chat (Aider Pattern) (2026-04-05)
 
 **What happened:**

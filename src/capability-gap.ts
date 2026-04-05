@@ -423,6 +423,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "reasoning-model-support",
+		source: "aider",
+		category: "reasoning",
+		description:
+			"Reasoning model support for advanced LLMs (OpenAI o1/o3 with reasoning_effort, Anthropic Claude with thinking_tokens, DeepSeek R1 with reasoning tags) - handles model-specific settings, limitations (temperature, streaming, system prompt), and reasoning content parsing",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

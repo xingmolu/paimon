@@ -874,3 +874,16 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Notification types — complete, error, input, custom events
 - [x] Configuration — Sound, title, enabled/disabled per type
 - [x] Statistics tracking — Track notifications sent, success rate, by platform/type
+
+## Phase 89: Reasoning Model Support (Aider Pattern)
+- [x] ReasoningModelSupportManager module — Manage reasoning model configurations
+- [x] reasoningModel tool — Tool for reasoning model management with 11 actions
+- [x] OpenAI reasoning models — o3-mini, o3, o1, o1-preview, o1-mini with reasoning_effort (low/medium/high)
+- [x] Anthropic reasoning models — claude-3-7-sonnet, claude-sonnet-4 with thinking_tokens budget
+- [x] DeepSeek reasoning models — deepseek-r1, deepseek-reasoner with reasoning tag parsing (<think>...</think>)
+- [x] Model limitations — Temperature, streaming, system prompt restrictions per model
+- [x] Settings validation — Warn when applying unsupported settings to models
+- [x] API parameters — Get correct API parameters for each model
+- [x] Reasoning content parsing — Extract reasoning from tagged output
+- [x] Custom model support — Add custom reasoning model configurations
+- [x] Statistics tracking — Track models by provider, by setting, active configuration

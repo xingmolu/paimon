@@ -67,6 +67,7 @@ import { predictiveErrorPreventionTool } from "./predictive-error-prevention-too
 import { ragTool } from "./rag-tool.js";
 import { ralphLoopTool } from "./ralph-loop-tool.js";
 import { reasoningMemoryTool } from "./reasoning-memory-tool.js";
+import { reasoningModelTool, reasoningModelToolDefinition } from "./reasoning-model-tool.js";
 import { reflectTool } from "./reflect-tool.js";
 import { regressionTestingToolDef } from "./regression-testing-tool.js";
 import { remoteExecutionToolDef } from "./remote-execution-tool.js";
@@ -173,6 +174,7 @@ export const metaTools: AgentTool[] = [
 	getClipboardTool(),
 	conventionsToolDefinition,
 	notificationsToolDefinition,
+	reasoningModelToolDefinition,
 ];
 
 /**
@@ -902,6 +904,18 @@ export type {
 	NotificationConfig,
 	IntegrationConfig,
 } from "../integration-manager.js";
+export {
+	getReasoningModelSupportManager,
+	ReasoningModelSupportManager,
+	DEFAULT_REASONING_MODEL_NAMES,
+} from "../reasoning-model-support.js";
+export type {
+	ReasoningModelConfig,
+	ReasoningSettings,
+	ReasoningModelStats,
+	ReasoningModelManagerConfig,
+} from "../reasoning-model-support.js";
+export { reasoningModelTool, reasoningModelToolDefinition } from "./reasoning-model-tool.js";
 export { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
 export {
 	getCacheWarmer,
