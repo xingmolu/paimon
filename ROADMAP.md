@@ -958,3 +958,13 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] 8 improvement categories — code-quality, performance, architecture, capability, reliability, documentation, testing, security
 - [x] 4 priority levels — critical, high, medium, low with confidence scoring
 - [x] Statistics tracking — Track suggestions, acceptances, dismissals by category/source
+
+## Phase 96: Model Settings Display (Aider Pattern)
+- [x] ModelSettingsManager module — Display model settings and metadata for active models
+- [x] modelSettings tool — Tool for showing main/editor/weak model configuration
+- [x] Model metadata — Context window, pricing, capabilities (vision, reasoning, streaming, cache)
+- [x] 13 actions — show, all, main, editor, weak, compare, list, providers, set-main, set-editor, set-weak, metadata, help
+- [x] Model comparison — Compare two models side-by-side
+- [x] Model listing — List all available models with provider filtering
+- [x] Provider support — OpenAI, Anthropic, DeepSeek, Google models with pricing
+- [x] Competitor pattern added to capability-gap.ts

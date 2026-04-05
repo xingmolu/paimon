@@ -59,6 +59,7 @@ import { mcpTool } from "./mcp-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { modelAliasesToolDefinition } from "./model-aliases-tool.js";
 import { modelMigrationToolDefinition } from "./model-migration-tool.js";
+import { modelSettingsTool } from "./model-settings-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { multiFileContextTool } from "./multi-file-context-tool.js";
 import { notificationsToolDefinition } from "./notification-tool.js";
@@ -189,6 +190,7 @@ export const metaTools: AgentTool[] = [
 	browserUIToolDefinition,
 	modelAliasesToolDefinition,
 	editFormatTool,
+	modelSettingsTool,
 	contextIdentifierTool,
 	selfImprovementTool,
 ];

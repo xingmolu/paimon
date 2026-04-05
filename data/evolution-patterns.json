@@ -13,8 +13,18 @@
       "firstTryRate": 98,
       "averageTime": 15,
       "confidence": 95,
-      "sampleSize": 61,
+      "sampleSize": 62,
       "examples": [
+        {
+          "taskDescription": "Model Settings Display (Aider Pattern) - ModelSettingsManager module for displaying model settings and metadata, modelSettings tool with 13 actions (show, all, main, editor, weak, compare, list, providers, set-main, set-editor, set-weak, metadata, help), model metadata including context window/pricing/capabilities, model comparison, provider filtering, OpenAI/Anthropic/DeepSeek/Google models supported, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Document browserUI tool in prompt.ts - Added documentation for browserUI tool in the IMPORTANT section with usage examples for all 10 actions (start, stop, status, sessions, session, config, enable, disable, stats, reset, help). Also fixed pre-existing lint issues in tests/edit-format.test.ts, src/context-identifier.ts, src/edit-format.ts, src/tools/self-improvement-tool.ts, src/self-improvement-engine.ts (use literal keys, template literals, non-null assertion, assignment in expression patterns)",
           "date": "2026-04-05",
@@ -34,19 +44,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Predictive Error Prevention - PredictiveErrorPreventionManager module for proactively predicting errors BEFORE they occur, 8 default error patterns (TypeScript imports, lint errors, test timeouts, file not found, hook handlers, context overflow, regex patterns, git conflicts), probability and confidence scoring, prevention suggestions, SessionStart hook integration, predictiveErrorPrevention tool with 13 actions, competitor pattern added to capability-gap.ts",
-          "date": "2026-04-04",
-          "time": 25,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,18 @@
       "firstTryRate": 95,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 112,
+      "sampleSize": 113,
       "examples": [
+        {
+          "taskDescription": "Model Settings Display (Aider Pattern) - ModelSettingsManager module for displaying model settings and metadata, modelSettings tool with 13 actions (show, all, main, editor, weak, compare, list, providers, set-main, set-editor, set-weak, metadata, help), model metadata including context window/pricing/capabilities, model comparison, provider filtering, OpenAI/Anthropic/DeepSeek/Google models supported, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Edit Format Support (Aider Pattern) - EditFormatManager module for managing code edit formats, editFormat tool with 12 actions (list, get, set, detect, recommend, formats, format, validate, convert, stats, config, help), 6 edit formats (diff, diff-fenced, whole, editor-diff, editor-whole, patch), model-specific format detection, format validation and conversion, competitor pattern added to capability-gap.ts",
           "date": "2026-04-05",
@@ -238,20 +248,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts",
-          "date": "2026-04-05",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "time-pattern-quick",
@@ -300,7 +299,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -352,7 +351,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     },
     {
       "id": "task-type-reliability",
@@ -398,9 +397,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T11:28:17.692Z"
+      "lastUpdated": "2026-04-05T13:27:35.283Z"
     }
   ],
-  "lastUpdated": "2026-04-05T11:28:17.692Z",
-  "sessionCount": 123
+  "lastUpdated": "2026-04-05T13:27:35.283Z",
+  "sessionCount": 124
 }

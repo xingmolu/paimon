@@ -487,6 +487,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		priority: 9,
 	},
 	{
+		name: "model-settings",
+		source: "aider",
+		category: "models",
+		description:
+			"Model settings display for showing active model configuration - displays detailed metadata for main/editor/weak models including context window, pricing, capabilities (vision, reasoning, streaming, cache), supports model comparison, model listing by provider, setting active models",
+		implementationStatus: "implemented",
+		priority: 7,
+	},
+	{
 		name: "context-identifier",
 		source: "aider",
 		category: "context",

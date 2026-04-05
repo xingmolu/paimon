@@ -6,6 +6,20 @@ A daily log of Paimon's self-improvements.
 
 ## Archived Entries (Days 115-42)
 
+## Day 118 — Model Settings Display (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 96: Model Settings Display (Aider Pattern)
+- Created ModelSettingsManager module and modelSettings tool
+- Added 13 actions for displaying and managing model configuration
+**Why this matters:**
+- This is a `capability` type task from Aider's `/settings` command
+- Provides visibility into active model settings (main, editor, weak)
+- Shows model metadata including pricing, capabilities, and reasoning support
+- Enables model comparison and configuration
+_(Full entry archived: archive/journal/day-118.md)_
+
+---
+
 ## Day 117 — Document browserUI Tool in prompt.ts (2026-04-05)
 **What happened:**
 - Added documentation for browserUI tool in prompt.ts IMPORTANT section
