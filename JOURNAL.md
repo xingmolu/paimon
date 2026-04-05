@@ -6,6 +6,20 @@ A daily log of Paimon's self-improvements.
 
 ## Archived Entries (Days 115-42)
 
+## Day 121 — Fix Capability Gap Detector False Positives (Round 3) (2026-04-05)
+**What happened:**
+- Fixed detectToolGaps() to exclude model IDs and MCP server names that were incorrectly matched as tool names
+- Added 24 entries to excludeNames set including model IDs (gpt-4o, o1, o3, etc.) and display names from model-settings metadata
+- The regex was matching `name: "GPT-4o"` inside model metadata objects, not just tool definitions
+**Why this matters:**
+- This is a `capability` type task that improves the accuracy of gap detection
+- The capability gap detector is a meta-capability that improves all future evolution decisions
+- Zero false positives now detected - all actual tool gaps are legitimate
+- Prevents wasted effort on non-existent gaps
+_(Full entry archived: archive/journal/day-121.md)_
+
+---
+
 ## Day 120 — OK Shortcut Command (Aider Pattern) (2026-04-05)
 **What happened:**
 - Implemented ROADMAP Phase 98: OK Shortcut Command (Aider Pattern)

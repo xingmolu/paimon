@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-05 | capability | Fix Capability Gap Detector False Positives (Round 3) - Fixed detectToolGaps() to exclude model IDs (gpt-4o, o1, o3, etc.) and MCP server names (filesystem) that were incorrectly matched as tool names. Added 24 entries to excludeNames set including model IDs and display names from model-settings metadata. Zero false positives now detected - all actual tool gaps are legitimate. | ~10m | ✅ | none | No | High | evolve | accurate-gap-detection, zero-false-positives, better-task-selection |
 | 2026-04-05 | capability | OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts | ~10m | ✅ | lint (fixed) | No | High | evolve, research | workflow-ux, ask-code-workflow, quick-acceptance |
 | 2026-04-05 | capability | Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts | ~15m | ✅ | lint (fixed) | No | High | evolve, research | context-awareness, token-visibility, cost-estimation, budget-management |
 | 2026-04-05 | reliability | Document browserUI tool in prompt.ts - Added documentation for browserUI tool in the IMPORTANT section with usage examples for all 10 actions (start, stop, status, sessions, session, config, enable, disable, stats, reset, help). Also fixed pre-existing lint issues in tests/edit-format.test.ts, src/context-identifier.ts, src/edit-format.ts, src/tools/self-improvement-tool.ts, src/self-improvement-engine.ts (use literal keys, template literals, non-null assertion, assignment in expression patterns) | ~10m | ✅ | none | No | Medium | evolve | tool-discoverability, browser-ui-documentation |
@@ -151,14 +152,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 98/107 = 92%
+- First Try Success Rate: 99/108 = 92%
 - Average Time: ~15 minutes
-- Rework Rate: 11/107 = 10%
+- Rework Rate: 11/108 = 10%
 
 ### Capability Metrics
-- Capability Tasks: 102/107 = 95%
-- High Impact Capabilities: 92/102 = 90%
-- Capability Velocity: 102 capabilities in 3 days = 34/day
+- Capability Tasks: 103/108 = 95%
+- High Impact Capabilities: 93/103 = 90%
+- Capability Velocity: 103 capabilities in 3 days = 34/day
 
 ### Error Analysis
 - TypeScript Errors: 7

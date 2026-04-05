@@ -685,11 +685,41 @@ export class CapabilityGapDetector {
 				.filter((f) => f.endsWith(".ts") && !f.includes("index"));
 
 			// Names to exclude (example names, not real tools)
+			// These are parameter values in examples or model IDs that incorrectly match the name pattern
 			const excludeNames = new Set([
 				"block-dangerous-rm",
 				"plugin-name",
-				"My Pattern",
 				"my-pattern",
+				// MCP server names used in examples (not tools)
+				"filesystem",
+				// Model IDs that appear in model-settings metadata (not tools)
+				"gpt-4o",
+				"gpt-4o-mini",
+				"o1",
+				"o1-mini",
+				"o1-preview",
+				"o3",
+				"o3-mini",
+				"claude-3-opus",
+				"claude-3-sonnet",
+				"claude-3-haiku",
+				"claude-3-7-sonnet",
+				"deepseek-chat",
+				"deepseek-reasoner",
+				// Display names in model metadata
+				"GPT-4o",
+				"GPT-4o Mini",
+				"O1",
+				"O1 Mini",
+				"O1 Preview",
+				"O3",
+				"O3 Mini",
+				"Claude 3 Opus",
+				"Claude 3 Sonnet",
+				"Claude 3 Haiku",
+				"Claude 3.7 Sonnet",
+				"DeepSeek Chat",
+				"DeepSeek R1",
 			]);
 
 			for (const file of toolFiles) {
