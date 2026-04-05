@@ -852,3 +852,14 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Platform support — macOS, Linux, Windows clipboard operations
 - [x] Repo map integration — Include repository structure in context
 - [x] Statistics tracking — Track copies, pastes, files copied, edits applied
+
+## Phase 87: Coding Conventions (Aider Pattern)
+- [x] CodingConventionsManager module — Manage coding conventions for consistent code style
+- [x] conventions tool — Tool for convention management with 14 actions
+- [x] CONVENTIONS.md support — Load conventions from markdown files
+- [x] .conventions/ directory — Organize conventions by category
+- [x] 10 convention categories — libraries, types, style, patterns, testing, documentation, security, performance, accessibility, custom
+- [x] 6 default conventions — TypeScript types, async/await, error handling, naming, imports, documentation
+- [x] SessionStart hook — Auto-load conventions at session start
+- [x] Convention rules — Support examples, anti-examples, and severity levels
+- [x] Statistics tracking — Track conventions loaded, applications, issues found/fixed

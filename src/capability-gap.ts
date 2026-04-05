@@ -405,6 +405,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "coding-conventions",
+		source: "aider",
+		category: "conventions",
+		description:
+			"Coding conventions for specifying coding guidelines like library preferences, type safety rules, style conventions - supports CONVENTIONS.md file and .conventions/ directory, auto-load at session start, community conventions support",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

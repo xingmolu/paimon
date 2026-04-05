@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getCodingConventionsManager } from "./coding-conventions.js";
 import { getGlobalContextBudgetManager } from "./context-budget.js";
 import { getDiffAwarePlanningManager } from "./diff-aware-planning.js";
 import { getErrorPatternLearner } from "./error-patterns.js";
@@ -402,6 +403,50 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 			return {
 				allow: true,
 				context: `Journal truncation available. Use journal({action: 'stats'}) to check size.`,
+			};
+		},
+	},
+	{
+		id: "session-coding-conventions",
+		type: "SessionStart",
+		name: "Load Coding Conventions",
+		description:
+			"Auto-loads coding conventions from CONVENTIONS.md and .conventions/ directory for consistent code style (Aider Pattern)",
+		enabled: true,
+		priority: 75, // After journal check (80)
+		handler: (context: HookContext): HookResult => {
+			const conventionsManager = getCodingConventionsManager();
+
+			if (!conventionsManager.isEnabled() || !conventionsManager.getConfig().autoLoad) {
+				return { allow: true };
+			}
+
+			// Load conventions from file and directory
+			const fromFile = conventionsManager.loadConventionsFromFile();
+			const fromDir = conventionsManager.loadConventionsFromDirectory();
+
+			const stats = conventionsManager.getStats();
+			const conventions = conventionsManager.getConventions();
+
+			if (conventions.length === 0) {
+				return { allow: true };
+			}
+
+			// Build context message
+			const lines = [
+				"## Coding Conventions Loaded",
+				"",
+				`**Total Conventions:** ${conventions.length}`,
+				`**Enabled:** ${conventions.filter((c) => c.enabled).length}`,
+				`**Sources:** File: ${fromFile ? "✅" : "❌"}, Directory: ${fromDir ? "✅" : "❌"}`,
+				"",
+				"Use conventions({action: 'list'}) to view all conventions.",
+				"Use conventions({action: 'apply'}) to get conventions for prompt.",
+			];
+
+			return {
+				allow: true,
+				context: lines.join("\n"),
 			};
 		},
 	},

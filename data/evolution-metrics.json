@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 94.78260869565217,
+    "current": 100,
     "points": [
       {
         "date": "------",
@@ -11,16 +11,21 @@
         "date": "2026-W14",
         "value": 94.78260869565217,
         "trend": "up"
+      },
+      {
+        "date": "2026-W15",
+        "value": 100,
+        "trend": "up"
       }
     ],
-    "weeklyAverage": 93.96551724137932,
-    "improvement": 94.78260869565217
+    "weeklyAverage": 94.01709401709401,
+    "improvement": 100
   },
   "time": {
-    "averageMinutes": 16.439655172413794,
+    "averageMinutes": 16.47008547008547,
     "byTaskType": {
       "-----------": 0,
-      "capability": 17.20952380952381,
+      "capability": 17.235849056603772,
       "reliability": 10
     },
     "points": [
@@ -33,16 +38,21 @@
         "date": "2026-W14",
         "value": 16.582608695652173,
         "trend": "down"
+      },
+      {
+        "date": "2026-W15",
+        "value": 20,
+        "trend": "down"
       }
     ],
     "fastestTask": "-----------------",
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 72,
+    "totalErrors": 73,
     "byType": {
       "--------": 1,
-      "lint (fixed)": 40,
+      "lint (fixed)": 41,
       "TS (fixed), lint (fixed)": 5,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
@@ -53,6 +63,7 @@
     },
     "recentErrors": [
       "------: -------- in \"-----------------\"",
+      "2026-04-05: lint (fixed) in \"Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Cache Warming (Aider Pattern) - CacheWarmer module for keeping prompt cache alive during long sessions, cacheWarmer tool with 12 actions (start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help), background warming thread with configurable intervals (default 5 min), cache hit token tracking, cost savings estimation (~90% cheaper on cache hits), manual ping support, pause/resume sessions, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts\"",
@@ -60,8 +71,7 @@
       "2026-04-04: TS (fixed), lint (fixed) in \"Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Predictive Error Prevention - PredictiveErrorPreventionManager module for proactively predicting errors BEFORE they occur, 8 default error patterns (TypeScript imports, lint errors, test timeouts, file not found, hook handlers, context overflow, regex patterns, git conflicts), probability and confidence scoring, prevention suggestions, SessionStart hook integration, predictiveErrorPrevention tool with 13 actions, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: lint (fixed) in \"Model Migration (Claude Code Pattern) - ModelMigrationManager module for model version migrations between LLM versions, 12 default migration rules for Claude/GPT/DeepSeek, file/directory scanning, migration planning with previews, execution with backup support, rollback capability, beta header and API endpoint migrations, modelMigration tool with 13 actions\"",
-      "2026-04-04: lint (fixed) in \"Agentic Reasoning Memory - ReasoningMemoryManager module for storing and recalling reasoning chains across iterations, 4 default reasoning patterns, similar chain retrieval, reasoning guidance, reasoningMemory tool with 16 actions\""
+      "2026-04-04: lint (fixed) in \"Model Migration (Claude Code Pattern) - ModelMigrationManager module for model version migrations between LLM versions, 12 default migration rules for Claude/GPT/DeepSeek, file/directory scanning, migration planning with previews, execution with backup support, rollback capability, beta header and API endpoint migrations, modelMigration tool with 13 actions\""
     ],
     "points": [
       {
@@ -73,6 +83,11 @@
         "date": "2026-W14",
         "value": 71,
         "trend": "down"
+      },
+      {
+        "date": "2026-W15",
+        "value": 1,
+        "trend": "up"
       }
     ],
     "commonPatterns": [
@@ -86,16 +101,16 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 113,
-      "successRate": 94.69026548672566,
-      "averageTime": 16.743362831858406,
+      "usageCount": 114,
+      "successRate": 94.73684210526315,
+      "averageTime": 16.771929824561404,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 37,
-      "successRate": 89.1891891891892,
-      "averageTime": 19.324324324324323,
+      "usageCount": 38,
+      "successRate": 89.47368421052632,
+      "averageTime": 19.342105263157894,
       "trend": "improving"
     },
     {
@@ -174,14 +189,18 @@
         "value": 52.5
       },
       {
+        "date": "2026-W15",
+        "value": 0.5
+      },
+      {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 105,
-    "highImpactCount": 102,
-    "highImpactPercentage": 97.14285714285714
+    "totalCapabilities": 106,
+    "highImpactCount": 103,
+    "highImpactPercentage": 97.16981132075472
   },
-  "lastUpdated": "2026-04-05T03:10:38.336Z",
-  "iterationsAnalyzed": 116
+  "lastUpdated": "2026-04-05T03:34:33.768Z",
+  "iterationsAnalyzed": 117
 }

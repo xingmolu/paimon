@@ -27,6 +27,7 @@ import { codeCompletionTool } from "./code-completion-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
 import { contextImportanceTool } from "./context-importance-tool.js";
+import { conventionsToolDefinition } from "./conventions-tool.js";
 import { conversationSharingToolDefinition } from "./conversation-sharing-tool.js";
 import { diffAwarePlanTool } from "./diff-aware-planning-tool.js";
 import { errorPatternsTool } from "./error-patterns-tool.js";
@@ -169,6 +170,7 @@ export const metaTools: AgentTool[] = [
 	cacheWarmerToolDefinition,
 	mcpTool,
 	getClipboardTool(),
+	conventionsToolDefinition,
 ];
 
 /**
