@@ -79,8 +79,92 @@ reasoningModel({action: 'models'})
 | DeepSeek | deepseek-r1, deepseek-reasoner | reasoning in  tags |
 
 **Context:**
-- ROADMAP Phase 1-89: All complete ✅
-- 33 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider, MCP)
+- ROADMAP Phase 1-90: All complete ✅
+- 34 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider, MCP)
+- All 875 tests pass
+
+---
+
+## Day 115 — Shell Tab Completion Generation (Aider Pattern) (2026-04-05)
+
+**What happened:**
+- Implemented ROADMAP Phase 90: Shell Tab Completion Generation (Aider Pattern)
+- Created ShellCompletionGenerator module in src/shell-completion.ts
+- Created shellCompletion tool with 10 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Aider's --shell-completions feature
+- Enables tab completion for CLI commands, options, and file paths
+- Supports bash, zsh, and fish shells
+- Auto-detects shell from $SHELL environment variable
+- Provides installation instructions for each shell
+- Cross-platform support (Linux, macOS, Windows via WSL)
+
+**Technical details:**
+- Created `src/shell-completion.ts`:
+  - `ShellCompletionGenerator` class for managing shell completion scripts
+  - `ShellCompletionConfig`, `ShellCompletionStats`, `CompletionCommand`, `CompletionOption` interfaces
+  - Bash completion script generation with options and arguments
+  - Zsh completion script generation with descriptions
+  - Fish completion script generation
+  - Auto-detect shell from $SHELL
+  - Install completions to appropriate directories
+  - Statistics tracking by shell type
+  - State persistence to `~/.paimon/shell-completion.json`
+- Created `src/tools/shell-completion-tool.ts`:
+  - `shellCompletion` tool with 10 actions:
+    - generate, install, bash, zsh, fish, instructions, config, stats, reset, help
+  - TypeBox-based parameter schema
+  - Full AgentTool implementation
+- Updated `src/tools/index.ts`:
+  - Added shellCompletionToolDefinition to metaTools array
+  - Added re-exports for shell-completion module
+- Updated `src/prompt.ts`:
+  - Added documentation for shellCompletion tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `shell-completions` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 90: Shell Tab Completion Generation
+
+**Shell Completion Tool Usage:**
+```typescript
+// Generate for auto-detected shell
+shellCompletion({action: 'generate'})
+
+// Generate for specific shell
+shellCompletion({action: 'bash'})
+shellCompletion({action: 'zsh'})
+shellCompletion({action: 'fish'})
+
+// Install completion script
+shellCompletion({action: 'install'})
+
+// Get installation instructions
+shellCompletion({action: 'instructions'})
+```
+
+**Installation Examples:**
+```bash
+# Bash
+source <(evo shell-completion bash)
+# Or add to ~/.bashrc:
+eval "$(evo shell-completion bash)"
+
+# Zsh
+source <(evo shell-completion zsh)
+# Or add to ~/.zshrc:
+eval "$(evo shell-completion zsh)"
+
+# Fish
+evo shell-completion fish | source
+# Or install permanently:
+evo shell-completion install fish
+```
+
+**Context:**
+- ROADMAP Phase 1-90: All complete ✅
+- 34 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider, MCP)
 - All 875 tests pass
 
 ---

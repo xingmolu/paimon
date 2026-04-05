@@ -81,6 +81,7 @@ import { securityGuidanceTool } from "./security-guidance-tool.js";
 import { selfEvaluationToolDef } from "./self-evaluation-tool.js";
 import { selfHealingToolWrapper } from "./self-healing-tool.js";
 import { sessionReplayToolDef } from "./session-replay-tool.js";
+import { shellCompletionTool, shellCompletionToolDefinition } from "./shell-completion-tool.js";
 import { singularityTool } from "./singularity-tool.js";
 import { stuckTool } from "./stuck-tool.js";
 import { syntheticTaskGenToolDef } from "./synthetic-task-gen-tool.js";
@@ -175,6 +176,7 @@ export const metaTools: AgentTool[] = [
 	conventionsToolDefinition,
 	notificationsToolDefinition,
 	reasoningModelToolDefinition,
+	shellCompletionToolDefinition,
 ];
 
 /**

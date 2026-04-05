@@ -887,3 +887,14 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Reasoning content parsing — Extract reasoning from tagged output
 - [x] Custom model support — Add custom reasoning model configurations
 - [x] Statistics tracking — Track models by provider, by setting, active configuration
+
+## Phase 90: Shell Tab Completion Generation (Aider Pattern)
+- [x] ShellCompletionGenerator module — Generate shell tab completion scripts for bash, zsh, and fish
+- [x] shellCompletion tool — Tool for generating and managing completion scripts
+- [x] Bash completion — Generate bash completion script with options and arguments
+- [x] Zsh completion — Generate zsh completion script with descriptions
+- [x] Fish completion — Generate fish completion script
+- [x] Install command — Install completions to appropriate shell directories
+- [x] Installation instructions — Get step-by-step installation instructions
+- [x] Auto-detect shell — Detect current shell from $SHELL environment
+- [x] Statistics tracking — Track generations and installations by shell type

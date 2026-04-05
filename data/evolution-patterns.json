@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,19 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 108,
+      "sampleSize": 109,
       "examples": [
+        {
+          "taskDescription": "Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts",
           "date": "2026-04-05",
@@ -238,20 +249,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts",
-          "date": "2026-04-05",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "time-pattern-quick",
@@ -300,7 +300,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -316,8 +316,19 @@
       "firstTryRate": 90,
       "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 39,
+      "sampleSize": 40,
       "examples": [
+        {
+          "taskDescription": "Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts",
           "date": "2026-04-05",
@@ -339,20 +350,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts",
-          "date": "2026-04-05",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     },
     {
       "id": "task-type-reliability",
@@ -398,9 +398,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-05T05:59:28.981Z"
+      "lastUpdated": "2026-04-05T07:29:26.192Z"
     }
   ],
-  "lastUpdated": "2026-04-05T05:59:28.982Z",
-  "sessionCount": 118
+  "lastUpdated": "2026-04-05T07:29:26.192Z",
+  "sessionCount": 119
 }

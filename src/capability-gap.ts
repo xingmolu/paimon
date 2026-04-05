@@ -432,6 +432,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "shell-completions",
+		source: "aider",
+		category: "cli",
+		description:
+			"Shell tab completion generation for bash, zsh, and fish - generates completion scripts with options, commands, file paths, installs to appropriate directories, provides installation instructions",
+		implementationStatus: "implemented",
+		priority: 7,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;
