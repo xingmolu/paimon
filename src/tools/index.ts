@@ -19,6 +19,7 @@ import { assessTool } from "./assess-tool.js";
 import { autoInvokeTool } from "./auto-invoke-tool.js";
 import { benchmarkTool } from "./benchmark-tool.js";
 import { browserUIToolDefinition } from "./browser-ui-tool.js";
+import { contextIdentifierTool } from "./context-identifier-tool.js";
 import { editFormatTool } from "./edit-format-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
@@ -187,6 +188,7 @@ export const metaTools: AgentTool[] = [
 	browserUIToolDefinition,
 	modelAliasesToolDefinition,
 	editFormatTool,
+	contextIdentifierTool,
 ];
 
 /**

@@ -486,6 +486,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "context-identifier",
+		source: "aider",
+		category: "context",
+		description:
+			"Context identifier for automatically identifying which files need to be edited for a given request - analyzes task descriptions, extracts keywords and symbols, calculates file relevance scores, suggests primary/secondary/reference files, improves context gathering efficiency",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

@@ -933,3 +933,14 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Health check endpoint — /health endpoint for monitoring
 - [x] Sessions API — /api/sessions endpoint for session info
 - [x] Competitor pattern added to capability-gap.ts
+
+## Phase 94: Context Identifier (Aider Pattern)
+- [x] ContextIdentifierManager module — Automatically identify which files need to be edited for a given request
+- [x] context tool — Tool for context identification (analyze, suggest, related, symbols, stats, config, enable, disable, clear, reset, help)
+- [x] Task analysis — Extract keywords and patterns from task descriptions
+- [x] File relevance scoring — Calculate relevance based on keywords, symbols, and task types
+- [x] Symbol extraction — Extract class/function/interface definitions from source files
+- [x] Related files discovery — Find files that share symbols with target file
+- [x] File suggestions — Suggest files based on task context with confidence scoring
+- [x] Multiple file types — Support TypeScript, JavaScript, Python, Rust, Go symbol extraction
+- [x] Competitor pattern added to capability-gap.ts
