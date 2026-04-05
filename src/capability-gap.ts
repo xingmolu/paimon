@@ -459,6 +459,24 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "browser-ui",
+		source: "aider",
+		category: "web-interface",
+		description:
+			"Browser UI for web-based evolution interface with Express.js server, WebSocket for real-time communication, static file serving, session management, and streaming responses - enables running evolution in browser with --browser flag",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
+	{
+		name: "model-aliases",
+		source: "aider",
+		category: "models",
+		description:
+			"Model aliases for defining shorthand names for frequently used models - create aliases like 'fast:gpt-4o-mini' and use them for quick model switching, supports YAML/JSON config files, command-line definitions, in-chat switching, team-shared configurations",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

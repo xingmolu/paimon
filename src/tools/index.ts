@@ -18,6 +18,7 @@ import { agentBuilderTool } from "./agent-builder-tool.js";
 import { assessTool } from "./assess-tool.js";
 import { autoInvokeTool } from "./auto-invoke-tool.js";
 import { benchmarkTool } from "./benchmark-tool.js";
+import { browserUIToolDefinition } from "./browser-ui-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
 import { capabilityGapToolDef } from "./capability-gap-tool.js";
@@ -54,6 +55,7 @@ import { getLearningTransferManager, learningTransferToolDef } from "./learning-
 import { lintingToolWrapper } from "./linting-tool.js";
 import { mcpTool } from "./mcp-tool.js";
 import { metricsTool } from "./metrics-tool.js";
+import { modelAliasesToolDefinition } from "./model-aliases-tool.js";
 import { modelMigrationToolDefinition } from "./model-migration-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { multiFileContextTool } from "./multi-file-context-tool.js";
@@ -181,6 +183,8 @@ export const metaTools: AgentTool[] = [
 	shellCompletionToolDefinition,
 	chatModesTool,
 	lintingToolWrapper,
+	browserUIToolDefinition,
+	modelAliasesToolDefinition,
 ];
 
 /**
@@ -995,3 +999,17 @@ export type {
 	ChatModesStats,
 	ChatModesManagerConfig,
 } from "../chat-modes.js";
+
+// Model Aliases exports
+export { modelAliasesToolDefinition } from "./model-aliases-tool.js";
+export {
+	getModelAliasManager,
+	ModelAliasManager,
+	resetModelAliasManager,
+} from "../model-aliases.js";
+export type {
+	ModelAlias,
+	ModelAliasConfig,
+	ModelAliasStats,
+	AliasResolutionResult,
+} from "../model-aliases.js";

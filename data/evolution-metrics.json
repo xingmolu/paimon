@@ -18,13 +18,13 @@
         "trend": "up"
       }
     ],
-    "weeklyAverage": 94.16666666666667,
+    "weeklyAverage": 94.21487603305785,
     "improvement": 100
   },
   "time": {
-    "averageMinutes": 16.516666666666666,
+    "averageMinutes": 16.50413223140496,
     "byTaskType": {
-      "capability": 17.26605504587156,
+      "capability": 17.245454545454546,
       "-----------": 0,
       "reliability": 10
     },
@@ -41,7 +41,7 @@
       },
       {
         "date": "2026-W15",
-        "value": 18.75,
+        "value": 18,
         "trend": "down"
       }
     ],
@@ -49,9 +49,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 76,
+    "totalErrors": 77,
     "byType": {
-      "lint (fixed)": 44,
+      "lint (fixed)": 45,
       "--------": 1,
       "TS (fixed), lint (fixed)": 5,
       "lint (fixed), test (fixed)": 7,
@@ -62,6 +62,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\"",
       "------: -------- in \"-----------------\"",
       "2026-04-05: lint (fixed) in \"Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts\"",
@@ -70,8 +71,7 @@
       "2026-04-04: lint (fixed) in \"MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Cache Warming (Aider Pattern) - CacheWarmer module for keeping prompt cache alive during long sessions, cacheWarmer tool with 12 actions (start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help), background warming thread with configurable intervals (default 5 min), cache hit token tracking, cost savings estimation (~90% cheaper on cache hits), manual ping support, pause/resume sessions, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: lint (fixed) in \"Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: TS (fixed), lint (fixed) in \"Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts\""
+      "2026-04-04: lint (fixed) in \"Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts\""
     ],
     "points": [
       {
@@ -86,7 +86,7 @@
       },
       {
         "date": "2026-W15",
-        "value": 4,
+        "value": 5,
         "trend": "up"
       }
     ],
@@ -101,16 +101,16 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 117,
-      "successRate": 94.87179487179486,
-      "averageTime": 16.811965811965813,
+      "usageCount": 118,
+      "successRate": 94.91525423728814,
+      "averageTime": 16.796610169491526,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 41,
-      "successRate": 90.2439024390244,
-      "averageTime": 19.26829268292683,
+      "usageCount": 42,
+      "successRate": 90.47619047619048,
+      "averageTime": 19.166666666666668,
       "trend": "improving"
     },
     {
@@ -190,17 +190,17 @@
       },
       {
         "date": "2026-W15",
-        "value": 2
+        "value": 2.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 109,
-    "highImpactCount": 106,
-    "highImpactPercentage": 97.24770642201835
+    "totalCapabilities": 110,
+    "highImpactCount": 107,
+    "highImpactPercentage": 97.27272727272728
   },
-  "lastUpdated": "2026-04-05T07:56:03.329Z",
-  "iterationsAnalyzed": 120
+  "lastUpdated": "2026-04-05T09:31:01.008Z",
+  "iterationsAnalyzed": 121
 }

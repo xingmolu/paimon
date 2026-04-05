@@ -921,3 +921,15 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Linter management — Add, remove, enable, disable custom linters
 - [x] Statistics tracking — Track linting runs, errors, fixes by linter and language
 - [x] Competitor pattern added to capability-gap.ts
+
+## Phase 93: Browser UI (Aider Pattern)
+- [x] BrowserUIManager module — Manage web-based evolution interface with HTTP server
+- [x] browserUI tool — Tool for managing browser UI (start, stop, status, sessions, session, config, enable, disable, stats, reset, help)
+- [x] HTTP server — Built-in node:http server for web interface (no Express dependency)
+- [x] WebSocket support — Real-time communication using ws package
+- [x] Static file serving — Serve HTML/CSS/JS from ~/.paimon/browser-ui/
+- [x] Default UI — Auto-generated chat interface with Paimon branding
+- [x] Session management — Track browser sessions with messages and status
+- [x] Health check endpoint — /health endpoint for monitoring
+- [x] Sessions API — /api/sessions endpoint for session info
+- [x] Competitor pattern added to capability-gap.ts
