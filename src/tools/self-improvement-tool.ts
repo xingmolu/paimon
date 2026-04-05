@@ -46,7 +46,10 @@ interface ToolResult {
 /**
  * Handle self-improvement tool actions.
  */
-async function handleAction(action: SelfImprovementAction, params: Record<string, unknown>): Promise<ToolResult> {
+async function handleAction(
+	action: SelfImprovementAction,
+	params: Record<string, unknown>,
+): Promise<ToolResult> {
 	const engine = getSelfImprovementEngine();
 
 	switch (action) {
@@ -174,16 +177,24 @@ selfImprovement({action: 'accept', id: 'pattern-xxx'})
 selfImprovement({action: 'stats'})`,
 	parameters: Type.Object({
 		action: Type.String({
-			description: "Action to perform: scan, suggestions, suggestion, accept, dismiss, clear-dismissed, stats, config, enable, disable, reset",
+			description:
+				"Action to perform: scan, suggestions, suggestion, accept, dismiss, clear-dismissed, stats, config, enable, disable, reset",
 		}),
-		rootDir: Type.Optional(Type.String({ description: "Root directory to scan (for scan action)" })),
-		id: Type.Optional(Type.String({ description: "Suggestion ID (for suggestion, accept, dismiss actions)" })),
+		rootDir: Type.Optional(
+			Type.String({ description: "Root directory to scan (for scan action)" }),
+		),
+		id: Type.Optional(
+			Type.String({ description: "Suggestion ID (for suggestion, accept, dismiss actions)" }),
+		),
 		category: Type.Optional(
 			Type.String({
-				description: "Filter by category: code-quality, performance, architecture, capability, reliability, documentation, testing, security",
+				description:
+					"Filter by category: code-quality, performance, architecture, capability, reliability, documentation, testing, security",
 			}),
 		),
-		priority: Type.Optional(Type.String({ description: "Filter by priority: critical, high, medium, low" })),
+		priority: Type.Optional(
+			Type.String({ description: "Filter by priority: critical, high, medium, low" }),
+		),
 	}),
 	execute: async (_toolCallId: string, params: unknown): Promise<AgentToolResult<unknown>> => {
 		const typedParams = params as Record<string, unknown>;
@@ -199,7 +210,7 @@ selfImprovement({action: 'stats'})`,
 		}
 
 		if (result.suggestion) {
-			output += `\n\n### Suggestion Details\n`;
+			output += "\n\n### Suggestion Details\n";
 			output += `- **ID:** ${result.suggestion.id}\n`;
 			output += `- **Category:** ${result.suggestion.category}\n`;
 			output += `- **Priority:** ${result.suggestion.priority}\n`;
@@ -214,7 +225,7 @@ selfImprovement({action: 'stats'})`,
 		}
 
 		if (result.stats) {
-			output += "\n\n" + engine.formatStats(result.stats);
+			output += `\n\n${engine.formatStats(result.stats)}`;
 		}
 
 		if (result.count !== undefined) {

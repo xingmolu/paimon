@@ -7,10 +7,10 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import {
+	EditFormatManager,
 	type EditFormatType,
 	type EditOperation,
 	getEditFormatManager,
-	EditFormatManager,
 } from "../edit-format.js";
 
 type EditFormatAction =
@@ -100,11 +100,7 @@ editFormat({action: 'recommend', model: 'claude-3.7-sonnet'})
 		operation: Type.Optional(
 			Type.Object({
 				filePath: Type.String(),
-				action: Type.Union([
-					Type.Literal("create"),
-					Type.Literal("edit"),
-					Type.Literal("delete"),
-				]),
+				action: Type.Union([Type.Literal("create"), Type.Literal("edit"), Type.Literal("delete")]),
 				content: Type.Optional(Type.String()),
 				oldContent: Type.Optional(Type.String()),
 				newContent: Type.Optional(Type.String()),
@@ -159,9 +155,7 @@ editFormat({action: 'recommend', model: 'claude-3.7-sonnet'})
 					result = {
 						success,
 						currentFormat: manager.getCurrentFormat(),
-						message: success
-							? `Format set to ${format}`
-							: `Failed to set format to ${format}`,
+						message: success ? `Format set to ${format}` : `Failed to set format to ${format}`,
 					};
 				}
 				break;
@@ -212,8 +206,7 @@ editFormat({action: 'recommend', model: 'claude-3.7-sonnet'})
 			case "convert": {
 				if (!operation || !fromFormat || !toFormat) {
 					result = {
-						error:
-							"Operation, fromFormat, and toFormat parameters required for convert action",
+						error: "Operation, fromFormat, and toFormat parameters required for convert action",
 					};
 				} else {
 					const convertResult = manager.convertEdit(operation, fromFormat, toFormat);

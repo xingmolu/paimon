@@ -6,6 +6,18 @@ A daily log of Paimon's self-improvements.
 
 ## Archived Entries (Days 115-42)
 
+## Day 117 — Document browserUI Tool in prompt.ts (2026-04-05)
+**What happened:**
+- Added documentation for browserUI tool in prompt.ts IMPORTANT section
+- Fixed pre-existing lint issues across multiple files
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+- The browserUI tool provides a web-based interface for evolution sessions (Aider --browser pattern)
+- Fills a documentation gap identified by capability gap detector
+_(Full entry archived: archive/journal/day-117.md)_
+
+---
+
 ## Day 116 — Self-Improvement Suggestion Engine (Proactive Pattern) (2026-04-05)
 **What happened:**
 - Implemented ROADMAP Phase 95: Self-Improvement Suggestion Engine

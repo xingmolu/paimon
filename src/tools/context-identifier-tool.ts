@@ -9,9 +9,9 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import {
 	type ContextAnalysis,
-	type FileSuggestion,
 	type ContextIdentifierConfig,
 	type ContextIdentifierStats,
+	type FileSuggestion,
 	getContextIdentifierManager,
 	resetContextIdentifierInstance,
 } from "../context-identifier.js";
@@ -105,7 +105,9 @@ function formatAnalysis(analysis: ContextAnalysis): string {
 			lines.push("");
 		}
 	} else {
-		lines.push("No relevant files found. Consider providing more context in the task description.\n");
+		lines.push(
+			"No relevant files found. Consider providing more context in the task description.\n",
+		);
 	}
 
 	lines.push(`### Reasoning\n${analysis.reasoning}`);
@@ -130,10 +132,7 @@ function formatSuggestions(suggestions: FileSuggestion[]): string {
 	return lines.join("\n");
 }
 
-async function executeContextIdentifierTool(
-	_toolCallId: string,
-	params: unknown,
-): Promise<string> {
+async function executeContextIdentifierTool(_toolCallId: string, params: unknown): Promise<string> {
 	const typedParams = params as ContextIdentifierToolParams;
 	const manager = getContextIdentifierManager();
 

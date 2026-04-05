@@ -413,7 +413,7 @@ export class EditFormatManager {
 					result = this.toDiffFormat(operation);
 					break;
 				case "diff-fenced":
-					result = "```diff\n" + this.toDiffFormat(operation) + "\n```";
+					result = `\`\`\`diff\n${this.toDiffFormat(operation)}\n\`\`\``;
 					break;
 				case "whole":
 					result = this.toWholeFormat(operation);
@@ -447,7 +447,7 @@ export class EditFormatManager {
 		const lines: string[] = [];
 
 		if (operation.action === "create") {
-			lines.push(`--- /dev/null`);
+			lines.push("--- /dev/null");
 			lines.push(`+++ b/${operation.filePath}`);
 			if (operation.content) {
 				const contentLines = operation.content.split("\n");
@@ -458,8 +458,8 @@ export class EditFormatManager {
 			}
 		} else if (operation.action === "delete") {
 			lines.push(`--- a/${operation.filePath}`);
-			lines.push(`+++ /dev/null`);
-			lines.push(`@@ -1,0 +0,0 @@`);
+			lines.push("+++ /dev/null");
+			lines.push("@@ -1,0 +0,0 @@");
 		} else if (operation.action === "edit") {
 			lines.push(`--- a/${operation.filePath}`);
 			lines.push(`+++ b/${operation.filePath}`);
@@ -560,7 +560,7 @@ export class EditFormatManager {
 	}
 
 	// Record an edit for statistics
-	public recordEdit(format: EditFormatType, model?: string, success: boolean = true): void {
+	public recordEdit(format: EditFormatType, model?: string, success = true): void {
 		this.stats.totalEdits++;
 		this.stats.byFormat[format] = (this.stats.byFormat[format] || 0) + 1;
 

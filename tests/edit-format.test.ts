@@ -2,12 +2,12 @@
  * Tests for Edit Format Support Module
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	EditFormatManager,
-	getEditFormatManager,
 	type EditFormatType,
 	type EditOperation,
+	getEditFormatManager,
 } from "../src/edit-format.js";
 import { editFormatTool } from "../src/tools/edit-format-tool.js";
 
@@ -237,11 +237,7 @@ describe("EditFormatManager", () => {
 				content: "content",
 			};
 
-			const result = manager.convertEdit(
-				operation,
-				"invalid" as EditFormatType,
-				"diff",
-			);
+			const result = manager.convertEdit(operation, "invalid" as EditFormatType, "diff");
 			expect(result.success).toBe(false);
 			expect(result.error).toBeDefined();
 		});
@@ -255,8 +251,8 @@ describe("EditFormatManager", () => {
 
 			const stats = manager.getStats();
 			expect(stats.totalEdits).toBe(3);
-			expect(stats.byFormat["diff"]).toBe(2);
-			expect(stats.byFormat["patch"]).toBe(1);
+			expect(stats.byFormat.diff).toBe(2);
+			expect(stats.byFormat.patch).toBe(1);
 			expect(stats.byModel["claude-3.7-sonnet"]).toBe(2);
 			expect(stats.byModel["gpt-4.1"]).toBe(1);
 		});
@@ -323,7 +319,10 @@ describe("editFormatTool", () => {
 		});
 
 		it("should detect format for model", async () => {
-			const result = await editFormatTool.execute("test-id", { action: "detect", model: "gpt-4.1" });
+			const result = await editFormatTool.execute("test-id", {
+				action: "detect",
+				model: "gpt-4.1",
+			});
 			expect(result.details).toHaveProperty("detectedFormat", "patch");
 		});
 

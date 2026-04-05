@@ -53,7 +53,12 @@ export interface ImprovementSuggestion {
 	impact: string;
 	effort: "simple" | "moderate" | "complex" | "very-complex";
 	confidence: number; // 0-100
-	source: "code-analysis" | "competitor-pattern" | "usage-analytics" | "capability-gap" | "best-practice";
+	source:
+		| "code-analysis"
+		| "competitor-pattern"
+		| "usage-analytics"
+		| "capability-gap"
+		| "best-practice";
 	timestamp: string;
 }
 
@@ -333,7 +338,7 @@ export class SelfImprovementEngine {
 	/**
 	 * Scan codebase for improvement suggestions.
 	 */
-	async scanCodebase(rootDir: string = "."): Promise<ImprovementSuggestion[]> {
+	async scanCodebase(rootDir = "."): Promise<ImprovementSuggestion[]> {
 		if (!this.config.enabled) return [];
 
 		const suggestions: ImprovementSuggestion[] = [];
@@ -396,7 +401,9 @@ export class SelfImprovementEngine {
 				} else if (entry.isFile() && fullPath.endsWith(".ts")) {
 					// Check exclude patterns
 					const relativePath = path.relative(rootDir, fullPath);
-					if (this.config.excludePatterns.some((p) => relativePath.includes(p.replace("**/", "")))) {
+					if (
+						this.config.excludePatterns.some((p) => relativePath.includes(p.replace("**/", "")))
+					) {
 						continue;
 					}
 
@@ -421,10 +428,11 @@ export class SelfImprovementEngine {
 			const allPatterns = [...getCodePatterns(), ...getSecurityPatterns()];
 
 			for (const pattern of allPatterns) {
-				let match: RegExpExecArray | null;
+				let match: RegExpExecArray | null = null;
 				const regex = new RegExp(pattern.pattern.source, pattern.pattern.flags);
 
-				while ((match = regex.exec(content)) !== null) {
+				match = regex.exec(content);
+				while (match !== null) {
 					// Find line number
 					const lineNumber = content.substring(0, match.index).split("\n").length;
 
@@ -445,6 +453,8 @@ export class SelfImprovementEngine {
 					};
 
 					suggestions.push(suggestion);
+
+					match = regex.exec(content);
 				}
 			}
 		} catch {
@@ -468,7 +478,8 @@ export class SelfImprovementEngine {
 				const suggestion: ImprovementSuggestion = {
 					id: `gap-${gap.id}`,
 					category: "capability",
-					priority: gap.severity === "critical" ? "critical" : gap.severity === "high" ? "high" : "medium",
+					priority:
+						gap.severity === "critical" ? "critical" : gap.severity === "high" ? "high" : "medium",
 					title: `Missing capability: ${gap.type}`,
 					description: gap.description,
 					impact: "Fills identified capability gap",
@@ -550,7 +561,9 @@ export class SelfImprovementEngine {
 	 * Get all suggestions.
 	 */
 	getSuggestions(category?: ImprovementCategory, priority?: Priority): ImprovementSuggestion[] {
-		let filtered = Array.from(this.suggestions.values()).filter((s) => !this.dismissedIds.has(s.id));
+		let filtered = Array.from(this.suggestions.values()).filter(
+			(s) => !this.dismissedIds.has(s.id),
+		);
 
 		if (category) {
 			filtered = filtered.filter((s) => s.category === category);
@@ -640,7 +653,8 @@ export class SelfImprovementEngine {
 			totalConfidence += s.confidence;
 		}
 
-		this.stats.averageConfidence = suggestions.length > 0 ? Math.round(totalConfidence / suggestions.length) : 0;
+		this.stats.averageConfidence =
+			suggestions.length > 0 ? Math.round(totalConfidence / suggestions.length) : 0;
 	}
 
 	/**
@@ -660,7 +674,10 @@ export class SelfImprovementEngine {
 	/**
 	 * Update configuration.
 	 */
-	updateConfig(updates: Partial<SuggestionEngineConfig>): { success: boolean; config: SuggestionEngineConfig } {
+	updateConfig(updates: Partial<SuggestionEngineConfig>): {
+		success: boolean;
+		config: SuggestionEngineConfig;
+	} {
 		this.config = { ...this.config, ...updates };
 		this.saveData();
 		return { success: true, config: this.config };

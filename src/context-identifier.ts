@@ -9,9 +9,9 @@
  * https://aider.chat/docs/usage/commands.html#context
  */
 
+import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execSync } from "node:child_process";
 
 // Types
 export interface FileSuggestion {
@@ -93,8 +93,7 @@ const TASK_PATTERNS: Record<string, string[]> = {
 const SYMBOL_PATTERNS: Record<string, RegExp> = {
 	typescript:
 		/(?:export\s+)?(?:class|function|interface|type|const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
-	javascript:
-		/(?:export\s+)?(?:class|function|const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
+	javascript: /(?:export\s+)?(?:class|function|const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
 	python: /(?:class|def)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
 	rust: /(?:pub\s+)?(?:struct|enum|fn|trait|impl)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
 	go: /(?:func|type|struct|interface)\s+([A-Za-z_][A-Za-z0-9_]*)/g,
@@ -235,7 +234,7 @@ export class ContextIdentifierManager {
 	// Extract symbols from a file
 	public extractSymbols(filePath: string): SymbolInfo[] {
 		if (this.symbolCache.has(filePath)) {
-			return this.symbolCache.get(filePath)!;
+			return this.symbolCache.get(filePath) ?? [];
 		}
 
 		const symbols: SymbolInfo[] = [];
@@ -258,10 +257,11 @@ export class ContextIdentifierManager {
 			this.fileContentCache.set(filePath, content);
 
 			const lines = content.split("\n");
-			let match;
+			let match: RegExpExecArray | null = null;
 			const patternCopy = new RegExp(pattern.source, pattern.flags);
 
-			while ((match = patternCopy.exec(content)) !== null) {
+			match = patternCopy.exec(content);
+			while (match !== null) {
 				const symbolName = match[1];
 				const position = match.index;
 				const lineNumber = content.substring(0, position).split("\n").length;
@@ -272,8 +272,7 @@ export class ContextIdentifierManager {
 				if (matchText.includes("class ")) type = "class";
 				else if (matchText.includes("interface ")) type = "interface";
 				else if (matchText.includes("type ")) type = "type";
-				else if (matchText.includes("const ") || matchText.includes("let "))
-					type = "variable";
+				else if (matchText.includes("const ") || matchText.includes("let ")) type = "variable";
 
 				symbols.push({
 					name: symbolName,
@@ -281,6 +280,8 @@ export class ContextIdentifierManager {
 					file: filePath,
 					line: lineNumber,
 				});
+
+				match = patternCopy.exec(content);
 			}
 		} catch {
 			// Skip files we can't read
@@ -291,11 +292,7 @@ export class ContextIdentifierManager {
 	}
 
 	// Calculate relevance score for a file
-	private calculateRelevance(
-		filePath: string,
-		keywords: string[],
-		taskTypes: string[],
-	): number {
+	private calculateRelevance(filePath: string, keywords: string[], taskTypes: string[]): number {
 		let score = 0;
 		const lowerPath = filePath.toLowerCase();
 
@@ -365,8 +362,7 @@ export class ContextIdentifierManager {
 				const symbols = this.extractSymbols(file)
 					.filter((s) =>
 						keywords.some(
-							(k) =>
-								s.name.toLowerCase().includes(k) || k.includes(s.name.toLowerCase()),
+							(k) => s.name.toLowerCase().includes(k) || k.includes(s.name.toLowerCase()),
 						),
 					)
 					.slice(0, 5);
@@ -390,8 +386,7 @@ export class ContextIdentifierManager {
 
 		// Calculate overall confidence
 		const avgRelevance =
-			topSuggestions.reduce((sum, s) => sum + s.relevance, 0) /
-			(topSuggestions.length || 1);
+			topSuggestions.reduce((sum, s) => sum + s.relevance, 0) / (topSuggestions.length || 1);
 		const confidence = Math.min(avgRelevance * (topSuggestions.length / 3), 1);
 
 		// Update stats
@@ -420,11 +415,7 @@ export class ContextIdentifierManager {
 		};
 	}
 
-	private generateReason(
-		file: string,
-		keywords: string[],
-		taskTypes: string[],
-	): string {
+	private generateReason(file: string, keywords: string[], taskTypes: string[]): string {
 		const reasons: string[] = [];
 		const lowerPath = file.toLowerCase();
 
@@ -471,7 +462,7 @@ export class ContextIdentifierManager {
 			parts.push("Low confidence: limited matches, may need manual file selection");
 		}
 
-		return parts.join(". ") + ".";
+		return `${parts.join(". ")}.`;
 	}
 
 	// Get suggestions for a specific file
