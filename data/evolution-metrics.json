@@ -18,14 +18,14 @@
         "trend": "up"
       }
     ],
-    "weeklyAverage": 94.11764705882352,
+    "weeklyAverage": 94.16666666666667,
     "improvement": 100
   },
   "time": {
-    "averageMinutes": 16.529411764705884,
+    "averageMinutes": 16.516666666666666,
     "byTaskType": {
+      "capability": 17.26605504587156,
       "-----------": 0,
-      "capability": 17.287037037037038,
       "reliability": 10
     },
     "points": [
@@ -41,7 +41,7 @@
       },
       {
         "date": "2026-W15",
-        "value": 20,
+        "value": 18.75,
         "trend": "down"
       }
     ],
@@ -49,10 +49,10 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 75,
+    "totalErrors": 76,
     "byType": {
+      "lint (fixed)": 44,
       "--------": 1,
-      "lint (fixed)": 43,
       "TS (fixed), lint (fixed)": 5,
       "lint (fixed), test (fixed)": 7,
       "lint (fixed), TS (fixed)": 2,
@@ -62,6 +62,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\"",
       "------: -------- in \"-----------------\"",
       "2026-04-05: lint (fixed) in \"Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Coding Conventions (Aider Pattern) - CodingConventionsManager module for managing coding conventions, conventions tool with 14 actions (load, list, get, add, remove, enable, disable, apply, status, stats, config, reset, clear, help), CONVENTIONS.md and .conventions/ directory support, 10 convention categories (libraries, types, style, patterns, testing, documentation, security, performance, accessibility, custom), 6 default conventions (TypeScript types, async/await, error handling, naming, imports, documentation), SessionStart hook for auto-loading conventions, competitor pattern added to capability-gap.ts\"",
@@ -70,8 +71,7 @@
       "2026-04-04: lint (fixed) in \"Cache Warming (Aider Pattern) - CacheWarmer module for keeping prompt cache alive during long sessions, cacheWarmer tool with 12 actions (start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help), background warming thread with configurable intervals (default 5 min), cache hit token tracking, cost savings estimation (~90% cheaper on cache hits), manual ping support, pause/resume sessions, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Integration Manager (OpenHands Cloud Pattern) - IntegrationManager module for external integrations, integration tool with 19 actions (add, get, list, update, remove, enable, disable, test, send, events, clear-events, stats, config, set-config, enable-all, disable-all, reset, types, help), 6 integration types (Slack, Jira, Linear, GitHub, Discord, Webhook), 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone), also documented imageContext tool, competitor pattern added to capability-gap.ts\"",
       "2026-04-04: lint (fixed) in \"Image Context Support (Aider Pattern) - ImageContextManager module for managing images and web pages for visual context in code generation, imageContext tool with 22 actions (add, paste, get, list, remove, clear-images, scrape, get-page, list-pages, remove-page, clear-pages, vision-models, check-vision, format-images, format-pages, data-url, stats, config, enable, disable, clear, reset, context-size, help), vision-capable model detection (GPT-4o, Claude 3.x, Gemini), base64 encoding, web page scraping for documentation, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: TS (fixed), lint (fixed) in \"Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: lint (fixed) in \"Git Workflow Automation (Claude Code commit-commands Pattern) - GitWorkflowManager module for streamlined git operations, gitWorkflow tool with 9 actions (commit, commit-push-pr, clean-gone, status, branch-status, branches, pr-status, push, create-branch), automatic branch creation, PR description generation from commits, stale branch cleanup, branch status tracking (ahead/behind/gone/worktree), GitHub CLI integration, competitor pattern added to capability-gap.ts\""
+      "2026-04-04: TS (fixed), lint (fixed) in \"Conversation Sharing (OpenHands Pattern) - ConversationSharingManager module for exporting, importing, and sharing evolution sessions, conversationSharing tool with 15 actions (create, export, import, share, get, list, delete, formats, stats, config, enable, disable, clear, reset, help), 4 export formats (JSON, Markdown, HTML, CSV), session anonymization for privacy, share link generation, competitor pattern added to capability-gap.ts\""
     ],
     "points": [
       {
@@ -86,7 +86,7 @@
       },
       {
         "date": "2026-W15",
-        "value": 3,
+        "value": 4,
         "trend": "up"
       }
     ],
@@ -101,16 +101,16 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 116,
-      "successRate": 94.82758620689656,
-      "averageTime": 16.82758620689655,
+      "usageCount": 117,
+      "successRate": 94.87179487179486,
+      "averageTime": 16.811965811965813,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 40,
-      "successRate": 90,
-      "averageTime": 19.375,
+      "usageCount": 41,
+      "successRate": 90.2439024390244,
+      "averageTime": 19.26829268292683,
       "trend": "improving"
     },
     {
@@ -190,17 +190,17 @@
       },
       {
         "date": "2026-W15",
-        "value": 1.5
+        "value": 2
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 108,
-    "highImpactCount": 105,
-    "highImpactPercentage": 97.22222222222221
+    "totalCapabilities": 109,
+    "highImpactCount": 106,
+    "highImpactPercentage": 97.24770642201835
   },
-  "lastUpdated": "2026-04-05T07:29:25.999Z",
-  "iterationsAnalyzed": 119
+  "lastUpdated": "2026-04-05T07:56:03.329Z",
+  "iterationsAnalyzed": 120
 }

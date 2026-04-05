@@ -441,6 +441,24 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 7,
 	},
+	{
+		name: "chat-modes",
+		source: "aider",
+		category: "interaction",
+		description:
+			"Chat modes for different interaction styles - code mode (make changes), ask mode (discuss without changes), architect mode (plan then implement with 2-model approach), help mode (usage/configuration). Supports ask/code workflow for bouncing between planning and implementation",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
+	{
+		name: "linting-testing-auto-fix",
+		source: "aider",
+		category: "quality",
+		description:
+			"Interactive linting with built-in linters for common languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix capabilities, per-language linter configuration, auto-lint after edits option, auto-fix strategies for common lint errors",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

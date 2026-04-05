@@ -898,3 +898,26 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Installation instructions — Get step-by-step installation instructions
 - [x] Auto-detect shell — Detect current shell from $SHELL environment
 - [x] Statistics tracking — Track generations and installations by shell type
+
+## Phase 91: Chat Modes (Aider Pattern)
+- [x] ChatModesManager module — Manage different interaction modes for the agent
+- [x] chatModes tool — Tool for managing chat modes (get, set, code, ask, architect, help, modes, workflow, stats, config, reset)
+- [x] Code mode — Make changes to code to satisfy requests (default)
+- [x] Ask mode — Discuss and answer questions without making changes
+- [x] Architect mode — Architect proposes changes, editor model implements (2-model approach)
+- [x] Help mode — Answer questions about usage, configuration, troubleshooting
+- [x] Mode indicator — Display current mode in prompt
+- [x] Ask/code workflow — Bounce between ask and code modes for better planning
+- [x] Mode-specific prompts — Different system prompt suffixes per mode
+- [x] Mode configuration — Track mode usage statistics and history
+
+## Phase 92: Interactive Linting with Auto-Fix (Aider Pattern)
+- [x] LintingManager module — Manage interactive linting with built-in linters
+- [x] linting tool — Tool for linting management (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help)
+- [x] Built-in linters — TypeScript (tsc, eslint), JavaScript (eslint), Python (pylint, mypy, ruff), Rust (cargo-clippy), Go (golangci-lint), JSON, YAML, Markdown
+- [x] Auto-fix capabilities — Automatic fixing of common lint errors
+- [x] Per-language configuration — Different linters for different file types
+- [x] Auto-fix patterns — Pattern-based fixes for trailing whitespace, unused vars, etc.
+- [x] Linter management — Add, remove, enable, disable custom linters
+- [x] Statistics tracking — Track linting runs, errors, fixes by linter and language
+- [x] Competitor pattern added to capability-gap.ts

@@ -21,6 +21,7 @@ import { benchmarkTool } from "./benchmark-tool.js";
 import { bugReportTool } from "./bug-report-tool.js";
 import { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
 import { capabilityGapToolDef } from "./capability-gap-tool.js";
+import { chatModesTool, chatModesToolDefinition, executeChatModes } from "./chat-modes-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
 import { getClipboardTool } from "./clipboard-tool.js";
 import { codeCompletionTool } from "./code-completion-tool.js";
@@ -50,6 +51,7 @@ import { interactiveApprovalTool } from "./interactive-approval-tool.js";
 import { journalTool } from "./journal-tool.js";
 import { learningOutputStyleTool } from "./learning-output-style-tool.js";
 import { getLearningTransferManager, learningTransferToolDef } from "./learning-transfer-tool.js";
+import { lintingToolWrapper } from "./linting-tool.js";
 import { mcpTool } from "./mcp-tool.js";
 import { metricsTool } from "./metrics-tool.js";
 import { modelMigrationToolDefinition } from "./model-migration-tool.js";
@@ -177,6 +179,8 @@ export const metaTools: AgentTool[] = [
 	notificationsToolDefinition,
 	reasoningModelToolDefinition,
 	shellCompletionToolDefinition,
+	chatModesTool,
+	lintingToolWrapper,
 ];
 
 /**
@@ -972,3 +976,22 @@ export type {
 	NotificationResult,
 	NotificationType,
 } from "../notification-manager.js";
+
+// Chat Modes exports
+export { chatModesToolDefinition, executeChatModes } from "./chat-modes-tool.js";
+export {
+	getChatModesManager,
+	ChatModesManager,
+	getCurrentMode,
+	setChatMode,
+	getModeSystemPromptSuffix,
+	modeAllowsFileChanges,
+	getModeIndicator,
+} from "../chat-modes.js";
+export type {
+	ChatMode,
+	ChatModeConfig,
+	ChatModesState,
+	ChatModesStats,
+	ChatModesManagerConfig,
+} from "../chat-modes.js";
