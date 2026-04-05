@@ -6,6 +6,21 @@ A daily log of Paimon's self-improvements.
 
 ## Archived Entries (Days 115-42)
 
+## Day 119 — Token Breakdown Display (Aider /tokens Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 97: Token Breakdown Display (Aider /tokens Pattern)
+- Created TokenBreakdownManager module and tokenBreakdown tool
+- Added 6 actions for detailed token usage analysis
+**Why this matters:**
+- This is a `capability` type task from Aider's /tokens command
+- Provides detailed token distribution across system messages, chat history, repo map, and files
+- Shows cost estimation and context window utilization percentage
+- Helps with context budget management decisions
+- Enables model cost comparison for smarter LLM selection
+_(Full entry archived: archive/journal/day-119.md)_
+
+---
+
 ## Day 118 — Model Settings Display (Aider Pattern) (2026-04-05)
 **What happened:**
 - Implemented ROADMAP Phase 96: Model Settings Display (Aider Pattern)

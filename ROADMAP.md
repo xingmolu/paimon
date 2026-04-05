@@ -968,3 +968,16 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Model listing — List all available models with provider filtering
 - [x] Provider support — OpenAI, Anthropic, DeepSeek, Google models with pricing
 - [x] Competitor pattern added to capability-gap.ts
+
+## Phase 97: Token Breakdown Display (Aider /tokens Pattern)
+- [x] TokenBreakdownManager module — Detailed token usage analysis and breakdown display
+- [x] tokenBreakdown tool — Tool for showing token distribution and cost analysis
+- [x] Token breakdown — Show tokens by system messages, chat history, repo map, and files
+- [x] Cost estimation — Calculate and display costs for each component
+- [x] Context window utilization — Show percentage of context window used with remaining tokens
+- [x] 7 actions — breakdown, summary, models, compare, cost, context, help
+- [x] Model comparison — Compare costs across models for given token count
+- [x] 15+ model configs — Context windows and pricing for GPT, Claude, DeepSeek models
+- [x] Utilization bar — Visual progress bar showing context usage
+- [x] Warning system — Warn when context window approaching/exceeding limits
+- [x] Competitor pattern added to capability-gap.ts

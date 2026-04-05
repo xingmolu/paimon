@@ -504,6 +504,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "token-breakdown",
+		source: "aider",
+		category: "tokens",
+		description:
+			"Token breakdown display for detailed token usage analysis - shows token distribution across system messages, chat history, repo map, and files with cost estimation, context window utilization, remaining tokens, model comparison, helps with context budget management decisions",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

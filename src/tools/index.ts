@@ -95,6 +95,7 @@ import { stuckTool } from "./stuck-tool.js";
 import { syntheticTaskGenToolDef } from "./synthetic-task-gen-tool.js";
 import { taskPredictorTool } from "./task-predictor-tool.js";
 import { taskTrackingTool } from "./task-tracking-tool.js";
+import { tokenBreakdownTool } from "./token-breakdown-tool.js";
 import { tokenTrackingTool } from "./token-tracking-tool.js";
 import { tomTool } from "./tom-tool.js";
 import { toolCacheTool } from "./tool-cache-tool.js";
@@ -193,6 +194,7 @@ export const metaTools: AgentTool[] = [
 	modelSettingsTool,
 	contextIdentifierTool,
 	selfImprovementTool,
+	tokenBreakdownTool,
 ];
 
 /**
@@ -251,6 +253,12 @@ export { benchmarkTool } from "./benchmark-tool.js";
 export { safetyGatesTool, getSafetyGatesForHook } from "./safety-gates-tool.js";
 export { multiAgentTool } from "./multi-agent-tool.js";
 export { tokenTrackingTool, getTokenTracker, resetTokenTracker } from "./token-tracking-tool.js";
+export {
+	tokenBreakdownTool,
+	getTokenBreakdownManager,
+	resetTokenBreakdownManager,
+	TokenBreakdownManager,
+} from "./token-breakdown-tool.js";
 export { toolCacheTool } from "./tool-cache-tool.js";
 export { journalTool } from "./journal-tool.js";
 export { contextBudgetTool, createContextBudgetTool } from "./context-budget-tool.js";

@@ -258,6 +258,7 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Scan for dangerous patterns with \`safetyGates({action: 'scan', content: '...'})\` before applying changes
 - Two-agent pattern with \`multiAgent({action: 'init'})\` for initializer + coder coordination (Claude Quickstart pattern)
 - Track tokens with \`tokenTracking({action: 'start', model: '...'})\`, \`tokenTracking({action: 'stats'})\` (Aider pattern)
+- Show detailed token breakdown with \`tokenBreakdown({action: 'breakdown', model: 'gpt-4o', files: ['src/agent.ts']})\` to see token distribution across system messages, chat history, repo map, and files with cost estimation and context window utilization. Use \`tokenBreakdown({action: 'summary', model: 'gpt-4o'})\` for quick summary, \`tokenBreakdown({action: 'models'})\` to list models with context windows and pricing, \`tokenBreakdown({action: 'compare', tokens: 10000})\` to compare costs across models (Aider /tokens pattern)
 - Manage cache with \`toolCache({action: 'stats'})\`, \`toolCache({action: 'clear'})\`
 - Manage journal with \`journal({action: 'stats'})\`, \`journal({action: 'truncate', maxEntries: 30})\`
 - Auto-fix errors with \`selfHealing({action: 'detect', errorContent: '...'})\`, \`selfHealing({action: 'auto-fix', errorContent: '...'})\` (OpenHands/Aider pattern)
