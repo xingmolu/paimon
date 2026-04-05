@@ -840,3 +840,15 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Server management — Add, remove, enable, disable, connect, disconnect servers
 - [x] Sample servers — Pre-configured sample MCP servers (filesystem, git, fetch, memory, time)
 - [x] Statistics tracking — Track tool calls, success rates, server statuses
+
+## Phase 86: Copy/Paste to Web Chat (Aider Pattern)
+- [x] ClipboardManager module — Manage clipboard context for working with LLM web chats
+- [x] clipboard tool — Tool for clipboard operations with 12 actions
+- [x] File tracking — Track files to include in context
+- [x] Context generation — Generate formatted code context for clipboard
+- [x] Paste parsing — Parse LLM web chat responses for code changes
+- [x] Edit application — Apply parsed edits to files (create, edit, delete)
+- [x] Copy/paste mode — Automatic clipboard sync for seamless workflow
+- [x] Platform support — macOS, Linux, Windows clipboard operations
+- [x] Repo map integration — Include repository structure in context
+- [x] Statistics tracking — Track copies, pastes, files copied, edits applied

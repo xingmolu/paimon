@@ -22,6 +22,7 @@ import { bugReportTool } from "./bug-report-tool.js";
 import { cacheWarmerToolDefinition } from "./cache-warmer-tool.js";
 import { capabilityGapToolDef } from "./capability-gap-tool.js";
 import { checkpointTool } from "./checkpoint-tool.js";
+import { getClipboardTool } from "./clipboard-tool.js";
 import { codeCompletionTool } from "./code-completion-tool.js";
 import { commitMsgTool } from "./commit-msg-tool.js";
 import { contextBudgetTool } from "./context-budget-tool.js";
@@ -167,6 +168,7 @@ export const metaTools: AgentTool[] = [
 	integrationTool,
 	cacheWarmerToolDefinition,
 	mcpTool,
+	getClipboardTool(),
 ];
 
 /**
@@ -907,6 +909,18 @@ export type {
 	CacheWarmingStats,
 	CacheWarmingSession,
 } from "../cache-warmer.js";
+export { getClipboardTool } from "./clipboard-tool.js";
+export {
+	ClipboardManager,
+	getClipboardManager,
+	resetClipboardManager,
+} from "../clipboard-manager.js";
+export type {
+	ClipboardContext,
+	ParsedEdit,
+	ClipboardConfig,
+	ClipboardStats,
+} from "../clipboard-manager.js";
 export { mcpTool } from "./mcp-tool.js";
 export {
 	getMCPClient,

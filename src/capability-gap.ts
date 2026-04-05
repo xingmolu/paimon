@@ -396,6 +396,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "clipboard-web-chat",
+		source: "aider",
+		category: "web-chat",
+		description:
+			"Copy/paste to web chat for working with LLM web interfaces when API access isn't available - copy code context to clipboard, paste into web LLM, parse and apply LLM responses, automatic clipboard watching mode",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;
