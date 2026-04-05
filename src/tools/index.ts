@@ -55,6 +55,7 @@ import { metricsTool } from "./metrics-tool.js";
 import { modelMigrationToolDefinition } from "./model-migration-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { multiFileContextTool } from "./multi-file-context-tool.js";
+import { notificationsToolDefinition } from "./notification-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternAutoApplyToolDef } from "./pattern-auto-apply-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
@@ -171,6 +172,7 @@ export const metaTools: AgentTool[] = [
 	mcpTool,
 	getClipboardTool(),
 	conventionsToolDefinition,
+	notificationsToolDefinition,
 ];
 
 /**
@@ -940,3 +942,17 @@ export type {
 	MCPServerStatus,
 	MCPClientConfig,
 } from "../mcp-client.js";
+
+// Notification Manager exports
+export { notificationsToolDefinition } from "./notification-tool.js";
+export {
+	getNotificationManager,
+	NotificationManager,
+	sendNotification,
+} from "../notification-manager.js";
+export type {
+	DesktopNotificationConfig,
+	NotificationStats,
+	NotificationResult,
+	NotificationType,
+} from "../notification-manager.js";

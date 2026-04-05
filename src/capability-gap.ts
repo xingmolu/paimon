@@ -414,6 +414,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "desktop-notifications",
+		source: "aider",
+		category: "notifications",
+		description:
+			"Desktop notifications for when the agent is waiting for input - cross-platform support (macOS terminal-notifier/applescript, Linux notify-send/zenity, Windows PowerShell), custom notification commands, remote notifications via Apprise (Slack, Discord, Pushbullet)",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

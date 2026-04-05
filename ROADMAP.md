@@ -863,3 +863,14 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] SessionStart hook — Auto-load conventions at session start
 - [x] Convention rules — Support examples, anti-examples, and severity levels
 - [x] Statistics tracking — Track conventions loaded, applications, issues found/fixed
+
+## Phase 88: Desktop Notifications (Aider Pattern)
+- [x] NotificationManager module — Manage desktop notifications for agent events
+- [x] notifications tool — Tool for notification management with 10 actions
+- [x] Cross-platform support — macOS (terminal-notifier, AppleScript), Linux (notify-send, zenity), Windows (PowerShell)
+- [x] Auto-detection — Automatically detect best notification method for platform
+- [x] Custom commands — Support custom notification commands with placeholders
+- [x] Remote notifications — Support Apprise for Slack, Discord, Pushbullet
+- [x] Notification types — complete, error, input, custom events
+- [x] Configuration — Sound, title, enabled/disabled per type
+- [x] Statistics tracking — Track notifications sent, success rate, by platform/type
