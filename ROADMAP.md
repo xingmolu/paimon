@@ -981,3 +981,11 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] Utilization bar — Visual progress bar showing context usage
 - [x] Warning system — Warn when context window approaching/exceeding limits
 - [x] Competitor pattern added to capability-gap.ts
+
+## Phase 98: OK Shortcut Command (Aider Pattern)
+- [x] OK action in chatModes tool — Quick way to accept proposed changes and proceed
+- [x] Automatic mode switch — Switches from ask to code mode when accepting
+- [x] Optional instructions — Accept changes with additional instructions
+- [x] Usage tracking — Track how often ok command is used
+- [x] Workflow improvement — Streamlines ask/code workflow with simple acceptance
+- [x] Competitor pattern added to capability-gap.ts

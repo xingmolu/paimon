@@ -38,6 +38,7 @@ const ChatModesActionSchema = Type.Union([
 	Type.Literal("stats"),
 	Type.Literal("config"),
 	Type.Literal("reset"),
+	Type.Literal("ok"),
 ]);
 
 const ChatModesParamsSchema = Type.Object({
@@ -52,6 +53,7 @@ const ChatModesParamsSchema = Type.Object({
 	),
 	reason: Type.Optional(Type.String()),
 	limit: Type.Optional(Type.Number()),
+	instructions: Type.Optional(Type.String()),
 });
 
 type ChatModesParams = Static<typeof ChatModesParamsSchema>;
@@ -68,6 +70,7 @@ Actions:
 - ask: Quick switch to ask mode (discuss without changes)
 - architect: Quick switch to architect mode (plan then implement)
 - help: Quick switch to help mode (usage/configuration help)
+- ok: Accept proposed changes and proceed with implementation (optional instructions)
 - modes: List all available modes with descriptions
 - workflow: Get workflow guidance for ask/code workflow
 - stats: View mode usage statistics
@@ -85,25 +88,28 @@ chatModes({action: 'get'})                    // Get current mode
 chatModes({action: 'set', mode: 'ask'})       // Set mode to ask
 chatModes({action: 'code'})                   // Quick switch to code mode
 chatModes({action: 'ask'})                    // Quick switch to ask mode
+chatModes({action: 'ok'})                     // Accept proposed changes, proceed
+chatModes({action: 'ok', instructions: 'also add tests'})  // With extra instructions
 chatModes({action: 'workflow'})               // Get workflow guidance
 
 Ask/Code Workflow:
 A recommended workflow is to bounce between ask and code modes:
 1. Use ask mode to discuss and plan
 2. Switch to code mode to implement
+3. Or use 'ok' action to quickly accept and proceed
 
 Example:
 chatModes({action: 'ask'})
 // ... discuss approach ...
-chatModes({action: 'code'})
-// "go ahead" to implement`,
+chatModes({action: 'ok'})
+// Proceeds with implementation`,
 	parameters: ChatModesParamsSchema,
 };
 
 // Execute function
 export async function executeChatModes(params: ChatModesParams): Promise<string> {
 	const manager = getChatModesManager();
-	const { action, mode, reason, limit = 20 } = params;
+	const { action, mode, reason, limit = 20, instructions } = params;
 
 	switch (action) {
 		case "get": {
@@ -241,6 +247,7 @@ Ask questions about how to use the agent, configuration options, troubleshooting
 			output += `- **Ask/Code Workflow Transitions**: ${stats.askCodeWorkflowTransitions}\n`;
 			output += `- **Architect Mode Sessions**: ${stats.architectModeSessions}\n`;
 			output += `- **Help Mode Queries**: ${stats.helpModeQueries}\n`;
+			output += `- **OK Command Usage**: ${stats.okCommandUsage}\n`;
 
 			if (history.length > 0) {
 				output += `\n## Recent Mode History (last ${Math.min(limit, history.length)})\n`;
@@ -275,8 +282,43 @@ Cleared all statistics and history.
 `;
 		}
 
+		case "ok": {
+			const currentMode = manager.getMode();
+			const previousMode = manager.getState().previousMode;
+
+			// Track ok command usage
+			manager.trackOkUsage();
+
+			// Switch to code mode if currently in ask mode
+			if (currentMode === "ask") {
+				manager.setMode("code", "ok: accepting proposed changes");
+			}
+
+			let output = "# ✓ OK - Proceeding with Implementation\n\n";
+
+			if (currentMode === "ask") {
+				output += "Switched from ASK mode to CODE mode.\n\n";
+			}
+
+			output += "The proposed changes will now be implemented.\n\n";
+
+			if (params.instructions) {
+				output += `**Additional Instructions**: ${params.instructions}\n\n`;
+			}
+
+			output += "---\n\n";
+			output += "You can now proceed with the planned implementation. ";
+			output += "Be direct and efficient in making the discussed changes to the codebase.\n\n";
+
+			if (params.instructions) {
+				output += `Remember to also: ${params.instructions}\n`;
+			}
+
+			return output;
+		}
+
 		default:
-			return `Unknown action: ${action}. Valid actions: get, set, code, ask, architect, help, modes, workflow, stats, config, reset`;
+			return `Unknown action: ${action}. Valid actions: get, set, code, ask, architect, help, ok, modes, workflow, stats, config, reset`;
 	}
 }
 

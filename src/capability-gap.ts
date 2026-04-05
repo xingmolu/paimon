@@ -513,6 +513,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 9,
 	},
+	{
+		name: "ok-shortcut",
+		source: "aider",
+		category: "workflow",
+		description:
+			"OK shortcut command for quickly accepting proposed changes and proceeding with implementation - allows users to type 'ok' to switch from ask mode to code mode and proceed with the discussed changes, optionally with extra instructions",
+		implementationStatus: "implemented",
+		priority: 8,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;

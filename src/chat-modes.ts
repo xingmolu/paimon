@@ -42,6 +42,7 @@ export interface ChatModesStats {
 	askCodeWorkflowTransitions: number;
 	architectModeSessions: number;
 	helpModeQueries: number;
+	okCommandUsage: number;
 }
 
 export interface ChatModesManagerConfig {
@@ -96,6 +97,7 @@ const DEFAULT_STATS: ChatModesStats = {
 	askCodeWorkflowTransitions: 0,
 	architectModeSessions: 0,
 	helpModeQueries: 0,
+	okCommandUsage: 0,
 };
 
 let managerInstance: ChatModesManager | null = null;
@@ -320,6 +322,12 @@ Example:
 		const mode = this.state.currentMode;
 		if (mode === "code") return ">"; // Default prompt
 		return `${mode}>`;
+	}
+
+	// Track ok command usage
+	public trackOkUsage(): void {
+		this.state.stats.okCommandUsage++;
+		this.saveState();
 	}
 }
 

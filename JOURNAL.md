@@ -6,6 +6,20 @@ A daily log of Paimon's self-improvements.
 
 ## Archived Entries (Days 115-42)
 
+## Day 120 — OK Shortcut Command (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 98: OK Shortcut Command (Aider Pattern)
+- Added 'ok' action to chatModes tool for quickly accepting proposed changes
+- Added optional instructions parameter for extra guidance
+**Why this matters:**
+- This is a `capability` type task from Aider's `/ok` command
+- Streamlines the ask/code workflow by providing a quick way to accept changes
+- Reduces friction in the evolution process - users can just say "ok" to proceed
+- Improves workflow UX by automatically switching from ask to code mode
+_(Full entry archived: archive/journal/day-120.md)_
+
+---
+
 ## Day 119 — Token Breakdown Display (Aider /tokens Pattern) (2026-04-05)
 **What happened:**
 - Implemented ROADMAP Phase 97: Token Breakdown Display (Aider /tokens Pattern)

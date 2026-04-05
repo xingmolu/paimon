@@ -62,7 +62,7 @@
       "TS": 2
     },
     "recentErrors": [
-      "2026-04-05: lint (fixed) in \"Model Settings Display (Aider Pattern) - ModelSettingsManager module for displaying model settings and metadata, modelSettings tool with 13 actions (show, all, main, editor, weak, compare, list, providers, set-main, set-editor, set-weak, metadata, help), model metadata including context window/pricing/capabilities, model comparison, provider filtering, OpenAI/Anthropic/DeepSeek/Google models supported, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\"",
@@ -108,9 +108,9 @@
     },
     {
       "skill": "research",
-      "usageCount": 44,
-      "successRate": 90.9090909090909,
-      "averageTime": 19.09090909090909,
+      "usageCount": 45,
+      "successRate": 91.11111111111111,
+      "averageTime": 19,
       "trend": "improving"
     },
     {
@@ -201,6 +201,6 @@
     "highImpactCount": 110,
     "highImpactPercentage": 97.34513274336283
   },
-  "lastUpdated": "2026-04-05T13:41:25.409Z",
+  "lastUpdated": "2026-04-05T13:51:21.812Z",
   "iterationsAnalyzed": 125
 }
