@@ -944,3 +944,17 @@ Priority is set by GitHub issue reactions. Open an issue to suggest improvements
 - [x] File suggestions — Suggest files based on task context with confidence scoring
 - [x] Multiple file types — Support TypeScript, JavaScript, Python, Rust, Go symbol extraction
 - [x] Competitor pattern added to capability-gap.ts
+
+## Phase 95: Self-Improvement Suggestion Engine (Proactive Pattern)
+- [x] SelfImprovementEngine module — Proactively analyze codebase and suggest improvements
+- [x] selfImprovement tool — Tool for managing suggestions (scan, suggestions, suggestion, accept, dismiss, clear-dismissed, stats, config, enable, disable, reset)
+- [x] Code pattern detection — Detect code quality issues (TODO/FIXME, any types, empty catches)
+- [x] Performance pattern detection — Detect async-in-forEach, JSON serialization issues
+- [x] Architecture pattern detection — Detect namespace imports, class inheritance
+- [x] Security pattern detection — Detect dangerous code execution patterns
+- [x] Capability gap integration — Suggestions from capability gap detector
+- [x] Usage analytics integration — Suggestions from tool usage patterns
+- [x] Competitor pattern suggestions — Proactive suggestions for competitor features
+- [x] 8 improvement categories — code-quality, performance, architecture, capability, reliability, documentation, testing, security
+- [x] 4 priority levels — critical, high, medium, low with confidence scoring
+- [x] Statistics tracking — Track suggestions, acceptances, dismissals by category/source
