@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-05 | capability | Edit Format Support (Aider Pattern) - EditFormatManager module for managing code edit formats, editFormat tool with 12 actions (list, get, set, detect, recommend, formats, format, validate, convert, stats, config, help), 6 edit formats (diff, diff-fenced, whole, editor-diff, editor-whole, patch), model-specific format detection, format validation and conversion, competitor pattern added to capability-gap.ts | ~20m | ✅ | none | No | High | evolve, research | better-code-editing, model-specific-formats, format-conversion, edit-format |
 | 2026-04-05 | capability | Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts | ~15m | ✅ | lint (fixed) | No | High | evolve, research | model-switching, shorthand-model-names, team-configurations, model-aliases |
 | 2026-04-05 | capability | Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts | ~15m | ✅ | lint (fixed) | No | High | evolve, research | code-quality, auto-fix, linting-automation, error-reduction |
 | 2026-04-05 | capability | Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts | ~15m | ✅ | lint (fixed) | No | High | evolve, research | cli-usability, tab-completion, shell-integration |
@@ -147,14 +148,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 97/106 = 92%
+- First Try Success Rate: 98/107 = 92%
 - Average Time: ~15 minutes
-- Rework Rate: 11/106 = 10%
+- Rework Rate: 11/107 = 10%
 
 ### Capability Metrics
-- Capability Tasks: 101/106 = 95%
-- High Impact Capabilities: 91/101 = 90%
-- Capability Velocity: 101 capabilities in 3 days = 34/day
+- Capability Tasks: 102/107 = 95%
+- High Impact Capabilities: 92/102 = 90%
+- Capability Velocity: 102 capabilities in 3 days = 34/day
 
 ### Error Analysis
 - TypeScript Errors: 7

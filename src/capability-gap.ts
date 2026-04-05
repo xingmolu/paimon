@@ -477,6 +477,15 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 		implementationStatus: "implemented",
 		priority: 8,
 	},
+	{
+		name: "edit-format",
+		source: "aider",
+		category: "editing",
+		description:
+			"Edit format support for different LLM code editing capabilities - supports 6 formats (diff, diff-fenced, whole, editor-diff, editor-whole, patch), model-specific format detection, format validation and conversion, improves code editing with various LLMs",
+		implementationStatus: "implemented",
+		priority: 9,
+	},
 ];
 
 let detectorInstance: CapabilityGapDetector | null = null;
