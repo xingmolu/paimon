@@ -18,13 +18,13 @@
         "trend": "up"
       }
     ],
-    "weeklyAverage": 94.44444444444444,
+    "weeklyAverage": 94.48818897637796,
     "improvement": 100
   },
   "time": {
-    "averageMinutes": 16.404761904761905,
+    "averageMinutes": 16.35433070866142,
     "byTaskType": {
-      "capability": 17.166666666666668,
+      "capability": 17.104347826086958,
       "reliability": 10,
       "-----------": 0
     },
@@ -41,8 +41,8 @@
       },
       {
         "date": "2026-W15",
-        "value": 16,
-        "trend": "stable"
+        "value": 15.454545454545455,
+        "trend": "up"
       }
     ],
     "fastestTask": "-----------------",
@@ -101,9 +101,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 123,
-      "successRate": 95.1219512195122,
-      "averageTime": 16.682926829268293,
+      "usageCount": 124,
+      "successRate": 95.16129032258065,
+      "averageTime": 16.629032258064516,
       "trend": "improving"
     },
     {
@@ -190,17 +190,17 @@
       },
       {
         "date": "2026-W15",
-        "value": 4.5
+        "value": 5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 114,
-    "highImpactCount": 111,
-    "highImpactPercentage": 97.36842105263158
+    "totalCapabilities": 115,
+    "highImpactCount": 112,
+    "highImpactPercentage": 97.3913043478261
   },
-  "lastUpdated": "2026-04-05T14:49:47.716Z",
-  "iterationsAnalyzed": 126
+  "lastUpdated": "2026-04-05T15:03:47.383Z",
+  "iterationsAnalyzed": 127
 }
