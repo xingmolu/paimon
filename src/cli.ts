@@ -367,7 +367,7 @@ function getConfig(mode: "chat" | "evolve" = "chat"): PaimonConfig {
 
 	return {
 		apiKey,
-		model: process.env.PAIMON_MODEL || "glm-5.1",
+		model: process.env.PAIMON_MODEL || "glm-5",
 		baseUrl: process.env.PAIMON_BASE_URL || "https://api.z.ai/api/paas/v4",
 		skillsDir: "./skills",
 		memoryPath: "./MEMORY.md",
