@@ -41,8 +41,8 @@ jobs:
 
       - name: Run evolution
         env:
-          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
-          PAIMON_MODEL: ${{ vars.PAIMON_MODEL || 'glm-5' }}
+          PAIMON_API_KEY: ${{ secrets.PAIMON_API_KEY }}
+          PAIMON_MODEL: ${{ vars.PAIMON_MODEL || 'glm-5.1' }}
         run: npm run evolve
 
       - name: Push changes

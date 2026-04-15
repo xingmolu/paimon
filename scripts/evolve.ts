@@ -262,9 +262,9 @@ async function main() {
 	console.log(`\n${COLORS.cyan}=== Paimon Evolution ===${COLORS.reset}`);
 	console.log(`${COLORS.dim}Date: ${DATE}${COLORS.reset}\n`);
 
-	const apiKey = process.env.DASHSCOPE_API_KEY || process.env.PAIMON_API_KEY;
+	const apiKey = process.env.PAIMON_API_KEY;
 	if (!apiKey) {
-		console.error("Error: Set DASHSCOPE_API_KEY or PAIMON_API_KEY");
+		console.error("Error: Set PAIMON_API_KEY");
 		process.exit(1);
 	}
 	console.log(
@@ -443,8 +443,8 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 
 		const { run } = createAgent({
 			apiKey,
-			model: process.env.PAIMON_MODEL || "glm-5",
-			baseUrl: process.env.PAIMON_BASE_URL || "https://coding.dashscope.aliyuncs.com/v1",
+			model: process.env.PAIMON_MODEL || "glm-5.1",
+			baseUrl: process.env.PAIMON_BASE_URL || "https://api.z.ai/api/paas/v4",
 			skillsDir: "./skills",
 			memoryPath: "./MEMORY.md",
 			mode: "evolve", // Always use evolve mode for self-evolution

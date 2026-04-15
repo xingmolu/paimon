@@ -53,7 +53,7 @@ function createModel(config: PaimonConfig): Model<Api> {
 		id: config.model,
 		name: config.model,
 		api: "openai-completions",
-		provider: "bailian",
+		provider: "z-ai",
 		baseUrl: config.baseUrl,
 		reasoning: false,
 		input: ["text", "image"],

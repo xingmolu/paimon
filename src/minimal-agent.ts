@@ -238,7 +238,7 @@ export class MinimalAgent {
 			api: "openai" as Api,
 			id: this.config.model,
 			name: this.config.model,
-			provider: "dashscope" as never,
+			provider: "z-ai" as never,
 			baseUrl: this.config.baseUrl,
 			reasoning: false,
 			input: ["text"],
