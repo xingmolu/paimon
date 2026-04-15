@@ -15,6 +15,11 @@
 
 import { type ErrorPattern, getErrorPatternLearner } from "./error-patterns.js";
 import {
+	type ComplexityLevel,
+	type CostPrediction,
+	getEvolutionCostPredictor,
+} from "./evolution-cost.js";
+import {
 	type EvolutionPattern,
 	type PatternRecommendation,
 	getPatternMiner,
@@ -31,11 +36,31 @@ import {
 export type { TaskContext } from "./task-predictor.js";
 
 /**
+ * Task Decision Score - Combines cost and success for smarter decisions.
+ */
+export interface TaskDecisionScore {
+	// Overall score 0-100 (higher = better decision)
+	score: number;
+	// Cost component (0-100, lower cost = higher score component)
+	costScore: number;
+	// Success component (0-100)
+	successScore: number;
+	// Recommendation based on score
+	recommendation: "highly-recommended" | "recommended" | "consider" | "avoid";
+	// Reasoning for the score
+	reasoning: string;
+}
+
+/**
  * Unified intelligence recommendation combining all sources.
  */
 export interface UnifiedRecommendation {
 	// Task prediction from TaskSuccessPredictor
 	prediction: TaskPrediction;
+	// Cost prediction from EvolutionCostPredictor
+	costPrediction: CostPrediction;
+	// Task decision score combining cost and success
+	decisionScore: TaskDecisionScore;
 	// Pattern-based recommendations from PatternMiner
 	patternRecommendations: PatternRecommendation[];
 	// Error risk assessment from ErrorPatternLearner
@@ -79,6 +104,11 @@ export interface IntelligenceAnalysis {
  */
 export interface IntelligenceStats {
 	predictorStats: PredictorStats;
+	costStats: {
+		totalPredictions: number;
+		averageAccuracy: number;
+		byComplexity: Record<ComplexityLevel, number>;
+	};
 	patternStats: {
 		totalPatterns: number;
 		averageSuccessRate: number;
@@ -99,9 +129,64 @@ export interface IntelligenceStats {
  */
 export class EvolutionIntelligence {
 	private predictor = getTaskPredictor();
+	private costPredictor = getEvolutionCostPredictor();
 	private patternMiner = getPatternMiner();
 	private errorLearner = getErrorPatternLearner();
 	private ragModule = new RagModule();
+
+	/**
+	 * Calculate task decision score combining cost and success.
+	 */
+	private calculateDecisionScore(
+		costPrediction: CostPrediction,
+		successProbability: number,
+	): TaskDecisionScore {
+		// Convert cost to score component (lower cost = higher score)
+		// simple: 100-80, moderate: 80-60, complex: 60-40, very-complex: 40-20
+		const costScoreMap: Record<ComplexityLevel, number> = {
+			simple: 95,
+			moderate: 70,
+			complex: 50,
+			"very-complex": 30,
+		};
+
+		const costScore = costScoreMap[costPrediction.complexityLevel];
+		const successScore = Math.round(successProbability * 100);
+
+		// Weighted combination: success is more important (60%) than cost (40%)
+		const score = Math.round(successScore * 0.6 + costScore * 0.4);
+
+		// Determine recommendation based on score
+		let recommendation: TaskDecisionScore["recommendation"];
+		let reasoning: string;
+
+		if (score >= 75) {
+			recommendation = "highly-recommended";
+			reasoning = `High success probability (${successScore}%) with reasonable cost (${costPrediction.complexityLevel})`;
+		} else if (score >= 55) {
+			recommendation = "recommended";
+			reasoning = `Good balance of success (${successScore}%) and cost (${costPrediction.complexityLevel})`;
+		} else if (score >= 35) {
+			recommendation = "consider";
+			reasoning = `Moderate success (${successScore}%) with significant cost (${costPrediction.complexityLevel}). Consider alternatives.`;
+		} else {
+			recommendation = "avoid";
+			reasoning = `Low success (${successScore}%) with high cost (${costPrediction.complexityLevel}). Not recommended.`;
+		}
+
+		// Adjust reasoning based on risk factors
+		if (costPrediction.riskFactors.length > 2) {
+			reasoning += ` Has ${costPrediction.riskFactors.length} risk factors.`;
+		}
+
+		return {
+			score,
+			costScore,
+			successScore,
+			recommendation,
+			reasoning,
+		};
+	}
 
 	/**
 	 * Get unified recommendations for a task context.
@@ -110,17 +195,26 @@ export class EvolutionIntelligence {
 		// 1. Get task prediction
 		const prediction = this.predictor.predict(context);
 
-		// 2. Get pattern recommendations
+		// 2. Get cost prediction
+		const costPrediction = this.costPredictor.predict(context.taskDescription, context.taskType);
+
+		// 3. Calculate decision score combining cost and success
+		const decisionScore = this.calculateDecisionScore(
+			costPrediction,
+			prediction.successProbability,
+		);
+
+		// 4. Get pattern recommendations
 		const patternRecommendations = this.patternMiner.getRecommendations({
 			taskType: context.taskType,
 			skillsAvailable: context.skillsAvailable,
 			taskDescription: context.taskDescription,
 		});
 
-		// 3. Analyze error risks
+		// 5. Analyze error risks
 		const errorRisks = this.analyzeErrorRisks(context);
 
-		// 4. Get relevant context from RAG
+		// 6. Get relevant context from RAG
 		const relevantContext = this.ragModule.search({
 			query: context.taskDescription,
 			maxResults: 3,
@@ -128,38 +222,45 @@ export class EvolutionIntelligence {
 			includeSnippet: true,
 		});
 
-		// 5. Calculate combined confidence
+		// 7. Calculate combined confidence
 		const combinedConfidence = this.calculateCombinedConfidence(
 			prediction,
+			costPrediction,
 			patternRecommendations,
 			errorRisks,
 			relevantContext,
 		);
 
-		// 6. Generate overall recommendation
+		// 8. Generate overall recommendation
 		const overallRecommendation = this.generateOverallRecommendation(
 			prediction,
+			costPrediction,
+			decisionScore,
 			patternRecommendations,
 			errorRisks,
 		);
 
-		// 7. Determine suggested approach
+		// 9. Determine suggested approach
 		const suggestedApproach = this.determineSuggestedApproach(
 			context,
 			prediction,
+			costPrediction,
 			patternRecommendations,
 		);
 
-		// 8. Extract key risks and opportunities
-		const keyRisks = this.extractKeyRisks(prediction, errorRisks);
+		// 10. Extract key risks and opportunities
+		const keyRisks = this.extractKeyRisks(prediction, costPrediction, errorRisks);
 		const keyOpportunities = this.extractKeyOpportunities(
 			prediction,
+			costPrediction,
 			patternRecommendations,
 			relevantContext,
 		);
 
 		return {
 			prediction,
+			costPrediction,
+			decisionScore,
 			patternRecommendations,
 			errorRisks,
 			relevantContext,
@@ -230,12 +331,16 @@ export class EvolutionIntelligence {
 	 */
 	private calculateCombinedConfidence(
 		prediction: TaskPrediction,
+		costPrediction: CostPrediction,
 		patterns: PatternRecommendation[],
 		errorRisks: ErrorRisk[],
 		context: RagSearchResult[],
 	): number {
 		// Base confidence from prediction
 		let base = prediction.confidence;
+
+		// Factor in cost confidence
+		base = Math.round(base * 0.6 + costPrediction.confidence * 0.4);
 
 		// Boost from pattern matches
 		if (patterns.length > 0) {
@@ -264,28 +369,38 @@ export class EvolutionIntelligence {
 	 */
 	private generateOverallRecommendation(
 		prediction: TaskPrediction,
+		costPrediction: CostPrediction,
+		decisionScore: TaskDecisionScore,
 		patterns: PatternRecommendation[],
 		errorRisks: ErrorRisk[],
 	): string {
 		const successPercent = Math.round(prediction.successProbability * 100);
+		const costEmoji =
+			costPrediction.complexityLevel === "simple"
+				? "⚡"
+				: costPrediction.complexityLevel === "moderate"
+					? "⏱️"
+					: costPrediction.complexityLevel === "complex"
+						? "🔨"
+						: "🏗️";
+
+		// Start with decision score recommendation
+		let rec = `${decisionScore.recommendation.toUpperCase().replace("-", " ")}: ${decisionScore.reasoning}`;
+
+		// Add details
+		rec += `\n\n**Decision Score:** ${decisionScore.score}/100`;
+		rec += ` (Success: ${decisionScore.successScore}%, Cost: ${decisionScore.costScore}%)`;
+		rec += `\n**Complexity:** ${costEmoji} ${costPrediction.complexityLevel} (~${costPrediction.estimatedTimeMinutes}m)`;
 
 		if (successPercent >= 80 && errorRisks.length === 0) {
-			return `High confidence task (${successPercent}% success probability). Proceed with standard approach.`;
+			rec += "\n\nHigh confidence task. Proceed with standard approach.";
+		} else if (successPercent < 50 || decisionScore.recommendation === "avoid") {
+			rec += "\n\nLow confidence task. Consider breaking down or acquiring missing skills.";
+		} else if (errorRisks.length > 2) {
+			rec += `\n\nWarning: ${errorRisks.length} error risks detected. Apply suggested solutions.`;
 		}
 
-		if (successPercent >= 70 && patterns.length > 0) {
-			return `Good confidence (${successPercent}%) with pattern support. Use recommended skills for best results.`;
-		}
-
-		if (successPercent < 50) {
-			return `Low confidence (${successPercent}%). Consider breaking down task or acquiring missing skills first.`;
-		}
-
-		if (errorRisks.length > 2) {
-			return `Moderate confidence (${successPercent}%) but with error risks. Apply suggested solutions proactively.`;
-		}
-
-		return `Proceed with caution (${successPercent}% confidence). Monitor for key risks.`;
+		return rec;
 	}
 
 	/**
@@ -294,11 +409,17 @@ export class EvolutionIntelligence {
 	private determineSuggestedApproach(
 		context: TaskContext,
 		prediction: TaskPrediction,
+		costPrediction: CostPrediction,
 		patterns: PatternRecommendation[],
 	): string {
-		// If high complexity, suggest planning phase
-		if (context.complexity === "high") {
-			return "Use plan-architecture skill first, then implement step-by-step with checkpoints.";
+		// If very complex, suggest breaking down
+		if (costPrediction.complexityLevel === "very-complex") {
+			return "Break into smaller subtasks. Use checkpoints and plan tool. Consider pair-coding with specialized agents.";
+		}
+
+		// If complex, suggest planning phase
+		if (costPrediction.complexityLevel === "complex") {
+			return "Use plan-architecture skill first, then implement step-by-step with verification at each stage.";
 		}
 
 		// If patterns available, use their approach
@@ -318,8 +439,17 @@ export class EvolutionIntelligence {
 	/**
 	 * Extract key risks from prediction and error analysis.
 	 */
-	private extractKeyRisks(prediction: TaskPrediction, errorRisks: ErrorRisk[]): string[] {
+	private extractKeyRisks(
+		prediction: TaskPrediction,
+		costPrediction: CostPrediction,
+		errorRisks: ErrorRisk[],
+	): string[] {
 		const risks: string[] = [];
+
+		// From cost prediction
+		for (const risk of costPrediction.riskFactors.slice(0, 2)) {
+			risks.push(`${risk.type}: ${risk.description}`);
+		}
 
 		// From prediction
 		for (const risk of prediction.riskFactors.slice(0, 2)) {
@@ -339,6 +469,7 @@ export class EvolutionIntelligence {
 	 */
 	private extractKeyOpportunities(
 		prediction: TaskPrediction,
+		costPrediction: CostPrediction,
 		patterns: PatternRecommendation[],
 		context: RagSearchResult[],
 	): string[] {
@@ -347,6 +478,11 @@ export class EvolutionIntelligence {
 		// Pattern opportunities
 		if (patterns.length > 0) {
 			opportunities.push(`Apply ${patterns.length} successful patterns from history`);
+		}
+
+		// Similar tasks opportunity
+		if (costPrediction.similarTasks.length > 0) {
+			opportunities.push(`${costPrediction.similarTasks.length} similar past tasks for reference`);
 		}
 
 		// Context opportunities
@@ -375,19 +511,26 @@ export class EvolutionIntelligence {
 	 */
 	getStats(): IntelligenceStats {
 		const predictorStats = this.predictor.getStats();
+		const costStats = this.costPredictor.getStats();
 		const patternStats = this.patternMiner.getStats();
 		const errorStats = this.errorLearner.getStats();
 		const ragStats = this.ragModule.getStats();
 
 		// Calculate combined accuracy
 		const combinedAccuracy = Math.round(
-			predictorStats.accuracyRate * 0.4 +
+			predictorStats.accuracyRate * 0.3 +
+				costStats.averageAccuracy * 0.2 +
 				patternStats.averageSuccessRate * 0.3 +
-				(100 - Math.min(errorStats.totalOccurrences * 5, 50)) * 0.3,
+				(100 - Math.min(errorStats.totalOccurrences * 5, 50)) * 0.2,
 		);
 
 		return {
 			predictorStats,
+			costStats: {
+				totalPredictions: costStats.predictionsTotal,
+				averageAccuracy: costStats.averageAccuracy,
+				byComplexity: costStats.predictionsByComplexity,
+			},
 			patternStats: {
 				totalPatterns: patternStats.totalPatterns,
 				averageSuccessRate: patternStats.averageSuccessRate,
@@ -409,6 +552,7 @@ export class EvolutionIntelligence {
 	 */
 	refresh(): void {
 		this.predictor.refresh();
+		this.costPredictor = getEvolutionCostPredictor();
 		this.patternMiner.refresh();
 		this.ragModule.initialize();
 	}
@@ -417,12 +561,38 @@ export class EvolutionIntelligence {
 	 * Format recommendation as markdown.
 	 */
 	formatRecommendation(rec: UnifiedRecommendation): string {
+		const decisionEmoji =
+			rec.decisionScore.recommendation === "highly-recommended"
+				? "🌟"
+				: rec.decisionScore.recommendation === "recommended"
+					? "✅"
+					: rec.decisionScore.recommendation === "consider"
+						? "⚠️"
+						: "❌";
+
+		const costEmoji =
+			rec.costPrediction.complexityLevel === "simple"
+				? "⚡"
+				: rec.costPrediction.complexityLevel === "moderate"
+					? "⏱️"
+					: rec.costPrediction.complexityLevel === "complex"
+						? "🔨"
+						: "🏗️";
+
 		const lines: string[] = [
 			"## Unified Evolution Intelligence Recommendation",
 			"",
+			`**Decision Score:** ${decisionEmoji} ${rec.decisionScore.score}/100`,
+			`**Recommendation:** ${rec.decisionScore.recommendation.toUpperCase().replace("-", " ")}`,
+			"",
+			"### Decision Breakdown",
+			"| Factor | Score | Value |",
+			"|--------|-------|-------|",
+			`| Success | ${rec.decisionScore.successScore}/100 | ${Math.round(rec.prediction.successProbability * 100)}% probability |`,
+			`| Cost | ${rec.decisionScore.costScore}/100 | ${costEmoji} ${rec.costPrediction.complexityLevel} (~${rec.costPrediction.estimatedTimeMinutes}m) |`,
+			"",
 			`**Combined Confidence:** ${rec.combinedConfidence}%`,
-			`**Success Probability:** ${Math.round(rec.prediction.successProbability * 100)}%`,
-			`**Estimated Time:** ~${rec.prediction.estimatedTime}m`,
+			`**Estimated Time:** ~${rec.costPrediction.estimatedTimeRange.min}-${rec.costPrediction.estimatedTimeRange.max}m`,
 			"",
 			"### Overall Recommendation",
 			rec.overallRecommendation,
@@ -491,6 +661,14 @@ export class EvolutionIntelligence {
 			"### Predictor Stats",
 			`- Total Predictions: ${stats.predictorStats.totalPredictions}`,
 			`- Accuracy Rate: ${stats.predictorStats.accuracyRate}%`,
+			"",
+			"### Cost Prediction Stats",
+			`- Total Predictions: ${stats.costStats.totalPredictions}`,
+			`- Average Accuracy: ${stats.costStats.averageAccuracy}%`,
+			`- Simple: ${stats.costStats.byComplexity.simple}`,
+			`- Moderate: ${stats.costStats.byComplexity.moderate}`,
+			`- Complex: ${stats.costStats.byComplexity.complex}`,
+			`- Very Complex: ${stats.costStats.byComplexity["very-complex"]}`,
 			"",
 			"### Pattern Stats",
 			`- Total Patterns: ${stats.patternStats.totalPatterns}`,

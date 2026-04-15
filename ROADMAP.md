@@ -303,6 +303,699 @@ Planned improvements for evo.
 - [x] Custom pattern support — Add custom security patterns
 - [x] Statistics tracking — Track scans, warnings, blocks, top patterns
 
+## Phase 38: Feature Dev 7-Phase Workflow (Claude Code Pattern)
+- [x] FeatureDevManager module — Manage 7-phase feature development workflow
+- [x] featureDev tool — Tool for managing feature development sessions
+- [x] 7-phase workflow — Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary
+- [x] Agent task management — Launch and track code-explorer, code-architect, code-reviewer agents
+- [x] Clarifying questions — Generate and track answers for requirement clarification
+- [x] Architecture approaches — Generate and select from multiple implementation approaches
+- [x] Review findings — Track and address code quality findings
+- [x] Session persistence — Save session state for resumption
+- [x] Statistics tracking — Track sessions, phases, agents, questions, reviews
+
+## Phase 39: Learning Output Style Pattern (Claude Code Pattern)
+- [x] LearningOutputStyleManager module — Interactive learning mode for requesting meaningful code contributions at decision points
+- [x] learningOutputStyle tool — Tool for detecting decision points and managing learning insights
+- [x] Decision point detection — Identify business logic, error handling, algorithm, architecture, security decision points
+- [x] Trade-off analysis — Show trade-offs for each decision category
+- [x] Auto-implementation detection — Distinguish auto-implementable code from code requiring user contribution
+- [x] SessionStart hook integration — Inject learning context automatically at session start
+- [x] Educational insights — 11 default insights about architecture, patterns, evolution, tools, skills, memory, safety
+- [x] Statistics tracking — Track sessions enhanced, decision points requested, contribution rate
+- [x] Tests — Comprehensive tests for Learning Output Style functionality
+
+## Phase 40: PR Review Toolkit (Claude Code Pattern)
+- [x] PRReviewToolkitManager module — Manage comprehensive PR review with 6 specialized agents
+- [x] prReviewToolkit tool — Tool for running and managing PR reviews
+- [x] 6 specialized agents — comment-analyzer, pr-test-analyzer, silent-failure-hunter, type-design-analyzer, code-reviewer, code-simplifier
+- [x] Confidence-based scoring — Filter false positives with configurable threshold (default 80)
+- [x] Review session management — Start, add findings, complete review sessions
+- [x] Review aspects — comments, tests, errors, types, code, simplify, all
+- [x] Finding tracking — Track findings by agent, aspect, confidence level
+- [x] Statistics tracking — Track reviews, findings, fixed/ignored issues
+- [x] Tests — Comprehensive tests for PR Review Toolkit functionality
+
+## Phase 41: Plugin Development Toolkit (Claude Code Pattern)
+- [x] PluginDevManager module — Manage 8-phase plugin development workflow
+- [x] pluginDev tool — Tool for managing plugin development sessions
+- [x] 8-phase workflow — Discovery → Component Planning → Detailed Design → Structure Creation → Component Implementation → Validation → Testing → Documentation
+- [x] 7 specialized skills — hook-dev, mcp-integration, plugin-structure, plugin-settings, command-dev, agent-dev, skill-dev
+- [x] 3 agents — plugin-validator, agent-creator, skill-reviewer
+- [x] Component management — Add, update, validate components (command, agent, skill, hook, mcp)
+- [x] Phase guidance — Detailed guidance for each phase with actions
+- [x] Session persistence — Save session state for resumption
+- [x] Statistics tracking — Track sessions, phases, components, skills, agents
+
+## Phase 42: Agent SDK Dev Pattern (Claude Code/OpenHands Pattern)
+- [x] AgentBuilder module — Composable agent definition system
+- [x] agentBuilder tool — Tool for defining and managing agents
+- [x] Agent definitions — Typed arguments and outputs for agents
+- [x] Agent chaining — Chain multiple agents sequentially with output mapping
+- [x] Agent swarms — Execute multiple agents in parallel, sequential, race, or all-to-all strategies
+- [x] Lifecycle hooks — onStart, onComplete, onError, onProgress hooks for agent execution
+- [x] Agent registry — Track agent usage, success rates, and performance
+- [x] Built-in agents — evolution-agent, code-explorer, code-reviewer, planner, error-recovery, intelligence
+- [x] Statistics tracking — Track executions, success rates, top agents by usage
+
+## Phase 43: Self-Healing Code Patterns (OpenHands/Aider Pattern)
+- [x] SelfHealingManager module — Automatic detection and correction of common error patterns
+- [x] selfHealing tool — Tool for pattern detection, auto-fixing, and statistics
+- [x] 12 default patterns — TypeScript imports, lint rules (unused var, missing semicolon, prefer const), test errors (missing await, timeout), runtime errors, dependency issues
+- [x] 4 default fix strategies — Unused variable removal, prefer const, missing semicolon, missing await
+- [x] Confidence scoring — Pattern-specific confidence calculation based on context
+- [x] Auto-fix recommendations — Intelligent recommendations based on severity and confidence
+- [x] Statistics tracking — Track detections, fixes, failures by category and pattern
+- [x] Detection history — Track recent pattern detections
+
+## Phase 44: Context Importance Scoring (Aider ChatSummary Pattern)
+- [x] ContextImportanceScorer module — Intelligent message importance scoring for smarter truncation
+- [x] contextImportance tool — Tool for importance analysis and truncation recommendations
+- [x] 8 importance factors — Role weight, recency, content type, tool success, error presence, file reference, plan reference, size factor
+- [x] Content type classification — System prompt, skill definition, file content, tool result, error message, plan output, user instruction, assistant response
+- [x] Importance level classification — Critical, high, medium, low, truncatable
+- [x] Truncation recommendations — Prioritized list of messages to truncate with estimated savings
+- [x] Target savings mode — Get recommendations to achieve specific token savings
+- [x] Statistics tracking — Track analyses, recommendations, estimated savings, average importance score
+
+## Phase 45: Frontend Design Skill (Claude Code Pattern)
+- [x] FrontendDesignManager module — Guidance for distinctive frontend interfaces
+- [x] frontendDesign tool — Tool for accessing design principles and recommendations
+- [x] 12 design principles — Typography, color, spacing, animation, layout, interaction, accessibility, performance
+- [x] Context detection — Detect frontend work context (new-component, refactor, style-update, responsive-design, animation-work, typography-work, layout-work, general-frontend)
+- [x] Anti-pattern warnings — Warn against generic AI aesthetics
+- [x] Bold design choices — Guidance on distinctive typography, intentional color, meaningful animations
+- [x] Statistics tracking — Track guidance provided, principles shown, contexts detected
+
+## Phase 46: Remote Execution Environment (SWE-ReX Pattern)
+- [x] RemoteExecutionManager module — Manage remote execution environments for sandboxed evolution
+- [x] remoteExecution tool — Tool for executing commands in various environments
+- [x] Environment adapters — Local, Docker, Modal, Remote execution support
+- [x] Shell session management — Interactive sessions for ipython, gdb, and other tools
+- [x] Docker environment support — Execute commands in Docker containers
+- [x] Multiple shell sessions — Run multiple interactive sessions in parallel
+- [x] Statistics tracking — Track executions, sessions, success rates by environment type
+
+## Phase 47: Role-Based Multi-Agent Protocol (MetaGPT Pattern)
+- [x] RoleBasedAgentManager module — Manage specialized agent roles with SOP-based coordination
+- [x] roleBasedAgents tool — Tool for role-based multi-agent sessions
+- [x] 6 default agent roles — ProductManager, Architect, ProjectManager, Engineer, QAEngineer, Reviewer
+- [x] SOP workflow system — Standard Operating Procedures for multi-agent coordination
+- [x] 3 default workflows — software-company, feature-development, code-review
+- [x] Artifact management — Track outputs with confidence scores
+- [x] Phase transitions — Automatic workflow progression
+- [x] Statistics tracking — Track sessions, artifacts, phases, role usage
+
+## Phase 48: Task Tracking Tool (OpenHands SDK Pattern)
+- [x] TaskTrackingManager module — Manage task tracking for agent execution
+- [x] taskTracking tool — Tool for tracking task progress, dependencies, and completion state
+- [x] Session management — Start, list, set active, clear task sessions
+- [x] Task lifecycle — Add, update, complete, fail tasks with status tracking
+- [x] Dependency management — Task dependencies with automatic blocking/unblocking
+- [x] Subtask support — Parent-child task relationships
+- [x] Progress tracking — Percentage completion, time estimates, session summaries
+- [x] Statistics tracking — Track sessions, tasks, priorities, tags, dependency depth
+
+## Phase 49: Synthetic Task Generation (SWE-smith Pattern)
+- [x] SyntheticTaskGenerator module — Generate synthetic task instances for training
+- [x] syntheticTaskGen tool — Tool for generating and managing synthetic tasks
+- [x] 5 task types — bug-fix, feature-add, refactor, test-add, security-fix
+- [x] 3 difficulty levels — easy, medium, hard with complexity scoring
+- [x] Generation scenarios — 5 default scenarios with template-based problem generation
+- [x] Task validation — Validate generated tasks for quality
+- [x] Training data export — Export in SWE-bench, SWE-smith, or custom formats
+- [x] Statistics tracking — Track generations by type, difficulty, validation rates
+
+## Phase 50: Self-Evaluation Tool (Recursive Pattern)
+- [x] SelfEvaluationManager module — Agent self-evaluation for recursive improvement
+- [x] selfEvaluation tool — Tool for evaluating own performance after iterations
+- [x] 8 evaluation criteria — task_success, time_efficiency, error_handling, skill_usage, code_quality, learning_quality, capability_gap, planning_quality
+- [x] Result categories — excellent, good, adequate, needs_improvement, poor with configurable thresholds
+- [x] Performance trends — Track trends across 7 dimensions over time
+- [x] Capability gap detection — Identify missing capabilities from iteration analysis
+- [x] Strength/weakness tracking — Track current strengths and weaknesses from recent evaluations
+- [x] Statistics tracking — Track evaluations, scores, trends, and capability gaps
+
+## Phase 51: Watch Mode/FileWatcher (Aider Pattern)
+- [x] FileWatcher module — Watch source files for changes and AI comment markers
+- [x] watch tool — Tool for managing file watching sessions
+- [x] AI comment detection — Detect markers like # ai!, // ai?, /* ai */
+- [x] Multiple comment styles — Support for #, //, /* */, --, ;; markers across 40+ file extensions
+- [x] Action type classification — execute (!), question (?), review, explain, refactor, test
+- [x] Gitignore integration — Respect .gitignore patterns for ignored files
+- [x] Debounced change handling — Prevent rapid-fire updates with configurable debounce interval
+- [x] Statistics tracking — Track files watched, changes detected, comments processed, actions triggered
+
+## Phase 52: Self-Evaluation Stop Hook Integration (Recursive Pattern)
+- [x] IterationContext module — Track iteration data during evolution sessions (task type, description, duration, errors, skills used)
+- [x] Self-Evaluation Stop hook — Automatically trigger self-evaluation after each iteration
+- [x] Iteration tracking — Start/end iteration with success status, first try, rework, impact tracking
+- [x] Error recording — Record errors encountered during iteration
+- [x] Skill tracking — Track skills used during iteration
+- [x] Automatic evaluation — Perform self-evaluation with 8 criteria on session stop
+- [x] Statistics tracking — Track iterations by task type, average duration, top skills
+
+## Phase 53: Evolution Session Replay (Mini-SWE-Agent Pattern)
+- [x] SessionReplayManager module — Replay and analyze past evolution sessions
+- [x] sessionReplay tool — Tool for session replay and pattern extraction
+- [x] 4 replay modes — full, steps, actions, learning for different analysis needs
+- [x] Pattern extraction — Extract 6 pattern types (success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage)
+- [x] Session comparison — Compare successful vs failed sessions to identify factors
+- [x] Step-by-step walkthrough — Detailed step analysis with learning points
+- [x] Statistics tracking — Track replays, patterns extracted, comparisons, walkthroughs
+
+## Phase 54: Pattern Auto-Application (SWE-agent Pattern)
+- [x] PatternAutoApplier module — Automatically match and apply learned patterns to new tasks
+- [x] patternAutoApply tool — Tool for pattern matching and auto-application
+- [x] Pattern similarity scoring — Calculate similarity based on task type, description, files, errors, keywords
+- [x] Auto-apply recommendations — Suggest or auto-apply high-confidence patterns
+- [x] 6 pattern type support — success-pattern, failure-pattern, tool-sequence, error-recovery, decision-point, skill-usage
+- [x] Application tracking — Track pattern applications with success rates
+- [x] Time saved estimation — Estimate time saved from applying patterns
+- [x] Statistics tracking — Track matches, applications, success rates, time saved
+
+## Phase 55: Cross-Session Learning Transfer (RAG Enhancement Pattern)
+- [x] LearningTransferManager module — Transfer learnings between related tasks automatically
+- [x] learningTransfer tool — Tool for cross-session learning transfer
+- [x] Task similarity detection — Calculate similarity score based on task type, keywords, skills, category
+- [x] Session learning extraction — Extract patterns, solutions, pitfalls from past sessions
+- [x] Transfer recommendations — Generate recommendations with similar sessions, transferred patterns, risk factors
+- [x] Proactive context injection — Inject relevant context at task start
+- [x] Warning generation — Warn about patterns from similar failed sessions
+- [x] Statistics tracking — Track transfers, patterns transferred, warnings generated, similarity scores
+
+## Phase 56: Evolution Cost Prediction
+- [x] EvolutionCostPredictor module — Predict effort/complexity before starting implementation
+- [x] evolutionCost tool — Tool for cost prediction and analysis
+- [x] Complexity scoring — Calculate complexity score from cost factors (new module, hook integration, file count, etc.)
+- [x] Complexity levels — simple (5-15m), moderate (15-30m), complex (30-60m), very-complex (60-120m)
+- [x] Time estimation — Estimate time based on complexity level and historical data
+- [x] Risk factor identification — Identify risk factors with impact scores and mitigations
+- [x] Historical learning — Record actual outcomes to improve future predictions
+- [x] Statistics tracking — Track predictions, accuracy, complexity distribution, top risk factors
+
+## Phase 57: Evolution Regression Testing
+- [x] EvolutionRegressionTester module — Run regression tests after evolution changes
+- [x] regressionTesting tool — Tool for running tests and tracking capability health
+- [x] Test runner — Run all tests and create snapshot of results
+- [x] Capability health tracking — Track pass rate, last tested, status (healthy/degraded/broken)
+- [x] Snapshot comparison — Compare test results before/after changes
+- [x] Regression detection — Identify new failures, fixed tests, regressed tests
+- [x] Change summary — Generate summary of test changes with recommendations
+- [x] Statistics tracking — Track runs, snapshots, capability health distribution, common failures
+
+## Phase 58: Capability Gap Detection
+- [x] CapabilityGapDetector module — Automatically identify missing capabilities
+- [x] capabilityGap tool — Tool for gap detection and analysis
+- [x] ROADMAP analysis — Detect incomplete ROADMAP items and phase gaps
+- [x] Tool coverage analysis — Compare documented tools vs implemented tools
+- [x] Competitor pattern detection — Identify competitor patterns not yet implemented
+- [x] Integration gap detection — Detect missing integrations between modules
+- [x] Capability coverage — Track coverage percentage by category
+- [x] ROADMAP suggestions — Generate ROADMAP items from detected gaps
+- [x] Statistics tracking — Track detections, resolutions, top gap categories
+
+---
+
+## Phase 69: Visual Progress (Devin Pattern)
+- [x] VisualProgressManager module — Manage progress visualization during evolution iterations
+- [x] visualProgress tool — Tool for tracking and visualizing progress
+- [x] Progress phases — context-gathering, task-selection, planning, implementation, verification, completion
+- [x] Step tracking — Track individual steps with status and duration
+- [x] Progress bar visualization — Visual progress indicator with percentage
+- [x] Time estimation — Estimate remaining time based on historical data
+- [x] Historical timing storage — Learn from past sessions to improve estimates
+- [x] Tool usage tracking — Record which tools are used for each step
+- [x] Session management — Start, update, complete progress sessions
+- [x] Statistics tracking — Track sessions, durations, success rates
+
 ---
 
 Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 83: Integration Manager (OpenHands Cloud Pattern)
+- [x] IntegrationManager module — Manage external integrations for notifications
+- [x] integration tool — Tool for managing integrations with 19 actions
+- [x] 6 integration types — Slack, Jira, Linear, GitHub, Discord, Webhook
+- [x] Event types — 8 event types (session_start, session_complete, task_start, task_complete, task_failed, capability_added, error, milestone)
+- [x] Integration management — Add, get, list, update, remove, enable, disable, test
+- [x] Event sending — Send events to all enabled integrations
+- [x] Event history — Track all sent events with status
+- [x] Notification config — Per-integration notification settings
+- [x] Statistics tracking — Track integrations, events, success rates
+- [x] State persistence — Save integrations to ~/.paimon/integrations.json
+
+## Phase 83: Image Context Support (Aider Pattern)
+- [x] ImageContextManager module — Manage images and web pages for visual context
+- [x] imageContext tool — Tool with 22 actions for image and web page management
+- [x] Image operations — Add from file, paste from clipboard (base64), get, list, remove
+- [x] Web page scraping — Scrape URLs for documentation content
+- [x] Vision model detection — Check if models support vision (GPT-4o, Claude 3.x, Gemini)
+- [x] Format conversion — Base64 encoding, data URL generation
+- [x] Context formatting — Format images and pages for LLM context
+- [x] Statistics tracking — Track images added, pages scraped, bytes processed
+- [x] Competitor pattern — Added to capability-gap.ts as aider pattern
+
+---
+
+Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+## Phase 59: Session Replay → Auto-Apply Integration
+- [x] Pattern feed callback system — Register callbacks to receive patterns when extracted
+- [x] proactivePatternFeeding config option — Enable/disable automatic pattern feeding
+- [x] feedPatternsToCallbacks method — Push patterns to registered callbacks
+- [x] feedAllPatternsToCallbacks method — Feed all stored patterns (for initialization)
+- [x] PatternAutoApplier.receivePatterns method — Accept patterns from session replay
+- [x] Combined pattern matching — Match against both stored and received patterns
+- [x] Persistence of received patterns — Save received patterns to state
+- [x] Statistics tracking — Track patterns fed and received
+
+## Phase 60: Regression Testing → Assess Integration
+- [x] Update AssessmentResult type — Add regressionResult field
+- [x] Assess tool regression parameters — runRegression, iterationId, taskDescription
+- [x] Before snapshot tracking — Store snapshot ID before running tests
+- [x] After evolution snapshot — Create snapshot with iteration context
+- [x] Snapshot comparison — Compare before/after for regression detection
+- [x] Regression warnings in recommendations — Alert when regressions detected
+- [x] Regression summary in output — Show detailed regression analysis
+- [x] Statistics tracking — Track regression checks performed
+
+## Phase 61: SessionStart Intelligence Integration
+- [x] Intelligence SessionStart hook — Inject intelligence recommendations at session start
+- [x] Proactive pattern notification — Show available patterns with success rates
+- [x] RAG context notification — Show indexed documents for context enrichment
+- [x] Error pattern notification — Show learned error patterns for risk avoidance
+- [x] Combined accuracy display — Show overall intelligence accuracy
+- [x] Session mode context — Adapt recommendations to session mode (evolve/chat)
+- [x] Integration with existing hooks — Priority 95, between learning output style and memory load
+
+## Phase 62: Evolution Cost → Task Predictor Integration
+- [x] TaskDecisionScore interface — Combine cost and success into single decision score
+- [x] calculateDecisionScore method — Weighted scoring (60% success, 40% cost)
+- [x] Decision breakdown table — Show success/cost factors in analysis output
+- [x] Recommendation levels — highly-recommended, recommended, consider, avoid
+- [x] Cost prediction integration — Get cost prediction alongside success prediction
+- [x] Updated combined confidence — Factor in both success and cost confidence
+- [x] Enhanced overall recommendation — Include decision score reasoning
+- [x] Updated suggested approach — Consider complexity level in suggestions
+- [x] Cost prediction stats in intelligence stats — Track predictions by complexity
+
+## Phase 63: Learning Transfer → RAG Integration
+- [x] Import RagModule into learning-transfer.ts — Get RAG search and enrichContext methods
+- [x] enrichWithRag method — Combine keyword similarity with RAG TF-IDF scoring
+- [x] RAG boost for session matching — Boost scores for sessions referenced in RAG documents
+- [x] rag-discovered sessions — Add sessions found via RAG that weren't in keyword results
+- [x] Combined confidence scoring — 70% keyword, 30% RAG weighting
+- [x] RAG insights in risk factors — Add reflection insights from RAG to risk factors
+- [x] Proactive RAG context — Enrich getProactiveContext with RAG document search
+- [x] RAG stats in learning transfer stats — Track enrichments, documents found, average RAG score
+
+## Phase 64: Proactive Error Pattern Injection at SessionStart
+- [x] getTopPatternsForInjection method — Get top patterns by confidence and occurrences
+- [x] formatTopPatternsForInjection method — Format patterns for proactive context
+- [x] SessionStart error pattern hook — Inject top error patterns at session start
+- [x] Proactive warning message — Show known error patterns with solutions
+- [x] High-confidence filtering — Only inject patterns with ≥70% confidence
+- [x] Evolve mode only — Only inject in evolve mode to reduce noise
+- [x] Integration with existing hooks — Priority 94, after intelligence recommendations
+
+## Phase 65: Diff-Aware Planning (Devin Pattern)
+- [x] DiffAwarePlanningManager module — Manage git diff analysis for impact prediction
+- [x] DiffAnalysis interface — Track files, additions, deletions, impact score, risk level
+- [x] analyzeDiff method — Analyze current git diff for impact prediction
+- [x] predictImpact method — Predict impact of proposed changes on files
+- [x] getSafeImplementationPlan method — Get phased implementation plan
+- [x] areChangesSafe method — Check if changes are safe to apply
+- [x] Conflict detection — Identify potential import, export, dependency conflicts
+- [x] Impact scoring — Calculate impact score based on file changes and conflicts
+- [x] Risk levels — low, medium, high, critical based on impact score
+- [x] diffAwarePlan tool — Tool for analyzing diffs and planning safe implementation
+- [x] Statistics tracking — Track analyses run, conflicts detected, recommendations provided
+
+## Phase 66: Diff-Aware Planning → Edit Tool Integration
+- [x] autoAnalyzeBeforeEdit config — Enable automatic analysis before edits by default
+- [x] Diff-aware edit PreToolUse hook — Analyze diffs before edit operations
+- [x] Safety check integration — Use areChangesSafe() for blocker/warning detection
+- [x] Warning messages — Show potential issues before edits are applied
+- [x] File-specific analysis — Analyze specific file being edited
+- [x] Hook priority configuration — Priority 75, after safety gates
+- [x] Statistics tracking — Track edit analyses via diff-aware planning stats
+
+## Phase 67: Multi-File Context (Cursor Pattern)
+- [x] SymbolUsage interface — Track where each symbol is used across all files
+- [x] ChangeImpact interface — Predict which files are affected by changes
+- [x] RelatedFiles interface — Suggest files that should be edited together
+- [x] buildSymbolUsages method — Build map of symbol usages across codebase
+- [x] buildFileDependencies method — Build file dependency graph from imports
+- [x] getSymbolUsages method — Get symbol usages with optional name filter
+- [x] analyzeChangeImpact method — Analyze impact of changes to a file
+- [x] getRelatedFiles method — Get related files with edit order suggestions
+- [x] Risk level calculation — low, medium, high, critical based on dependent files
+- [x] multiFileContext tool — Tool for cross-file analysis with 5 actions
+
+## Phase 68: Multi-File Context → Edit Tool Integration
+- [x] Multi-file edit PreToolUse hook — Analyze cross-file dependencies before edit operations
+- [x] Risk level warning — Warn about high/critical risk files with many dependents
+- [x] Imported-by notification — Show files that import the file being edited
+- [x] Shared types notification — Show files with shared types/interfaces
+- [x] Edit order recommendation — Suggest optimal edit order for multi-file changes
+- [x] Hook priority configuration — Priority 70, after diff-aware-edit-analysis
+- [x] Integration with RepoMap — Uses RepoMap for multi-file context analysis
+- [x] Statistics tracking — Track edit analyses via hook execution
+
+## Phase 70: IDE Integration (Cursor Pattern)
+- [x] IDEIntegrationManager module — Manage IDE context detection and inline suggestions
+- [x] IDE detection — Detect VSCode, JetBrains, Vim, Neovim, Emacs, Sublime, Atom, Cursor via environment variables
+- [x] IDEContext interface — Track detected IDE, open files, active file, cursor position
+- [x] InlineSuggestion generation — Generate suggestions from evolution context, error patterns, competitor patterns
+- [x] IDENotification system — Send notifications to IDE for evolution events
+- [x] Open files management — Track and manage open files in IDE context
+- [x] SessionStart hook integration — Inject IDE context at session start with priority 93
+- [x] ideIntegration tool — Tool with 20 actions for IDE integration management
+- [x] Statistics tracking — Track sessions, suggestions, notifications by IDE type
+
+## Phase 71: Code Completion (Cursor Pattern)
+- [x] CodeCompletionManager module — Intelligent code completion based on codebase analysis
+- [x] Code pattern analysis — Extract and match code patterns for snippet suggestions
+- [x] Import suggestions — Suggest imports based on codebase import analysis
+- [x] Function signature extraction — Extract function signatures for signature help
+- [x] Multi-line completions — Support multi-line code completion patterns
+- [x] Context-aware suggestions — Generate completions based on surrounding code context
+- [x] Language detection — Detect language from file extension for appropriate patterns
+- [x] codeCompletion tool — Tool with 12 actions for code completion management
+- [x] Statistics tracking — Track completions, patterns used, confidence levels
+
+## Phase 72: Agentic Reasoning Memory
+- [x] ReasoningMemoryManager module — Store and recall reasoning chains across iterations
+- [x] Reasoning chain tracking — Track reasoning steps (analysis, decision, action, observation, conclusion)
+- [x] Pattern extraction — Extract successful reasoning patterns from past iterations
+- [x] Similar chain retrieval — Find similar past chains based on task description
+- [x] Reasoning guidance — Get guidance for new tasks based on past reasoning
+- [x] 4 default reasoning patterns — Standard Implementation, Exploration-First, Debug Cycle, Research Integration
+- [x] Keyword and tag extraction — Extract keywords and tags from task descriptions
+- [x] reasoningMemory tool — Tool with 16 actions for reasoning memory management
+- [x] Statistics tracking — Track chains, patterns, success rates, average steps per chain
+
+## Phase 73: Tool Usage Analytics
+- [x] ToolUsageAnalyticsManager module — Track and analyze tool usage patterns across sessions
+- [x] Tool usage recording — Record tool usage events with success/failure, duration, task type
+- [x] Tool statistics — Track usage counts, success rates, average durations per tool
+- [x] Tool combinations analysis — Identify frequently used tool combinations
+- [x] Usage insights — Generate insights (underutilized, high failure, optimal, recommended)
+- [x] Tool recommendations — Get tool recommendations based on task type
+- [x] Recommended tools per task type — Default recommendations for capability, reliability, feature tasks
+- [x] toolUsageAnalytics tool — Tool with 12 actions for analytics management
+- [x] Statistics tracking — Track records, unique tools, sessions, insights generated
+
+## Phase 74: Model Migration (Claude Code Pattern)
+- [x] ModelMigrationManager module — Manage model version migrations between LLM versions
+- [x] Migration rules — Default rules for Claude, GPT, DeepSeek model migrations
+- [x] File scanning — Scan files for migration opportunities with regex patterns
+- [x] Directory scanning — Recursively scan directories for migration opportunities
+- [x] Migration planning — Create migration plans with change previews
+- [x] Migration execution — Execute migrations with backup support
+- [x] Rollback support — Rollback completed migrations from backups
+- [x] Beta header migration — Update beta headers for new model versions
+- [x] API endpoint migration — Update API endpoints for new models
+- [x] modelMigration tool — Tool with 13 actions for migration management
+- [x] Statistics tracking — Track migrations, files modified, changes applied
+
+## Phase 75: Evolution Strategy Planner (Meta-Capability)
+- [x] EvolutionStrategyPlanner module — Meta-capability for planning optimal evolution strategies
+- [x] State analysis — Analyze current capability coverage, success rate, velocity
+- [x] Strategy recommendations — Recommend next evolution strategies with priorities and confidence
+- [x] 8 strategy types — fill-gaps, improve-reliability, add-new-capability, optimize-existing, integration-improvement, research-competitors, memory-enhancement, tool-chain-improvement
+- [x] Capability enablers — Predict which capabilities enable others for multiplier effects
+- [x] Strategic direction — Determine current strategic direction (expand, stabilize, integrate, optimize, evolve, maintain)
+- [x] Next phase suggestion — Suggest next ROADMAP phase based on analysis
+- [x] Strategic guidance — Get guidance for specific tasks with risk assessment
+- [x] Capability dependency graph — Track which capabilities enable others
+- [x] evolutionStrategy tool — Tool with 10 actions for strategy management
+- [x] Statistics tracking — Track analyses, recommendations, enablers identified
+
+## Phase 76: Evolution Timeline Generator
+- [x] EvolutionTimelineGenerator module — Generate visual timelines of evolution history
+- [x] Timeline events — Parse MEMORY.md scorecard for timeline events
+- [x] Phase identification — Group events into evolution phases
+- [x] Milestone detection — Identify key milestones (first, 10, 50, 100 capabilities)
+- [x] Trend analysis — Calculate velocity, success rate, and time trends
+- [x] Day-by-day breakdown — Track capabilities added per day
+- [x] evolutionTimeline tool — Tool with 6 actions (generate, format, stats, config, reset, help)
+- [x] Statistics tracking — Track timelines generated, events processed, phases identified
+
+## Phase 77: Context Budget PreToolUse Hook (Proactive Context Management Pattern)
+- [x] ContextBudgetPreToolUseHook — Monitor context budget during long sessions
+- [x] PreToolUse hook integration — Automatic context monitoring before tool operations
+- [x] Rate-limited checking — Only check every 10 seconds to avoid overhead
+- [x] Overflow detection — Critical warning when context exceeds 100%
+- [x] Warning thresholds — Alert at critical (85%) and warning (70%) levels
+- [x] Auto-executable suggestions — Show context reduction actions when overflow detected
+- [x] Context health status — Report usage percentage and token counts
+- [x] Integration with contextBudget tool — Uses existing ContextBudgetManager module
+
+---
+
+Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 78: Adaptive Reasoning Strategy Selection
+- [x] AdaptiveReasoningManager module — Automatically selects optimal reasoning strategies
+- [x] adaptiveReasoning tool — Tool for strategy selection, adaptation, and outcome recording
+- [x] 7 reasoning strategies — analytical, creative, systematic, exploratory, diagnostic, architectural, iterative
+- [x] Context detection — Automatic detection of task context from description
+- [x] Strategy profiles — Detailed profiles with strengths, weaknesses, optimal contexts
+- [x] Historical success tracking — Learn which strategies work best for different task types
+- [x] Learned preferences — Store and apply learned strategy preferences per context/task type
+- [x] Adaptation triggers — Warnings when strategy may need to change
+- [x] Statistics tracking — Track strategy performance across sessions
+
+## Phase 79: Predictive Error Prevention (Proactive Error Pattern)
+- [x] PredictiveErrorPreventionManager module — Proactively predicts errors BEFORE they occur
+- [x] predictiveErrorPrevention tool — Tool for error prediction, warnings, and prevention
+- [x] 8 default error patterns — TypeScript imports, lint errors, test timeouts, file not found, hook handlers, context overflow, regex patterns, git conflicts
+- [x] Probability and confidence scoring — Predict errors with quantified likelihood
+- [x] Prevention suggestions — Actionable recommendations to avoid predicted errors
+- [x] SessionStart hook integration — Inject proactive warnings at session start
+- [x] Learning from outcomes — Learn from errors that occur to improve predictions
+- [x] Statistics tracking — Track predictions, accuracy, prevention success rate
+
+## Phase 80: Git Workflow Automation (Claude Code commit-commands Pattern)
+- [x] GitWorkflowManager module — Streamlined git operations for evolution workflow
+- [x] gitWorkflow tool — Tool for git automation with 9 actions
+- [x] commit action — Generate commit message and commit staged/all changes
+- [x] commit-push-pr action — Full workflow: commit → push → create PR in one command
+- [x] clean-gone action — Remove stale local branches whose remote has been deleted
+- [x] status action — Get comprehensive git status summary
+- [x] branch-status action — Get detailed status for a specific branch
+- [x] branches action — List all local branches with sync status
+- [x] pr-status action — Get PR status for current/specified branch
+- [x] push action — Push current branch to remote
+- [x] create-branch action — Create and switch to new branch
+- [x] Branch status tracking — ahead/behind counts, gone detection, worktree detection
+- [x] PR description generation — Auto-generate PR descriptions from commit history
+- [x] GitHub CLI integration — Requires gh CLI for PR creation
+- [x] Statistics tracking — Track workflow operations performed
+
+## Phase 81: Voice-to-Code (Aider Pattern)
+- [x] VoiceToCodeManager module — Hands-free coding via voice commands
+- [x] voiceToCode tool — Tool for voice session management with 20 actions
+- [x] 12 default voice commands — File operations, git, testing, planning, checkpoints
+- [x] Voice session management — Start, stop, pause, resume sessions
+- [x] Speech recognition integration — Whisper API support for transcription
+- [x] Voice command parsing — Parse voice transcripts into tool invocations
+- [x] Confidence scoring — Match confidence for command recognition
+- [x] History and statistics — Track voice commands, sessions, success rates
+
+## Phase 82: Conversation Sharing (OpenHands Pattern)
+- [x] ConversationSharingManager module — Export, import, and share evolution sessions
+- [x] conversationSharing tool — Tool for session sharing with 15 actions
+- [x] Export formats — JSON, Markdown, HTML, CSV with configurable options
+- [x] Import sessions — Import shared sessions from JSON format
+- [x] Anonymization — Automatic redaction of emails, phone numbers, API keys, file paths
+- [x] Session management — Create, get, list, delete shared sessions
+- [x] Share link generation — Generate unique shareable session IDs
+- [x] Statistics tracking — Track exports, imports, sessions shared by format/source
+
+---
+
+Priority is set by GitHub issue reactions. Open an issue to suggest improvements!
+
+## Phase 84: Cache Warming (Aider Pattern)
+- [x] CacheWarmer module — Keep prompt cache alive during long sessions
+- [x] cacheWarmer tool — Tool for cache warming management with 12 actions
+- [x] Background warming thread — Periodic API pings to preserve cache
+- [x] Configurable intervals — Default 5 minute keepalive delay
+- [x] Token cache hit tracking — Track preserved cache tokens
+- [x] Cost savings estimation — Estimate cost saved from cache hits
+- [x] Manual ping support — On-demand cache warming ping
+- [x] Session management — Start, stop, pause, resume warming sessions
+- [x] TokenTracker integration — Track cache hit tokens for cost calculation
+- [x] Statistics tracking — Track pings, success rate, tokens preserved, cost saved
+
+## Phase 85: MCP Integration (Model Context Protocol)
+- [x] MCPClient module — Connect to MCP servers for external tools and data sources
+- [x] mcp tool — Tool for MCP server management with 24 actions
+- [x] Transport support — stdio, SSE, HTTP transport implementations
+- [x] Tool discovery — Automatically discover tools from connected servers
+- [x] Resource access — Read resources from MCP servers
+- [x] Prompt support — Use prompts from MCP servers
+- [x] Server management — Add, remove, enable, disable, connect, disconnect servers
+- [x] Sample servers — Pre-configured sample MCP servers (filesystem, git, fetch, memory, time)
+- [x] Statistics tracking — Track tool calls, success rates, server statuses
+
+## Phase 86: Copy/Paste to Web Chat (Aider Pattern)
+- [x] ClipboardManager module — Manage clipboard context for working with LLM web chats
+- [x] clipboard tool — Tool for clipboard operations with 12 actions
+- [x] File tracking — Track files to include in context
+- [x] Context generation — Generate formatted code context for clipboard
+- [x] Paste parsing — Parse LLM web chat responses for code changes
+- [x] Edit application — Apply parsed edits to files (create, edit, delete)
+- [x] Copy/paste mode — Automatic clipboard sync for seamless workflow
+- [x] Platform support — macOS, Linux, Windows clipboard operations
+- [x] Repo map integration — Include repository structure in context
+- [x] Statistics tracking — Track copies, pastes, files copied, edits applied
+
+## Phase 87: Coding Conventions (Aider Pattern)
+- [x] CodingConventionsManager module — Manage coding conventions for consistent code style
+- [x] conventions tool — Tool for convention management with 14 actions
+- [x] CONVENTIONS.md support — Load conventions from markdown files
+- [x] .conventions/ directory — Organize conventions by category
+- [x] 10 convention categories — libraries, types, style, patterns, testing, documentation, security, performance, accessibility, custom
+- [x] 6 default conventions — TypeScript types, async/await, error handling, naming, imports, documentation
+- [x] SessionStart hook — Auto-load conventions at session start
+- [x] Convention rules — Support examples, anti-examples, and severity levels
+- [x] Statistics tracking — Track conventions loaded, applications, issues found/fixed
+
+## Phase 88: Desktop Notifications (Aider Pattern)
+- [x] NotificationManager module — Manage desktop notifications for agent events
+- [x] notifications tool — Tool for notification management with 10 actions
+- [x] Cross-platform support — macOS (terminal-notifier, AppleScript), Linux (notify-send, zenity), Windows (PowerShell)
+- [x] Auto-detection — Automatically detect best notification method for platform
+- [x] Custom commands — Support custom notification commands with placeholders
+- [x] Remote notifications — Support Apprise for Slack, Discord, Pushbullet
+- [x] Notification types — complete, error, input, custom events
+- [x] Configuration — Sound, title, enabled/disabled per type
+- [x] Statistics tracking — Track notifications sent, success rate, by platform/type
+
+## Phase 89: Reasoning Model Support (Aider Pattern)
+- [x] ReasoningModelSupportManager module — Manage reasoning model configurations
+- [x] reasoningModel tool — Tool for reasoning model management with 11 actions
+- [x] OpenAI reasoning models — o3-mini, o3, o1, o1-preview, o1-mini with reasoning_effort (low/medium/high)
+- [x] Anthropic reasoning models — claude-3-7-sonnet, claude-sonnet-4 with thinking_tokens budget
+- [x] DeepSeek reasoning models — deepseek-r1, deepseek-reasoner with reasoning tag parsing (<think>...</think>)
+- [x] Model limitations — Temperature, streaming, system prompt restrictions per model
+- [x] Settings validation — Warn when applying unsupported settings to models
+- [x] API parameters — Get correct API parameters for each model
+- [x] Reasoning content parsing — Extract reasoning from tagged output
+- [x] Custom model support — Add custom reasoning model configurations
+- [x] Statistics tracking — Track models by provider, by setting, active configuration
+
+## Phase 90: Shell Tab Completion Generation (Aider Pattern)
+- [x] ShellCompletionGenerator module — Generate shell tab completion scripts for bash, zsh, and fish
+- [x] shellCompletion tool — Tool for generating and managing completion scripts
+- [x] Bash completion — Generate bash completion script with options and arguments
+- [x] Zsh completion — Generate zsh completion script with descriptions
+- [x] Fish completion — Generate fish completion script
+- [x] Install command — Install completions to appropriate shell directories
+- [x] Installation instructions — Get step-by-step installation instructions
+- [x] Auto-detect shell — Detect current shell from $SHELL environment
+- [x] Statistics tracking — Track generations and installations by shell type
+
+## Phase 91: Chat Modes (Aider Pattern)
+- [x] ChatModesManager module — Manage different interaction modes for the agent
+- [x] chatModes tool — Tool for managing chat modes (get, set, code, ask, architect, help, modes, workflow, stats, config, reset)
+- [x] Code mode — Make changes to code to satisfy requests (default)
+- [x] Ask mode — Discuss and answer questions without making changes
+- [x] Architect mode — Architect proposes changes, editor model implements (2-model approach)
+- [x] Help mode — Answer questions about usage, configuration, troubleshooting
+- [x] Mode indicator — Display current mode in prompt
+- [x] Ask/code workflow — Bounce between ask and code modes for better planning
+- [x] Mode-specific prompts — Different system prompt suffixes per mode
+- [x] Mode configuration — Track mode usage statistics and history
+
+## Phase 92: Interactive Linting with Auto-Fix (Aider Pattern)
+- [x] LintingManager module — Manage interactive linting with built-in linters
+- [x] linting tool — Tool for linting management (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help)
+- [x] Built-in linters — TypeScript (tsc, eslint), JavaScript (eslint), Python (pylint, mypy, ruff), Rust (cargo-clippy), Go (golangci-lint), JSON, YAML, Markdown
+- [x] Auto-fix capabilities — Automatic fixing of common lint errors
+- [x] Per-language configuration — Different linters for different file types
+- [x] Auto-fix patterns — Pattern-based fixes for trailing whitespace, unused vars, etc.
+- [x] Linter management — Add, remove, enable, disable custom linters
+- [x] Statistics tracking — Track linting runs, errors, fixes by linter and language
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 93: Browser UI (Aider Pattern)
+- [x] BrowserUIManager module — Manage web-based evolution interface with HTTP server
+- [x] browserUI tool — Tool for managing browser UI (start, stop, status, sessions, session, config, enable, disable, stats, reset, help)
+- [x] HTTP server — Built-in node:http server for web interface (no Express dependency)
+- [x] WebSocket support — Real-time communication using ws package
+- [x] Static file serving — Serve HTML/CSS/JS from ~/.paimon/browser-ui/
+- [x] Default UI — Auto-generated chat interface with Paimon branding
+- [x] Session management — Track browser sessions with messages and status
+- [x] Health check endpoint — /health endpoint for monitoring
+- [x] Sessions API — /api/sessions endpoint for session info
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 94: Context Identifier (Aider Pattern)
+- [x] ContextIdentifierManager module — Automatically identify which files need to be edited for a given request
+- [x] context tool — Tool for context identification (analyze, suggest, related, symbols, stats, config, enable, disable, clear, reset, help)
+- [x] Task analysis — Extract keywords and patterns from task descriptions
+- [x] File relevance scoring — Calculate relevance based on keywords, symbols, and task types
+- [x] Symbol extraction — Extract class/function/interface definitions from source files
+- [x] Related files discovery — Find files that share symbols with target file
+- [x] File suggestions — Suggest files based on task context with confidence scoring
+- [x] Multiple file types — Support TypeScript, JavaScript, Python, Rust, Go symbol extraction
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 95: Self-Improvement Suggestion Engine (Proactive Pattern)
+- [x] SelfImprovementEngine module — Proactively analyze codebase and suggest improvements
+- [x] selfImprovement tool — Tool for managing suggestions (scan, suggestions, suggestion, accept, dismiss, clear-dismissed, stats, config, enable, disable, reset)
+- [x] Code pattern detection — Detect code quality issues (TODO/FIXME, any types, empty catches)
+- [x] Performance pattern detection — Detect async-in-forEach, JSON serialization issues
+- [x] Architecture pattern detection — Detect namespace imports, class inheritance
+- [x] Security pattern detection — Detect dangerous code execution patterns
+- [x] Capability gap integration — Suggestions from capability gap detector
+- [x] Usage analytics integration — Suggestions from tool usage patterns
+- [x] Competitor pattern suggestions — Proactive suggestions for competitor features
+- [x] 8 improvement categories — code-quality, performance, architecture, capability, reliability, documentation, testing, security
+- [x] 4 priority levels — critical, high, medium, low with confidence scoring
+- [x] Statistics tracking — Track suggestions, acceptances, dismissals by category/source
+
+## Phase 96: Model Settings Display (Aider Pattern)
+- [x] ModelSettingsManager module — Display model settings and metadata for active models
+- [x] modelSettings tool — Tool for showing main/editor/weak model configuration
+- [x] Model metadata — Context window, pricing, capabilities (vision, reasoning, streaming, cache)
+- [x] 13 actions — show, all, main, editor, weak, compare, list, providers, set-main, set-editor, set-weak, metadata, help
+- [x] Model comparison — Compare two models side-by-side
+- [x] Model listing — List all available models with provider filtering
+- [x] Provider support — OpenAI, Anthropic, DeepSeek, Google models with pricing
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 97: Token Breakdown Display (Aider /tokens Pattern)
+- [x] TokenBreakdownManager module — Detailed token usage analysis and breakdown display
+- [x] tokenBreakdown tool — Tool for showing token distribution and cost analysis
+- [x] Token breakdown — Show tokens by system messages, chat history, repo map, and files
+- [x] Cost estimation — Calculate and display costs for each component
+- [x] Context window utilization — Show percentage of context window used with remaining tokens
+- [x] 7 actions — breakdown, summary, models, compare, cost, context, help
+- [x] Model comparison — Compare costs across models for given token count
+- [x] 15+ model configs — Context windows and pricing for GPT, Claude, DeepSeek models
+- [x] Utilization bar — Visual progress bar showing context usage
+- [x] Warning system — Warn when context window approaching/exceeding limits
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 98: OK Shortcut Command (Aider Pattern)
+- [x] OK action in chatModes tool — Quick way to accept proposed changes and proceed
+- [x] Automatic mode switch — Switches from ask to code mode when accepting
+- [x] Optional instructions — Accept changes with additional instructions
+- [x] Usage tracking — Track how often ok command is used
+- [x] Workflow improvement — Streamlines ask/code workflow with simple acceptance
+- [x] Competitor pattern added to capability-gap.ts
+
+## Phase 99: Evolution Optimization Dashboard
+- [x] OptimizationDashboardManager module — Unified view of all evolution metrics and recommendations
+- [x] Health score calculation — Combined score from success rate, time efficiency, error rate
+- [x] Trend visualization — Visual indicators for improvement/decline trends
+- [x] Capability utilization — Show which capabilities are used vs available
+- [x] Bottleneck identification — Identify slow tools or high-error patterns
+- [x] Recommendation engine — Suggest optimizations based on current state
+- [x] Session comparison — Compare current session to historical benchmarks
+- [x] Generate report function — Output comprehensive markdown dashboard

@@ -1,0 +1,828 @@
+/**
+ * Self-Improvement Suggestion Engine
+ *
+ * Proactively analyzes the codebase and suggests improvements to the agent.
+ * Unlike reactive error handling or task prediction, this is a forward-looking
+ * capability that identifies improvement opportunities before they're needed.
+ *
+ * Benefits:
+ * - Proactive identification of improvement opportunities
+ * - Code quality suggestions based on best practices
+ * - Missing capability detection from competitor patterns
+ * - Performance optimization suggestions
+ * - Architecture improvement recommendations
+ *
+ * Inspired by Aider's code analysis patterns and Claude Code's review capabilities.
+ */
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { getCapabilityGapDetector } from "./capability-gap.js";
+import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
+
+/**
+ * Improvement category types.
+ */
+export type ImprovementCategory =
+	| "code-quality"
+	| "performance"
+	| "architecture"
+	| "capability"
+	| "reliability"
+	| "documentation"
+	| "testing"
+	| "security";
+
+/**
+ * Priority level for suggestions.
+ */
+export type Priority = "critical" | "high" | "medium" | "low";
+
+/**
+ * Improvement suggestion.
+ */
+export interface ImprovementSuggestion {
+	id: string;
+	category: ImprovementCategory;
+	priority: Priority;
+	title: string;
+	description: string;
+	filePath?: string;
+	lineNumber?: number;
+	suggestedFix?: string;
+	impact: string;
+	effort: "simple" | "moderate" | "complex" | "very-complex";
+	confidence: number; // 0-100
+	source:
+		| "code-analysis"
+		| "competitor-pattern"
+		| "usage-analytics"
+		| "capability-gap"
+		| "best-practice";
+	timestamp: string;
+}
+
+/**
+ * Suggestion engine configuration.
+ */
+export interface SuggestionEngineConfig {
+	enabled: boolean;
+	scanOnStartup: boolean;
+	minConfidence: number; // 0-100, minimum confidence to include suggestion
+	maxSuggestions: number; // Maximum suggestions to return
+	scanPatterns: string[]; // File patterns to scan
+	excludePatterns: string[]; // Patterns to exclude
+}
+
+/**
+ * Suggestion engine stats.
+ */
+export interface SuggestionEngineStats {
+	totalSuggestions: number;
+	byCategory: Record<ImprovementCategory, number>;
+	byPriority: Record<Priority, number>;
+	bySource: Record<string, number>;
+	averageConfidence: number;
+	lastScanTime: string;
+	suggestionsAccepted: number;
+	suggestionsDismissed: number;
+}
+
+/**
+ * Code pattern for detection.
+ */
+interface CodePattern {
+	pattern: RegExp;
+	category: ImprovementCategory;
+	title: string;
+	description: string;
+	suggestedFix?: string;
+	priority: Priority;
+}
+
+/**
+ * Default configuration.
+ */
+const DEFAULT_CONFIG: SuggestionEngineConfig = {
+	enabled: true,
+	scanOnStartup: false,
+	minConfidence: 50,
+	maxSuggestions: 20,
+	scanPatterns: ["src/**/*.ts"],
+	excludePatterns: ["**/*.test.ts", "**/*.d.ts"],
+};
+
+/**
+ * Code patterns to detect for improvement suggestions.
+ * Note: Using string patterns to avoid security false positives
+ */
+function getCodePatterns(): CodePattern[] {
+	return [
+		// Code Quality Patterns
+		{
+			pattern: /TODO|FIXME|HACK|XXX/g,
+			category: "code-quality",
+			title: "Unresolved TODO/FIXME comment",
+			description: "Found unresolved comment that indicates incomplete work",
+			priority: "medium",
+		},
+		{
+			pattern: /console\.(log|warn|error)\([^)]*\)/g,
+			category: "code-quality",
+			title: "Console logging statement",
+			description: "Consider using a proper logging system instead of console",
+			priority: "low",
+		},
+		{
+			pattern: /:\s*any\s*[;:\)\[]/g,
+			category: "code-quality",
+			title: "Use of 'any' type",
+			description: "Consider using a more specific type for better type safety",
+			priority: "medium",
+		},
+		{
+			pattern: /catch\s*\([^)]*\)\s*\{\s*\}/g,
+			category: "reliability",
+			title: "Empty catch block",
+			description: "Empty catch blocks silently swallow errors. Add error handling.",
+			priority: "high",
+		},
+		// Performance Patterns
+		{
+			pattern: /\.forEach\s*\([^)]*=>\s*\{[^}]*await/g,
+			category: "performance",
+			title: "Async in forEach",
+			description: "forEach with async doesn't wait. Use for...of with await or Promise.all",
+			priority: "medium",
+		},
+		{
+			pattern: /JSON\.(parse|stringify)\s*\(/g,
+			category: "performance",
+			title: "JSON serialization",
+			description: "Consider caching JSON results if called frequently with same data",
+			priority: "low",
+		},
+		// Architecture Patterns
+		{
+			pattern: /import\s+\*\s+as\s+\w+\s+from/g,
+			category: "architecture",
+			title: "Namespace import",
+			description: "Consider named imports for better tree-shaking",
+			priority: "low",
+		},
+		{
+			pattern: /class\s+\w+\s+extends\s+\w+/g,
+			category: "architecture",
+			title: "Class inheritance",
+			description: "Consider composition over inheritance for flexibility",
+			priority: "low",
+		},
+	];
+}
+
+/**
+ * Security patterns to detect (for security category suggestions)
+ */
+function getSecurityPatterns(): CodePattern[] {
+	return [
+		{
+			pattern: /\beval\s*\(/g,
+			category: "security",
+			title: "Dynamic code execution",
+			description: "Dynamic code execution is dangerous. Review and use safer alternatives",
+			priority: "critical",
+		},
+		{
+			pattern: /new\s+Function\s*\(/g,
+			category: "security",
+			title: "Dynamic Function creation",
+			description: "Dynamic function creation can be unsafe. Review usage",
+			priority: "high",
+		},
+	];
+}
+
+/**
+ * Competitor patterns that could be added.
+ */
+const COMPETITOR_SUGGESTIONS: Omit<ImprovementSuggestion, "id" | "timestamp">[] = [
+	{
+		category: "capability",
+		priority: "medium",
+		title: "Auto-context detection",
+		description: "Automatically detect which files need to be read based on task description",
+		impact: "Reduces context gathering time and improves accuracy",
+		effort: "moderate",
+		confidence: 70,
+		source: "competitor-pattern",
+	},
+	{
+		category: "capability",
+		priority: "low",
+		title: "Interactive tutorial mode",
+		description: "Guide users through using Paimon with interactive tutorials",
+		impact: "Improves user onboarding and adoption",
+		effort: "moderate",
+		confidence: 60,
+		source: "competitor-pattern",
+	},
+	{
+		category: "performance",
+		priority: "medium",
+		title: "Parallel file analysis",
+		description: "Analyze multiple files in parallel for faster codebase understanding",
+		impact: "Faster codebase exploration for large projects",
+		effort: "moderate",
+		confidence: 75,
+		source: "competitor-pattern",
+	},
+	{
+		category: "capability",
+		priority: "low",
+		title: "Code generation templates",
+		description: "Pre-defined templates for common code generation patterns",
+		impact: "Faster implementation of common patterns",
+		effort: "simple",
+		confidence: 65,
+		source: "competitor-pattern",
+	},
+];
+
+/**
+ * Self-Improvement Suggestion Engine
+ * Analyzes codebase and suggests improvements proactively.
+ */
+export class SelfImprovementEngine {
+	private config: SuggestionEngineConfig;
+	private stats: SuggestionEngineStats;
+	private suggestions: Map<string, ImprovementSuggestion> = new Map();
+	private dataPath: string;
+	private dismissedIds: Set<string> = new Set();
+
+	constructor(configPath?: string) {
+		this.config = DEFAULT_CONFIG;
+		this.dataPath = path.join(process.env.HOME || ".", ".paimon", "suggestions.json");
+		this.stats = this.getDefaultStats();
+		this.loadData();
+	}
+
+	private getDefaultStats(): SuggestionEngineStats {
+		return {
+			totalSuggestions: 0,
+			byCategory: {
+				"code-quality": 0,
+				performance: 0,
+				architecture: 0,
+				capability: 0,
+				reliability: 0,
+				documentation: 0,
+				testing: 0,
+				security: 0,
+			},
+			byPriority: {
+				critical: 0,
+				high: 0,
+				medium: 0,
+				low: 0,
+			},
+			bySource: {},
+			averageConfidence: 0,
+			lastScanTime: "",
+			suggestionsAccepted: 0,
+			suggestionsDismissed: 0,
+		};
+	}
+
+	private loadData(): void {
+		try {
+			if (fs.existsSync(this.dataPath)) {
+				const data = JSON.parse(fs.readFileSync(this.dataPath, "utf-8"));
+				this.config = { ...DEFAULT_CONFIG, ...data.config };
+				this.stats = { ...this.getDefaultStats(), ...data.stats };
+				this.dismissedIds = new Set(data.dismissedIds || []);
+				if (data.suggestions) {
+					for (const s of data.suggestions) {
+						this.suggestions.set(s.id, s);
+					}
+				}
+			}
+		} catch {
+			// Use defaults
+		}
+	}
+
+	private saveData(): void {
+		try {
+			const dir = path.dirname(this.dataPath);
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			fs.writeFileSync(
+				this.dataPath,
+				JSON.stringify(
+					{
+						config: this.config,
+						stats: this.stats,
+						dismissedIds: Array.from(this.dismissedIds),
+						suggestions: Array.from(this.suggestions.values()),
+					},
+					null,
+					2,
+				),
+			);
+		} catch (error) {
+			console.error("Failed to save suggestion data:", error);
+		}
+	}
+
+	/**
+	 * Scan codebase for improvement suggestions.
+	 */
+	async scanCodebase(rootDir = "."): Promise<ImprovementSuggestion[]> {
+		if (!this.config.enabled) return [];
+
+		const suggestions: ImprovementSuggestion[] = [];
+
+		// 1. Scan for code patterns
+		const codeSuggestions = await this.scanCodePatterns(rootDir);
+		suggestions.push(...codeSuggestions);
+
+		// 2. Get capability gap suggestions
+		const gapSuggestions = this.getCapabilityGapSuggestions();
+		suggestions.push(...gapSuggestions);
+
+		// 3. Get usage analytics suggestions
+		const usageSuggestions = this.getUsageAnalyticsSuggestions();
+		suggestions.push(...usageSuggestions);
+
+		// 4. Add competitor pattern suggestions
+		suggestions.push(...this.getCompetitorSuggestions());
+
+		// Filter by confidence and dismissed
+		const filtered = suggestions
+			.filter((s) => s.confidence >= this.config.minConfidence)
+			.filter((s) => !this.dismissedIds.has(s.id))
+			.sort((a, b) => {
+				const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+				return priorityOrder[a.priority] - priorityOrder[b.priority];
+			})
+			.slice(0, this.config.maxSuggestions);
+
+		// Store suggestions
+		for (const s of filtered) {
+			this.suggestions.set(s.id, s);
+		}
+
+		// Update stats
+		this.stats.lastScanTime = new Date().toISOString();
+		this.stats.totalSuggestions = this.suggestions.size;
+		this.updateStats();
+		this.saveData();
+
+		return filtered;
+	}
+
+	/**
+	 * Scan files for code patterns.
+	 */
+	private async scanCodePatterns(rootDir: string): Promise<ImprovementSuggestion[]> {
+		const suggestions: ImprovementSuggestion[] = [];
+
+		const scanDir = async (dir: string): Promise<void> => {
+			const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+			for (const entry of entries) {
+				const fullPath = path.join(dir, entry.name);
+
+				if (entry.isDirectory()) {
+					if (!entry.name.startsWith(".") && entry.name !== "node_modules") {
+						await scanDir(fullPath);
+					}
+				} else if (entry.isFile() && fullPath.endsWith(".ts")) {
+					// Check exclude patterns
+					const relativePath = path.relative(rootDir, fullPath);
+					if (
+						this.config.excludePatterns.some((p) => relativePath.includes(p.replace("**/", "")))
+					) {
+						continue;
+					}
+
+					const fileSuggestions = this.scanFile(fullPath, rootDir);
+					suggestions.push(...fileSuggestions);
+				}
+			}
+		};
+
+		await scanDir(rootDir);
+		return suggestions;
+	}
+
+	/**
+	 * Scan a single file for patterns.
+	 */
+	private scanFile(filePath: string, rootDir: string): ImprovementSuggestion[] {
+		const suggestions: ImprovementSuggestion[] = [];
+
+		try {
+			const content = fs.readFileSync(filePath, "utf-8");
+			const allPatterns = [...getCodePatterns(), ...getSecurityPatterns()];
+
+			for (const pattern of allPatterns) {
+				let match: RegExpExecArray | null = null;
+				const regex = new RegExp(pattern.pattern.source, pattern.pattern.flags);
+
+				match = regex.exec(content);
+				while (match !== null) {
+					// Find line number
+					const lineNumber = content.substring(0, match.index).split("\n").length;
+
+					const suggestion: ImprovementSuggestion = {
+						id: `pattern-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+						category: pattern.category,
+						priority: pattern.priority,
+						title: pattern.title,
+						description: pattern.description,
+						filePath: path.relative(rootDir, filePath),
+						lineNumber,
+						suggestedFix: pattern.suggestedFix,
+						impact: `Improves ${pattern.category}`,
+						effort: "simple",
+						confidence: 80,
+						source: "code-analysis",
+						timestamp: new Date().toISOString(),
+					};
+
+					suggestions.push(suggestion);
+
+					match = regex.exec(content);
+				}
+			}
+		} catch {
+			// Skip files that can't be read
+		}
+
+		return suggestions;
+	}
+
+	/**
+	 * Get suggestions from capability gap detection.
+	 */
+	private getCapabilityGapSuggestions(): ImprovementSuggestion[] {
+		const suggestions: ImprovementSuggestion[] = [];
+
+		try {
+			const detector = getCapabilityGapDetector();
+			const gaps = detector.getAllGaps();
+
+			for (const gap of gaps.slice(0, 5)) {
+				const suggestion: ImprovementSuggestion = {
+					id: `gap-${gap.id}`,
+					category: "capability",
+					priority:
+						gap.severity === "critical" ? "critical" : gap.severity === "high" ? "high" : "medium",
+					title: `Missing capability: ${gap.type}`,
+					description: gap.description,
+					impact: "Fills identified capability gap",
+					effort: "moderate",
+					confidence: 85,
+					source: "capability-gap",
+					timestamp: new Date().toISOString(),
+				};
+
+				suggestions.push(suggestion);
+			}
+		} catch {
+			// Skip if capability gap detector not available
+		}
+
+		return suggestions;
+	}
+
+	/**
+	 * Get suggestions from usage analytics.
+	 */
+	private getUsageAnalyticsSuggestions(): ImprovementSuggestion[] {
+		const suggestions: ImprovementSuggestion[] = [];
+
+		try {
+			const analytics = getToolUsageAnalyticsManager();
+			const insights = analytics.analyzeUsage();
+
+			for (const insight of insights.slice(0, 3)) {
+				if (insight.type === "underutilized") {
+					const suggestion: ImprovementSuggestion = {
+						id: `usage-${insight.toolName}`,
+						category: "capability",
+						priority: "low",
+						title: `Underutilized tool: ${insight.toolName}`,
+						description: `Tool ${insight.toolName} has low usage. Consider promoting it or improving documentation.`,
+						impact: "Increases tool adoption and capability utilization",
+						effort: "simple",
+						confidence: 70,
+						source: "usage-analytics",
+						timestamp: new Date().toISOString(),
+					};
+					suggestions.push(suggestion);
+				} else if (insight.type === "high_failure") {
+					const suggestion: ImprovementSuggestion = {
+						id: `reliability-${insight.toolName}`,
+						category: "reliability",
+						priority: "high",
+						title: `High failure tool: ${insight.toolName}`,
+						description: `Tool ${insight.toolName} has high failure rate. Consider improving error handling.`,
+						impact: "Improves reliability and reduces failures",
+						effort: "moderate",
+						confidence: 80,
+						source: "usage-analytics",
+						timestamp: new Date().toISOString(),
+					};
+					suggestions.push(suggestion);
+				}
+			}
+		} catch {
+			// Skip if analytics not available
+		}
+
+		return suggestions;
+	}
+
+	/**
+	 * Get competitor-based suggestions.
+	 */
+	private getCompetitorSuggestions(): ImprovementSuggestion[] {
+		return COMPETITOR_SUGGESTIONS.map((s) => ({
+			...s,
+			id: `competitor-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+			timestamp: new Date().toISOString(),
+		}));
+	}
+
+	/**
+	 * Get all suggestions.
+	 */
+	getSuggestions(category?: ImprovementCategory, priority?: Priority): ImprovementSuggestion[] {
+		let filtered = Array.from(this.suggestions.values()).filter(
+			(s) => !this.dismissedIds.has(s.id),
+		);
+
+		if (category) {
+			filtered = filtered.filter((s) => s.category === category);
+		}
+
+		if (priority) {
+			filtered = filtered.filter((s) => s.priority === priority);
+		}
+
+		return filtered.sort((a, b) => {
+			const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+			return priorityOrder[a.priority] - priorityOrder[b.priority];
+		});
+	}
+
+	/**
+	 * Get a specific suggestion.
+	 */
+	getSuggestion(id: string): ImprovementSuggestion | undefined {
+		return this.suggestions.get(id);
+	}
+
+	/**
+	 * Accept a suggestion (mark as useful).
+	 */
+	acceptSuggestion(id: string): { success: boolean; message: string } {
+		const suggestion = this.suggestions.get(id);
+		if (!suggestion) {
+			return { success: false, message: "Suggestion not found" };
+		}
+
+		this.stats.suggestionsAccepted++;
+		this.dismissedIds.add(id);
+		this.saveData();
+
+		return { success: true, message: `Suggestion accepted: ${suggestion.title}` };
+	}
+
+	/**
+	 * Dismiss a suggestion.
+	 */
+	dismissSuggestion(id: string): { success: boolean; message: string } {
+		const suggestion = this.suggestions.get(id);
+		if (!suggestion) {
+			return { success: false, message: "Suggestion not found" };
+		}
+
+		this.stats.suggestionsDismissed++;
+		this.dismissedIds.add(id);
+		this.saveData();
+
+		return { success: true, message: `Suggestion dismissed: ${suggestion.title}` };
+	}
+
+	/**
+	 * Clear dismissed suggestions.
+	 */
+	clearDismissed(): { success: boolean; message: string; count: number } {
+		const count = this.dismissedIds.size;
+		this.dismissedIds.clear();
+		this.saveData();
+
+		return { success: true, message: `Cleared ${count} dismissed suggestions`, count };
+	}
+
+	/**
+	 * Update statistics.
+	 */
+	private updateStats(): void {
+		const suggestions = Array.from(this.suggestions.values());
+
+		// Reset counts
+		for (const cat of Object.keys(this.stats.byCategory) as ImprovementCategory[]) {
+			this.stats.byCategory[cat] = 0;
+		}
+		for (const pri of Object.keys(this.stats.byPriority) as Priority[]) {
+			this.stats.byPriority[pri] = 0;
+		}
+		this.stats.bySource = {};
+
+		// Count
+		let totalConfidence = 0;
+		for (const s of suggestions) {
+			this.stats.byCategory[s.category]++;
+			this.stats.byPriority[s.priority]++;
+			this.stats.bySource[s.source] = (this.stats.bySource[s.source] || 0) + 1;
+			totalConfidence += s.confidence;
+		}
+
+		this.stats.averageConfidence =
+			suggestions.length > 0 ? Math.round(totalConfidence / suggestions.length) : 0;
+	}
+
+	/**
+	 * Get statistics.
+	 */
+	getStats(): SuggestionEngineStats {
+		return { ...this.stats };
+	}
+
+	/**
+	 * Get configuration.
+	 */
+	getConfig(): SuggestionEngineConfig {
+		return { ...this.config };
+	}
+
+	/**
+	 * Update configuration.
+	 */
+	updateConfig(updates: Partial<SuggestionEngineConfig>): {
+		success: boolean;
+		config: SuggestionEngineConfig;
+	} {
+		this.config = { ...this.config, ...updates };
+		this.saveData();
+		return { success: true, config: this.config };
+	}
+
+	/**
+	 * Enable/disable suggestion engine.
+	 */
+	setEnabled(enabled: boolean): void {
+		this.config.enabled = enabled;
+		this.saveData();
+	}
+
+	/**
+	 * Reset statistics.
+	 */
+	resetStats(): { success: boolean; message: string } {
+		this.stats = this.getDefaultStats();
+		this.suggestions.clear();
+		this.saveData();
+		return { success: true, message: "Statistics and suggestions reset" };
+	}
+
+	/**
+	 * Format suggestions as markdown.
+	 */
+	formatSuggestions(suggestions: ImprovementSuggestion[]): string {
+		const priorityEmoji: Record<Priority, string> = {
+			critical: "🔴",
+			high: "🟠",
+			medium: "🟡",
+			low: "🟢",
+		};
+
+		const categoryEmoji: Record<ImprovementCategory, string> = {
+			"code-quality": "📝",
+			performance: "⚡",
+			architecture: "🏛️",
+			capability: "🔧",
+			reliability: "🛡️",
+			documentation: "📚",
+			testing: "🧪",
+			security: "🔒",
+		};
+
+		const lines: string[] = [
+			"## Self-Improvement Suggestions",
+			"",
+			`Found ${suggestions.length} improvement opportunities:`,
+			"",
+		];
+
+		// Group by priority
+		const byPriority = suggestions.reduce(
+			(acc, s) => {
+				if (!acc[s.priority]) acc[s.priority] = [];
+				acc[s.priority].push(s);
+				return acc;
+			},
+			{} as Record<Priority, ImprovementSuggestion[]>,
+		);
+
+		for (const priority of ["critical", "high", "medium", "low"] as Priority[]) {
+			const items = byPriority[priority];
+			if (!items || items.length === 0) continue;
+
+			lines.push(`### ${priorityEmoji[priority]} ${priority.toUpperCase()} (${items.length})`);
+			lines.push("");
+
+			for (const s of items) {
+				lines.push(`#### ${categoryEmoji[s.category]} ${s.title}`);
+				lines.push(`- **ID:** ${s.id}`);
+				lines.push(`- **Category:** ${s.category}`);
+				lines.push(`- **Description:** ${s.description}`);
+				if (s.filePath) {
+					lines.push(`- **File:** ${s.filePath}${s.lineNumber ? `:${s.lineNumber}` : ""}`);
+				}
+				lines.push(`- **Impact:** ${s.impact}`);
+				lines.push(`- **Effort:** ${s.effort}`);
+				lines.push(`- **Confidence:** ${s.confidence}%`);
+				lines.push(`- **Source:** ${s.source}`);
+				lines.push("");
+			}
+		}
+
+		return lines.join("\n");
+	}
+
+	/**
+	 * Format stats as markdown.
+	 */
+	formatStats(stats: SuggestionEngineStats): string {
+		const lines: string[] = [
+			"## Self-Improvement Engine Statistics",
+			"",
+			`**Total Suggestions:** ${stats.totalSuggestions}`,
+			`**Average Confidence:** ${stats.averageConfidence}%`,
+			`**Last Scan:** ${stats.lastScanTime || "Never"}`,
+			`**Accepted:** ${stats.suggestionsAccepted}`,
+			`**Dismissed:** ${stats.suggestionsDismissed}`,
+			"",
+			"### By Category",
+			"",
+		];
+
+		for (const [cat, count] of Object.entries(stats.byCategory)) {
+			if (count > 0) {
+				lines.push(`- ${cat}: ${count}`);
+			}
+		}
+
+		lines.push("", "### By Priority", "");
+
+		for (const [pri, count] of Object.entries(stats.byPriority)) {
+			if (count > 0) {
+				lines.push(`- ${pri}: ${count}`);
+			}
+		}
+
+		lines.push("", "### By Source", "");
+
+		for (const [source, count] of Object.entries(stats.bySource)) {
+			lines.push(`- ${source}: ${count}`);
+		}
+
+		return lines.join("\n");
+	}
+}
+
+// Singleton instance
+let engineInstance: SelfImprovementEngine | null = null;
+
+/**
+ * Get singleton engine instance.
+ */
+export function getSelfImprovementEngine(): SelfImprovementEngine {
+	if (!engineInstance) {
+		engineInstance = new SelfImprovementEngine();
+	}
+	return engineInstance;
+}
+
+/**
+ * Reset singleton instance.
+ */
+export function resetSelfImprovementEngine(): void {
+	engineInstance = null;
+}

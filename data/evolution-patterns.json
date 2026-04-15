@@ -3,31 +3,21 @@
     {
       "id": "skill-combo-evo",
       "type": "skill-combination",
-      "description": "Skills evolve have 100% success rate",
+      "description": "Skills evolve have 98% success rate",
       "characteristics": {
         "skills": [
           "evolve"
         ]
       },
-      "successRate": 100,
-      "firstTryRate": 100,
-      "averageTime": 13,
+      "successRate": 98,
+      "firstTryRate": 98,
+      "averageTime": 15,
       "confidence": 95,
-      "sampleSize": 22,
+      "sampleSize": 64,
       "examples": [
         {
-          "taskDescription": "SessionStart and Stop Hooks (OpenHands Pattern) - Agent lifecycle hooks for initialization and cleanup",
-          "date": "2026-04-02",
-          "time": 20,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Context Budget Monitoring Tool - Proactive context window monitoring with health status, warnings, and optimization suggestions",
-          "date": "2026-04-01",
+          "taskDescription": "Evolution Optimization Dashboard (Phase 99) - OptimizationDashboardManager module for unified view of evolution metrics, health score with 5 components (successRate, timeEfficiency, errorRate, capabilityUtilization, memoryQuality), trend visualization, capability utilization tracking, bottleneck identification, recommendation engine, session comparison, generateReport function",
+          "date": "2026-04-05",
           "time": 15,
           "skillsUsed": [
             "evolve"
@@ -36,9 +26,19 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Journal Auto-Truncation - Auto-truncate JOURNAL.md, archive old entries with summaries, reduce context bloat",
-          "date": "2026-04-01",
+          "taskDescription": "Verify Capability Gap Detector Accuracy - Verified that the exclusion list correctly excludes model IDs (gpt-4o, o1, o3) and MCP server names (filesystem). Direct Node.js tests confirm 0 false positives. Coverage is excellent: 100% ROADMAP complete, 100% competitor patterns implemented, 92% overall coverage. No code changes needed - code is correct.",
+          "date": "2026-04-05",
           "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix Capability Gap Detector False Positives (Round 3) - Fixed detectToolGaps() to exclude model IDs (gpt-4o, o1, o3, etc.) and MCP server names (filesystem) that were incorrectly matched as tool names. Added 24 entries to excludeNames set including model IDs and display names from model-settings metadata. Zero false positives now detected - all actual tool gaps are legitimate.",
+          "date": "2026-04-05",
+          "time": 10,
           "skillsUsed": [
             "evolve"
           ],
@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,47 +202,45 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 92% success, 85% high impact",
+      "description": "capability tasks: 95% success, 92% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 92,
-      "firstTryRate": 92,
-      "averageTime": 16,
+      "successRate": 95,
+      "firstTryRate": 95,
+      "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 59,
+      "sampleSize": 116,
       "examples": [
         {
-          "taskDescription": "Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns",
-          "date": "2026-04-02",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Explanatory Output Style Pattern (Claude Code Pattern) - Educational context injection at session start with 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety",
-          "date": "2026-04-02",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Auto-Invoke Skills Pattern (Claude Code Pattern) - Automatic skill suggestions based on task context with file patterns, keywords, tool usage, and task type triggers",
-          "date": "2026-04-02",
+          "taskDescription": "Evolution Optimization Dashboard (Phase 99) - OptimizationDashboardManager module for unified view of evolution metrics, health score with 5 components (successRate, timeEfficiency, errorRate, capabilityUtilization, memoryQuality), trend visualization, capability utilization tracking, bottleneck identification, recommendation engine, session comparison, generateReport function",
+          "date": "2026-04-05",
           "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix Capability Gap Detector False Positives (Round 3) - Fixed detectToolGaps() to exclude model IDs (gpt-4o, o1, o3, etc.) and MCP server names (filesystem) that were incorrectly matched as tool names. Added 24 entries to excludeNames set including model IDs and display names from model-settings metadata. Zero false positives now detected - all actual tool gaps are legitimate.",
+          "date": "2026-04-05",
+          "time": 10,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 10,
           "skillsUsed": [
             "evolve",
             "research"
@@ -251,7 +249,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "time-pattern-quick",
@@ -266,9 +264,29 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 5,
-      "confidence": 62,
-      "sampleSize": 4,
+      "confidence": 68,
+      "sampleSize": 6,
       "examples": [
+        {
+          "taskDescription": "Document New Tools (adaptiveReasoning, evolutionStrategy, evolutionTimeline, taskTracking) - Added documentation for 4 newly added tools in prompt.ts IMPORTANT section with usage examples and pattern references",
+          "date": "2026-04-04",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Update Competitor Pattern Status - Mark multi-file-context and diff-aware-planning as implemented in KNOWN_COMPETITOR_PATTERNS, add multi-file-context → edit-tool integration gap as implemented (Phase 68), reduces false positives in capability gap detection, accurate self-awareness",
+          "date": "2026-04-04",
+          "time": 5,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Fix Singularity git log format bug - Enable self-awareness tracking",
           "date": "2026-03-31",
@@ -278,50 +296,30 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Lint fix for biome.json (ignore superpowers)",
-          "date": "2026-03-30",
-          "time": 5,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Enhanced scorecard metrics",
-          "date": "2026-03-30",
-          "time": 5,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.558Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     },
     {
       "id": "skill-combo-evo-res",
       "type": "skill-combination",
-      "description": "Skills evolve + research have 80% success rate",
+      "description": "Skills evolve + research have 91% success rate",
       "characteristics": {
         "skills": [
           "evolve",
           "research"
         ]
       },
-      "successRate": 80,
-      "firstTryRate": 80,
+      "successRate": 91,
+      "firstTryRate": 91,
       "averageTime": 19,
       "confidence": 95,
-      "sampleSize": 20,
+      "sampleSize": 45,
       "examples": [
         {
-          "taskDescription": "Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns",
-          "date": "2026-04-02",
-          "time": 20,
+          "taskDescription": "OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 10,
           "skillsUsed": [
             "evolve",
             "research"
@@ -330,19 +328,8 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Explanatory Output Style Pattern (Claude Code Pattern) - Educational context injection at session start with 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety",
-          "date": "2026-04-02",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "research"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Auto-Invoke Skills Pattern (Claude Code Pattern) - Automatic skill suggestions based on task context with file patterns, keywords, tool usage, and task type triggers",
-          "date": "2026-04-02",
+          "taskDescription": "Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
           "time": 15,
           "skillsUsed": [
             "evolve",
@@ -350,11 +337,68 @@
           ],
           "success": true,
           "firstTry": true
+        },
+        {
+          "taskDescription": "Edit Format Support (Aider Pattern) - EditFormatManager module for managing code edit formats, editFormat tool with 12 actions (list, get, set, detect, recommend, formats, format, validate, convert, stats, config, help), 6 edit formats (diff, diff-fenced, whole, editor-diff, editor-whole, patch), model-specific format detection, format validation and conversion, competitor pattern added to capability-gap.ts",
+          "date": "2026-04-05",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "research"
+          ],
+          "success": true,
+          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-02T22:27:14.557Z"
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
+    },
+    {
+      "id": "task-type-reliability",
+      "type": "task-type-success",
+      "description": "reliability tasks: 100% success, 50% high impact",
+      "characteristics": {
+        "taskType": "reliability"
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 10,
+      "confidence": 76,
+      "sampleSize": 12,
+      "examples": [
+        {
+          "taskDescription": "Fix Capability Gap Detector Escaped Backtick Bug - Fixed regex in detectToolGaps() to handle escaped backticks (\\`) in prompt.ts. The regex was looking for literal backticks but prompt.ts uses escaped backticks in template strings. Changed from `/`([a-zA-Z][a-zA-Z0-9-]*)\\(\\{/g` to `/\\\\?`([a-zA-Z][a-zA-Z0-9-]*)\\(\\{/g` to match both literal and escaped backticks. All 75 documented tools now correctly match 75 implemented tools with zero false positives.",
+          "date": "2026-04-04",
+          "time": 10,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix Capability Gap Detector False Positives (Round 2) - Fixed bug where `!toolName.includes('Pattern')` incorrectly excluded legitimate tools like errorPatterns, changed to `!toolName.includes(' ')` to only exclude example patterns with spaces. Added documentation for bash, read, write, edit, glob, grep, find, ls, http, learningOutputStyle in prompt.ts IMPORTANT section. Updated detectAllGaps() to clear cached gaps before re-detecting. All 75 documented tools now match 75 implemented tools with zero gaps.",
+          "date": "2026-04-04",
+          "time": 20,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix Capability Gap Detector False Positives - Fixed detectToolGaps() to extract actual tool names from definitions, updated regex to match any tool usage pattern, fixed matching logic for proper string comparison, added exclusion list for example names",
+          "date": "2026-04-04",
+          "time": 15,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-05T15:20:10.049Z"
     }
   ],
-  "lastUpdated": "2026-04-02T22:27:14.558Z",
-  "sessionCount": 61
+  "lastUpdated": "2026-04-05T15:20:10.050Z",
+  "sessionCount": 128
 }

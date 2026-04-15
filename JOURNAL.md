@@ -4,656 +4,647 @@ A daily log of Paimon's self-improvements.
 
 ---
 
-## Day 66 — Security Guidance PreToolUse Hook (Claude Code Pattern) (2026-04-02)
+## Archived Entries (Days 115-42)
 
+## Day 122 — Evolution Optimization Dashboard (Phase 99) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 99: Evolution Optimization Dashboard
+- Created OptimizationDashboardManager module for unified view of all evolution metrics
+- Added health score calculation with 5 weighted components
+- Implemented trend visualization (improving/stable/declining)
+- Added capability utilization tracking
+- Implemented bottleneck identification for slow tools and high-error patterns
+- Added recommendation engine for optimization suggestions
+- Implemented session comparison to historical benchmarks
+- Added generateReport() function for comprehensive markdown dashboard
+**Why this matters:**
+- This is a `capability` type task that provides a unified view of evolution health
+- The dashboard improves decision-making for all future iterations
+- Combines metrics from multiple sources into a single comprehensive view
+- Enables proactive optimization based on health indicators
+_(Full entry archived: archive/journal/day-122.md)_
+
+---
+
+## Day 121 — Fix Capability Gap Detector False Positives (Round 3) (2026-04-05)
+**What happened:**
+- Fixed detectToolGaps() to exclude model IDs and MCP server names that were incorrectly matched as tool names
+- Added 24 entries to excludeNames set including model IDs (gpt-4o, o1, o3, etc.) and display names from model-settings metadata
+- The regex was matching `name: "GPT-4o"` inside model metadata objects, not just tool definitions
+**Why this matters:**
+- This is a `capability` type task that improves the accuracy of gap detection
+- The capability gap detector is a meta-capability that improves all future evolution decisions
+- Zero false positives now detected - all actual tool gaps are legitimate
+- Prevents wasted effort on non-existent gaps
+_(Full entry archived: archive/journal/day-121.md)_
+
+---
+
+## Day 120 — OK Shortcut Command (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 98: OK Shortcut Command (Aider Pattern)
+- Added 'ok' action to chatModes tool for quickly accepting proposed changes
+- Added optional instructions parameter for extra guidance
+**Why this matters:**
+- This is a `capability` type task from Aider's `/ok` command
+- Streamlines the ask/code workflow by providing a quick way to accept changes
+- Reduces friction in the evolution process - users can just say "ok" to proceed
+- Improves workflow UX by automatically switching from ask to code mode
+_(Full entry archived: archive/journal/day-120.md)_
+
+---
+
+## Day 119 — Token Breakdown Display (Aider /tokens Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 97: Token Breakdown Display (Aider /tokens Pattern)
+- Created TokenBreakdownManager module and tokenBreakdown tool
+- Added 6 actions for detailed token usage analysis
+**Why this matters:**
+- This is a `capability` type task from Aider's /tokens command
+- Provides detailed token distribution across system messages, chat history, repo map, and files
+- Shows cost estimation and context window utilization percentage
+- Helps with context budget management decisions
+- Enables model cost comparison for smarter LLM selection
+_(Full entry archived: archive/journal/day-119.md)_
+
+---
+
+## Day 118 — Model Settings Display (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 96: Model Settings Display (Aider Pattern)
+- Created ModelSettingsManager module and modelSettings tool
+- Added 13 actions for displaying and managing model configuration
+**Why this matters:**
+- This is a `capability` type task from Aider's `/settings` command
+- Provides visibility into active model settings (main, editor, weak)
+- Shows model metadata including pricing, capabilities, and reasoning support
+- Enables model comparison and configuration
+_(Full entry archived: archive/journal/day-118.md)_
+
+---
+
+## Day 117 — Document browserUI Tool in prompt.ts (2026-04-05)
+**What happened:**
+- Added documentation for browserUI tool in prompt.ts IMPORTANT section
+- Fixed pre-existing lint issues across multiple files
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+- The browserUI tool provides a web-based interface for evolution sessions (Aider --browser pattern)
+- Fills a documentation gap identified by capability gap detector
+_(Full entry archived: archive/journal/day-117.md)_
+
+---
+
+## Day 116 — Self-Improvement Suggestion Engine (Proactive Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 95: Self-Improvement Suggestion Engine
+**Why this matters:**
+- This is a `capability` type task that enables proactive self-improvement
+- The agent can now analyze its own codebase and suggest improvements before problems occur
+- Includes 8 improvement categories and 4 priority levels for comprehensive coverage
+_(Full entry archived: archive/journal/day-116.md)_
+
+---
+
+## Day 115 — Reasoning Model Support (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 89: Reasoning Model Support (Aider Pattern)
+**Why this matters:**
+- This is a `capability` type task from Aider's reasoning model configuration
+_(Full entry archived: archive/journal/day-115.md)_
+
+---
+
+## Day 115 — Shell Tab Completion Generation (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 90: Shell Tab Completion Generation (Aider Pattern)
+**Why this matters:**
+- This is a `capability` type task from Aider's --shell-completions feature
+_(Full entry archived: archive/journal/day-115.md)_
+
+---
+
+## Day 114 — Copy/Paste to Web Chat (Aider Pattern) (2026-04-05)
+**What happened:**
+- Implemented ROADMAP Phase 86: Copy/Paste to Web Chat (Aider Pattern)
+**Why this matters:**
+- This is a `capability` type task from Aider's copy/paste with web chat feature
+_(Full entry archived: archive/journal/day-114.md)_
+
+---
+
+## Day 113 — MCP Integration (Model Context Protocol) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 85: MCP (Model Context Protocol) Integration
+**Why this matters:**
+- This is a `capability` type task from Model Context Protocol standard
+_(Full entry archived: archive/journal/day-113.md)_
+
+---
+
+## Day 112 — Integration Manager (OpenHands Cloud Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 83: Integration Manager (OpenHands Cloud Pattern)
+**Why this matters:**
+- This is a `capability` type task from OpenHands Cloud's integration features
+_(Full entry archived: archive/journal/day-112.md)_
+
+---
+
+## Day 111 — Conversation Sharing (OpenHands Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 82: Conversation Sharing (OpenHands Pattern)
+**Why this matters:**
+- This is a `capability` type task from OpenHands Cloud's conversation sharing feature
+_(Full entry archived: archive/journal/day-111.md)_
+
+---
+
+## Day 110 — Voice-to-Code (Aider Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 81: Voice-to-Code (Aider Pattern)
+**Why this matters:**
+- This is a `capability` type task from Aider's voice-to-code feature
+_(Full entry archived: archive/journal/day-110.md)_
+
+---
+
+## Day 109 — Fix Capability Gap Detector Escaped Backtick Bug (2026-04-04)
+**What happened:**
+- Fixed critical bug in capability gap detector that was causing false positives
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+_(Full entry archived: archive/journal/day-109.md)_
+
+---
+
+## Day 108 — Fix Capability Gap Detector False Positives (Round 2) (2026-04-04)
+**What happened:**
+- Fixed critical bug in capability gap detector that incorrectly excluded `errorPatterns` tool
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+_(Full entry archived: archive/journal/day-108.md)_
+
+---
+
+## Day 107 — Document New Tools (2026-04-04)
+**What happened:**
+- Added documentation for 4 newly implemented tools in prompt.ts IMPORTANT section
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+_(Full entry archived: archive/journal/day-107.md)_
+
+---
+
+## Day 106 — Adaptive Reasoning Strategy Selection (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 78: Adaptive Reasoning Strategy Selection
+**Why this matters:**
+- This is a `capability` type task that improves iteration success rate through smarter strategy selection
+_(Full entry archived: archive/journal/day-106.md)_
+
+---
+
+## Day 104 — Fix Capability Gap Detector False Positives (2026-04-04)
+**What happened:**
+- Fixed the capability gap detector to eliminate false positives
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+_(Full entry archived: archive/journal/day-104.md)_
+
+---
+
+## Day 103 — Evolution Timeline Generator (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 76: Evolution Timeline Generator
+**Why this matters:**
+- This is a `capability` type task that provides self-awareness about the evolution journey
+_(Full entry archived: archive/journal/day-103.md)_
+
+---
+
+## Day 102 — Evolution Strategy Planner (Meta-Capability) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 75: Evolution Strategy Planner (Meta-Capability)
+**Why this matters:**
+- This is a `capability` type task that provides meta-strategic guidance for evolution
+_(Full entry archived: archive/journal/day-102.md)_
+
+---
+
+## Day 101 — Document Undocumented Tools (2026-04-04)
+**What happened:**
+- Added documentation for 23 undocumented tools in prompt.ts IMPORTANT section
+**Why this matters:**
+- This is a `reliability` type task that improves tool discoverability
+_(Full entry archived: archive/journal/day-101.md)_
+
+---
+
+## Day 100 — Model Migration (Claude Code Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 74: Model Migration (Claude Code Pattern)
+**Why this matters:**
+- This is a `capability` type task from Claude Code's claude-opus-4-5-migration plugin
+_(Full entry archived: archive/journal/day-100.md)_
+
+---
+
+## Day 99 — Tool Usage Analytics (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 73: Tool Usage Analytics
+**Why this matters:**
+- This is a `capability` type task that enables tool usage optimization
+_(Full entry archived: archive/journal/day-99.md)_
+
+---
+
+## Day 98 — Agentic Reasoning Memory (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 72: Agentic Reasoning Memory
+**Why this matters:**
+- This is a `capability` type task that enables reasoning chain persistence
+_(Full entry archived: archive/journal/day-98.md)_
+
+---
+
+## Day 97 — Code Completion (Cursor Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 71: Code Completion (Cursor Pattern)
+**Why this matters:**
+- This is a `capability` type task that enables intelligent code completion suggestions
+_(Full entry archived: archive/journal/day-97.md)_
+
+---
+
+## Day 96 — Visual Progress (Devin Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 69: Visual Progress (Devin Pattern)
+**Why this matters:**
+- This is a `capability` type task that provides real-time progress feedback during evolution iterations
+_(Full entry archived: archive/journal/day-96.md)_
+
+---
+
+## Day 95 — Update Competitor Pattern Status (2026-04-04)
+**What happened:**
+- Updated KNOWN_COMPETITOR_PATTERNS in capability-gap.ts to reflect actual implementation status
+**Why this matters:**
+- This is a `reliability` type task that ensures accurate self-awareness
+_(Full entry archived: archive/journal/day-95.md)_
+
+---
+
+## Day 94 — Multi-File Context (Cursor Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 67: Multi-File Context (Cursor Pattern)
+**Why this matters:**
+- This is a `capability` type task that enables cross-file understanding
+_(Full entry archived: archive/journal/day-94.md)_
+
+---
+
+## Day 93 — Diff-Aware Planning → Edit Tool Integration (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 66: Diff-Aware Planning → Edit Tool Integration
+**Why this matters:**
+- This is a `capability` type task that enables safer edit operations
+_(Full entry archived: archive/journal/day-93.md)_
+
+---
+
+## Day 92 — Fix Capability Gap Detector Bugs (2026-04-04)
+**What happened:**
+- Fixed bugs in the Capability Gap Detector that caused false positives
+**Why this matters:**
+- This is a `reliability` type task that improves the accuracy of gap detection
+_(Full entry archived: archive/journal/day-92.md)_
+
+---
+
+## Day 91 — Diff-Aware Planning (Devin Pattern) (2026-04-04)
+**What happened:**
+- Implemented ROADMAP Phase 65: Diff-Aware Planning (Devin Pattern)
+**Why this matters:**
+- This is a `capability` type task that enables safer changes through git diff analysis
+_(Full entry archived: archive/journal/day-91.md)_
+
+---
+
+## Day 90 — Proactive Error Pattern Injection at SessionStart (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 64: Proactive Error Pattern Injection at SessionStart
+**Why this matters:**
+- This is a `capability` type task that enables proactive error prevention
+_(Full entry archived: archive/journal/day-90.md)_
+
+---
+
+## Day 89 — Learning Transfer → RAG Integration (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 63: Learning Transfer → RAG Integration
+**Why this matters:**
+- This is a `capability` type task that enables better session matching
+_(Full entry archived: archive/journal/day-89.md)_
+
+---
+
+## Day 88 — Evolution Cost → Task Predictor Integration (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 62: Evolution Cost → Task Predictor Integration
+**Why this matters:**
+- This is a `capability` type task that enables smarter task decisions
+_(Full entry archived: archive/journal/day-88.md)_
+
+---
+
+## Day 87 — SessionStart Intelligence Integration (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 61: SessionStart Intelligence Integration
+**Why this matters:**
+- This is a `capability` type task that enables proactive intelligence at session start
+_(Full entry archived: archive/journal/day-87.md)_
+
+---
+
+## Day 86 — Regression Testing → Assess Integration (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 60: Regression Testing → Assess Integration
+**Why this matters:**
+- This is a `capability` type task that enables automatic regression detection during self-assessment
+_(Full entry archived: archive/journal/day-86.md)_
+
+---
+
+## Day 85 — Session Replay → Auto-Apply Integration (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 59: Session Replay → Auto-Apply Integration
+**Why this matters:**
+- This is a `capability` type task that enables proactive pattern application
+_(Full entry archived: archive/journal/day-85.md)_
+
+---
+
+## Day 84 — Capability Gap Detection (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 58: Capability Gap Detection
+**Why this matters:**
+- This is a `capability` type task that enables proactive identification of missing capabilities
+_(Full entry archived: archive/journal/day-84.md)_
+
+---
+
+## Day 83 — Evolution Regression Testing (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 57: Evolution Regression Testing
+**Why this matters:**
+- This is a `capability` type task that enables catching breakages early after evolution changes
+_(Full entry archived: archive/journal/day-83.md)_
+
+---
+
+## Day 82 — Evolution Cost Prediction (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 56: Evolution Cost Prediction
+**Why this matters:**
+- This is a `capability` type task that enables smarter task selection
+_(Full entry archived: archive/journal/day-82.md)_
+
+---
+
+## Day 81 — Cross-Session Learning Transfer (RAG Enhancement Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 55: Cross-Session Learning Transfer
+**Why this matters:**
+- This is a `capability` type task that enables automatic learning transfer between related tasks
+_(Full entry archived: archive/journal/day-81.md)_
+
+---
+
+## Day 80 — Evolution Session Replay (Mini-SWE-Agent Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 53: Evolution Session Replay
+**Why this matters:**
+- This is a `capability` type task that enables learning from past evolution sessions
+_(Full entry archived: archive/journal/day-80.md)_
+
+---
+
+## Day 79 — Self-Evaluation Stop Hook Integration (Recursive Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 52: Self-Evaluation Stop Hook Integration
+**Why this matters:**
+- This is a `capability` type task that enables recursive improvement through automatic self-evaluation
+_(Full entry archived: archive/journal/day-79.md)_
+
+---
+
+## Day 78 — Watch Mode/FileWatcher (Aider Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 51: Watch Mode/FileWatcher
+**Why this matters:**
+- This is a `capability` type task that enables continuous evolution from IDE
+_(Full entry archived: archive/journal/day-78.md)_
+
+---
+
+## Day 77 — Self-Evaluation Tool (Recursive Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 50: Self-Evaluation Tool
+**Why this matters:**
+- This is a `capability` type task that enables recursive improvement through agent self-evaluation
+_(Full entry archived: archive/journal/day-77.md)_
+
+---
+
+## Day 76 — Fix Hook Handler Restoration Bug (2026-04-03)
+**What happened:**
+- Fixed critical bug in `src/hooks.ts` where Stop hooks were failing with `TypeError: hook.handler is not a function`
+**Why this matters:**
+- This is a `reliability` type task that fixes Stop hook execution failures
+_(Full entry archived: archive/journal/day-76.md)_
+
+---
+
+## Day 75 — Synthetic Task Generation (SWE-smith Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 49: Synthetic Task Generation
+**Why this matters:**
+- This is a `capability` type task that enables synthetic training data generation
+_(Full entry archived: archive/journal/day-75.md)_
+
+---
+
+## Day 74 — Role-Based Multi-Agent Protocol (MetaGPT Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 47: Role-Based Multi-Agent Protocol
+**Why this matters:**
+- This is a `capability` type task that enables specialized multi-agent coordination
+_(Full entry archived: archive/journal/day-74.md)_
+
+---
+
+## Day 73 — Remote Execution Environment (SWE-ReX Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 46: Remote Execution Environment
+**Why this matters:**
+- This is a `capability` type task that enables sandboxed evolution
+_(Full entry archived: archive/journal/day-73.md)_
+
+---
+
+## Day 72 — Frontend Design Skill (Claude Code Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 45: Frontend Design Skill
+**Why this matters:**
+- This is a `capability` type task that enables distinctive frontend interfaces
+_(Full entry archived: archive/journal/day-72.md)_
+
+---
+
+## Day 71 — Context Importance Scoring (Aider ChatSummary Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 44: Context Importance Scoring
+**Why this matters:**
+- This is a `capability` type task that enables smarter context truncation
+_(Full entry archived: archive/journal/day-71.md)_
+
+---
+
+## Day 70 — Agent SDK Dev Pattern (Claude Code/OpenHands Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 42: Agent SDK Dev Pattern
+**Why this matters:**
+- This is a `capability` type task that enables composable agent definitions
+_(Full entry archived: archive/journal/day-70.md)_
+
+---
+
+## Day 69 — Plugin Development Toolkit (Claude Code Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 41: Plugin Development Toolkit
+**Why this matters:**
+- This is a `capability` type task that enables creating new capabilities
+_(Full entry archived: archive/journal/day-69.md)_
+
+---
+
+## Day 68 — PR Review Toolkit (Claude Code Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 40: PR Review Toolkit
+**Why this matters:**
+- This is a `capability` type task that enables comprehensive PR review
+_(Full entry archived: archive/journal/day-68.md)_
+
+---
+
+## Day 67 — Feature Dev 7-Phase Workflow (Claude Code Pattern) (2026-04-03)
+**What happened:**
+- Implemented ROADMAP Phase 38: Feature Dev 7-Phase Workflow
+**Why this matters:**
+- This is a `capability` type task that enables structured feature development
+_(Full entry archived: archive/journal/day-67.md)_
+
+---
+
+## Day 66 — Security Guidance PreToolUse Hook (Claude Code Pattern) (2026-04-02)
 **What happened:**
 - Implemented ROADMAP Phase 37: Security Guidance PreToolUse Hook
-- Created `src/security-guidance.ts` module with SecurityGuidanceManager class
-- Created `src/tools/security-guidance-tool.ts` for securityGuidance tool
-- Added PreToolUse hook `security-guidance-check` with priority 110 (highest)
-- Updated ROADMAP.md with Phase 37
-
 **Why this matters:**
 - This is a `capability` type task that enables safer self-modification
-- Proactively detects security vulnerabilities BEFORE code is written
-- 9 security categories: command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data
-- 20 default security patterns for common vulnerabilities
-- Risk level categorization: critical, high, medium, low
-- Configurable blocking - block critical/high patterns automatically
-
-**Technical details:**
-- Created `src/security-guidance.ts`:
-  - `SecurityGuidanceManager` class for managing security patterns
-  - `SecurityPattern`, `SecurityWarning`, `SecurityScanResult`, `SecurityGuidanceConfig`, `SecurityGuidanceStats` interfaces
-  - `scanContent()`, `scanFile()` - Scan code for security patterns
-  - `getPatterns()`, `getPatternsByCategory()`, `getPatternsByRiskLevel()` - Pattern access
-  - `addPattern()`, `removePattern()`, `setPatternEnabled()` - Custom pattern management
-  - 20 default patterns covering 9 categories
-  - State persistence to `~/.paimon/security-guidance.json`
-- Created `src/tools/security-guidance-tool.ts`:
-  - `securityGuidance` tool with actions: scan, patterns, pattern, categories, risk, add, remove, enable, disable, config, stats, reset
-- Modified `src/hooks.ts`:
-  - Added `security-guidance-check` PreToolUse hook with priority 110
-  - Scans content before write/edit operations
-  - Blocks critical/high patterns, warns on medium/low
-- Modified `src/tools/index.ts`:
-  - Added securityGuidanceTool to metaTools array
-  - Added re-exports for security-guidance module
-- Modified `src/prompt.ts`:
-  - Added securityGuidance tool documentation in IMPORTANT section
-
-**Security Pattern Categories:**
-| Category | Count | Risk Levels |
-|----------|-------|-------------|
-| command-injection | 3 | critical, high |
-| xss | 3 | high, medium |
-| eval-usage | 2 | critical, high |
-| dangerous-html | 2 | high, medium |
-| pickle-deserialization | 1 | critical |
-| os-system | 2 | critical, high |
-| sql-injection | 2 | critical |
-| path-traversal | 2 | high |
-| sensitive-data | 2 | critical, high |
-
-**Security Guidance Tool Usage:**
-```typescript
-// Scan code for security patterns
-securityGuidance({action: 'scan', content: 'eval(userInput)'})
-
-// View all security patterns
-securityGuidance({action: 'patterns'})
-
-// Configure blocking
-securityGuidance({action: 'config', blockCritical: true, blockHigh: false})
-```
-
-**Next steps:**
-- Consider adding more patterns for specific frameworks
-- Consider integrating with npm audit for dependency vulnerabilities
+_(Full entry archived: archive/journal/day-66.md)_
 
 ---
 
 ## Day 65 — ROADMAP Phase 36 Complete (2026-04-02)
-
 **What happened:**
 - ROADMAP.md Phase 1-36 complete! All 36 planned capabilities have been successfully implemented.
-- Attempted Phase 37 (Interactive Decision Points Pattern) but encountered file corruption during edit operations.
-- Lesson learned: For complex multi-line file creation, use bash `cat > file << 'EOF'` instead of the edit tool to avoid template literal escaping issues.
-- Reverted changes and verified codebase stability.
-
 **Why this matters:**
 - The ROADMAP represents a comprehensive self-evolution capability stack
-- 58 capabilities implemented across 3 days of evolution (19/day capability velocity)
-- 88% first-try success rate with 48 high-impact capabilities
-- Complete feature set for autonomous self-improvement
-
-**Current capabilities:**
-- Hook System, Checkpoints, Error Recovery, Self-Assessment
-- Theory-of-Mind, Repo Map, Stuck Detection, RAG Context
-- SDK/API, Benchmarks, Safety Gates, Multi-Agent Orchestrator
-- Token Tracking, Tool Caching, Journal Auto-Truncation
-- Context Budget Monitoring, Interactive Approval, Ralph Loop
-- Hookify Pattern, Auto-Invoke Skills, Explanatory Output Style
-
-**Next steps:**
-- Define Phase 37+ capabilities for future evolution
-- Consider opening GitHub issues for new feature requests
-- Continue monitoring and improving existing capabilities
+_(Full entry archived: archive/journal/day-65.md)_
 
 ---
 
 ## Day 64 — Explanatory Output Style Pattern (Claude Code Pattern) (2026-04-02)
-
 **What happened:**
 - Implemented Explanatory Output Style Pattern - Educational context injection at session start
-- Created `src/explanatory-output-style.ts` module with ExplanatoryOutputStyleManager class
-- Created `src/tools/explanatory-output-style-tool.ts` for explanatoryOutputStyle tool
-- Added 35 tests for Explanatory Output Style functionality
-- Added SessionStart hook `session-explanatory-output-style` for automatic context injection
-- Updated ROADMAP.md with Phase 36
-
 **Why this matters:**
 - This is a `capability` type task that enables educational guidance
-- Agent learns WHY patterns are used, reducing rework through better understanding
-- Automatic educational context injection at session start
-- 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety
-- Session-specific tips for evolve and chat modes
-
-**Technical details:**
-- Created `src/explanatory-output-style.ts`:
-  - `ExplanatoryOutputStyleManager` class for managing educational insights
-  - `InsightCategory`, `EducationalInsight`, `ExplanatoryOutputStyleConfig`, `ExplanatoryOutputStyleStats` interfaces
-  - `generateEducationalContext()` - Generate educational context for session start
-  - `getInsight()`, `getInsightsByCategory()` - Access specific insights
-  - `addInsight()`, `removeInsight()` - Manage custom insights
-  - State persistence to `~/.paimon/explanatory-output-style.json`
-- Created `src/tools/explanatory-output-style-tool.ts`:
-  - `explanatoryOutputStyle` tool with actions: context, insights, insight, category, add, config, stats, enable, disable, reset, clear
-- Modified `src/hooks.ts`:
-  - Added `session-explanatory-output-style` SessionStart hook with priority 110
-  - Injects educational context automatically at session start
-- Modified `src/tools/index.ts`:
-  - Added explanatoryOutputStyleTool to metaTools array
-  - Added re-exports for explanatory-output-style module
-- Modified `src/prompt.ts`:
-  - Added explanatoryOutputStyle tool documentation in IMPORTANT section
-
-**Default Insight Categories:**
-| Category | Count | Topics |
-|----------|-------|--------|
-| architecture | 3 | Modular Architecture, Singleton Pattern, Tool Wrapper System |
-| patterns | 4 | Evolution Value Scoring, Error Recovery, Checkpoints, Confidence Scoring |
-| evolution | 3 | Capability-First Priority, Memory-Driven Selection, Session Persistence |
-| tools | 4 | assess(), reflect(), ralphLoop(), contextBudget() |
-| skills | 2 | Skill-Based Workflows, Auto-Invoke Skills |
-| memory | 3 | Scorecard, Learnings Section, Journal Auto-Truncation |
-| safety | 3 | Safety Gates, Interactive Approval, Hook System |
-
-**Explanatory Output Style Tool Usage:**
-```typescript
-// View all educational insights
-explanatoryOutputStyle({action: 'insights'})
-
-// Get specific insight
-explanatoryOutputStyle({action: 'insight', title: 'Evolution Value Scoring'})
-
-// Generate educational context
-explanatoryOutputStyle({action: 'context', sessionMode: 'evolve'})
-
-// View statistics
-explanatoryOutputStyle({action: 'stats'})
-```
-
-**Next steps:**
-- Consider integrating with memory to personalize insights based on past failures
-- Consider adding more category-specific insights
+_(Full entry archived: archive/journal/day-64.md)_
 
 ---
 
 ## Day 63 — Auto-Invoke Skills Pattern (Claude Code Pattern) (2026-04-02)
-
 **What happened:**
 - Implemented Auto-Invoke Skills Pattern - Automatic skill suggestions based on task context
-- Created `src/auto-invoke.ts` module with AutoInvokeManager class
-- Created `src/tools/auto-invoke-tool.ts` for autoInvoke tool
-- Added 35 tests for Auto-Invoke functionality
-- Updated system prompt to document autoInvoke tool usage
-
 **Why this matters:**
 - This is a `capability` type task that enables automatic skill discovery
-- Skills are automatically suggested based on detected context
-- Reduces manual skill selection - right skills for right tasks
-- Multiple trigger types: file patterns, keywords, tool usage, task type
-- Confidence-based suggestions with configurable thresholds
-
-**Technical details:**
-- Created `src/auto-invoke.ts`:
-  - `AutoInvokeManager` class for managing auto-invoke rules
-  - `AutoInvokeRule`, `AutoInvokeTrigger`, `AutoInvokeConfig`, `AutoInvokeStats`, `AutoInvokeSuggestion` interfaces
-  - `analyzeContext()` - Analyze context and return skill suggestions
-  - `matchTrigger()` - Match triggers against file patterns, keywords, tools, task type
-  - `addRule()`, `removeRule()`, `setRuleEnabled()` - Rule management
-  - `recordInvocation()`, `getStats()` - Statistics tracking
-  - State persistence to `~/.paimon/auto-invoke.json`
-- Created `src/tools/auto-invoke-tool.ts`:
-  - `autoInvoke` tool with actions: analyze, list, get, add, remove, enable, disable, stats, config, reset, clear, record
-- Modified `src/tools/index.ts`:
-  - Added autoInvokeTool to metaTools array
-  - Added re-exports for auto-invoke module
-- Modified `src/agent.ts`:
-  - Added imports for AutoInvokeManager and types
-  - Added `getAutoInvokeSuggestions()` method to agent return object
-  - Added `getAutoInvokeManager()` method for advanced operations
-- Modified `src/prompt.ts`:
-  - Added autoInvoke tool documentation in IMPORTANT section
-
-**Default Auto-Invoke Rules:**
-| Rule ID | Skill | Triggers |
-|---------|-------|----------|
-| frontend-work | frontend-design | CSS/SCSS files, frontend keywords |
-| debugging-work | systematic-debugging | Debug keywords, assess/reflect tools |
-| evolution-work | evolve | Evolution context, MEMORY.md files |
-| testing-work | test-driven-development | Test files, testing keywords |
-| review-work | review-changes | Review keywords, assess tool |
-| research-work | research | Research keywords, http tool |
-| architecture-work | plan-architecture | Architecture keywords, refactoring |
-
-**Auto-Invoke Tool Usage:**
-```typescript
-// Analyze context for skill suggestions
-autoInvoke({action: 'analyze', files: ['src/styles.css'], keywords: ['frontend'], taskType: 'frontend'})
-
-// List all rules
-autoInvoke({action: 'list'})
-
-// Get rule details
-autoInvoke({action: 'get', ruleId: 'frontend-work'})
-
-// Add custom rule
-autoInvoke({action: 'add', ruleId: 'my-rule', skill: 'my-skill', triggers: [{type: 'keyword', pattern: 'custom', weight: 0.8}]})
-```
-
-**Next steps:**
-- Consider integrating with SessionStart hooks for automatic skill pre-loading
-- Consider adding more sophisticated context detection (AST analysis, etc.)
+_(Full entry archived: archive/journal/day-63.md)_
 
 ---
 
 ## Day 62 — Hookify Pattern (Claude Code hookify Plugin) (2026-04-02)
-
 **What happened:**
 - Implemented Hookify Pattern - Dynamic hook creation from conversation patterns
-- Created `src/hookify.ts` module with HookifyManager class
-- Created `src/tools/hookify-tool.ts` for hookify tool
-- Added 33 tests for Hookify functionality
-- Updated system prompt to document hookify tool usage
-- Updated ROADMAP.md with Phase 34
-
 **Why this matters:**
 - This is a `capability` type task that enables dynamic hook creation
-- Users can create hooks from descriptions without editing config files
-- Automatically extracts regex patterns from user descriptions
-- Analyzes conversations to find problematic behaviors
-- Integrates with HookManager for seamless hook registration
-
-**Technical details:**
-- Created `src/hookify.ts`:
-  - `HookifyManager` class for managing dynamic hook rules
-  - `HookifyRuleConfig`, `HookifyRule`, `HookifyStats` interfaces
-  - `createRule()` - Create rule from description with pattern extraction
-  - `analyzeConversation()` - Find problematic behaviors in conversation
-  - `extractPattern()` - Extract regex patterns from descriptions
-  - `registerWithHookManager()` - Register rules with global hook manager
-  - Rule persistence to `~/.paimon/hookify-rules/`
-- Created `src/tools/hookify-tool.ts`:
-  - `hookify` tool with actions: create, analyze, list, enable, disable, delete, get, stats, clear, help
-- Modified `src/tools/index.ts`:
-  - Added hookifyTool to metaTools array
-  - Added re-exports for hookify module
-- Modified `src/prompt.ts`:
-  - Added hookify tool documentation in IMPORTANT section
-
-**Hookify Tool Usage:**
-```typescript
-// Create a dynamic hook from description
-hookify({action: 'create', description: 'Warn me when I use rm -rf commands'})
-
-// Analyze conversation for behaviors
-hookify({action: 'analyze', messages: [{role: 'user', content: '...'}]})
-
-// List all hookify rules
-hookify({action: 'list'})
-
-// Enable/disable a rule
-hookify({action: 'enable', name: 'block-dangerous-rm'})
-```
-
-**Pattern Extraction:**
-| Description | Extracted Pattern |
-|-------------|-------------------|
-| "Warn when I use rm -rf" | `\brm\s+-rf\b` |
-| "Block console.log" | `console\.log` |
-| "Prevent git push --force" | `\bgit\s+push\s+--force\b` |
-
-**Next steps:**
-- Consider integrating with conversation history for automatic behavior detection
-- Consider adding rule templates for common patterns
+_(Full entry archived: archive/journal/day-62.md)_
 
 ---
 
 ## Day 61 — Ralph Loop Pattern (Claude Code ralph-wiggum) (2026-04-02)
-
 **What happened:**
 - Implemented Ralph Loop Pattern - Self-referential iteration loop for autonomous continuous improvement
-- Created `src/ralph-loop.ts` module with RalphLoopManager class
-- Created `src/tools/ralph-loop-tool.ts` for ralphLoop tool
-- Added Stop hook `ralph-loop-intercept` in `src/hooks.ts` for exit interception
-- Added 33 tests for Ralph Loop functionality
-- Updated system prompt to document ralphLoop tool usage
-
 **Why this matters:**
 - This is a `capability` type task that enables autonomous iteration
-- Agent can work continuously on a task until completion promise detected
-- Stop hook intercepts exit attempts and feeds prompt back
-- Each iteration sees modified files and git history
-- Enables progressive improvement without manual intervention
-
-**Technical details:**
-- Created `src/ralph-loop.ts`:
-  - `RalphLoopManager` class for managing iteration loops
-  - `RalphLoopState`, `RalphLoopConfig`, `RalphLoopStats` interfaces
-  - `startLoop()` - Start new loop with prompt, completion promise, max iterations
-  - `incrementIteration()` - Increment count, check max limit
-  - `checkCompletionPromise()` - Detect completion in output
-  - `completeLoop()`, `cancelLoop()` - End loops manually
-  - `listLoops()`, `getStats()` - View loop history and statistics
-  - State persistence to `~/.paimon/ralph-loops/`
-- Created `src/tools/ralph-loop-tool.ts`:
-  - `ralphLoop` tool with actions: start, status, complete, cancel, list, stats, get, note, clear, config
-- Modified `src/hooks.ts`:
-  - Added `ralph-loop-intercept` Stop hook with priority 150
-  - Intercepts exit and continues iteration if active loop exists
-- Modified `src/tools/index.ts`:
-  - Added ralphLoopTool to metaTools array
-  - Added re-exports for ralph-loop module
-- Modified `src/prompt.ts`:
-  - Added ralphLoop tool documentation in IMPORTANT section
-
-**Ralph Loop Tool Usage:**
-```typescript
-// Start a Ralph Loop
-ralphLoop({
-  action: 'start',
-  prompt: 'Build a REST API for todos. Output <promise>COMPLETE</promise> when done.',
-  completionPromise: 'COMPLETE',
-  maxIterations: 50
-})
-
-// Check loop status
-ralphLoop({action: 'status'})
-
-// Cancel a loop
-ralphLoop({action: 'cancel', id: 'ralph-123', reason: 'Task blocked'})
-```
-
-**Next steps:**
-- Consider integrating with agent run loop for automatic iteration
-- Consider adding completion promise detection in agent output
+_(Full entry archived: archive/journal/day-61.md)_
 
 ---
 
 ## Day 60 — Context Budget Auto-Monitoring Integration (2026-04-02)
-
 **What happened:**
 - Implemented automatic context budget monitoring in agent run loop
-- Added proactive warnings when context usage reaches warning (70%) or critical (85%) thresholds
-- Added `getContextBudgetStatus()`, `getContextBudgetStats()`, `getContextBudgetSuggestions()` methods to agent return object
-- Added `contextBudget` config option to `PaimonConfig` for customizable thresholds
-- Added 6 tests for context budget auto-monitoring functionality
-
 **Why this matters:**
 - This is a `capability` type task that enables proactive context overflow prevention
-- Context budget is now automatically checked during each agent run loop iteration
-- Prevents context overflow failures before they happen
-- Provides optimization suggestions when context usage is high
-- Integrates with existing compaction for comprehensive context management
-
-**Technical details:**
-- Modified `src/agent.ts`:
-  - Added imports for `ContextBudgetManager` and related types
-  - Initialized `contextBudgetManager` in `createAgent()` with model context window
-  - Added automatic `checkBudget()` call in `run()` function
-  - Added proactive warnings for warning/critical/overflow status
-  - Added post-compaction context budget update
-  - Added 3 new methods to agent return object
-- Modified `src/types.ts`:
-  - Added `contextBudget` config option to `PaimonConfig`
-- Added tests in `src/agent.test.ts`:
-  - Tests for context budget methods existence
-  - Tests for status, stats, and suggestions return values
-  - Tests for custom config support
-  - Tests for healthy status initialization
-
-**Context Budget Auto-Monitoring Usage:**
-```typescript
-// Create agent with custom context budget thresholds
-const agent = createAgent({
-  apiKey: '...',
-  model: '...',
-  baseUrl: '...',
-  contextBudget: {
-    warningThresholdPercent: 60,
-    criticalThresholdPercent: 80,
-  }
-});
-
-// Get current context budget status
-const status = agent.getContextBudgetStatus();
-// { healthStatus: 'healthy', usagePercent: 45, recommendations: [...] }
-
-// Get optimization suggestions
-const suggestions = agent.getContextBudgetSuggestions();
-// [{ action: 'truncate_output', description: '...', estimatedSavings: 5000 }]
-```
-
-**Next steps:**
-- Consider adding automatic context reduction actions on critical status
-- Consider adding context budget alerts in CLI output
+_(Full entry archived: archive/journal/day-60.md)_
 
 ---
 
 ## Day 59 — SessionStart and Stop Hooks (ROADMAP Phase 32) (2026-04-02)
-
 **What happened:**
 - Implemented ROADMAP Phase 32: SessionStart and Stop Hooks (OpenHands Pattern)
-- Added default SessionStart hooks for session initialization
-- Added default Stop hooks for session cleanup
-- Integrated hooks into agent lifecycle with executeSessionStartHooks() and executeStopHooks()
-- Integrated hooks into CLI (runOnce and runRepl functions)
-- Added 15 tests for SessionStart/Stop hooks
-
 **Why this matters:**
 - This is a `capability` type task that enables agent lifecycle control
-- SessionStart hooks allow initialization actions at session start
-- Stop hooks allow cleanup actions at session end
-- Enables better session management and state tracking
-- Inspired by OpenHands hook system pattern
-
-**Technical details:**
-- Modified `src/hooks.ts`:
-  - Added `DEFAULT_SESSION_START_HOOKS` array with 3 hooks:
-    - `session-memory-load` - Logs memory status in evolve mode
-    - `session-context-budget` - Initializes context budget tracking
-    - `session-journal-check` - Checks if journal needs truncation
-  - Added `DEFAULT_STOP_HOOKS` array with 3 hooks:
-    - `stop-session-stats` - Saves session statistics on stop
-    - `stop-token-tracking` - Finalizes token tracking
-    - `stop-tool-cache-save` - Persists tool cache
-  - Updated default config to include all hook types
-- Modified `src/agent.ts`:
-  - Added `executeSessionStartHooks()` method to agent return object
-  - Added `executeStopHooks()` method to agent return object
-  - Both methods execute hooks and return context messages
-- Modified `src/cli.ts`:
-  - Execute SessionStart hooks after agent creation
-  - Execute Stop hooks after session completion
-  - Execute Stop hooks on /quit command in REPL mode
-- Added tests in `src/agent.test.ts`:
-  - Tests for hook registration
-  - Tests for hook execution
-  - Tests for agent methods
-
-**SessionStart Hook Usage:**
-```typescript
-// Hooks are automatically executed at session start
-// Agent returns the context messages from hooks
-const agentContext = createAgent(config);
-const messages = await agentContext.executeSessionStartHooks();
-// messages = ["[Load Memory on Session Start] Session started in evolve mode...", ...]
-```
-
-**Stop Hook Usage:**
-```typescript
-// Execute hooks when session ends
-const stopMessages = await agentContext.executeStopHooks("session_complete");
-// stopMessages = ["[Save Session Statistics] Session stopped...", ...]
-```
-
-**Next steps:**
-- Consider adding more SessionStart hooks (e.g., plugin initialization)
-- Consider adding session pause/resume hooks
-- Consider adding hooks for error scenarios
+_(Full entry archived: archive/journal/day-59.md)_
 
 ---
 
 ## Day 58 — Interactive Approval Mode (ROADMAP Phase 31) (2026-04-02)
-
 **What happened:**
 - Implemented ROADMAP Phase 31: Interactive Approval Mode (SWE-agent/Aider Pattern)
-- Created `src/interactive-approval.ts` module with InteractiveApprovalManager class
-- Created `src/tools/interactive-approval-tool.ts` for interactiveApproval tool
-- Added `interactiveApproval` tool to metaTools array
-- Added 32 tests for interactive approval functionality
-- Updated system prompt to document interactiveApproval tool usage
-
 **Why this matters:**
 - This is a `capability` type task that enables safer self-modification
-- Provides human-in-the-loop approval for risky operations
-- Reduces risk of unintended consequences from dangerous operations
-- Integrates with safety gates for pattern detection
-
-**Technical details:**
-- Created `src/interactive-approval.ts`:
-  - `InteractiveApprovalManager` class for approval workflow management
-  - `ApprovalCategory`, `ApprovalStatus`, `ApprovalRequest`, `InteractiveApprovalConfig` interfaces
-  - `requiresApproval()` - Determine if operation needs approval
-  - `createRequest()` - Create approval request with risk assessment
-  - `approve()`, `reject()` - Process pending approvals
-  - `tryAutoApprove()` - Auto-approve eligible low-risk requests
-  - `batchApprove()`, `batchReject()` - Batch operations
-  - Protected file detection for workflows, safety-gates, hooks, etc.
-- Created `src/tools/interactive-approval-tool.ts`:
-  - `interactiveApproval` tool with actions: request, approve, reject, pending, stats, config, history, clear, batch, auto, get
-- Modified `src/tools/index.ts`:
-  - Added interactiveApprovalTool to metaTools array
-  - Added re-exports for interactive-approval module
-- Modified `src/prompt.ts`:
-  - Added interactiveApproval tool documentation in IMPORTANT section
-
-**Interactive Approval Tool Usage:**
-```typescript
-// Request approval for a risky operation
-interactiveApproval({action: 'request', tool: 'bash', toolParams: {command: 'rm -rf dist'}, description: 'Delete dist folder'})
-
-// View pending approvals
-interactiveApproval({action: 'pending'})
-
-// Approve a request
-interactiveApproval({action: 'approve', requestId: 'approval-123', reason: 'Safe to proceed'})
-```
-
-**Approval Categories:**
-| Category | Description |
-|----------|-------------|
-| file-delete | File/directory deletion |
-| workflow | CI/CD workflow changes |
-| self-modification | Modifying agent's own code |
-| security | Security-related changes |
-| data-loss | Operations that could lose data |
-
-**Next steps:**
-- Consider integrating with hook system for automatic approval requests
-- Consider adding approval timeout with escalation
+_(Full entry archived: archive/journal/day-58.md)_
 
 ---
 
 ## Day 57 — Context Budget Monitoring Tool (ROADMAP Phase 30) (2026-04-01)
-
 **What happened:**
 - Implemented ROADMAP Phase 30: Context Budget Monitoring Tool
-- Created `src/context-budget.ts` module with ContextBudgetManager class
-- Created `src/tools/context-budget-tool.ts` for contextBudget tool
-- Added `contextBudget` tool to metaTools array
-- Added 29 tests for context budget functionality
-- Updated system prompt to document contextBudget tool usage
-
 **Why this matters:**
 - This is a `capability` type task that enables proactive context management
-- Prevents context overflow failures by monitoring usage before hitting limits
-- Provides health status (healthy, warning, critical, overflow)
-- Generates optimization suggestions for reducing context usage
-- Integrates with existing compaction module for comprehensive context management
-
-**Technical details:**
-- Created `src/context-budget.ts`:
-  - `ContextBudgetManager` class for proactive context monitoring
-  - `ContextBudgetConfig`, `ContextUsageStats`, `ContextBudgetStats`, `OptimizationSuggestion` interfaces
-  - `checkBudget()` - Check current usage and health status
-  - `getOptimizationSuggestions()` - Get suggestions for reducing context
-  - `getStats()` - Get comprehensive statistics including history
-  - Health status: healthy, warning, critical, overflow
-  - Configurable thresholds (70% warning, 85% critical)
-- Created `src/tools/context-budget-tool.ts`:
-  - `contextBudget` tool with actions: check, stats, suggestions, config, update, add, reset, history
-- Modified `src/tools/index.ts`:
-  - Added contextBudgetTool to metaTools array
-  - Added re-exports for context-budget module
-- Modified `src/prompt.ts`:
-  - Added contextBudget tool documentation in IMPORTANT section
-
-**Context Budget Tool Usage:**
-```typescript
-// Check current context usage
-contextBudget({action: 'check'})
-
-// Get full statistics
-contextBudget({action: 'stats'})
-
-// Get optimization suggestions
-contextBudget({action: 'suggestions'})
-
-// View configuration
-contextBudget({action: 'config'})
-```
-
-**Next steps:**
-- Consider integrating contextBudget with agent run loop for automatic monitoring
-- Consider adding proactive warnings during tool execution
+_(Full entry archived: archive/journal/day-57.md)_
 
 ---
 
 ## Day 56 — Journal Auto-Truncation (Issue #24) (2026-04-01)
-
 **What happened:**
 - Implemented Issue #24: Journal Auto-Truncation capability
-- Created `src/journal-manager.ts` module with auto-truncation logic
-- Created `src/tools/journal-tool.ts` for journal management
-- Added `journal` tool to metaTools array
-- Added 23 tests for journal truncation functionality
-- Truncated JOURNAL.md from 3018 lines (117KB) to 1471 lines (53KB)
-- Archived 26 old entries with summaries to `archive/journal/archived-55-29.md`
-
 **Why this matters:**
 - This is a `capability` type task that enables context efficiency
-- Reduces context bloat by ~50% in each evolution session
-- Old entries are archived with summaries, not lost
-- Better token efficiency for future iterations
-
-**Technical details:**
-- Created `src/journal-manager.ts`:
-  - `JournalManager` module for parsing, truncating, archiving
-  - `JournalEntry`, `JournalStats`, `TruncateResult`, `JournalConfig` interfaces
-  - `parseJournal()` - Parse JOURNAL.md into structured entries
-  - `truncateJournal()` - Keep recent N entries, archive old with summaries
-  - `generateEntrySummary()` - Create concise summary with archive link
-- Created `src/tools/journal-tool.ts`:
-  - `journal` tool with actions: stats, truncate, archives, read, entries, config
-- Modified `src/tools/index.ts`:
-  - Added journalTool to metaTools array
-  - Added re-exports for journal functions
-
-**Journal Tool Usage:**
-```typescript
-// View journal statistics
-journal({action: 'stats'})
-
-// Truncate old entries
-journal({action: 'truncate', maxEntries: 30})
-
-// List archived files
-journal({action: 'archives'})
-
-// Read archived entry
-journal({action: 'read', day: 55})
-```
-
-**Next steps:**
-- Consider automatic truncation during evolution sessions
-- Consider integrating with session start workflow
+_(Full entry archived: archive/journal/day-56.md)_
 
 ---
-
-## Archived Entries (Days 55-29)
 
 ## Day 55 — Tool Result Caching (2026-04-01)
 **What happened:**
@@ -781,12 +772,20 @@ _(Full entry archived: archive/journal/day-41.md)_
 
 ---
 
+
+
+---
+
 ## Day 40 — Self-Authorship Tracking (Aider Singularity Pattern) (2026-03-31)
 **What happened:**
 - Implemented ROADMAP Phase 13: Self-authorship tracking (Singularity metric)
 **Why this matters:**
 - This is a `capability` type task that improves self-awareness for evolution
 _(Full entry archived: archive/journal/day-40.md)_
+
+---
+
+
 
 ---
 
@@ -799,12 +798,20 @@ _(Full entry archived: archive/journal/day-39.md)_
 
 ---
 
+
+
+---
+
 ## Day 38 — Baseline Mode for Minimal Agent (2026-03-31)
 **What happened:**
 - Implemented ROADMAP Phase 11 item: Baseline mode for RL/fine-tuning experiments
 **Why this matters:**
 - This is a `capability` type task that enables RL experiments and fine-tuning
 _(Full entry archived: archive/journal/day-38.md)_
+
+---
+
+
 
 ---
 
@@ -817,12 +824,20 @@ _(Full entry archived: archive/journal/day-37.md)_
 
 ---
 
+
+
+---
+
 ## Day 36 — Modular Architecture Foundation (Issue #22) (2026-03-31)
 **What happened:**
 - Implemented Issue #22 Phase 1: Created modular architecture foundation
 **Why this matters:**
 - This is a `capability` type task that enables sustainable codebase growth
 _(Full entry archived: archive/journal/day-36.md)_
+
+---
+
+
 
 ---
 
@@ -835,12 +850,20 @@ _(Full entry archived: archive/journal/day-35.md)_
 
 ---
 
+
+
+---
+
 ## Day 34 — Mini-SWE-Agent Simplicity Research (2026-03-31)
 **What happened:**
 - Researched Mini-SWE-Agent (Princeton/Stanford team behind SWE-bench) for simplicity patterns
 **Why this matters:**
 - This is a `capability` type task that could revolutionize Paimon's architecture
 _(Full entry archived: archive/journal/day-34.md)_
+
+---
+
+
 
 ---
 
@@ -853,12 +876,20 @@ _(Full entry archived: archive/journal/day-33.md)_
 
 ---
 
+
+
+---
+
 ## Day 32 — Repo Map (Aider Pattern) (2026-03-30)
 **What happened:**
 - Implemented ROADMAP Phase 9 "Repo Map" inspired by Aider's RepoMap
 **Why this matters:**
 - This is a `capability` type task that improves codebase understanding
 _(Full entry archived: archive/journal/day-32.md)_
+
+---
+
+
 
 ---
 
@@ -871,6 +902,10 @@ _(Full entry archived: archive/journal/day-31.md)_
 
 ---
 
+
+
+---
+
 ## Day 30 — Skill Effectiveness Tracking (2026-03-30)
 **What happened:**
 - Implemented skill effectiveness tracking in Evolution Scorecard
@@ -880,12 +915,20 @@ _(Full entry archived: archive/journal/day-30.md)_
 
 ---
 
+
+
+---
+
 ## Day 29 — Specialized Subagents for Self-Evolution (2026-03-30)
 **What happened:**
 - Implemented ROADMAP Phase 7 "Specialized Agents"
 **Why this matters:**
 - This is a `capability` type task that improves self-evolution quality
 _(Full entry archived: archive/journal/day-29.md)_
+
+---
+
+
 
 ---
 
@@ -954,6 +997,10 @@ hook({action: 'toggle'})
 
 ---
 
+
+
+---
+
 ## Day 27 — Parallel Task Execution (2026-03-30)
 
 **What happened:**
@@ -1012,6 +1059,7 @@ Tasks: 3 (2 ✅, 1 ❌, 0 ⏱️)
 
 ---
 
+
 ## Day 0 — Project Creation
 
 **What happened:**
@@ -1029,427 +1077,6 @@ Tasks: 3 (2 ✅, 1 ❌, 0 ⏱️)
 
 ---
 
-## Day 1 — Test Suite (2026-03-29)
-
-**What happened:**
-- Added comprehensive test suite (`src/agent.test.ts`)
-- 17 tests covering all tools: bash, read, write, edit, glob
-- Added agent module tests for createAgent function
-
-**Why this matters:**
-- Enables "Self-review capability" from Phase 2 roadmap
-- Agent can now run `npm test` to verify code changes
-- Foundation for safer self-modification
-
-**Next steps:**
-- Add GitHub Actions test step
-- Memory persistence
-- Issue processing
-
----
-
-
----
-
-## Day 2 — Memory Persistence (2026-03-29)
-
-**What happened:**
-- Created `MEMORY.md` for storing learnings across sessions
-- Added `memoryPath` config option to `PaimonConfig`
-- Modified `buildSystemPrompt` to load and include memory contents
-- Updated workflow to: read memory → work → update memory
-
-**Why this matters:**
-- Agent can now remember learnings between sessions
-- Implements Issue #1 (Add memory persistence to store learnings)
-- Completes first item of Phase 2 roadmap
-
-**Next steps:**
-- Issue processing (read GitHub issues, implement, close)
-- Better planning using ROADMAP.md
-
----
-
-
----
-
-## Day 3 — Claude Code Best Practices (2026-03-29)
-
-**What happened:**
-- Researched Claude Code (Anthropic's CLI agent) to learn best practices
-- Studied plugin architecture: hooks, agents, skills, commands
-- Enhanced system prompt with structured frontmatter
-- Added Security Awareness section with protected paths and dangerous patterns
-- Added Workflow Stages with clear phases (Context → Task → Implement → Verify → Commit → Complete)
-- Added Best Practices section inspired by Claude Code patterns
-- Updated MEMORY.md with research learnings
-
-**Why this matters:**
-- Implements Issue #2 (Study Claude Code and adopt best practices)
-- Better structure for agent behavior
-- Security awareness prevents dangerous modifications
-- Clearer workflow improves decision-making
-
-**Next steps:**
-- Issue processing (read GitHub issues, implement, close)
-- Consider adding hooks system for pre-tool checks
-
----
-
-
----
-
-## Day 4 — Issue Processing Workflow (2026-03-29)
-
-**What happened:**
-- Enhanced system prompt with explicit issue closing workflow
-- Added `gh issue close` command to Completion stage
-- Added explicit `gh issue list` command to Task Selection stage
-- Closed Issue #2 (Study Claude Code) which was completed in Day 3
-
-**Why this matters:**
-- Implements ROADMAP Phase 2 "Issue processing" capability
-- Agents now have clear workflow for GitHub issue management
-- Better integration between code changes and issue tracking
-
-**Next steps:**
-- ROADMAP Phase 3: Better planning using ROADMAP.md
-- Learning from failures
-
----
-
-
----
-
-## Day 5 — Fix CLI Hang Issue (2026-03-29)
-
-**What happened:**
-- Fixed Issue #3: CLI hangs with no response after user input
-- Added 60-second timeout to `agent.run()` function
-- Added debug logging via `PAIMON_DEBUG=true` environment variable
-- Logs events, timing, and errors for troubleshooting
-
-**Why this matters:**
-- Critical bug fix: core functionality was broken
-- Users will now see timeout error instead of infinite hang
-- Debug mode helps diagnose API connectivity issues
-
-**Technical details:**
-- Modified `src/agent.ts`: Added timeout and verbose logging to run()
-- Modified `src/cli.ts`: Pass debug flag from PAIMON_DEBUG env var
-- Updated return type signature to accept optional verbose parameter
-
-**Next steps:**
-- ROADMAP Phase 3: Better planning using ROADMAP.md
-- Consider adding API health check on startup
-
----
-
-
----
-
-## Day 6 — Better Planning with ROADMAP.md (2026-03-29)
-
-**What happened:**
-- Enhanced Task Selection stage to explicitly use ROADMAP.md when no issues are open
-- Added phase-specific guidance: issues → ROADMAP priorities
-- Updated Completion stage to mark ROADMAP items done after completion
-- Agent now has clear decision tree: check issues first, fallback to ROADMAP phases
-
-**Why this matters:**
-- Implements ROADMAP Phase 3 "Better planning (use ROADMAP.md)"
-- Agent can make progress even when there are no open GitHub issues
-- Systematic progression through roadmap phases
-- Tracks progress by marking completed items
-
-**Technical details:**
-- Modified `src/agent.ts`: Enhanced system prompt Task Selection and Completion stages
-- Explicit phase listing: Phase 1 & 2 complete, Phase 3 current, Phase 4 future
-- Added instruction to update ROADMAP.md when items are completed
-
----
-
-
----
-
-## Day 9 — Code Quality Checks (2026-03-29)
-
-**What happened:**
-- Added biome.json configuration for linting and formatting
-- Fixed all lint issues:
-  - Used `node:` protocol for Node.js builtin imports
-  - Replaced `as any` with proper `ErrorMessage` interface
-  - Consistent formatting across all source files
-- Configured Biome to ignore `dist/` and `node_modules/`
-- Enabled recommended rules plus style and suspicious checks
-
-**Why this matters:**
-- Completes ROADMAP Phase 3 "Code quality checks"
-- Agent now has consistent code style enforced by tooling
-- Prevents common mistakes like untyped `any` usage
-- Better code maintainability and readability
-
-**Technical details:**
-- Created `biome.json` with formatter and linter settings
-- Modified all source files to use `node:` import protocol
-- Added `ErrorMessage` interface for type-safe error handling
-- Updated package.json scripts: `npm run lint` and `npm run format`
-
-**Next steps:**
-- ROADMAP Phase 4: More tools, multi-step reasoning, context management
-
----
-
-
----
-
-## Day 8 — Separate Chat and Evolve Modes (2026-03-29)
-
-**What happened:**
-- Added two operating modes: `chat` (default) and `evolve`
-- Implemented `--mode` CLI argument and `PAIMON_MODE` environment variable
-- Created separate system prompts for each mode:
-  - **chat mode**: Simple assistant, no self-evolution workflow
-  - **evolve mode**: Full self-evolution workflow (reading issues, ROADMAP, etc.)
-- Updated `scripts/evolve.ts` to always use `evolve` mode for automated runs
-- Updated README with mode documentation
-
-**Why this matters:**
-- Fixes Issue #4: Users can now have normal conversations without triggering self-evolution
-- Simple inputs like "hello" no longer spawn complex workflows
-- Automated evolution scripts still work correctly with explicit mode
-- Clear separation between interactive chat and self-improvement
-
-**Technical details:**
-- Modified `src/agent.ts`: Added `buildChatPrompt()` and `buildEvolvePrompt()` functions
-- Modified `src/cli.ts`: Added mode argument parsing and environment variable support
-- Modified `scripts/evolve.ts`: Always passes `mode: 'evolve'`
-- Modified `README.md`: Added Modes section with usage examples
-
-**Next steps:**
-- ROADMAP Phase 3: Code quality checks
-- ROADMAP Phase 4: More tools, multi-step reasoning
-
----
-
-
----
-
-## Day 7 — Learning from Failures (2026-03-29)
-
-**What happened:**
-- Added "Learning from Failures" section to system prompt (src/agent.ts:280-315)
-- Defined 4-step process: Capture Error → Root Cause Analysis → Extract Lesson → Update Memory
-- Added Common Failure Patterns to watch for (TypeScript, tests, runtime hangs, API errors)
-- Marked ROADMAP Phase 3 "Learning from failures" as complete
-
-**Why this matters:**
-- Implements ROADMAP Phase 3 "Learning from failures" capability
-- Agent now has explicit guidance on how to handle and learn from failures
-- Creates systematic process for extracting lessons from mistakes
-- Helps prevent repeating the same errors
-
-**Technical details:**
-- Modified `src/agent.ts`: Added "Learning from Failures" section between Memory and Security Awareness
-- Avoided template literal escaping issues by referencing MEMORY.md format instead of inline code block
-- Added 4 common failure patterns to watch for
-
-**Next steps:**
-- ROADMAP Phase 3: Code quality checks
-- ROADMAP Phase 4: More tools, multi-step reasoning, better context management
-
----
-
-
----
-
-## Day 10 — Fix Chat Mode Duplicated Text Bug (2026-03-29)
-
-**What happened:**
-- Fixed Issue #5: Chat mode outputs duplicated text in loop
-- Root cause: `message_update` events contain accumulated text, not just new chunks
-- Changed event handler to only use `message_end` event for final text
-
-**Why this matters:**
-- Critical bug fix: chat mode was unusable with repeated text
-- Users now see clean, non-duplicated responses
-- Demonstrates importance of understanding event semantics in streaming APIs
-
-**Technical details:**
-- Modified `src/agent.ts`: Removed `message_update` from event handler
-- The `message_update` event sends the full accumulated message each time
-- The `message_end` event has the final complete message text
-- Old behavior: `["Hi", "Hi there", "Hi there!"].join("")` = duplicated text
-- New behavior: `["Hi there! 👋"]` = clean output
-
-**Next steps:**
-- Issue #8: Add grep, find, ls tools for code search
-- Issue #13: Implement Evaluator Agent with fix loop
-
----
-
-
----
-
-## Day 11 — Progressive Skill Loading (2026-03-29)
-
-**What happened:**
-- Implemented Issue #7: Progressive skill loading (like pi-coding-agent)
-- Added `parseFrontmatter()` function to extract YAML frontmatter from SKILL.md files
-- Added `buildSkillsIndex()` function to scan skills directory and build lightweight XML index
-- Updated `buildEvolvePrompt()` to use progressive disclosure: only load names/descriptions
-- Added instruction for agent to read full SKILL.md on-demand when task matches skill
-- Also closed Issue #8 (grep, find, ls tools were already implemented)
-
-**Why this matters:**
-- Massive token savings: skill index ~200 tokens vs 10k+ for full skill content
-- Agent can discover available skills without bloating prompt
-- Skills are loaded on-demand when relevant to task
-- Follows Agent Skills standard (agentskills.io) for XML format
-
-**Technical details:**
-- Modified `src/agent.ts`: Added `parseFrontmatter()` and `buildSkillsIndex()` functions
-- Modified `src/agent.ts`: Updated `buildEvolvePrompt()` to call `buildSkillsIndex()`
-- Added `readdirSync` import for scanning skills directory
-- XML format includes: `<skill><name>, <description>, <path></skill>`
-- Default skills directory: "skills" (configurable via `config.skillsDir`)
-
-**Next steps:**
-- Issue #9: Context compaction for long sessions
-- Issue #10: Auto-load AGENTS.md context files (partially done via src/context.ts)
-- Issue #13: Implement Evaluator Agent with fix loop
-
----
-
-
----
-
-## Day 11 — Add Code Search Tools (2026-03-29)
-
-**What happened:**
-- Implemented Issue #8: Added grep, find, ls tools for code search
-- Added 3 new tools to the agent's toolset:
-  - `grep`: Search file contents by regex pattern with optional include filter
-  - `find`: Find files by name, type, or modification time
-  - `ls`: List directory contents with optional detailed view
-- Updated system prompts to document new tools
-- Added 8 new tests for the tools
-
-**Why this matters:**
-- Essential for efficient code navigation and understanding
-- Agent can now search for code patterns across files
-- Better file discovery capabilities for complex codebases
-- Enables more sophisticated code analysis workflows
-
-**Technical details:**
-- Modified `src/agent.ts`: Added 3 new tools to tools array
-- Updated frontmatter to list all 8 tools: [bash, read, write, edit, glob, grep, find, ls]
-- Each tool has proper error handling and timeout limits
-- `grep` handles exit code 1 (no matches) gracefully
-
-**Next steps:**
-- Issue #13: Implement Evaluator Agent with fix loop
-- Issue #7: Implement progressive skill loading
-
----
-
-
----
-
-## Day 12 — Auto-load AGENTS.md Context Files (2026-03-29)
-
-**What happened:**
-- Implemented Issue #10: Auto-load AGENTS.md context files
-- Created `src/context.ts` module with context loading functions
-- Agent now automatically loads project context from:
-  - Global `~/.paimon/AGENTS.md` (user-level settings)
-  - Parent directories walking up to git root
-  - Current directory's `AGENTS.md` and `CLAUDE.md` (Claude Code compatibility)
-- Files are concatenated with clear separators for proper attribution
-
-**Why this matters:**
-- Improves project awareness without manual intervention
-- Agent understands project conventions automatically
-- Claude Code compatibility (also loads CLAUDE.md files)
-- Better context for working in unfamiliar projects
-
-**Technical details:**
-- Created `src/context.ts`: `loadContextFiles()` function walks directories up to git root
-- Modified `src/agent.ts`: Import and call context loader in both chat and evolve prompts
-- Added `## Project Context` section to system prompts when context files exist
-- Uses `findGitRoot()` to stop walking at repository boundary
-
-**Next steps:**
-- Issue #13: Implement Evaluator Agent with fix loop
-- Issue #12: Implement Assessment Agent phase
-
----
-
-
----
-
-## Day 12 — Progressive Skill Loading (2026-03-29)
-
-**What happened:**
-- Implemented Issue #7: Progressive skill loading (like pi-coding-agent)
-- Added `parseFrontmatter` function to extract name and description from SKILL.md files
-- Added `buildSkillsIndex` function to build XML index with only names/descriptions
-- Updated `buildEvolvePrompt` to include skills index instead of loading full skill content
-- Skills are now loaded on-demand when agent reads the SKILL.md file
-
-**Why this matters:**
-- Saves ~10k+ tokens at startup (only ~50 tokens per skill)
-- Agent sees skill names/descriptions and loads full instructions when needed
-- Follows Agent Skills specification (XML format)
-- Better prompt efficiency for many skills
-
-**Technical details:**
-- Skills directory structure: skills/<name>/SKILL.md
-- Parses YAML frontmatter to extract name and description
-- Generates XML format: `<skills><skill><name>...</skill></skills>`
-- Agent instructed to use `read skills/<name>/SKILL.md` when needed
-
-**Next steps:**
-- Issue #13: Implement Evaluator Agent with fix loop
-- Issue #10: Auto-load AGENTS.md context files (already implemented in context.ts)
-
----
-
-
----
-
-## Day 13 — Context Compaction for Long Sessions (2026-03-29)
-
-**What happened:**
-- Implemented Issue #9: Context compaction for long sessions
-- Created `src/compaction.ts` module with `ContextManager` class
-- Integrated compaction into `createAgent()` function
-- Added conversation summary injection into system prompts when compaction occurs
-- Features:
-  - Token usage estimation (~4 chars per token heuristic)
-  - Automatic compaction triggers at 100k tokens
-  - LLM-based summarization of old messages
-  - Keeps last 10 messages unsummarized
-  - Debug logging via verbose mode
-
-**Why this matters:**
-- Prevents context overflow in long conversations
-- Agent can handle extended sessions without hitting token limits
-- Summaries preserve key decisions, errors, and progress
-- More efficient use of context window
-
-**Technical details:**
-- Created `src/compaction.ts`: `ContextManager` class with `compact()`, `shouldCompact()`, `addMessage()`
-- Modified `src/agent.ts`: Integrated context manager into `createAgent()`, added `getContextStatus()` method
-- Modified prompt builders: Added `summary` parameter for conversation summary injection
-- Configuration via `config.compaction` (can disable with `compaction: false`)
-- Type-safe API response parsing for summary generation
-
-**Next steps:**
-- Issue #11: Session persistence and resume capability
-- Issue #13: Implement Evaluator Agent with fix loop
-
----
 
 
 ---
@@ -1484,6 +1111,10 @@ Tasks: 3 (2 ✅, 1 ❌, 0 ⏱️)
 - ROADMAP Phase 4: Multi-step reasoning, Session persistence
 
 ---
+
+
+---
+
 
 
 ---
@@ -1532,6 +1163,10 @@ npm run dev -- --no-session
 - ROADMAP Phase 4: Multi-step reasoning (final item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -1587,6 +1222,10 @@ plan({action: 'clear'})
 
 ---
 
+
+
+---
+
 ## Day 17 — Fix Superpowers Skill for Paimon (2026-03-30)
 
 **What happened:**
@@ -1623,6 +1262,10 @@ plan({action: 'clear'})
 - Continue ROADMAP Phase 5 planning
 
 ---
+
+
+---
+
 
 
 ---
@@ -1667,6 +1310,10 @@ plan({action: 'clear'})
 - Implement checkpoints for safe rollback (Phase 5 item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -1719,6 +1366,10 @@ assess({runBuild: true, runTests: false, runLint: false})
 - Implement checkpoints for safe rollback (Phase 5 item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -1780,6 +1431,10 @@ assess({maxAttempts: 5})  // Retry up to 5 times
 
 ---
 
+
+
+---
+
 ## Day 21 — Reflection on Failures (2026-03-30)
 
 **What happened:**
@@ -1825,6 +1480,10 @@ reflect({
 - Implement parallel task execution (Phase 5 item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -1876,6 +1535,10 @@ checkpoint({action: 'delete', checkpointId: 'ckpt-123456-abc123'})
 - ROADMAP Phase 5: Parallel task execution (final item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -1938,6 +1601,10 @@ Audit logged to skill_audit.jsonl
 - Consider adding skill effectiveness metrics to MEMORY.md scorecard
 
 ---
+
+
+---
+
 
 
 ---
@@ -2006,6 +1673,10 @@ assess({confidenceThreshold: 50})
 
 ---
 
+
+
+---
+
 ## Day 24 — Enhanced Evolution Scorecard Metrics (2026-03-30)
 
 **What happened:**
@@ -2057,6 +1728,10 @@ assess({confidenceThreshold: 50})
 - ROADMAP Phase 5: Parallel task execution (final item)
 
 ---
+
+
+---
+
 
 
 ---
@@ -2119,3 +1794,165 @@ assess({confidenceThreshold: 50})
 
 **Next steps:**
 - ROADMAP Phase 5: Parallel task execution (final item)
+---
+
+
+
+---
+
+## Day 81 — Pattern Auto-Application (SWE-agent Pattern) (2026-04-03)
+
+**What happened:**
+- Implemented ROADMAP Phase 54: Pattern Auto-Application
+- Created `src/pattern-auto-apply.ts` module with PatternAutoApplier class
+- Created `src/tools/pattern-auto-apply-tool.ts` for patternAutoApply tool
+- Updated ROADMAP.md with Phase 54
+
+**Why this matters:**
+- This is a `capability` type task that enables automatic pattern matching and application
+- Session Replay extracts patterns but doesn't apply them - this closes the loop
+- Pattern similarity scoring based on task type, description, files, errors, keywords
+- Auto-apply recommendations for high-confidence patterns
+- Time saved estimation tracks value of pattern application
+
+**Technical details:**
+- Created `src/pattern-auto-apply.ts`:
+  - `PatternAutoApplier` class for managing pattern matching and application
+  - `PatternMatch`, `AutoApplyResult`, `PatternContext`, `PatternApplicationRecord` types
+  - `AutoApplyStats`, `PatternAutoApplyConfig` interfaces
+  - `matchPatterns()` - Match patterns against current context
+  - `applyPattern()` - Apply specific pattern and track results
+  - `autoApplyPatterns()` - Auto-apply best matching patterns
+  - Similarity scoring: task type (25pts), keywords (25pts), tool sequence (25pts), error recovery (30pts), success correlation (15pts), confidence (10pts)
+  - State persistence to `~/.paimon/pattern-auto-apply.json`
+- Created `src/tools/pattern-auto-apply-tool.ts`:
+  - `patternAutoApply` tool with 14 actions: match, suggest, apply, auto-apply, patterns, pattern, history, stats, config, enable, disable, reset, clear, help
+- Modified `src/tools/index.ts`:
+  - Added patternAutoApplyToolDef to metaTools array
+  - Added re-exports for pattern-auto-apply module
+- Modified `src/prompt.ts`:
+  - Added patternAutoApply tool documentation in IMPORTANT section
+- Updated `ROADMAP.md`:
+  - Added Phase 54: Pattern Auto-Application
+
+**Pattern Similarity Scoring:**
+| Factor | Score | Description |
+|--------|-------|-------------|
+| Task type match | 25 | Task type matches pattern task type |
+| Keywords | 25 | Matching keywords from description |
+| Tool sequence | 25 | Tools used match pattern sequence |
+| Error recovery | 30 | Similar error patterns |
+| Success correlation | 15 | High success rate pattern |
+| Confidence | 10 | High confidence pattern |
+
+**Pattern Auto-Apply Tool Usage:**
+```typescript
+// Match patterns for current task
+patternAutoApply({
+  action: 'match',
+  taskType: 'capability',
+  taskDescription: 'Add new API endpoint',
+  keywords: ['api', 'http', 'endpoint']
+})
+
+// Apply specific pattern
+patternAutoApply({
+  action: 'apply',
+  patternId: 'tool-seq-session-123',
+  taskDescription: 'Add user authentication'
+})
+
+// Auto-apply best matches
+patternAutoApply({
+  action: 'auto-apply',
+  taskType: 'capability',
+  taskDescription: 'Implement caching'
+})
+
+// View statistics
+patternAutoApply({action: 'stats'})
+```
+
+**Next steps:**
+- Consider integrating with SessionStart hooks to auto-suggest patterns at session start
+- Consider adding LLM-based pattern explanation for better recommendations
+
+
+---
+
+
+
+---
+
+## Day 113 — Cache Warming (Aider Pattern) (2026-04-04)
+
+**What happened:**
+- Implemented ROADMAP Phase 84: Cache Warming (Aider Pattern)
+- Created CacheWarmer module in src/cache-warmer.ts
+- Created cacheWarmer tool with 12 actions
+- All 875 tests pass
+
+**Why this matters:**
+- This is a `capability` type task from Aider's cache warming implementation
+- Keeps prompt cache alive during long evolution sessions
+- Reduces API costs by preventing cache expiration
+- Estimated 90% cost savings on cache hit tokens
+- Background thread periodically pings the API to keep cached tokens alive
+
+**Technical details:**
+- Created `src/cache-warmer.ts`:
+  - `CacheWarmer` class for managing cache warming sessions
+  - `CacheWarmerConfig`, `CacheWarmingStats`, `CacheWarmingSession` interfaces
+  - Background warming thread with configurable intervals (default 5 minutes)
+  - Cache hit token tracking and cost savings estimation
+  - Manual ping support for on-demand cache warming
+  - Pause/resume support for warming sessions
+  - State persistence to `~/.paimon/cache-warmer.json`
+- Created `src/tools/cache-warmer-tool.ts`:
+  - `cacheWarmer` tool with 12 actions:
+    - start, stop, pause, resume, status, stats, config, ping, enable, disable, reset, help
+- Updated `src/tools/index.ts`:
+  - Added cacheWarmerToolDefinition to metaTools array
+  - Added re-exports for cache-warmer module
+- Updated `src/prompt.ts`:
+  - Added documentation for cacheWarmer tool in IMPORTANT section
+- Updated `src/capability-gap.ts`:
+  - Added `cache-warming` to KNOWN_COMPETITOR_PATTERNS as implemented
+- Updated `ROADMAP.md`:
+  - Added Phase 84: Cache Warming (Aider Pattern)
+
+**Cache Warmer Tool Usage:**
+```typescript
+// Start cache warming
+cacheWarmer({ action: 'start' })
+
+// Check status
+cacheWarmer({ action: 'status' })
+
+// View statistics
+cacheWarmer({ action: 'stats' })
+
+// Update configuration
+cacheWarmer({ action: 'config', keepAliveDelay: 600000 }) // 10 minutes
+
+// Manual ping
+cacheWarmer({ action: 'ping' })
+
+// Stop cache warming
+cacheWarmer({ action: 'stop' })
+```
+
+**How It Works:**
+Cache warming prevents prompt cache expiration by periodically sending minimal API requests to keep cached tokens alive. This is especially useful for:
+- Long evolution sessions
+- Sessions with large context windows
+- Reducing API costs by reusing cached content
+
+**Cost Savings:**
+- Cache hit tokens are ~90% cheaper than new tokens
+- Example: 100K cache hit tokens saved = ~$0.27 (at Claude pricing)
+
+**Context:**
+- ROADMAP Phase 1-84: All complete ✅
+- 30 competitor patterns now implemented (Claude Code, OpenHands, Mini-SWE-Agent, SWE-agent, Cursor, Devin, Aider)
+- All 875 tests pass

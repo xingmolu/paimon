@@ -495,6 +495,67 @@ export class ErrorPatternLearner {
 	}
 
 	/**
+	 * Get top patterns for proactive injection at session start
+	 * Returns patterns sorted by occurrences and confidence
+	 */
+	getTopPatternsForInjection(maxPatterns = 5): Array<{
+		id: string;
+		type: string;
+		description: string;
+		solution: string;
+		confidence: number;
+	}> {
+		const patterns = Array.from(this.patterns.values())
+			.filter((p) => p.confidence >= 70) // Only high-confidence patterns
+			.sort((a, b) => {
+				// Sort by: occurrences (primary), confidence (secondary)
+				const scoreA = a.occurrences * 10 + a.confidence;
+				const scoreB = b.occurrences * 10 + b.confidence;
+				return scoreB - scoreA;
+			})
+			.slice(0, maxPatterns);
+
+		return patterns.map((p) => ({
+			id: p.id,
+			type: p.type,
+			description: p.description,
+			solution: p.solution,
+			confidence: p.confidence,
+		}));
+	}
+
+	/**
+	 * Format top patterns for proactive injection context
+	 */
+	formatTopPatternsForInjection(maxPatterns = 5): string {
+		const topPatterns = this.getTopPatternsForInjection(maxPatterns);
+
+		if (topPatterns.length === 0) {
+			return "";
+		}
+
+		const lines: string[] = [
+			"## ⚠️ Known Error Patterns (Proactive Warning)",
+			"",
+			"These patterns have been learned from past sessions. Watch out for them:",
+			"",
+		];
+
+		for (const pattern of topPatterns) {
+			lines.push(`**${pattern.type}: ${pattern.description}**`);
+			lines.push(`- Solution: ${pattern.solution}`);
+			lines.push(`- Confidence: ${pattern.confidence}%`);
+			lines.push("");
+		}
+
+		lines.push(
+			"Use errorPatterns({action: 'suggest', error: 'your error message'}) when encountering errors.",
+		);
+
+		return lines.join("\n");
+	}
+
+	/**
 	 * Get pattern statistics
 	 */
 	getStats(): PatternStats {

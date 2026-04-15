@@ -1,10 +1,21 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { getCodingConventionsManager } from "./coding-conventions.js";
+import { getGlobalContextBudgetManager } from "./context-budget.js";
+import { getDiffAwarePlanningManager } from "./diff-aware-planning.js";
+import { getErrorPatternLearner } from "./error-patterns.js";
 import { getExplanatoryOutputStyleManager } from "./explanatory-output-style.js";
+import { getIDEIntegrationManager } from "./ide-integration.js";
+import { getEvolutionIntelligence } from "./intelligence.js";
+import { getIterationContextManager } from "./iteration-context.js";
+import { getLearningManager } from "./learning-output-style.js";
+import { getPredictiveErrorPreventionManager } from "./predictive-error-prevention.js";
 import { getRalphLoopManager } from "./ralph-loop.js";
+import { RepoMap } from "./repomap.js";
 import { getSafetyGateManager } from "./safety-gates.js";
 import { getSecurityGuidanceManager } from "./security-guidance.js";
+import { getSelfEvaluationManager } from "./self-evaluation.js";
 
 /**
  * Hook system for intercepting and validating tool calls
@@ -120,6 +131,140 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 		},
 	},
 	{
+		id: "session-learning-output-style",
+		type: "SessionStart",
+		name: "Inject Learning Mode Context",
+		description:
+			"Injects interactive learning mode context for requesting meaningful code contributions at decision points (Claude Code learning-output-style pattern)",
+		enabled: true,
+		priority: 105, // After explanatory output style (110), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const manager = getLearningManager();
+			const config = manager.getConfig();
+
+			if (!config.enabled || !config.interactive) {
+				return { allow: true };
+			}
+
+			// Generate learning context for session mode
+			const sessionMode =
+				context.session?.mode === "evolve"
+					? "evolve"
+					: context.session?.mode === "chat"
+						? "chat"
+						: "feature";
+
+			const learningContext = manager.generateEducationalContext({
+				mode: sessionMode,
+				filesChanged: [],
+				skillsUsed: [],
+			});
+
+			if (learningContext) {
+				return {
+					allow: true,
+					context: learningContext,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-intelligence-recommendations",
+		type: "SessionStart",
+		name: "Inject Intelligence Recommendations",
+		description:
+			"Injects proactive intelligence recommendations at session start for smarter task selection (Unified Intelligence Pattern)",
+		enabled: true,
+		priority: 95, // After learning output style (105), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const intelligence = getEvolutionIntelligence();
+
+			// Get session mode for context
+			const sessionMode = context.session?.mode || "evolve";
+
+			// Get intelligence stats
+			const stats = intelligence.getStats();
+
+			// Get proactive recommendations based on session mode
+			const recommendations: string[] = [];
+
+			// Add pattern recommendations
+			if (stats.patternStats.totalPatterns > 0) {
+				recommendations.push(
+					`- ${stats.patternStats.totalPatterns} patterns available with ${stats.patternStats.averageSuccessRate}% avg success rate`,
+				);
+			}
+
+			// Add RAG context
+			if (stats.ragStats.totalDocuments > 0) {
+				recommendations.push(
+					`- ${stats.ragStats.totalDocuments} documents indexed for context enrichment`,
+				);
+			}
+
+			// Add error pattern warnings
+			if (stats.errorPatternStats.totalPatterns > 0) {
+				recommendations.push(
+					`- ${stats.errorPatternStats.totalPatterns} error patterns learned for risk avoidance`,
+				);
+			}
+
+			// Build context message
+			if (recommendations.length > 0) {
+				const contextMessage = [
+					"## Intelligence Ready",
+					"",
+					`Session mode: ${sessionMode}`,
+					`Combined accuracy: ${stats.combinedAccuracy}%`,
+					"",
+					"Available intelligence sources:",
+					...recommendations,
+					"",
+					"Use intelligence({action: 'recommend'}) for task-specific recommendations.",
+					"Use intelligence({action: 'analyze', taskDescription: '...'}) for detailed analysis.",
+				].join("\n");
+
+				return {
+					allow: true,
+					context: contextMessage,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-error-pattern-injection",
+		type: "SessionStart",
+		name: "Inject Proactive Error Patterns",
+		description:
+			"Injects top learned error patterns with solutions at session start to prevent known errors (Error Pattern Learning Pattern)",
+		enabled: true,
+		priority: 94, // After intelligence recommendations (95), before memory load (100)
+		handler: (context: HookContext): HookResult => {
+			const errorLearner = getErrorPatternLearner();
+
+			// Only inject in evolve mode
+			if (context.session?.mode !== "evolve") {
+				return { allow: true };
+			}
+
+			// Get top patterns for proactive injection (max 5 patterns)
+			const proactiveWarning = errorLearner.formatTopPatternsForInjection(5);
+
+			if (proactiveWarning) {
+				return {
+					allow: true,
+					context: proactiveWarning,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
 		id: "session-memory-load",
 		type: "SessionStart",
 		name: "Load Memory on Session Start",
@@ -134,6 +279,100 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 					context: "Session started in evolve mode. MEMORY.md should be loaded for context.",
 				};
 			}
+			return { allow: true };
+		},
+	},
+	{
+		id: "session-predictive-error-prevention",
+		type: "SessionStart",
+		name: "Inject Predictive Error Warnings",
+		description:
+			"Injects proactive error predictions at session start based on task context, files, tools, and historical patterns (Predictive Error Prevention Pattern)",
+		enabled: true,
+		priority: 93, // After error pattern injection (94), before IDE integration (93)
+		handler: (context: HookContext): HookResult => {
+			const predictiveManager = getPredictiveErrorPreventionManager();
+
+			// Only inject in evolve mode
+			if (context.session?.mode !== "evolve") {
+				return { allow: true };
+			}
+
+			// Check if session start predictions are enabled
+			if (
+				!predictiveManager.isEnabled() ||
+				!predictiveManager.getConfig().sessionStartPredictions
+			) {
+				return { allow: true };
+			}
+
+			// Get general predictions for session start
+			const predictions = predictiveManager.getSessionStartPredictions();
+
+			if (predictions.length === 0) {
+				return { allow: true };
+			}
+
+			// Format predictions for context
+			const lines = [
+				"## Proactive Error Predictions",
+				"",
+				"The following errors are predicted based on historical patterns:",
+				"",
+			];
+
+			for (const pred of predictions.slice(0, 3)) {
+				const probStr = Math.round(pred.probability * 100);
+				lines.push(`- **${pred.predictedErrorType}**: ${probStr}% probability`);
+				if (pred.preventionSuggestions.length > 0) {
+					lines.push(`  Prevention: ${pred.preventionSuggestions[0]}`);
+				}
+			}
+
+			lines.push("");
+			lines.push(
+				"Use predictiveErrorPrevention({action: 'predict', ...}) for detailed predictions.",
+			);
+
+			return {
+				allow: true,
+				context: lines.join("\n"),
+			};
+		},
+	},
+	{
+		id: "session-ide-integration",
+		type: "SessionStart",
+		name: "Inject IDE Integration Context",
+		description:
+			"Detects IDE environment and injects inline suggestion context at session start (Cursor Pattern)",
+		enabled: true,
+		priority: 93, // After error pattern injection (94), before context budget (90)
+		handler: (context: HookContext): HookResult => {
+			const ideManager = getIDEIntegrationManager();
+
+			if (!ideManager.isEnabled() || !ideManager.getConfig().injectContextAtStart) {
+				return { allow: true };
+			}
+
+			// Detect IDE environment
+			const ide = ideManager.detectIDE();
+
+			if (!ide) {
+				// No IDE detected, return without context
+				return { allow: true };
+			}
+
+			// Get IDE context for session start
+			const ideContext = ideManager.getSessionStartContext();
+
+			if (ideContext) {
+				return {
+					allow: true,
+					context: ideContext,
+				};
+			}
+
 			return { allow: true };
 		},
 	},
@@ -167,12 +406,116 @@ const DEFAULT_SESSION_START_HOOKS: Hook[] = [
 			};
 		},
 	},
+	{
+		id: "session-coding-conventions",
+		type: "SessionStart",
+		name: "Load Coding Conventions",
+		description:
+			"Auto-loads coding conventions from CONVENTIONS.md and .conventions/ directory for consistent code style (Aider Pattern)",
+		enabled: true,
+		priority: 75, // After journal check (80)
+		handler: (context: HookContext): HookResult => {
+			const conventionsManager = getCodingConventionsManager();
+
+			if (!conventionsManager.isEnabled() || !conventionsManager.getConfig().autoLoad) {
+				return { allow: true };
+			}
+
+			// Load conventions from file and directory
+			const fromFile = conventionsManager.loadConventionsFromFile();
+			const fromDir = conventionsManager.loadConventionsFromDirectory();
+
+			const stats = conventionsManager.getStats();
+			const conventions = conventionsManager.getConventions();
+
+			if (conventions.length === 0) {
+				return { allow: true };
+			}
+
+			// Build context message
+			const lines = [
+				"## Coding Conventions Loaded",
+				"",
+				`**Total Conventions:** ${conventions.length}`,
+				`**Enabled:** ${conventions.filter((c) => c.enabled).length}`,
+				`**Sources:** File: ${fromFile ? "✅" : "❌"}, Directory: ${fromDir ? "✅" : "❌"}`,
+				"",
+				"Use conventions({action: 'list'}) to view all conventions.",
+				"Use conventions({action: 'apply'}) to get conventions for prompt.",
+			];
+
+			return {
+				allow: true,
+				context: lines.join("\n"),
+			};
+		},
+	},
 ];
 
 /**
  * Default Stop hooks for cleanup
  */
 const DEFAULT_STOP_HOOKS: Hook[] = [
+	{
+		id: "self-evaluation-trigger",
+		type: "Stop",
+		name: "Trigger Self-Evaluation",
+		description:
+			"Automatically triggers self-evaluation after each evolution iteration for recursive improvement (Recursive Pattern)",
+		enabled: true,
+		priority: 200, // Highest priority - runs first to capture evaluation
+		handler: (context: HookContext): HookResult => {
+			const selfEvalManager = getSelfEvaluationManager();
+			const iterContextManager = getIterationContextManager();
+
+			// Check if auto-evaluation is enabled
+			if (!selfEvalManager.isEnabled() || !iterContextManager.isEnabled()) {
+				return { allow: true };
+			}
+
+			// Check if there's a current iteration to evaluate
+			const currentIteration = iterContextManager.getCurrentIteration();
+			if (!currentIteration) {
+				return { allow: true };
+			}
+
+			// Determine success from stop reason
+			const isSuccess = !context.reason?.toLowerCase().includes("fail");
+			const isUserStop = context.reason?.toLowerCase().includes("user");
+
+			// End the iteration and get final context
+			const finalContext = iterContextManager.endIteration({
+				success: isSuccess,
+				firstTry: currentIteration.errors.length === 0 && isSuccess,
+				rework: currentIteration.notes.some((n) => n.toLowerCase().includes("rework")),
+				impact: "Medium", // Default, would be set by agent in real implementation
+			});
+
+			if (!finalContext) {
+				return { allow: true };
+			}
+
+			// Perform self-evaluation
+			const evaluation = selfEvalManager.evaluate({
+				iterationId: finalContext.iterationId,
+				taskType: finalContext.taskType,
+				taskDescription: finalContext.taskDescription,
+				durationMinutes: finalContext.durationMinutes || 0,
+				success: finalContext.success || false,
+				errors: finalContext.errors,
+				skillsUsed: finalContext.skillsUsed,
+				firstTry: finalContext.firstTry || false,
+				rework: finalContext.rework || false,
+				impact: finalContext.impact || "Medium",
+			});
+
+			// Return evaluation summary
+			return {
+				allow: true,
+				context: `Self-Evaluation: Score ${evaluation.overallScore}/100 (${evaluation.strengths.length} strengths, ${evaluation.weaknesses.length} weaknesses, ${evaluation.capabilityGaps.length} gaps identified)`,
+			};
+		},
+	},
 	{
 		id: "ralph-loop-intercept",
 		type: "Stop",
@@ -529,6 +872,189 @@ const DEFAULT_SECURITY_HOOKS: Hook[] = [
 			return { allow: true };
 		},
 	},
+	{
+		id: "diff-aware-edit-analysis",
+		type: "PreToolUse",
+		name: "Diff-Aware Edit Analysis",
+		description:
+			"Analyzes git diff impact before edit operations using Diff-Aware Planning module (Devin Pattern)",
+		enabled: true,
+		priority: 75, // After safety gates (85), lower priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			if (context.tool !== "edit" || !context.params?.path) {
+				return { allow: true };
+			}
+
+			const filePath = String(context.params.path);
+			const diffManager = getDiffAwarePlanningManager();
+			const config = diffManager.getConfig();
+
+			// Check if auto-analyze is enabled
+			if (!config.enabled || !config.autoAnalyzeBeforeEdit) {
+				return { allow: true };
+			}
+
+			// Analyze the diff for this specific file
+			const safetyCheck = diffManager.areChangesSafe([filePath]);
+
+			// If there are blockers, show them but don't block (informational)
+			if (safetyCheck.blockers.length > 0) {
+				return {
+					allow: true,
+					warning: `Diff-Aware Analysis: Potential issues detected:\n${safetyCheck.blockers.map((b) => `  ⚠️ ${b}`).join("\n")}\n\nUse diffAwarePlan({action: 'analyze', files: ['${filePath}']}) for detailed analysis.`,
+					context: `File: ${filePath}\nBlockers: ${safetyCheck.blockers.length}`,
+				};
+			}
+
+			// If there are warnings, show them
+			if (safetyCheck.warnings.length > 0) {
+				return {
+					allow: true,
+					warning: `Diff-Aware Analysis: Consider reviewing:\n${safetyCheck.warnings.map((w) => `  💡 ${w}`).join("\n")}`,
+					context: `File: ${filePath}\nWarnings: ${safetyCheck.warnings.length}`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
+	{
+		id: "multi-file-edit-analysis",
+		type: "PreToolUse",
+		name: "Multi-File Edit Analysis",
+		description:
+			"Analyzes cross-file dependencies before edit operations using Multi-File Context module (Cursor Pattern)",
+		enabled: true,
+		priority: 70, // After diff-aware-edit-analysis (75), lower priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			if (context.tool !== "edit" || !context.params?.path) {
+				return { allow: true };
+			}
+
+			const filePath = String(context.params.path);
+
+			try {
+				// Use RepoMap for multi-file context analysis
+				const repoMap = new RepoMap({ root: "." });
+
+				// Analyze change impact for this file
+				const impact = repoMap.analyzeChangeImpact(filePath);
+
+				// Get related files
+				const related = repoMap.getRelatedFiles(filePath);
+
+				// Build warnings based on analysis
+				const warnings: string[] = [];
+
+				// High risk files have many dependents
+				if (impact.riskLevel === "high" || impact.riskLevel === "critical") {
+					warnings.push(`⚠️ High risk file: ${impact.dependentFiles.length} files depend on this`);
+				}
+
+				// Files that import this file may need updates
+				const importedBy = related.related.filter((r) => r.relation === "imported-by");
+				if (importedBy.length > 0) {
+					const topImportedBy = importedBy.slice(0, 3);
+					warnings.push(
+						`📋 Files that import this: ${topImportedBy.map((f) => f.file).join(", ")}${importedBy.length > 3 ? ` (+${importedBy.length - 3} more)` : ""}`,
+					);
+				}
+
+				// Files with shared types may need updates
+				const sharedTypes = related.related.filter((r) => r.relation === "shared-types");
+				if (sharedTypes.length > 0) {
+					warnings.push(`🔗 Files with shared types: ${sharedTypes.map((f) => f.file).join(", ")}`);
+				}
+
+				// Recommended edit order for multi-file changes
+				if (related.editOrder.length > 1) {
+					warnings.push(
+						`📝 Recommended edit order: ${related.editOrder.slice(0, 4).join(" → ")}${related.editOrder.length > 4 ? ` (+${related.editOrder.length - 4} more)` : ""}`,
+					);
+				}
+
+				if (warnings.length > 0) {
+					return {
+						allow: true,
+						warning: `Multi-File Context Analysis:\n${warnings.map((w) => `  ${w}`).join("\n")}\n\nUse multiFileContext({action: 'change-impact', file: '${filePath}'}) for detailed analysis.`,
+						context: `File: ${filePath}\nRisk: ${impact.riskLevel}\nDependents: ${impact.dependentFiles.length}\nRelated: ${related.related.length}`,
+					};
+				}
+
+				return { allow: true };
+			} catch {
+				// If analysis fails, allow the edit without warning
+				return { allow: true };
+			}
+		},
+	},
+	{
+		id: "context-budget-monitor",
+		type: "PreToolUse",
+		name: "Context Budget Monitor",
+		description:
+			"Monitors context budget during long sessions and provides proactive warnings before context overflow (Proactive Context Management Pattern)",
+		enabled: true,
+		priority: 65, // After multi-file-edit-analysis (70), low priority since it's informational
+		handler: (context: HookContext): HookResult => {
+			// Skip for trivial operations
+			if (!context.tool) {
+				return { allow: true };
+			}
+
+			const budgetManager = getGlobalContextBudgetManager();
+			const config = budgetManager.getConfig();
+
+			if (!config.enabled) {
+				return { allow: true };
+			}
+
+			// Check if we should run a budget check (rate limited)
+			const stats = budgetManager.getStats();
+			const lastCheck = stats.lastCheckTimestamp;
+
+			// Only check every 10 seconds to avoid overhead
+			if (lastCheck && Date.now() - lastCheck < 10000) {
+				return { allow: true };
+			}
+
+			// Check budget
+			const usage = budgetManager.checkBudget("pre-tool-use");
+
+			// If overflow detected, show critical warning
+			if (usage.healthStatus === "overflow") {
+				const suggestions = budgetManager.getAutoExecutableSuggestions();
+				return {
+					allow: true,
+					warning: `🚨 CRITICAL: Context overflow detected (${Math.round(usage.usagePercent)}% used)!\n\nImmediate actions:\n${suggestions.map((s) => `  - ${s.description} (~${s.estimatedSavings} tokens)`).join("\n")}\n\nUse contextBudget({action: 'check'}) for details.`,
+					context: `Context: ${usage.currentTokens}/${usage.maxAvailableTokens} tokens (${Math.round(usage.usagePercent)}%)`,
+				};
+			}
+
+			// If critical threshold reached, show warning
+			if (usage.healthStatus === "critical") {
+				const suggestions = budgetManager.getAutoExecutableSuggestions();
+				return {
+					allow: true,
+					warning: `⚠️ WARNING: Context usage at ${Math.round(usage.usagePercent)}% (critical level).\n\nSuggested actions:\n${suggestions
+						.slice(0, 3)
+						.map((s) => `  - ${s.description}`)
+						.join("\n")}\n\nUse contextBudget({action: 'suggestions'}) for more options.`,
+					context: `Context: ${usage.currentTokens}/${usage.maxAvailableTokens} tokens`,
+				};
+			}
+
+			// If warning threshold reached, show informational message
+			if (usage.healthStatus === "warning") {
+				return {
+					allow: true,
+					context: `📊 Context usage: ${Math.round(usage.usagePercent)}% (${usage.currentTokens}/${usage.maxAvailableTokens} tokens). Consider proactive context management.`,
+				};
+			}
+
+			return { allow: true };
+		},
+	},
 ];
 
 /**
@@ -545,13 +1071,52 @@ export class HookManager {
 	}
 
 	/**
+	 * All default hooks with their handlers
+	 * Used to restore handlers when loading from JSON (which can't serialize functions)
+	 */
+	private getAllDefaultHooks(): Hook[] {
+		return [...DEFAULT_SESSION_START_HOOKS, ...DEFAULT_STOP_HOOKS, ...DEFAULT_SECURITY_HOOKS];
+	}
+
+	/**
+	 * Get default hook by ID with handler
+	 */
+	private getDefaultHookById(id: string): Hook | undefined {
+		return this.getAllDefaultHooks().find((h) => h.id === id);
+	}
+
+	/**
 	 * Load hooks configuration from file
+	 * Restores handler functions for default hooks (JSON can't serialize functions)
 	 */
 	private loadConfig(): HooksConfig {
+		// Get all default hooks with handlers
+		const defaultHooks = this.getAllDefaultHooks();
+
 		if (existsSync(this.configPath)) {
 			try {
 				const content = readFileSync(this.configPath, "utf-8");
-				return JSON.parse(content);
+				const loadedConfig = JSON.parse(content) as HooksConfig;
+
+				// Restore handlers for default hooks from the loaded config
+				const restoredHooks: Hook[] = loadedConfig.hooks.map((loadedHook) => {
+					// Find the matching default hook with handler
+					const defaultHook = this.getDefaultHookById(loadedHook.id);
+					if (defaultHook) {
+						// Restore handler while preserving loaded settings (enabled/disabled state)
+						return {
+							...loadedHook,
+							handler: defaultHook.handler,
+						};
+					}
+					// Custom hook without default - keep as-is (may have no handler)
+					return loadedHook as Hook;
+				});
+
+				return {
+					hooks: restoredHooks,
+					settings: loadedConfig.settings,
+				};
 			} catch {
 				// Invalid config, use defaults
 			}
@@ -559,7 +1124,7 @@ export class HookManager {
 
 		// Create default config with all hook types
 		return {
-			hooks: [...DEFAULT_SESSION_START_HOOKS, ...DEFAULT_STOP_HOOKS, ...DEFAULT_SECURITY_HOOKS],
+			hooks: defaultHooks,
 			settings: {
 				enabled: true,
 				defaultBehavior: "allow",
@@ -569,13 +1134,37 @@ export class HookManager {
 
 	/**
 	 * Save hooks configuration to file
+	 * Strips handler functions (JSON can't serialize them)
 	 */
 	private saveConfig(): void {
 		const dir = join(homedir(), ".paimon");
 		if (!existsSync(dir)) {
 			mkdirSync(dir, { recursive: true });
 		}
-		writeFileSync(this.configPath, JSON.stringify(this.config, null, 2), "utf-8");
+
+		// Strip handlers before saving (they can be restored from defaults on load)
+		const hooksWithoutHandlers = this.config.hooks.map((hook) => ({
+			id: hook.id,
+			type: hook.type,
+			name: hook.name,
+			description: hook.description,
+			enabled: hook.enabled,
+			priority: hook.priority,
+			// handler is intentionally omitted
+		}));
+
+		writeFileSync(
+			this.configPath,
+			JSON.stringify(
+				{
+					hooks: hooksWithoutHandlers,
+					settings: this.config.settings,
+				},
+				null,
+				2,
+			),
+			"utf-8",
+		);
 	}
 
 	/**

@@ -1,83 +1,117 @@
 {
   "successRate": {
-    "current": 91.80327868852459,
+    "current": 100,
     "points": [
       {
-        "date": "2026-W14",
-        "value": 91.80327868852459,
+        "date": "------",
+        "value": 0,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W14",
+        "value": 94.78260869565217,
+        "trend": "up"
+      },
+      {
+        "date": "2026-W15",
+        "value": 100,
+        "trend": "up"
       }
     ],
-    "weeklyAverage": 91.80327868852459,
-    "improvement": 0
+    "weeklyAverage": 94.53125,
+    "improvement": 100
   },
   "time": {
-    "averageMinutes": 15.852459016393443,
+    "averageMinutes": 16.34375,
     "byTaskType": {
-      "capability": 16.220338983050848,
-      "reliability": 5
+      "reliability": 10.416666666666666,
+      "capability": 17.104347826086958,
+      "-----------": 0
     },
     "points": [
       {
-        "date": "2026-W14",
-        "value": 15.852459016393443,
+        "date": "------",
+        "value": 0,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W14",
+        "value": 16.582608695652173,
+        "trend": "down"
+      },
+      {
+        "date": "2026-W15",
+        "value": 15.416666666666666,
+        "trend": "up"
       }
     ],
-    "fastestTask": "Fix Singularity git log format bug - Enable self-awareness tracking",
-    "slowestTask": "ROADMAP Complete - All 36 phases implemented successfully. Attempted Phase 37 (Interactive Decision Points Pattern) but encountered file corruption during edit operations - lesson: use bash for complex multi-line file creation"
+    "fastestTask": "-----------------",
+    "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 36,
+    "totalErrors": 80,
     "byType": {
-      "lint (fixed)": 18,
-      "lint (fixed), test (fixed)": 5,
+      "lint (fixed)": 48,
+      "--------": 1,
+      "TS (fixed), lint (fixed)": 5,
+      "lint (fixed), test (fixed)": 7,
+      "lint (fixed), TS (fixed)": 2,
+      "TS (fixed)": 5,
       "TS (file corruption)": 1,
-      "lint (fixed), TS (fixed)": 1,
       "lint": 9,
       "TS": 2
     },
     "recentErrors": [
-      "2026-04-02: lint (fixed) in \"Security Guidance PreToolUse Hook (Claude Code Pattern) - Proactive security pattern detection with 9 categories (command injection, XSS, eval usage, dangerous HTML, pickle deserialization, os.system, SQL injection, path traversal, sensitive data) and 20 default patterns\"",
-      "2026-04-02: lint (fixed), test (fixed) in \"Explanatory Output Style Pattern (Claude Code Pattern) - Educational context injection at session start with 23 default insights about architecture, patterns, evolution, tools, skills, memory, safety\"",
-      "2026-04-02: lint (fixed) in \"Auto-Invoke Skills Pattern (Claude Code Pattern) - Automatic skill suggestions based on task context with file patterns, keywords, tool usage, and task type triggers\"",
-      "2026-04-02: lint (fixed) in \"Hookify Pattern (Claude Code hookify Plugin) - Dynamic hook creation from conversation patterns with simple markdown rules, pattern extraction, and HookManager integration\"",
-      "2026-04-02: lint (fixed), test (fixed) in \"Ralph Loop Pattern (Claude Code ralph-wiggum) - Self-referential iteration loop for autonomous continuous improvement using Stop hook interception\"",
-      "2026-04-02: TS (file corruption) in \"ROADMAP Complete - All 36 phases implemented successfully. Attempted Phase 37 (Interactive Decision Points Pattern) but encountered file corruption during edit operations - lesson: use bash for complex multi-line file creation\"",
-      "2026-04-02: lint (fixed), TS (fixed) in \"SessionStart and Stop Hooks (OpenHands Pattern) - Agent lifecycle hooks for initialization and cleanup\"",
-      "2026-04-02: lint (fixed) in \"Interactive Approval Mode (SWE-agent/Aider Pattern) - Approval workflow for risky operations with auto-approve, batch operations, and statistics\"",
-      "2026-04-01: lint (fixed) in \"Context Budget Monitoring Tool - Proactive context window monitoring with health status, warnings, and optimization suggestions\"",
-      "2026-04-01: lint (fixed) in \"Journal Auto-Truncation - Auto-truncate JOURNAL.md, archive old entries with summaries, reduce context bloat\""
+      "2026-04-05: lint (fixed) in \"OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\"",
+      "------: -------- in \"-----------------\"",
+      "2026-04-05: lint (fixed) in \"Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Coding Conventions (Aider Pattern) - CodingConventionsManager module for managing coding conventions, conventions tool with 14 actions (load, list, get, add, remove, enable, disable, apply, status, stats, config, reset, clear, help), CONVENTIONS.md and .conventions/ directory support, 10 convention categories (libraries, types, style, patterns, testing, documentation, security, performance, accessibility, custom), 6 default conventions (TypeScript types, async/await, error handling, naming, imports, documentation), SessionStart hook for auto-loading conventions, competitor pattern added to capability-gap.ts\"",
+      "2026-04-05: lint (fixed) in \"Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts\"",
+      "2026-04-04: lint (fixed) in \"MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts\""
     ],
     "points": [
       {
-        "date": "2026-W14",
-        "value": 36,
+        "date": "------",
+        "value": 1,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W14",
+        "value": 71,
+        "trend": "down"
+      },
+      {
+        "date": "2026-W15",
+        "value": 8,
+        "trend": "up"
       }
     ],
     "commonPatterns": [
       "lint (fixed)",
       "lint",
       "lint (fixed), test (fixed)",
-      "ts",
-      "ts (file corruption)"
+      "ts (fixed), lint (fixed)",
+      "ts (fixed)"
     ]
   },
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 59,
-      "successRate": 91.52542372881356,
-      "averageTime": 16.135593220338983,
+      "usageCount": 125,
+      "successRate": 95.19999999999999,
+      "averageTime": 16.616,
       "trend": "improving"
     },
     {
       "skill": "research",
-      "usageCount": 21,
-      "successRate": 80.95238095238095,
-      "averageTime": 18.571428571428573,
-      "trend": "stable"
+      "usageCount": 46,
+      "successRate": 91.30434782608695,
+      "averageTime": 18.804347826086957,
+      "trend": "improving"
     },
     {
       "skill": "writing-plans",
@@ -105,6 +139,13 @@
       "usageCount": 4,
       "successRate": 100,
       "averageTime": 13.75,
+      "trend": "stable"
+    },
+    {
+      "skill": "-------------",
+      "usageCount": 1,
+      "successRate": 0,
+      "averageTime": 0,
       "trend": "stable"
     },
     {
@@ -140,18 +181,26 @@
     "current": 0,
     "points": [
       {
+        "date": "------",
+        "value": 0
+      },
+      {
         "date": "2026-W14",
-        "value": 29.5
+        "value": 52.5
+      },
+      {
+        "date": "2026-W15",
+        "value": 5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 59,
-    "highImpactCount": 50,
-    "highImpactPercentage": 84.7457627118644
+    "totalCapabilities": 115,
+    "highImpactCount": 112,
+    "highImpactPercentage": 97.3913043478261
   },
-  "lastUpdated": "2026-04-02T22:27:14.426Z",
-  "iterationsAnalyzed": 61
+  "lastUpdated": "2026-04-05T15:20:09.889Z",
+  "iterationsAnalyzed": 128
 }

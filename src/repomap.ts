@@ -37,6 +37,68 @@ export interface Reference {
 }
 
 /**
+ * Symbol usage across files (Multi-File Context - Cursor Pattern)
+ */
+export interface SymbolUsage {
+	/** Symbol name */
+	name: string;
+	/** File where symbol is defined */
+	definedIn: string;
+	/** Definition type */
+	type: Definition["type"];
+	/** Files that use this symbol */
+	usedIn: Array<{
+		file: string;
+		importFrom?: string;
+		count: number;
+	}>;
+	/** Total usage count across all files */
+	totalUsageCount: number;
+}
+
+/**
+ * Change impact analysis (Multi-File Context - Cursor Pattern)
+ */
+export interface ChangeImpact {
+	/** File being changed */
+	file: string;
+	/** Symbols that would be affected */
+	affectedSymbols: Array<{
+		name: string;
+		type: Definition["type"];
+		definedIn: string;
+	}>;
+	/** Files that depend on this file */
+	dependentFiles: Array<{
+		file: string;
+		reason: string;
+		risk: "low" | "medium" | "high";
+	}>;
+	/** Overall risk level */
+	riskLevel: "low" | "medium" | "high" | "critical";
+	/** Summary */
+	summary: string;
+}
+
+/**
+ * Related files suggestion (Multi-File Context - Cursor Pattern)
+ */
+export interface RelatedFiles {
+	/** Target file */
+	file: string;
+	/** Files related to this one */
+	related: Array<{
+		file: string;
+		relation: "imports" | "imported-by" | "shared-types" | "shared-functions" | "same-module";
+		strength: number;
+	}>;
+	/** Recommended edit order */
+	editOrder: string[];
+	/** Summary */
+	summary: string;
+}
+
+/**
  * Repo Map configuration
  */
 export interface RepoMapConfig {
@@ -139,13 +201,16 @@ const IMPORT_PATTERNS: Array<{
 ];
 
 /**
- * Repo Map Generator
+ * Repo Map Generator with Multi-File Context (Cursor Pattern)
  */
 export class RepoMap {
 	private config: RepoMapConfig;
 	private definitions: Definition[] = [];
 	private references: Reference[] = [];
 	private fileScores: Map<string, number> = new Map();
+	private symbolUsages: Map<string, SymbolUsage> = new Map();
+	private fileDependencies: Map<string, Set<string>> = new Map();
+	private scanned = false;
 
 	constructor(config: Partial<RepoMapConfig> = {}) {
 		this.config = { ...DEFAULT_CONFIG, ...config };
@@ -435,9 +500,11 @@ export class RepoMap {
 	}
 
 	/**
-	 * Generate the repo map
+	 * Ensure files are scanned before using multi-file context features
 	 */
-	generate(): string {
+	private ensureScanned(): void {
+		if (this.scanned) return;
+
 		// Find and scan all source files
 		const files = this.findSourceFiles(this.config.root);
 
@@ -448,6 +515,260 @@ export class RepoMap {
 
 		// Calculate file importance
 		this.calculateFileScores();
+
+		// Build symbol usages and file dependencies
+		this.buildSymbolUsages();
+		this.buildFileDependencies();
+
+		this.scanned = true;
+	}
+
+	/**
+	 * Build symbol usage map (Multi-File Context - Cursor Pattern)
+	 */
+	private buildSymbolUsages(): void {
+		// Create a map of definitions by name
+		const definitionMap = new Map<string, Definition>();
+		for (const def of this.definitions) {
+			definitionMap.set(def.name, def);
+		}
+
+		// Count usages per file for each symbol
+		const usageCounts = new Map<string, Map<string, { count: number; importFrom?: string }>>();
+
+		for (const ref of this.references) {
+			const key = ref.name;
+			if (!usageCounts.has(key)) {
+				usageCounts.set(key, new Map());
+			}
+			const fileUsages = usageCounts.get(key);
+			if (!fileUsages) continue;
+			const existing = fileUsages.get(ref.file) || { count: 0, importFrom: ref.importFrom };
+			fileUsages.set(ref.file, { count: existing.count + 1, importFrom: ref.importFrom });
+		}
+
+		// Build SymbolUsage objects
+		for (const [name, fileUsages] of usageCounts) {
+			const def = definitionMap.get(name);
+			if (!def) continue; // Skip symbols not defined in the codebase
+
+			const usedIn = Array.from(fileUsages.entries())
+				.filter(([file]) => file !== def.file) // Exclude definition file
+				.map(([file, data]) => ({
+					file,
+					importFrom: data.importFrom,
+					count: data.count,
+				}));
+
+			this.symbolUsages.set(name, {
+				name,
+				definedIn: def.file,
+				type: def.type,
+				usedIn,
+				totalUsageCount: usedIn.reduce((sum, u) => sum + u.count, 0),
+			});
+		}
+	}
+
+	/**
+	 * Build file dependency graph (Multi-File Context - Cursor Pattern)
+	 */
+	private buildFileDependencies(): void {
+		for (const ref of this.references) {
+			const sourceFile = ref.file;
+			const targetFile = this.resolveImport(ref.importFrom || "", sourceFile);
+
+			if (targetFile) {
+				if (!this.fileDependencies.has(sourceFile)) {
+					this.fileDependencies.set(sourceFile, new Set());
+				}
+				this.fileDependencies.get(sourceFile)?.add(targetFile);
+			}
+		}
+	}
+
+	/**
+	 * Get symbol usages across files (Multi-File Context - Cursor Pattern)
+	 */
+	getSymbolUsages(symbolName?: string): SymbolUsage[] {
+		this.ensureScanned();
+
+		if (symbolName) {
+			const usage = this.symbolUsages.get(symbolName);
+			return usage ? [usage] : [];
+		}
+
+		return Array.from(this.symbolUsages.values());
+	}
+
+	/**
+	 * Analyze change impact for a file (Multi-File Context - Cursor Pattern)
+	 */
+	analyzeChangeImpact(file: string): ChangeImpact {
+		this.ensureScanned();
+
+		// Find symbols defined in this file
+		const affectedSymbols = this.definitions
+			.filter((d) => d.file === file)
+			.map((d) => ({
+				name: d.name,
+				type: d.type,
+				definedIn: d.file,
+			}));
+
+		// Find files that depend on this file
+		const dependentFiles: Array<{
+			file: string;
+			reason: string;
+			risk: "low" | "medium" | "high";
+		}> = [];
+
+		for (const [sourceFile, deps] of this.fileDependencies) {
+			if (deps.has(file)) {
+				// Calculate risk based on how many symbols are imported
+				const importedSymbols = this.references.filter(
+					(r) => r.file === sourceFile && this.resolveImport(r.importFrom || "", r.file) === file,
+				).length;
+
+				const risk: "low" | "medium" | "high" =
+					importedSymbols > 5 ? "high" : importedSymbols > 2 ? "medium" : "low";
+
+				dependentFiles.push({
+					file: sourceFile,
+					reason: `Imports ${importedSymbols} symbol(s) from this file`,
+					risk,
+				});
+			}
+		}
+
+		// Calculate overall risk level
+		const highRiskCount = dependentFiles.filter((d) => d.risk === "high").length;
+		const mediumRiskCount = dependentFiles.filter((d) => d.risk === "medium").length;
+
+		let riskLevel: "low" | "medium" | "high" | "critical";
+		if (highRiskCount > 3) {
+			riskLevel = "critical";
+		} else if (highRiskCount > 0) {
+			riskLevel = "high";
+		} else if (mediumRiskCount > 2) {
+			riskLevel = "medium";
+		} else {
+			riskLevel = "low";
+		}
+
+		// Build summary
+		const summary =
+			`Changing ${file} affects ${affectedSymbols.length} symbol(s) and ${dependentFiles.length} dependent file(s). ` +
+			`Risk level: ${riskLevel}`;
+
+		return {
+			file,
+			affectedSymbols,
+			dependentFiles,
+			riskLevel,
+			summary,
+		};
+	}
+
+	/**
+	 * Get related files for a file (Multi-File Context - Cursor Pattern)
+	 */
+	getRelatedFiles(file: string): RelatedFiles {
+		this.ensureScanned();
+
+		const related: Array<{
+			file: string;
+			relation: "imports" | "imported-by" | "shared-types" | "shared-functions" | "same-module";
+			strength: number;
+		}> = [];
+
+		// Files this file imports
+		const imports = this.fileDependencies.get(file) || new Set();
+		for (const imported of imports) {
+			related.push({
+				file: imported,
+				relation: "imports",
+				strength: 3,
+			});
+		}
+
+		// Files that import this file
+		for (const [sourceFile, deps] of this.fileDependencies) {
+			if (deps.has(file)) {
+				related.push({
+					file: sourceFile,
+					relation: "imported-by",
+					strength: 4,
+				});
+			}
+		}
+
+		// Files with shared types/interfaces
+		const thisTypes = this.definitions
+			.filter((d) => d.file === file && (d.type === "interface" || d.type === "type"))
+			.map((d) => d.name);
+
+		for (const typeName of thisTypes) {
+			const usage = this.symbolUsages.get(typeName);
+			if (usage) {
+				for (const u of usage.usedIn) {
+					// Check if already in related
+					if (!related.some((r) => r.file === u.file)) {
+						related.push({
+							file: u.file,
+							relation: "shared-types",
+							strength: 2,
+						});
+					}
+				}
+			}
+		}
+
+		// Files in the same module (directory)
+		const fileDir = file.substring(0, file.lastIndexOf("/"));
+		const sameModuleFiles = this.definitions
+			.filter((d) => d.file.startsWith(`${fileDir}/`) && d.file !== file)
+			.map((d) => d.file);
+
+		for (const moduleFile of new Set(sameModuleFiles)) {
+			if (!related.some((r) => r.file === moduleFile)) {
+				related.push({
+					file: moduleFile,
+					relation: "same-module",
+					strength: 1,
+				});
+			}
+		}
+
+		// Sort by strength
+		related.sort((a, b) => b.strength - a.strength);
+
+		// Determine edit order (files that should be edited together)
+		const editOrder = [file];
+		for (const r of related) {
+			if (r.relation === "imported-by" || r.relation === "shared-types") {
+				editOrder.push(r.file);
+			}
+		}
+
+		const summary =
+			`File ${file} is related to ${related.length} file(s): ` +
+			`${imports.size} imports, ${related.filter((r) => r.relation === "imported-by").length} imported-by, ` +
+			`${related.filter((r) => r.relation === "shared-types").length} shared-types`;
+
+		return {
+			file,
+			related,
+			editOrder,
+			summary,
+		};
+	}
+
+	/**
+	 * Generate the repo map
+	 */
+	generate(): string {
+		this.ensureScanned();
 
 		// Sort definitions by file score
 		const sortedDefinitions = [...this.definitions].sort((a, b) => {
@@ -482,7 +803,7 @@ export class RepoMap {
 
 			if (tokens + sectionTokens > maxTokens) {
 				// Token budget exhausted, truncate
-				output += `\n... (truncated, ${files.length - sortedFiles.indexOf(file)} more files)\n`;
+				output += `\n... (truncated, ${sortedFiles.length - sortedFiles.indexOf(file)} more files)\n`;
 				break;
 			}
 

@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { extractErrorPatterns } from "../errors.js";
+import { getRegressionTester } from "../regression-testing.js";
 import type { AssessmentResult } from "../types.js";
 
 /**
@@ -33,6 +34,23 @@ export const assessTool: AgentTool = {
 					"Minimum confidence score (0-100) for recommendations to be shown (default: 80). Higher values filter out more potential false positives.",
 			}),
 		),
+		runRegression: Type.Optional(
+			Type.Boolean({
+				description:
+					"Run regression testing to compare test results with previous snapshot (default: true if regression testing enabled)",
+			}),
+		),
+		iterationId: Type.Optional(
+			Type.String({
+				description:
+					"Iteration ID for regression tracking (optional, auto-generated if not provided)",
+			}),
+		),
+		taskDescription: Type.Optional(
+			Type.String({
+				description: "Task description for regression tracking (optional)",
+			}),
+		),
 	}),
 	execute: async (_toolCallId, params): Promise<AgentToolResult<AssessmentResult>> => {
 		const {
@@ -41,13 +59,32 @@ export const assessTool: AgentTool = {
 			runLint = true,
 			maxAttempts = 1,
 			confidenceThreshold = 80,
+			runRegression,
+			iterationId,
+			taskDescription,
 		} = params as {
 			runBuild?: boolean;
 			runTests?: boolean;
 			runLint?: boolean;
 			maxAttempts?: number;
 			confidenceThreshold?: number;
+			runRegression?: boolean;
+			iterationId?: string;
+			taskDescription?: string;
 		};
+
+		// Initialize regression tester
+		const regressionTester = getRegressionTester();
+		const shouldRunRegression = runRegression ?? regressionTester.isEnabled();
+
+		// Take before snapshot for regression comparison
+		let beforeSnapshotId: string | null = null;
+		if (shouldRunRegression && runTests) {
+			const recentSnapshots = regressionTester.getRecentSnapshots(1);
+			if (recentSnapshots.length > 0) {
+				beforeSnapshotId = recentSnapshots[0].id;
+			}
+		}
 
 		const result: AssessmentResult = {
 			buildStatus: "unknown",
@@ -139,6 +176,56 @@ export const assessTool: AgentTool = {
 						}
 						// Merge error patterns (all types, for display later)
 						result.errorPatterns = [...(result.errorPatterns || []), ...patterns];
+					}
+				}
+
+				// Run regression testing if enabled and tests passed
+				if (shouldRunRegression && runTests && result.testStatus === "pass" && attempt === 1) {
+					try {
+						const effectiveIterationId =
+							iterationId || `assess-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+						const snapshot = regressionTester.runAfterEvolution(
+							effectiveIterationId,
+							taskDescription || "Self-assessment check",
+							result.changedFiles,
+						);
+
+						// Compare with before snapshot if available
+						if (beforeSnapshotId) {
+							const comparison = regressionTester.compareSnapshots(beforeSnapshotId, snapshot.id);
+							if (comparison) {
+								result.regressionResult = {
+									regressionDetected:
+										comparison.overallChange === "degraded" || comparison.regressedTests.length > 0,
+									newFailures: comparison.newFailures.length,
+									regressedTests: comparison.regressedTests.length,
+									fixedTests: comparison.fixedTests.length,
+									overallChange: comparison.overallChange,
+									summary: comparison.changeSummary,
+								};
+
+								// Add regression warnings to recommendations
+								if (comparison.regressedTests.length > 0) {
+									result.recommendations.push(
+										`⚠️ Regression detected: ${comparison.regressedTests.length} tests regressed`,
+									);
+									for (const test of comparison.regressedTests.slice(0, 3)) {
+										result.recommendations.push(`  - Regressed: ${test.testFile}`);
+									}
+								}
+
+								if (comparison.newFailures.length > 0) {
+									result.recommendations.push(
+										`⚠️ New failures: ${comparison.newFailures.length} new test failures`,
+									);
+								}
+							}
+						}
+					} catch (e) {
+						// Regression testing failed, but don't fail the assessment
+						result.recommendations.push(
+							`Note: Regression testing failed: ${e instanceof Error ? e.message : String(e)}`,
+						);
 					}
 				}
 
@@ -245,6 +332,28 @@ export const assessTool: AgentTool = {
 		output += `${statusEmoji[result.testStatus]} Tests: ${result.testStatus}\n`;
 		output += `${statusEmoji[result.lintStatus]} Lint: ${result.lintStatus}\n`;
 		output += `📄 Changed files: ${result.changedFiles.length > 0 ? result.changedFiles.join(", ") : "(none)"}\n`;
+
+		// Show regression testing results if available
+		if (result.regressionResult) {
+			const regEmoji = {
+				improved: "📈",
+				degraded: "📉",
+				unchanged: "➡️",
+				mixed: "🔄",
+				none: "❓",
+			};
+			output += `${regEmoji[result.regressionResult.overallChange]} Regression: ${result.regressionResult.overallChange}\n`;
+			if (result.regressionResult.regressedTests > 0) {
+				output += `  ⚠️ Regressed tests: ${result.regressionResult.regressedTests}\n`;
+			}
+			if (result.regressionResult.newFailures > 0) {
+				output += `  ❌ New failures: ${result.regressionResult.newFailures}\n`;
+			}
+			if (result.regressionResult.fixedTests > 0) {
+				output += `  ✅ Fixed tests: ${result.regressionResult.fixedTests}\n`;
+			}
+		}
+
 		output += `${"─".repeat(40)}\n`;
 
 		if (allPassed && result.recommendations.filter((r) => !r.includes("Retrying")).length === 0) {
@@ -285,6 +394,15 @@ export const assessTool: AgentTool = {
 				output += `\n📋 ${result.errorPatterns.length} error patterns detected, but all below confidence threshold (${confidenceThreshold}%).\n`;
 				output += "  Consider lowering confidenceThreshold to see more patterns.\n";
 			}
+		}
+
+		// Show detailed regression summary if available
+		if (result.regressionResult?.summary) {
+			output += "\n📊 Regression Analysis:\n";
+			output += result.regressionResult.summary
+				.split("\n")
+				.map((line) => `  ${line}`)
+				.join("\n");
 		}
 
 		return {

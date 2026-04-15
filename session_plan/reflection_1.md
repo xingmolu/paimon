@@ -1,8 +1,8 @@
 # Reflection — Iteration 1
 
 ## Status
-- Build: PASS
-- Tests: PASS
+- Build: FAIL
+- Tests: FAIL
 
 ## Error
 Error: 400 <400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 202745]
@@ -15,4 +15,4 @@ I need to analyze why this iteration failed.
 2. Re-run build and tests before committing
 
 ---
-Generated at 2026-03-31T09:15:06.167Z
+Generated at 2026-04-05T09:14:07.032Z
