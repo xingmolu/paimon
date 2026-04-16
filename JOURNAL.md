@@ -13,6 +13,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 128 — Shared Context Analysis Refactor for Issue #25 (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Extracted a new shared `src/context-analysis.ts` helper module so representative task-to-file analysis can be reused across the context system instead of living inline inside `SelfImprovementEngine`
+- Refactored `SelfImprovementEngine.getContextAwareSuggestions()` to consume the shared helper and command formatter, preserving existing user-facing suggestion behavior while reducing duplicated context-analysis logic
+- Added focused tests for helper ranking/filtering plus updated self-improvement tests so the refactor stays structural and does not continue the blocked context-heuristic work from Issue #25
+
+**Why this matters:**
+- Advances the mandatory context-system refactor by consolidating reusable task→file analysis behavior into a stable shared layer
+- Reduces future rework by making other context-aware features easier to build on the same helper instead of re-implementing inline task-analysis pipelines
+- Improves future iteration success rate without touching `contextImportance` heuristics, honoring the explicit instruction to stop heuristic-only context tweaks
+
+---
+
 ## Day 127 — Evidence-Based Auto-Context Suggestions for Self-Improvement (2026-04-16)
 
 **Task type:** capability

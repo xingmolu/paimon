@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,22 @@
       "firstTryRate": 92,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 127,
+      "sampleSize": 128,
       "examples": [
+        {
+          "taskDescription": "Evidence-Based Auto-Context Suggestions for Self-Improvement - Extended the `selfImprovement` engine so proactive scans now reuse the existing `context` capability to surface concrete file-target suggestions and ready-to-run context-analysis prompts for representative evolution tasks; added focused tests to preserve actionable scan output",
+          "date": "2026-04-16",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "explore-code",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention",
           "date": "2026-04-16",
@@ -242,22 +256,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Enabler-Aware Optimization Recommendations - Extended optimization dashboard recommendations so weak health signals now point toward leverageful enabling capabilities like self-assessment, error-recovery, rag, and learning-transfer; added focused tests to preserve targeted recommendation output for future task selection",
-          "date": "2026-04-16",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "time-pattern-quick",
@@ -306,7 +307,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -358,7 +359,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "task-type-reliability",
@@ -404,7 +405,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     },
     {
       "id": "skill-combo-evo-pla-rev-usi",
@@ -464,9 +465,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T13:00:42.817Z"
+      "lastUpdated": "2026-04-16T15:16:16.793Z"
     }
   ],
-  "lastUpdated": "2026-04-16T13:00:42.818Z",
-  "sessionCount": 139
+  "lastUpdated": "2026-04-16T15:16:16.794Z",
+  "sessionCount": 140
 }

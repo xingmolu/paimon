@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Shared Context Analysis Refactor for Issue #25 - Extracted a reusable `context-analysis` helper so representative task-to-file analysis is shared across the context system, refactored `SelfImprovementEngine` to consume it instead of inline logic, and added focused tests to preserve structural behavior without continuing blocked heuristic-only context tweaks | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | shared-context-analysis, issue-25-alignment, lower-context-refactor-debt |
 | 2026-04-16 | capability | Evidence-Based Auto-Context Suggestions for Self-Improvement - Extended the `selfImprovement` engine so proactive scans now reuse the existing `context` capability to surface concrete file-target suggestions and ready-to-run context-analysis prompts for representative evolution tasks; added focused tests to preserve actionable scan output | ~15m | ✅ | none | No | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | proactive-file-targeting, better-context-gathering, stronger-self-improvement-guidance |
 | 2026-04-16 | capability | Tunable Context Importance Configuration - Upgraded the `contextImportance` tool so `update-config` now safely applies numeric, boolean, and weight-map config changes with validation, added focused tool tests, and stabilized a flaky agent import test timeout so full verification passes reliably | ~20m | ❌ | TS, test | Yes | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | tunable-context-scoring, adjustable-context-compaction, context-drift-tuning |
 | 2026-04-16 | capability | Decision-Carrying Anchor Preservation for Context Drift - Refined context importance scoring so explicit implementation decisions, chosen approaches, and file-target commitments outrank generic planning chatter during long sessions; added focused tests to keep committed execution records preserved above truncation thresholds | ~15m | ❌ | test | No | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | decision-anchor-preservation, context-drift-resistance, smarter-context-compaction |
@@ -166,14 +167,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 107/119 = 90%
+- First Try Success Rate: 108/120 = 90%
 - Average Time: ~15 minutes
-- Rework Rate: 13/116 = 11%
+- Rework Rate: 13/117 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 113/118 = 96%
-- High Impact Capabilities: 103/113 = 91%
-- Capability Velocity: 113 capabilities in 3 days = 38/day
+- Capability Tasks: 114/119 = 96%
+- High Impact Capabilities: 104/114 = 91%
+- Capability Velocity: 114 capabilities in 3 days = 38/day
 
 ### Error Analysis
 - TypeScript Errors: 7

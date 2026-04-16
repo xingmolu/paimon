@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 70,
+    "current": 63.63636363636363,
     "points": [
       {
         "date": "------",
@@ -19,17 +19,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 70,
+        "value": 63.63636363636363,
         "trend": "down"
       }
     ],
-    "weeklyAverage": 92.80575539568345,
-    "improvement": 70
+    "weeklyAverage": 92.14285714285714,
+    "improvement": 63.63636363636363
   },
   "time": {
-    "averageMinutes": 16.489208633093526,
+    "averageMinutes": 16.514285714285716,
     "byTaskType": {
-      "capability": 17.1984126984127,
+      "capability": 17.22047244094488,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -51,7 +51,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 18.5,
+        "value": 18.636363636363637,
         "trend": "down"
       }
     ],
@@ -59,8 +59,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 85,
+    "totalErrors": 86,
     "byType": {
+      "TS, test": 1,
       "test": 3,
       "test (fixed)": 1,
       "lint (auto-fixed)": 1,
@@ -75,6 +76,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-16: TS, test in \"Tunable Context Importance Configuration - Upgraded the `contextImportance` tool so `update-config` now safely applies numeric, boolean, and weight-map config changes with validation, added focused tool tests, and stabilized a flaky agent import test timeout so full verification passes reliably\"",
       "2026-04-16: test in \"Decision-Carrying Anchor Preservation for Context Drift - Refined context importance scoring so explicit implementation decisions, chosen approaches, and file-target commitments outrank generic planning chatter during long sessions; added focused tests to keep committed execution records preserved above truncation thresholds\"",
       "2026-04-16: test (fixed) in \"Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions\"",
       "2026-04-16: test in \"Actionable Memory-Quality Recommendations - Replaced generic dashboard memory guidance with concrete recommendations derived from weak-signal skills, recurring error patterns, and low-impact capability trends; added focused tests and ensured self-improvement suggestions inherit the more actionable memory signals\"",
@@ -83,8 +85,7 @@
       "2026-04-05: lint (fixed) in \"OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\""
+      "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\""
     ],
     "points": [
       {
@@ -104,7 +105,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 5,
+        "value": 6,
         "trend": "up"
       }
     ],
@@ -119,9 +120,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 136,
-      "successRate": 93.38235294117648,
-      "averageTime": 16.74264705882353,
+      "usageCount": 137,
+      "successRate": 92.7007299270073,
+      "averageTime": 16.766423357664234,
       "trend": "improving"
     },
     {
@@ -133,23 +134,23 @@
     },
     {
       "skill": "plan-architecture",
-      "usageCount": 15,
-      "successRate": 73.33333333333333,
-      "averageTime": 18,
-      "trend": "stable"
+      "usageCount": 16,
+      "successRate": 68.75,
+      "averageTime": 18.125,
+      "trend": "declining"
     },
     {
       "skill": "using-superpowers",
-      "usageCount": 12,
-      "successRate": 83.33333333333334,
-      "averageTime": 16.666666666666668,
+      "usageCount": 13,
+      "successRate": 76.92307692307693,
+      "averageTime": 16.923076923076923,
       "trend": "stable"
     },
     {
       "skill": "review-changes",
-      "usageCount": 11,
-      "successRate": 63.63636363636363,
-      "averageTime": 18.181818181818183,
+      "usageCount": 12,
+      "successRate": 58.333333333333336,
+      "averageTime": 18.333333333333332,
       "trend": "declining"
     },
     {
@@ -160,17 +161,17 @@
       "trend": "improving"
     },
     {
+      "skill": "explore-code",
+      "usageCount": 4,
+      "successRate": 0,
+      "averageTime": 18.75,
+      "trend": "stable"
+    },
+    {
       "skill": "systematic-debugging",
       "usageCount": 4,
       "successRate": 100,
       "averageTime": 13.75,
-      "trend": "stable"
-    },
-    {
-      "skill": "explore-code",
-      "usageCount": 3,
-      "successRate": 0,
-      "averageTime": 18.333333333333332,
       "trend": "stable"
     },
     {
@@ -212,17 +213,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 5
+        "value": 5.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 126,
-    "highImpactCount": 123,
-    "highImpactPercentage": 97.61904761904762
+    "totalCapabilities": 127,
+    "highImpactCount": 124,
+    "highImpactPercentage": 97.63779527559055
   },
-  "lastUpdated": "2026-04-16T13:00:42.645Z",
-  "iterationsAnalyzed": 139
+  "lastUpdated": "2026-04-16T15:16:16.655Z",
+  "iterationsAnalyzed": 140
 }
