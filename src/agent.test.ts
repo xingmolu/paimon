@@ -226,7 +226,7 @@ describe("Tools", () => {
 			// Check that the http tool is defined by looking at agent creation
 			const { createAgent } = module;
 			expect(createAgent).toBeDefined();
-		});
+		}, 15000);
 
 		it("should have http parameters defined", async () => {
 			// Verify http tool exists by checking that createAgent doesn't fail

@@ -4,9 +4,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import {
-	type ContextImportanceConfig,
 	ContextImportanceScorer,
-	DEFAULT_CONTEXT_IMPORTANCE_CONFIG,
 	type MessageForAnalysis,
 	getGlobalContextImportanceScorer,
 	initGlobalContextImportanceScorer,

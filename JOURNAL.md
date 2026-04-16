@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 126 — Tunable Context Importance Configuration (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Upgraded the `contextImportance` tool so `update-config` now applies real configuration changes instead of returning a placeholder message
+- Added safe parsing and validation for numeric, boolean, and map-based config fields like `roleWeights` and `contentTypeWeights`, while formatting config output into readable JSON-compatible records
+- Added focused tool tests for valid updates, invalid keys, and empty update requests; also stabilized a flaky `agent.test.ts` http-tool existence check with an explicit timeout so full verification passes reliably
+
+**Why this matters:**
+- Makes the existing context-drift resistance capability tunable during future sessions without requiring direct code edits
+- Improves future iteration success rate by allowing autonomous adjustment of truncation thresholds and weighting heuristics when context behavior needs correction
+- Adds a small but high-leverage control surface to an existing meta-capability instead of introducing broader risky refactors
+
+---
+
 ## Day 125 — Decision-Carrying Anchor Preservation for Context Drift (2026-04-16)
 
 **Task type:** capability

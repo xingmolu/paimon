@@ -8,12 +8,15 @@
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import {
+	type ContentType,
 	type ContextImportanceAnalysis,
 	type ContextImportanceConfig,
 	ContextImportanceScorer,
 	type ContextImportanceStats,
+	DEFAULT_CONTEXT_IMPORTANCE_CONFIG,
 	type MessageForAnalysis,
 	type MessageImportanceScore,
+	type MessageRole,
 	type TruncationRecommendation,
 	getGlobalContextImportanceScorer,
 } from "../context-importance.js";
@@ -207,6 +210,124 @@ function formatTargetResult(
 	return `${base}\n\n**Target:** ${targetSavings} tokens\n**Achieved:** ${totalSavings} tokens`;
 }
 
+function mapToRecord<TKey extends string>(map: Map<TKey, number>): Record<string, number> {
+	return Object.fromEntries(map.entries());
+}
+
+function formatConfig(config: ContextImportanceConfig): string {
+	return JSON.stringify(
+		{
+			...config,
+			roleWeights: mapToRecord(config.roleWeights),
+			contentTypeWeights: mapToRecord(config.contentTypeWeights),
+		},
+		null,
+		2,
+	);
+}
+
+function isNumber(value: unknown): value is number {
+	return typeof value === "number" && Number.isFinite(value);
+}
+
+function isBoolean(value: unknown): value is boolean {
+	return typeof value === "boolean";
+}
+
+function parseWeightRecord<TKey extends string>(
+	value: unknown,
+	allowedKeys: readonly TKey[],
+	fieldName: string,
+): Map<TKey, number> {
+	if (!value || typeof value !== "object" || Array.isArray(value)) {
+		throw new Error(`${fieldName} must be an object of numeric weights`);
+	}
+
+	const entries = Object.entries(value as Record<string, unknown>);
+	const allowed = new Set<string>(allowedKeys);
+	const weights = new Map<TKey, number>();
+
+	for (const [key, raw] of entries) {
+		if (!allowed.has(key)) {
+			throw new Error(`Invalid ${fieldName} key: ${key}`);
+		}
+		if (!isNumber(raw)) {
+			throw new Error(`${fieldName}.${key} must be a finite number`);
+		}
+		weights.set(key as TKey, raw);
+	}
+
+	return weights;
+}
+
+function parseConfigUpdate(params: Record<string, unknown>): Partial<ContextImportanceConfig> {
+	const update: Partial<ContextImportanceConfig> = {};
+
+	if (params.minKeepScore !== undefined) {
+		if (!isNumber(params.minKeepScore)) {
+			throw new Error("minKeepScore must be a finite number");
+		}
+		update.minKeepScore = params.minKeepScore;
+	}
+
+	if (params.maxTruncatableSize !== undefined) {
+		if (!isNumber(params.maxTruncatableSize)) {
+			throw new Error("maxTruncatableSize must be a finite number");
+		}
+		update.maxTruncatableSize = params.maxTruncatableSize;
+	}
+
+	if (params.recencyWeight !== undefined) {
+		if (!isNumber(params.recencyWeight)) {
+			throw new Error("recencyWeight must be a finite number");
+		}
+		update.recencyWeight = params.recencyWeight;
+	}
+
+	if (params.analyzeToolSuccess !== undefined) {
+		if (!isBoolean(params.analyzeToolSuccess)) {
+			throw new Error("analyzeToolSuccess must be a boolean");
+		}
+		update.analyzeToolSuccess = params.analyzeToolSuccess;
+	}
+
+	if (params.detectFileReferences !== undefined) {
+		if (!isBoolean(params.detectFileReferences)) {
+			throw new Error("detectFileReferences must be a boolean");
+		}
+		update.detectFileReferences = params.detectFileReferences;
+	}
+
+	if (params.detectPlanReferences !== undefined) {
+		if (!isBoolean(params.detectPlanReferences)) {
+			throw new Error("detectPlanReferences must be a boolean");
+		}
+		update.detectPlanReferences = params.detectPlanReferences;
+	}
+
+	if (params.roleWeights !== undefined) {
+		update.roleWeights = parseWeightRecord<MessageRole>(
+			params.roleWeights,
+			Array.from(DEFAULT_CONTEXT_IMPORTANCE_CONFIG.roleWeights.keys()),
+			"roleWeights",
+		);
+	}
+
+	if (params.contentTypeWeights !== undefined) {
+		update.contentTypeWeights = parseWeightRecord<ContentType>(
+			params.contentTypeWeights,
+			Array.from(DEFAULT_CONTEXT_IMPORTANCE_CONFIG.contentTypeWeights.keys()),
+			"contentTypeWeights",
+		);
+	}
+
+	if (Object.keys(update).length === 0) {
+		throw new Error("No valid configuration fields provided for update-config");
+	}
+
+	return update;
+}
+
 /**
  * Create the contextImportance tool.
  */
@@ -254,6 +375,14 @@ contextImportance({action: 'stats'})
 		messageIndex: Type.Optional(
 			Type.Number({ description: "Message index to score (for score action)" }),
 		),
+		minKeepScore: Type.Optional(Type.Number()),
+		maxTruncatableSize: Type.Optional(Type.Number()),
+		recencyWeight: Type.Optional(Type.Number()),
+		analyzeToolSuccess: Type.Optional(Type.Boolean()),
+		detectFileReferences: Type.Optional(Type.Boolean()),
+		detectPlanReferences: Type.Optional(Type.Boolean()),
+		roleWeights: Type.Optional(Type.Record(Type.String(), Type.Number())),
+		contentTypeWeights: Type.Optional(Type.Record(Type.String(), Type.Number())),
 	}),
 	execute: async (_toolCallId, params): Promise<AgentToolResult<ContextImportanceResult>> => {
 		const scorer = getGlobalContextImportanceScorer();
@@ -374,14 +503,16 @@ contextImportance({action: 'stats'})
 				case "config": {
 					const config = scorer.getConfig();
 					result.data = config;
-					output = JSON.stringify(config, null, 2);
+					output = formatConfig(config);
 					break;
 				}
 
 				case "update-config": {
-					// Note: Limited config update support due to Map types
-					output =
-						"Configuration updates limited. Use direct module access for full config changes.";
+					const configUpdate = parseConfigUpdate(p);
+					scorer.updateConfig(configUpdate);
+					const updatedConfig = scorer.getConfig();
+					result.data = updatedConfig;
+					output = `Configuration updated successfully.\n\n${formatConfig(updatedConfig)}`;
 					break;
 				}
 
