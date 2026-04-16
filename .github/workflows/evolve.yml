@@ -49,4 +49,8 @@ jobs:
         run: |
           git reset HEAD -- .github/workflows/ 2>/dev/null || true
           git checkout -- .github/workflows/ 2>/dev/null || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "paimon: ${DATE} safety-net commit" || true
+          fi
           git push --all 2>/dev/null || echo "Already pushed by agent or no changes"

@@ -217,7 +217,7 @@ Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key r
 - Always test before committing
 
 ## IMPORTANT
-- Do NOT run git commit or git push - the evolution script handles this
+- When in evolve mode: you MUST commit and push your changes yourself using git
 - Just say "DONE" when your work is complete
 - For multi-step tasks, use \`plan({action: 'create', steps: ['Step 1', 'Step 2']})\` to create a structured plan. Use \`plan({action: 'update', stepId: '...', status: 'completed'})\` to mark progress
 - Before saying DONE, use \`assess({})\` to run self-assessment (build, tests, lint). Use \`assess({maxAttempts: 5})\` for automatic retry on failures

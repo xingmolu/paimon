@@ -160,9 +160,8 @@ You are fully autonomous. You must:
 4. **Verify yourself** — Run \`npm run build && npm test -- --run\`. If it fails, **fix it yourself** and retry. Do NOT stop until build and tests pass.
 5. **Commit** — Use git: \`git add -A && git commit -m "paimon: <description>"\`
 6. **Push** — Use git: \`git push\`
-7. **Record** — Update MEMORY.md scorecard, JOURNAL.md, and ROADMAP.md as appropriate
 
-You can do multiple improvements in this session. Keep going until you've exhausted the time or have nothing valuable left to improve.
+**You MUST commit and push your changes.** This is your primary responsibility. Do NOT skip this step.
 
 ## Rules
 - Do NOT modify files in \`.github/workflows/\` directory
