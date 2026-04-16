@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 75,
+    "current": 77.77777777777779,
     "points": [
       {
         "date": "------",
@@ -19,17 +19,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 75,
+        "value": 77.77777777777779,
         "trend": "down"
       }
     ],
-    "weeklyAverage": 93.43065693430657,
-    "improvement": 75
+    "weeklyAverage": 93.47826086956522,
+    "improvement": 77.77777777777779
   },
   "time": {
-    "averageMinutes": 16.51094890510949,
+    "averageMinutes": 16.5,
     "byTaskType": {
-      "capability": 17.233870967741936,
+      "capability": 17.216,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -51,7 +51,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 19.375,
+        "value": 18.88888888888889,
         "trend": "down"
       }
     ],
@@ -119,9 +119,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 134,
-      "successRate": 94.02985074626866,
-      "averageTime": 16.76865671641791,
+      "usageCount": 135,
+      "successRate": 94.07407407407408,
+      "averageTime": 16.755555555555556,
       "trend": "improving"
     },
     {
@@ -133,24 +133,24 @@
     },
     {
       "skill": "plan-architecture",
-      "usageCount": 13,
-      "successRate": 76.92307692307693,
-      "averageTime": 18.46153846153846,
+      "usageCount": 14,
+      "successRate": 78.57142857142857,
+      "averageTime": 18.214285714285715,
       "trend": "stable"
     },
     {
       "skill": "using-superpowers",
-      "usageCount": 10,
-      "successRate": 90,
-      "averageTime": 17,
+      "usageCount": 11,
+      "successRate": 90.9090909090909,
+      "averageTime": 16.818181818181817,
       "trend": "improving"
     },
     {
       "skill": "review-changes",
-      "usageCount": 9,
-      "successRate": 66.66666666666666,
-      "averageTime": 18.88888888888889,
-      "trend": "declining"
+      "usageCount": 10,
+      "successRate": 70,
+      "averageTime": 18.5,
+      "trend": "stable"
     },
     {
       "skill": "writing-plans",
@@ -212,17 +212,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 4
+        "value": 4.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 124,
-    "highImpactCount": 121,
-    "highImpactPercentage": 97.58064516129032
+    "totalCapabilities": 125,
+    "highImpactCount": 122,
+    "highImpactPercentage": 97.6
   },
-  "lastUpdated": "2026-04-16T10:11:51.953Z",
-  "iterationsAnalyzed": 137
+  "lastUpdated": "2026-04-16T12:36:21.187Z",
+  "iterationsAnalyzed": 138
 }
