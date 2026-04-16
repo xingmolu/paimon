@@ -218,6 +218,85 @@ describe("OptimizationDashboardManager", () => {
 		expect(errorRecommendation?.description).not.toContain("lint (fixed)");
 	});
 
+	it("deduplicates and orders recommendations by priority and effort", () => {
+		const manager = new OptimizationDashboardManager({
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 60, points: [], weeklyAverage: 62, improvement: -4 },
+					time: {
+						averageMinutes: 21,
+						byTaskType: { capability: 21 },
+						points: [],
+						fastestTask: "A",
+						slowestTask: "B",
+					},
+					errors: {
+						totalErrors: 6,
+						byType: { lint: 4, test: 2 },
+						recentErrors: [],
+						points: [],
+						commonPatterns: ["lint", "lint", "test"],
+					},
+					skills: [
+						{
+							skill: "review-changes",
+							usageCount: 3,
+							successRate: 62,
+							averageTime: 17,
+							trend: "declining",
+						},
+					],
+					capabilityVelocity: {
+						current: 5,
+						points: [],
+						totalCapabilities: 20,
+						highImpactCount: 8,
+						highImpactPercentage: 40,
+					},
+					lastUpdated: "2026-04-16T00:00:00.000Z",
+					iterationsAnalyzed: 10,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [
+					{
+						toolName: "rareTool",
+						totalUses: 2,
+						successfulUses: 1,
+						failedUses: 1,
+						successRate: 50,
+						averageDuration: 70000,
+						lastUsed: "2026-04-16T00:00:00.000Z",
+						actions: {},
+						taskTypes: {},
+						commonErrors: ["boom"],
+					},
+					{
+						toolName: "rareTool",
+						totalUses: 2,
+						successfulUses: 1,
+						failedUses: 1,
+						successRate: 50,
+						averageDuration: 70000,
+						lastUsed: "2026-04-16T00:00:00.000Z",
+						actions: {},
+						taskTypes: {},
+						commonErrors: ["boom"],
+					},
+				],
+			},
+		});
+
+		const recommendations = manager.getRecommendations();
+		const titles = recommendations.map((item) => item.title);
+
+		expect(new Set(titles).size).toBe(titles.length);
+		expect(recommendations[0]?.priority).toBe("high");
+		expect(titles[0]).toBe("Capture reusable lessons from weak-signal skills");
+		expect(titles).toContain("Increase tool utilization");
+		expect(titles.filter((title) => title === "Increase tool utilization")).toHaveLength(1);
+	});
+
 	it("uses dynamic baseline values when comparing a session", () => {
 		const manager = new OptimizationDashboardManager({
 			metricsTracker: {

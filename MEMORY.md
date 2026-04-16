@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Recommendation Deduping for Optimization Guidance - Finalized optimization dashboard recommendations through shared deduping and priority ordering so overlapping guidance stays unique, stable, and action-ranked; added focused tests to preserve clean recommendation output for future task selection | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | cleaner-recommendation-ranking, lower-guidance-noise, better-task-selection |
 | 2026-04-16 | capability | Recommendation Hygiene for Memory Signals - Cleaned optimization dashboard memory recommendations by filtering malformed placeholder skill names and normalizing recurring error labels like `lint (fixed)` into actionable signals; added focused tests to keep recommendation output trustworthy | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | trustworthy-memory-signals, cleaner-dashboard-guidance, better-task-selection |
 | 2026-04-16 | capability | Actionable Memory-Quality Recommendations - Replaced generic dashboard memory guidance with concrete recommendations derived from weak-signal skills, recurring error patterns, and low-impact capability trends; added focused tests and ensured self-improvement suggestions inherit the more actionable memory signals | ~20m | ❌ | test | Yes | High | using-superpowers, evolve, plan-architecture, review-changes | actionable-memory-guidance, stronger-learning-capture, better-task-selection |
 | 2026-04-16 | capability | Self-Improvement Signal Quality Upgrade - Made self-improvement suggestions deterministic and deduplicated, integrated live optimization dashboard health/bottleneck/recommendation signals into proactive scans, and added focused tests for stable IDs and dashboard-derived suggestions | ~20m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | trustworthy-self-improvement-signals, dashboard-driven-task-selection, reduced-suggestion-noise |
@@ -159,14 +160,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 102/113 = 90%
+- First Try Success Rate: 103/114 = 90%
 - Average Time: ~15 minutes
-- Rework Rate: 13/113 = 12%
+- Rework Rate: 13/114 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 108/113 = 96%
-- High Impact Capabilities: 98/108 = 91%
-- Capability Velocity: 108 capabilities in 3 days = 36/day
+- Capability Tasks: 109/114 = 96%
+- High Impact Capabilities: 99/109 = 91%
+- Capability Velocity: 109 capabilities in 3 days = 36/day
 
 ### Error Analysis
 - TypeScript Errors: 7

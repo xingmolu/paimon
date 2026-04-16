@@ -279,7 +279,69 @@ export class OptimizationDashboardManager {
 			});
 		}
 
-		return recommendations;
+		return this.finalizeRecommendations(recommendations);
+	}
+
+	private getPriorityWeight(priority: OptimizationRecommendation["priority"]): number {
+		return {
+			critical: 4,
+			high: 3,
+			medium: 2,
+			low: 1,
+		}[priority];
+	}
+
+	private getEffortWeight(effort: OptimizationRecommendation["effort"]): number {
+		return {
+			simple: 1,
+			moderate: 2,
+			complex: 3,
+		}[effort];
+	}
+
+	private finalizeRecommendations(
+		recommendations: OptimizationRecommendation[],
+	): OptimizationRecommendation[] {
+		const merged = new Map<string, OptimizationRecommendation>();
+
+		for (const recommendation of recommendations) {
+			const key = `${recommendation.category}:${recommendation.title}`.toLowerCase();
+			const existing = merged.get(key);
+			if (!existing) {
+				merged.set(key, { ...recommendation });
+				continue;
+			}
+
+			const mergedRecommendation: OptimizationRecommendation = {
+				...existing,
+				priority:
+					this.getPriorityWeight(recommendation.priority) >
+					this.getPriorityWeight(existing.priority)
+						? recommendation.priority
+						: existing.priority,
+				effort:
+					this.getEffortWeight(recommendation.effort) > this.getEffortWeight(existing.effort)
+						? recommendation.effort
+						: existing.effort,
+				expectedImpact:
+					recommendation.expectedImpact.length > existing.expectedImpact.length
+						? recommendation.expectedImpact
+						: existing.expectedImpact,
+				description:
+					recommendation.description.length > existing.description.length
+						? recommendation.description
+						: existing.description,
+			};
+			merged.set(key, mergedRecommendation);
+		}
+
+		return Array.from(merged.values()).sort((a, b) => {
+			const priorityDelta = this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority);
+			if (priorityDelta !== 0) return priorityDelta;
+			const effortDelta = this.getEffortWeight(a.effort) - this.getEffortWeight(b.effort);
+			if (effortDelta !== 0) return effortDelta;
+			return a.title.localeCompare(b.title);
+		});
 	}
 
 	private calculateCapabilityUtilization(toolStats: ToolUsageStats[]): number {
@@ -471,9 +533,10 @@ export class OptimizationDashboardManager {
 			...this.getMemoryRecommendations(metrics, health.components.memoryQuality),
 		);
 
-		this.stats.recommendationsGenerated += recommendations.length;
+		const finalizedRecommendations = this.finalizeRecommendations(recommendations);
+		this.stats.recommendationsGenerated += finalizedRecommendations.length;
 		this.writeData();
-		return recommendations;
+		return finalizedRecommendations;
 	}
 
 	compareSession(cur: {

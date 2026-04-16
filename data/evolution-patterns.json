@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,21 +202,34 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 94% success, 92% high impact",
+      "description": "capability tasks: 93% success, 93% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 94,
-      "firstTryRate": 94,
+      "successRate": 93,
+      "firstTryRate": 93,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 119,
+      "sampleSize": 121,
       "examples": [
+        {
+          "taskDescription": "Recommendation Hygiene for Memory Signals - Cleaned optimization dashboard memory recommendations by filtering malformed placeholder skill names and normalizing recurring error labels like `lint (fixed)` into actionable signals; added focused tests to keep recommendation output trustworthy",
+          "date": "2026-04-16",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Self-Improvement Signal Quality Upgrade - Made self-improvement suggestions deterministic and deduplicated, integrated live optimization dashboard health/bottleneck/recommendation signals into proactive scans, and added focused tests for stable IDs and dashboard-derived suggestions",
           "date": "2026-04-16",
@@ -241,19 +254,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Evolution Optimization Dashboard (Phase 99) - OptimizationDashboardManager module for unified view of evolution metrics, health score with 5 components (successRate, timeEfficiency, errorRate, capabilityUtilization, memoryQuality), trend visualization, capability utilization tracking, bottleneck identification, recommendation engine, session comparison, generateReport function",
-          "date": "2026-04-05",
-          "time": 15,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "time-pattern-quick",
@@ -302,7 +305,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -354,7 +357,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     },
     {
       "id": "task-type-reliability",
@@ -400,9 +403,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:47:17.966Z"
+      "lastUpdated": "2026-04-16T05:20:13.938Z"
     }
   ],
-  "lastUpdated": "2026-04-16T04:47:17.966Z",
-  "sessionCount": 131
+  "lastUpdated": "2026-04-16T05:20:13.939Z",
+  "sessionCount": 133
 }
