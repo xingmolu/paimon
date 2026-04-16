@@ -18,6 +18,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getCapabilityGapDetector } from "./capability-gap.js";
+import type { Bottleneck, OptimizationRecommendation } from "./optimization-dashboard.js";
+import { getOptimizationDashboardManager } from "./optimization-dashboard.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
 
 /**
@@ -258,6 +260,7 @@ export class SelfImprovementEngine {
 	private suggestions: Map<string, ImprovementSuggestion> = new Map();
 	private dataPath: string;
 	private dismissedIds: Set<string> = new Set();
+	private readonly fingerprintPrefix = "self-improvement";
 
 	constructor(configPath?: string) {
 		this.config = DEFAULT_CONFIG;
@@ -335,6 +338,63 @@ export class SelfImprovementEngine {
 		}
 	}
 
+	private toSlug(value: string): string {
+		return value
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/^-+|-+$/g, "")
+			.slice(0, 60);
+	}
+
+	private buildSuggestionId(suggestion: Omit<ImprovementSuggestion, "id">): string {
+		const fingerprintParts = [
+			this.fingerprintPrefix,
+			suggestion.source,
+			suggestion.category,
+			suggestion.priority,
+			suggestion.filePath ?? "global",
+			suggestion.lineNumber?.toString() ?? "0",
+			suggestion.title,
+		];
+		return this.toSlug(fingerprintParts.join("-"));
+	}
+
+	private createSuggestion(
+		suggestion: Omit<ImprovementSuggestion, "id" | "timestamp"> & {
+			filePath?: string;
+			lineNumber?: number;
+		},
+	): ImprovementSuggestion {
+		const baseSuggestion: Omit<ImprovementSuggestion, "id"> = {
+			...suggestion,
+			timestamp: new Date().toISOString(),
+		};
+		return {
+			...baseSuggestion,
+			id: this.buildSuggestionId(baseSuggestion),
+		};
+	}
+
+	private deduplicateSuggestions(suggestions: ImprovementSuggestion[]): ImprovementSuggestion[] {
+		const deduplicated = new Map<string, ImprovementSuggestion>();
+		for (const suggestion of suggestions) {
+			const normalized = { ...suggestion, id: this.buildSuggestionId(suggestion) };
+			const existing = deduplicated.get(normalized.id);
+			if (!existing || normalized.confidence > existing.confidence) {
+				deduplicated.set(normalized.id, normalized);
+			}
+		}
+		return Array.from(deduplicated.values());
+	}
+
+	private getDashboardManager(): {
+		getHealth(): { status: "excellent" | "good" | "fair" | "poor"; overallScore: number };
+		identifyBottlenecks(): Bottleneck[];
+		getRecommendations(): OptimizationRecommendation[];
+	} {
+		return getOptimizationDashboardManager();
+	}
+
 	/**
 	 * Scan codebase for improvement suggestions.
 	 */
@@ -358,13 +418,18 @@ export class SelfImprovementEngine {
 		// 4. Add competitor pattern suggestions
 		suggestions.push(...this.getCompetitorSuggestions());
 
+		// 5. Add optimization dashboard suggestions
+		suggestions.push(...this.getDashboardSuggestions());
+
+		const deduplicated = this.deduplicateSuggestions(suggestions);
+
 		// Filter by confidence and dismissed
-		const filtered = suggestions
+		const filtered = deduplicated
 			.filter((s) => s.confidence >= this.config.minConfidence)
 			.filter((s) => !this.dismissedIds.has(s.id))
 			.sort((a, b) => {
 				const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-				return priorityOrder[a.priority] - priorityOrder[b.priority];
+				return priorityOrder[a.priority] - priorityOrder[b.priority] || b.confidence - a.confidence;
 			})
 			.slice(0, this.config.maxSuggestions);
 
@@ -436,8 +501,7 @@ export class SelfImprovementEngine {
 					// Find line number
 					const lineNumber = content.substring(0, match.index).split("\n").length;
 
-					const suggestion: ImprovementSuggestion = {
-						id: `pattern-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+					const suggestion = this.createSuggestion({
 						category: pattern.category,
 						priority: pattern.priority,
 						title: pattern.title,
@@ -449,8 +513,7 @@ export class SelfImprovementEngine {
 						effort: "simple",
 						confidence: 80,
 						source: "code-analysis",
-						timestamp: new Date().toISOString(),
-					};
+					});
 
 					suggestions.push(suggestion);
 
@@ -475,8 +538,7 @@ export class SelfImprovementEngine {
 			const gaps = detector.getAllGaps();
 
 			for (const gap of gaps.slice(0, 5)) {
-				const suggestion: ImprovementSuggestion = {
-					id: `gap-${gap.id}`,
+				const suggestion = this.createSuggestion({
 					category: "capability",
 					priority:
 						gap.severity === "critical" ? "critical" : gap.severity === "high" ? "high" : "medium",
@@ -486,8 +548,7 @@ export class SelfImprovementEngine {
 					effort: "moderate",
 					confidence: 85,
 					source: "capability-gap",
-					timestamp: new Date().toISOString(),
-				};
+				});
 
 				suggestions.push(suggestion);
 			}
@@ -510,8 +571,7 @@ export class SelfImprovementEngine {
 
 			for (const insight of insights.slice(0, 3)) {
 				if (insight.type === "underutilized") {
-					const suggestion: ImprovementSuggestion = {
-						id: `usage-${insight.toolName}`,
+					const suggestion = this.createSuggestion({
 						category: "capability",
 						priority: "low",
 						title: `Underutilized tool: ${insight.toolName}`,
@@ -520,12 +580,10 @@ export class SelfImprovementEngine {
 						effort: "simple",
 						confidence: 70,
 						source: "usage-analytics",
-						timestamp: new Date().toISOString(),
-					};
+					});
 					suggestions.push(suggestion);
 				} else if (insight.type === "high_failure") {
-					const suggestion: ImprovementSuggestion = {
-						id: `reliability-${insight.toolName}`,
+					const suggestion = this.createSuggestion({
 						category: "reliability",
 						priority: "high",
 						title: `High failure tool: ${insight.toolName}`,
@@ -534,8 +592,7 @@ export class SelfImprovementEngine {
 						effort: "moderate",
 						confidence: 80,
 						source: "usage-analytics",
-						timestamp: new Date().toISOString(),
-					};
+					});
 					suggestions.push(suggestion);
 				}
 			}
@@ -550,11 +607,75 @@ export class SelfImprovementEngine {
 	 * Get competitor-based suggestions.
 	 */
 	private getCompetitorSuggestions(): ImprovementSuggestion[] {
-		return COMPETITOR_SUGGESTIONS.map((s) => ({
-			...s,
-			id: `competitor-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-			timestamp: new Date().toISOString(),
-		}));
+		return COMPETITOR_SUGGESTIONS.map((suggestion) => this.createSuggestion(suggestion));
+	}
+
+	private getDashboardSuggestions(): ImprovementSuggestion[] {
+		try {
+			const dashboard = this.getDashboardManager();
+			const suggestions: ImprovementSuggestion[] = [];
+			const health = dashboard.getHealth();
+
+			if (health.status === "fair" || health.status === "poor") {
+				suggestions.push(
+					this.createSuggestion({
+						category: "capability",
+						priority: health.status === "poor" ? "critical" : "high",
+						title: `Optimization dashboard health is ${health.status}`,
+						description: `Live evolution health is ${health.overallScore}/100. Prioritize improvements that address the weakest dashboard signals.`,
+						impact: "Improves task prioritization with real evolution health signals",
+						effort: "simple",
+						confidence: 88,
+						source: "best-practice",
+					}),
+				);
+			}
+
+			for (const bottleneck of dashboard.identifyBottlenecks()) {
+				suggestions.push(
+					this.createSuggestion({
+						category:
+							bottleneck.type === "high-error"
+								? "reliability"
+								: bottleneck.type === "memory-issues"
+									? "capability"
+									: "performance",
+						priority: bottleneck.impact >= 70 ? "high" : "medium",
+						title: `Bottleneck: ${bottleneck.name}`,
+						description: `${bottleneck.description} ${bottleneck.suggestion}`,
+						impact: "Targets a live bottleneck detected from recent evolution data",
+						effort: "moderate",
+						confidence: 84,
+						source: "best-practice",
+					}),
+				);
+			}
+
+			for (const recommendation of dashboard.getRecommendations()) {
+				suggestions.push(
+					this.createSuggestion({
+						category:
+							recommendation.category === "memory"
+								? "capability"
+								: recommendation.category === "reliability"
+									? "reliability"
+									: recommendation.category,
+						priority: recommendation.priority,
+						title: recommendation.title,
+						description: recommendation.description,
+						suggestedFix: recommendation.expectedImpact,
+						impact: recommendation.expectedImpact,
+						effort: recommendation.effort === "complex" ? "complex" : recommendation.effort,
+						confidence: 86,
+						source: "best-practice",
+					}),
+				);
+			}
+
+			return suggestions;
+		} catch {
+			return [];
+		}
 	}
 
 	/**

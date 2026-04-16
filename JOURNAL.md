@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 118 — Self-Improvement Signal Quality Upgrade (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Upgraded `SelfImprovementEngine` so scan results now use deterministic suggestion IDs and deduplicate repeated findings instead of generating fresh random duplicates on each scan
+- Integrated the live `OptimizationDashboardManager` into self-improvement scanning so proactive suggestions now reflect current health status, active bottlenecks, and dashboard recommendations
+- Added focused tests covering stable/deduplicated scan output and dashboard-derived suggestions to keep the improvement trustworthy
+
+**Why this matters:**
+- Makes proactive self-improvement suggestions far more actionable and less noisy during future evolution sessions
+- Connects the self-improvement engine to live optimization signals, improving task selection quality and reducing manual cross-tool synthesis
+- Strengthens integration between two existing meta-capabilities instead of adding another isolated feature
+
+---
+
 ## Day 117 — Data-Driven Optimization Dashboard (2026-04-16)
 
 **Task type:** capability

@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,20 +202,20 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 95% success, 92% high impact",
+      "description": "capability tasks: 94% success, 92% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 95,
-      "firstTryRate": 95,
+      "successRate": 94,
+      "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 117,
+      "sampleSize": 118,
       "examples": [
         {
           "taskDescription": "Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution",
@@ -250,16 +250,16 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "time-pattern-quick",
       "type": "time-pattern",
-      "description": "Tasks under 8min have 100% success",
+      "description": "Tasks under 9min have 100% success",
       "characteristics": {
         "timeRange": {
           "min": 0,
-          "max": 8
+          "max": 9
         }
       },
       "successRate": 100,
@@ -299,7 +299,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -351,7 +351,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     },
     {
       "id": "task-type-reliability",
@@ -397,9 +397,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T02:57:17.498Z"
+      "lastUpdated": "2026-04-16T04:16:13.745Z"
     }
   ],
-  "lastUpdated": "2026-04-16T02:57:17.498Z",
-  "sessionCount": 129
+  "lastUpdated": "2026-04-16T04:16:13.745Z",
+  "sessionCount": 130
 }

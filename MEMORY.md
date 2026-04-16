@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Self-Improvement Signal Quality Upgrade - Made self-improvement suggestions deterministic and deduplicated, integrated live optimization dashboard health/bottleneck/recommendation signals into proactive scans, and added focused tests for stable IDs and dashboard-derived suggestions | ~20m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | trustworthy-self-improvement-signals, dashboard-driven-task-selection, reduced-suggestion-noise |
 | 2026-04-16 | capability | Data-Driven Optimization Dashboard - Replaced hardcoded optimization dashboard scores with live values derived from evolution metrics and tool usage analytics, added dependency injection for testable data sources, and covered dynamic health/utilization/bottleneck/comparison behavior with focused tests | ~25m | ❌ | test | Yes | High | evolve, explore-code, plan-architecture, review-changes | trustworthy-dashboard-signals, analytics-integration, better-task-selection |
 | 2026-04-16 | capability | Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution | ~20m | ✅ | lint (auto-fixed) | No | High | evolve, plan-architecture, review-changes | dashboard-visibility, optimization-monitoring, better-task-selection |
 | 2026-04-05 | capability | Evolution Optimization Dashboard (Phase 99) - OptimizationDashboardManager module for unified view of evolution metrics, health score with 5 components (successRate, timeEfficiency, errorRate, capabilityUtilization, memoryQuality), trend visualization, capability utilization tracking, bottleneck identification, recommendation engine, session comparison, generateReport function | ~15m | ✅ | none | No | High | evolve | unified-dashboard, health-monitoring, optimization-recommendations |
@@ -156,14 +157,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 100/110 = 91%
+- First Try Success Rate: 101/111 = 91%
 - Average Time: ~15 minutes
-- Rework Rate: 12/110 = 11%
+- Rework Rate: 12/111 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 105/110 = 95%
-- High Impact Capabilities: 95/105 = 90%
-- Capability Velocity: 105 capabilities in 3 days = 35/day
+- Capability Tasks: 106/111 = 95%
+- High Impact Capabilities: 96/106 = 91%
+- Capability Velocity: 106 capabilities in 3 days = 35/day
 
 ### Error Analysis
 - TypeScript Errors: 7

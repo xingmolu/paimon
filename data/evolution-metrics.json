@@ -16,15 +16,20 @@
         "date": "2026-W15",
         "value": 100,
         "trend": "up"
+      },
+      {
+        "date": "2026-W16",
+        "value": 100,
+        "trend": "stable"
       }
     ],
-    "weeklyAverage": 94.57364341085271,
+    "weeklyAverage": 94.61538461538461,
     "improvement": 100
   },
   "time": {
-    "averageMinutes": 16.333333333333332,
+    "averageMinutes": 16.361538461538462,
     "byTaskType": {
-      "capability": 17.086206896551722,
+      "capability": 17.11111111111111,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -43,14 +48,20 @@
         "date": "2026-W15",
         "value": 15.384615384615385,
         "trend": "up"
+      },
+      {
+        "date": "2026-W16",
+        "value": 20,
+        "trend": "down"
       }
     ],
     "fastestTask": "-----------------",
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 80,
+    "totalErrors": 81,
     "byType": {
+      "lint (auto-fixed)": 1,
       "lint (fixed)": 48,
       "--------": 1,
       "TS (fixed), lint (fixed)": 5,
@@ -62,6 +73,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-16: lint (auto-fixed) in \"Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution\"",
       "2026-04-05: lint (fixed) in \"OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
@@ -70,8 +82,7 @@
       "------: -------- in \"-----------------\"",
       "2026-04-05: lint (fixed) in \"Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Coding Conventions (Aider Pattern) - CodingConventionsManager module for managing coding conventions, conventions tool with 14 actions (load, list, get, add, remove, enable, disable, apply, status, stats, config, reset, clear, help), CONVENTIONS.md and .conventions/ directory support, 10 convention categories (libraries, types, style, patterns, testing, documentation, security, performance, accessibility, custom), 6 default conventions (TypeScript types, async/await, error handling, naming, imports, documentation), SessionStart hook for auto-loading conventions, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts\"",
-      "2026-04-04: lint (fixed) in \"MCP Integration (Model Context Protocol) - MCPClient module for connecting to external tools/data sources via standardized protocol, mcp tool with 24 actions (add, list, connect, disconnect, tools, call-tool, resources, read-resource, prompts, stats, samples, help), stdio transport support, tool/resource/prompt discovery, 6 sample MCP servers, competitor pattern added to capability-gap.ts\""
+      "2026-04-05: lint (fixed) in \"Copy/Paste to Web Chat (Aider Pattern) - ClipboardManager module for working with LLM web chats, clipboard tool with 12 actions (copy-context, paste, apply, add, remove, clear, mode, status, stats, config, reset, help), cross-platform clipboard support, copy/paste mode for automatic sync, competitor pattern added to capability-gap.ts\""
     ],
     "points": [
       {
@@ -88,6 +99,11 @@
         "date": "2026-W15",
         "value": 8,
         "trend": "up"
+      },
+      {
+        "date": "2026-W16",
+        "value": 1,
+        "trend": "up"
       }
     ],
     "commonPatterns": [
@@ -101,9 +117,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 126,
-      "successRate": 95.23809523809523,
-      "averageTime": 16.603174603174605,
+      "usageCount": 127,
+      "successRate": 95.2755905511811,
+      "averageTime": 16.62992125984252,
       "trend": "improving"
     },
     {
@@ -114,18 +130,18 @@
       "trend": "improving"
     },
     {
+      "skill": "plan-architecture",
+      "usageCount": 6,
+      "successRate": 83.33333333333334,
+      "averageTime": 17.5,
+      "trend": "stable"
+    },
+    {
       "skill": "writing-plans",
       "usageCount": 6,
       "successRate": 100,
       "averageTime": 15.833333333333334,
       "trend": "improving"
-    },
-    {
-      "skill": "plan-architecture",
-      "usageCount": 5,
-      "successRate": 80,
-      "averageTime": 17,
-      "trend": "stable"
     },
     {
       "skill": "using-superpowers",
@@ -142,6 +158,13 @@
       "trend": "stable"
     },
     {
+      "skill": "review-changes",
+      "usageCount": 2,
+      "successRate": 50,
+      "averageTime": 17.5,
+      "trend": "stable"
+    },
+    {
       "skill": "-------------",
       "usageCount": 1,
       "successRate": 0,
@@ -150,13 +173,6 @@
     },
     {
       "skill": "explore-code",
-      "usageCount": 1,
-      "successRate": 0,
-      "averageTime": 15,
-      "trend": "stable"
-    },
-    {
-      "skill": "review-changes",
       "usageCount": 1,
       "successRate": 0,
       "averageTime": 15,
@@ -193,14 +209,18 @@
         "value": 5.5
       },
       {
+        "date": "2026-W16",
+        "value": 0.5
+      },
+      {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 116,
-    "highImpactCount": 113,
-    "highImpactPercentage": 97.41379310344827
+    "totalCapabilities": 117,
+    "highImpactCount": 114,
+    "highImpactPercentage": 97.43589743589743
   },
-  "lastUpdated": "2026-04-16T02:57:17.370Z",
-  "iterationsAnalyzed": 129
+  "lastUpdated": "2026-04-16T04:16:13.614Z",
+  "iterationsAnalyzed": 130
 }
