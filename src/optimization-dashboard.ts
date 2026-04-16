@@ -83,6 +83,16 @@ export interface OptimizationDashboardDependencies {
 	};
 }
 
+interface EnablerRecommendationSignal {
+	threshold: number;
+	title: string;
+	description: string;
+	expectedImpact: string;
+	effort: OptimizationRecommendation["effort"];
+	priority: OptimizationRecommendation["priority"];
+	enablers: string[];
+}
+
 export class OptimizationDashboardManager {
 	private config: DashboardConfig;
 	private stats: DashboardStats;
@@ -90,6 +100,61 @@ export class OptimizationDashboardManager {
 	private history: DashboardHealth[] = [];
 	private readonly metricsTracker: { getMetrics(): EvolutionMetrics };
 	private readonly toolUsageAnalyticsManager: { getToolStats(): ToolUsageStats[] };
+	private readonly enablerSignals: Record<
+		keyof HealthComponents,
+		EnablerRecommendationSignal | null
+	> = {
+		successRate: {
+			threshold: 90,
+			title: "Strengthen self-assessment enablers",
+			description:
+				"Success rate is below target. Invest in capabilities that strengthen pre-merge verification and error recovery loops before adding more surface area.",
+			expectedImpact: "Higher first-try success rate and fewer failed iterations",
+			effort: "simple",
+			priority: "high",
+			enablers: ["self-assessment", "error-recovery", "reflection"],
+		},
+		timeEfficiency: {
+			threshold: 75,
+			title: "Improve planning and tool-chain enablers",
+			description:
+				"Iteration speed is lagging. Focus on planning and workflow enablers that reduce avoidable exploration and verification churn.",
+			expectedImpact: "Shorter iteration cycles and more throughput per session",
+			effort: "simple",
+			priority: "medium",
+			enablers: ["better-planning", "parallel-execution", "tool-chain-reliability"],
+		},
+		errorRate: {
+			threshold: 85,
+			title: "Expand error-recovery enablers",
+			description:
+				"Error pressure is elevated. Prioritize capabilities that turn recurring failures into faster recovery and prevention loops.",
+			expectedImpact: "Lower rework and more resilient evolution sessions",
+			effort: "simple",
+			priority: "high",
+			enablers: ["error-recovery", "self-healing", "error-patterns"],
+		},
+		capabilityUtilization: {
+			threshold: 60,
+			title: "Promote tool-discovery enablers",
+			description:
+				"Capability utilization is weak. Strengthen enablers that make the right tools easier to discover and reuse during execution.",
+			expectedImpact: "Better leverage of existing capabilities and less redundant work",
+			effort: "simple",
+			priority: "medium",
+			enablers: ["repo-map", "auto-invoke-skills", "unified-intelligence"],
+		},
+		memoryQuality: {
+			threshold: 80,
+			title: "Invest in memory-persistence enablers",
+			description:
+				"Memory-quality signals are weak. Prioritize enablers that improve capture, retrieval, and transfer of lessons across sessions.",
+			expectedImpact: "Better task selection and stronger cross-session learning reuse",
+			effort: "simple",
+			priority: "high",
+			enablers: ["memory-persistence", "rag", "learning-transfer"],
+		},
+	};
 
 	constructor(dependencies: OptimizationDashboardDependencies = {}) {
 		this.config = {
@@ -216,6 +281,34 @@ export class OptimizationDashboardManager {
 			.map((pattern) => this.formatErrorPattern(pattern))
 			.filter((pattern) => pattern && pattern !== "none");
 		return formattedPatterns[0];
+	}
+
+	private formatEnablerList(enablers: string[]): string {
+		if (enablers.length === 0) return "";
+		if (enablers.length === 1) return enablers[0] ?? "";
+		if (enablers.length === 2) return `${enablers[0]} and ${enablers[1]}`;
+		return `${enablers.slice(0, -1).join(", ")}, and ${enablers[enablers.length - 1]}`;
+	}
+
+	private getEnablerRecommendations(health: HealthComponents): OptimizationRecommendation[] {
+		const recommendations: OptimizationRecommendation[] = [];
+
+		for (const [component, signal] of Object.entries(this.enablerSignals) as Array<
+			[keyof HealthComponents, EnablerRecommendationSignal | null]
+		>) {
+			if (!signal) continue;
+			if (health[component] >= signal.threshold) continue;
+			recommendations.push({
+				priority: signal.priority,
+				category: "capability",
+				title: signal.title,
+				description: `${signal.description} Recommended enablers: ${this.formatEnablerList(signal.enablers)}.`,
+				expectedImpact: signal.expectedImpact,
+				effort: signal.effort,
+			});
+		}
+
+		return recommendations;
 	}
 
 	private getMemoryRecommendations(
@@ -491,7 +584,9 @@ export class OptimizationDashboardManager {
 	getRecommendations(): OptimizationRecommendation[] {
 		const metrics = this.getMetrics();
 		const health = this.getHealth();
-		const recommendations: OptimizationRecommendation[] = [];
+		const recommendations: OptimizationRecommendation[] = [
+			...this.getEnablerRecommendations(health.components),
+		];
 
 		if (health.components.timeEfficiency < 70) {
 			recommendations.push({

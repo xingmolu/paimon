@@ -218,6 +218,80 @@ describe("OptimizationDashboardManager", () => {
 		expect(errorRecommendation?.description).not.toContain("lint (fixed)");
 	});
 
+	it("adds enabler-aware capability recommendations for weak dashboard components", () => {
+		const manager = new OptimizationDashboardManager({
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 78, points: [], weeklyAverage: 80, improvement: -4 },
+					time: {
+						averageMinutes: 19,
+						byTaskType: { capability: 19 },
+						points: [],
+						fastestTask: "A",
+						slowestTask: "B",
+					},
+					errors: {
+						totalErrors: 5,
+						byType: { lint: 3, test: 2 },
+						recentErrors: [],
+						points: [],
+						commonPatterns: ["lint", "test"],
+					},
+					skills: [
+						{
+							skill: "review-changes",
+							usageCount: 4,
+							successRate: 60,
+							averageTime: 18,
+							trend: "declining",
+						},
+					],
+					capabilityVelocity: {
+						current: 5,
+						points: [],
+						totalCapabilities: 30,
+						highImpactCount: 12,
+						highImpactPercentage: 40,
+					},
+					lastUpdated: "2026-04-16T00:00:00.000Z",
+					iterationsAnalyzed: 10,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [
+					{
+						toolName: "read",
+						totalUses: 3,
+						successfulUses: 2,
+						failedUses: 1,
+						successRate: 67,
+						averageDuration: 100,
+						lastUsed: "2026-04-16T00:00:00.000Z",
+						actions: {},
+						taskTypes: { capability: 3 },
+						commonErrors: ["boom"],
+					},
+				],
+			},
+		});
+
+		const recommendations = manager.getRecommendations();
+		const successEnablerRecommendation = recommendations.find(
+			(item) => item.title === "Strengthen self-assessment enablers",
+		);
+		const memoryEnablerRecommendation = recommendations.find(
+			(item) => item.title === "Invest in memory-persistence enablers",
+		);
+
+		expect(successEnablerRecommendation?.description).toContain("self-assessment");
+		expect(successEnablerRecommendation?.description).toContain("error-recovery");
+		expect(memoryEnablerRecommendation?.description).toContain("memory-persistence");
+		expect(memoryEnablerRecommendation?.description).toContain("learning-transfer");
+		expect(recommendations.some((item) => item.title === "Promote tool-discovery enablers")).toBe(
+			true,
+		);
+	});
+
 	it("deduplicates and orders recommendations by priority and effort", () => {
 		const manager = new OptimizationDashboardManager({
 			metricsTracker: {
