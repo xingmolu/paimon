@@ -6,6 +6,11 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import type { EvolutionMetrics } from "./metrics.js";
+import { getMetricsTracker } from "./metrics.js";
+import type { ToolUsageStats } from "./tool-usage-analytics.js";
+import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
+
 export interface HealthComponents {
 	successRate: number;
 	timeEfficiency: number;
@@ -69,13 +74,24 @@ export interface DashboardStats {
 	healthHistory: Array<{ score: number; timestamp: string }>;
 }
 
+export interface OptimizationDashboardDependencies {
+	metricsTracker?: {
+		getMetrics(): EvolutionMetrics;
+	};
+	toolUsageAnalyticsManager?: {
+		getToolStats(): ToolUsageStats[];
+	};
+}
+
 export class OptimizationDashboardManager {
 	private config: DashboardConfig;
 	private stats: DashboardStats;
 	private dataFile: string;
 	private history: DashboardHealth[] = [];
+	private readonly metricsTracker: { getMetrics(): EvolutionMetrics };
+	private readonly toolUsageAnalyticsManager: { getToolStats(): ToolUsageStats[] };
 
-	constructor() {
+	constructor(dependencies: OptimizationDashboardDependencies = {}) {
 		this.config = {
 			enabled: true,
 			updateInterval: 60000,
@@ -90,6 +106,9 @@ export class OptimizationDashboardManager {
 			optimizationsApplied: 0,
 			healthHistory: [],
 		};
+		this.metricsTracker = dependencies.metricsTracker ?? getMetricsTracker();
+		this.toolUsageAnalyticsManager =
+			dependencies.toolUsageAnalyticsManager ?? getToolUsageAnalyticsManager();
 		this.readData();
 	}
 
@@ -128,13 +147,76 @@ export class OptimizationDashboardManager {
 		}
 	}
 
+	private clamp(value: number, min = 0, max = 100): number {
+		return Math.max(min, Math.min(max, Math.round(value)));
+	}
+
+	private getMetrics(): EvolutionMetrics {
+		return this.metricsTracker.getMetrics();
+	}
+
+	private getToolStats(): ToolUsageStats[] {
+		try {
+			return this.toolUsageAnalyticsManager.getToolStats();
+		} catch {
+			return [];
+		}
+	}
+
+	private calculateTimeEfficiency(averageMinutes: number): number {
+		if (averageMinutes <= 0) return 75;
+		const baselineMinutes = 15;
+		return this.clamp((baselineMinutes / averageMinutes) * 100);
+	}
+
+	private calculateMemoryQuality(metrics: EvolutionMetrics): number {
+		const skillsScore =
+			metrics.skills.length > 0
+				? metrics.skills.reduce((sum, skill) => sum + skill.successRate, 0) / metrics.skills.length
+				: 75;
+		const iterationScore = Math.min(metrics.iterationsAnalyzed, 25) * 2;
+		const capabilityScore = Math.min(metrics.capabilityVelocity.highImpactPercentage, 100);
+		return this.clamp(skillsScore * 0.5 + iterationScore * 0.2 + capabilityScore * 0.3);
+	}
+
+	private calculateCapabilityUtilization(toolStats: ToolUsageStats[]): number {
+		if (toolStats.length === 0) return 40;
+		const activelyUsedTools = toolStats.filter(
+			(tool) => tool.totalUses >= this.config.underutilizedThreshold,
+		);
+		const coverageScore = (activelyUsedTools.length / toolStats.length) * 100;
+		const successScore =
+			toolStats.reduce((sum, tool) => sum + tool.successRate, 0) / toolStats.length;
+		return this.clamp(coverageScore * 0.6 + successScore * 0.4);
+	}
+
+	private getTrend(currentScore: number): DashboardHealth["trend"] {
+		if (this.history.length < 2) return "stable";
+		const recent = this.history.slice(-5).map((entry) => entry.overallScore);
+		const prior = recent.slice(0, -1);
+		if (prior.length === 0) return "stable";
+		const priorAverage = prior.reduce((sum, value) => sum + value, 0) / prior.length;
+		if (currentScore >= priorAverage + 3) return "improving";
+		if (currentScore <= priorAverage - 3) return "declining";
+		return "stable";
+	}
+
 	getHealth(): DashboardHealth {
+		const metrics = this.getMetrics();
+		const toolStats = this.getToolStats();
+		const totalErrors = metrics.errors.totalErrors;
+		const errorFreeRate =
+			metrics.iterationsAnalyzed > 0
+				? ((metrics.iterationsAnalyzed - totalErrors) / metrics.iterationsAnalyzed) * 100
+				: 92;
 		const components: HealthComponents = {
-			successRate: 92,
-			timeEfficiency: 75,
-			errorRate: 92,
-			capabilityUtilization: 60,
-			memoryQuality: 92,
+			successRate: this.clamp(
+				metrics.successRate.current || metrics.successRate.weeklyAverage || 0,
+			),
+			timeEfficiency: this.calculateTimeEfficiency(metrics.time.averageMinutes),
+			errorRate: this.clamp(errorFreeRate),
+			capabilityUtilization: this.calculateCapabilityUtilization(toolStats),
+			memoryQuality: this.calculateMemoryQuality(metrics),
 		};
 		const weights = {
 			successRate: 0.3,
@@ -143,7 +225,7 @@ export class OptimizationDashboardManager {
 			capabilityUtilization: 0.15,
 			memoryQuality: 0.1,
 		};
-		const overallScore = Math.round(
+		const overallScore = this.clamp(
 			components.successRate * weights.successRate +
 				components.timeEfficiency * weights.timeEfficiency +
 				components.errorRate * weights.errorRate +
@@ -158,7 +240,7 @@ export class OptimizationDashboardManager {
 					: overallScore >= 50
 						? "fair"
 						: "poor";
-		const trend: DashboardHealth["trend"] = this.history.length < 3 ? "stable" : "stable";
+		const trend = this.getTrend(overallScore);
 		const health: DashboardHealth = {
 			overallScore,
 			status,
@@ -169,67 +251,134 @@ export class OptimizationDashboardManager {
 		this.history.push(health);
 		if (this.history.length > this.config.historySize) this.history.shift();
 		this.stats.totalViews++;
+		this.stats.healthHistory.push({ score: overallScore, timestamp: health.lastUpdated });
+		if (this.stats.healthHistory.length > this.config.historySize) {
+			this.stats.healthHistory = this.stats.healthHistory.slice(-this.config.historySize);
+		}
 		this.writeData();
 		return health;
 	}
 
 	getCapabilityUtilization(): CapabilityUtilization[] {
-		return [
-			{ tool: "edit", usageCount: 150, successRate: 95, avgTime: 500, underutilized: false },
-			{ tool: "read", usageCount: 200, successRate: 99, avgTime: 100, underutilized: false },
-			{ tool: "bash", usageCount: 180, successRate: 90, avgTime: 5000, underutilized: false },
-			{ tool: "assess", usageCount: 108, successRate: 92, avgTime: 30000, underutilized: false },
-			{ tool: "plan", usageCount: 32, successRate: 95, avgTime: 2000, underutilized: false },
-		];
+		const toolStats = this.getToolStats();
+		if (toolStats.length === 0) {
+			return [];
+		}
+
+		return toolStats
+			.map((tool) => ({
+				tool: tool.toolName,
+				usageCount: tool.totalUses,
+				successRate: this.clamp(tool.successRate),
+				avgTime: Math.round(tool.averageDuration),
+				underutilized: tool.totalUses < this.config.underutilizedThreshold,
+			}))
+			.sort((a, b) => b.usageCount - a.usageCount);
 	}
 
 	identifyBottlenecks(): Bottleneck[] {
+		const metrics = this.getMetrics();
 		const result: Bottleneck[] = [];
-		for (const u of this.getCapabilityUtilization()) {
-			if (u.avgTime > 10000)
+		for (const tool of this.getCapabilityUtilization()) {
+			if (tool.avgTime > this.config.bottleneckThreshold * 1000) {
 				result.push({
 					type: "slow-tool",
-					name: u.tool,
-					impact: Math.round((u.avgTime / 10000) * 30),
-					description: `${u.tool} slow`,
-					suggestion: "Optimize",
+					name: tool.tool,
+					impact: this.clamp(tool.avgTime / 1000),
+					description: `${tool.tool} averages ${(tool.avgTime / 1000).toFixed(1)}s per use`,
+					suggestion: "Optimize slow tool workflows or use it later in the iteration.",
 				});
-			if (u.successRate < 85)
+			}
+			if (tool.successRate < 85) {
 				result.push({
 					type: "high-error",
-					name: u.tool,
-					impact: Math.round((100 - u.successRate) * 0.8),
-					description: `${u.tool} errors`,
-					suggestion: "Fix errors",
+					name: tool.tool,
+					impact: this.clamp(100 - tool.successRate),
+					description: `${tool.tool} succeeds only ${tool.successRate}% of the time`,
+					suggestion: "Review recent failures and add safeguards or retries.",
 				});
+			}
+			if (tool.underutilized) {
+				result.push({
+					type: "low-utilization",
+					name: tool.tool,
+					impact: this.clamp(this.config.underutilizedThreshold - tool.usageCount + 10),
+					description: `${tool.tool} is available but rarely used`,
+					suggestion: "Surface usage guidance or integrate it into common workflows.",
+				});
+			}
 		}
+
+		if (metrics.iterationsAnalyzed > 0 && metrics.capabilityVelocity.highImpactPercentage < 75) {
+			result.push({
+				type: "memory-issues",
+				name: "memory-quality",
+				impact: this.clamp(100 - metrics.capabilityVelocity.highImpactPercentage),
+				description: "Recent iterations are producing fewer high-impact capabilities than usual",
+				suggestion:
+					"Prefer higher-leverage capability work and capture stronger learnings in MEMORY.md.",
+			});
+		}
+
 		return result.sort((a, b) => b.impact - a.impact).slice(0, 5);
 	}
 
 	getRecommendations(): OptimizationRecommendation[] {
-		const rec: OptimizationRecommendation[] = [];
-		const h = this.getHealth();
-		if (h.components.timeEfficiency < 70)
-			rec.push({
+		const metrics = this.getMetrics();
+		const health = this.getHealth();
+		const recommendations: OptimizationRecommendation[] = [];
+
+		if (health.components.timeEfficiency < 70) {
+			recommendations.push({
 				priority: "high",
 				category: "performance",
-				title: "Improve Time",
-				description: "Optimize tool chains",
-				expectedImpact: "20% faster",
+				title: "Improve iteration speed",
+				description: `Average iteration time is ~${metrics.time.averageMinutes.toFixed(1)} minutes, above the 15 minute target.`,
+				expectedImpact: "Faster verification loops and more iterations per day",
 				effort: "moderate",
 			});
-		if (h.components.capabilityUtilization < 50)
-			rec.push({
-				priority: "medium",
+		}
+
+		if (health.components.errorRate < 85) {
+			recommendations.push({
+				priority: "high",
+				category: "reliability",
+				title: "Reduce recurring errors",
+				description: `Recent common errors: ${metrics.errors.commonPatterns.slice(0, 3).join(", ") || "insufficient data"}.`,
+				expectedImpact: "Higher first-try success rate and less rework",
+				effort: "moderate",
+			});
+		}
+
+		const underutilizedCount = this.getCapabilityUtilization().filter(
+			(tool) => tool.underutilized,
+		).length;
+		if (underutilizedCount > 0) {
+			recommendations.push({
+				priority: underutilizedCount >= 5 ? "high" : "medium",
 				category: "capability",
-				title: "Use More Tools",
-				description: "More capabilities available",
-				expectedImpact: "Faster iterations",
+				title: "Increase tool utilization",
+				description: `${underutilizedCount} tools are underutilized based on recent tool analytics.`,
+				expectedImpact: "Better capability leverage and improved task execution quality",
 				effort: "simple",
 			});
-		this.stats.recommendationsGenerated += rec.length;
+		}
+
+		if (health.components.memoryQuality < 80) {
+			recommendations.push({
+				priority: "medium",
+				category: "memory",
+				title: "Strengthen learning capture",
+				description:
+					"Recent iteration history suggests memory quality or impact capture can improve.",
+				expectedImpact: "Better task selection and stronger cross-session transfer",
+				effort: "simple",
+			});
+		}
+
+		this.stats.recommendationsGenerated += recommendations.length;
 		this.writeData();
-		return rec;
+		return recommendations;
 	}
 
 	compareSession(cur: {
@@ -238,7 +387,20 @@ export class OptimizationDashboardManager {
 		errorCount: number;
 		capabilitiesUsed: number;
 	}): SessionComparison {
-		const avg = { successRate: 92, avgTime: 900000, errorCount: 1.2, capabilitiesUsed: 12 };
+		const metrics = this.getMetrics();
+		const utilizations = this.getCapabilityUtilization();
+		const avg = {
+			successRate: this.clamp(
+				metrics.successRate.current || metrics.successRate.weeklyAverage || 92,
+			),
+			avgTime: Math.round((metrics.time.averageMinutes || 15) * 60000),
+			errorCount:
+				metrics.iterationsAnalyzed > 0
+					? Number((metrics.errors.totalErrors / metrics.iterationsAnalyzed).toFixed(1))
+					: 1.2,
+			capabilitiesUsed:
+				utilizations.filter((tool) => !tool.underutilized).length || utilizations.length || 12,
+		};
 		const delta = {
 			successRate: cur.successRate - avg.successRate,
 			avgTime: cur.avgTime - avg.avgTime,
@@ -253,32 +415,40 @@ export class OptimizationDashboardManager {
 	}
 
 	generateReport(): string {
-		const h = this.getHealth();
-		const u = this.getCapabilityUtilization();
-		const b = this.identifyBottlenecks();
-		const r = this.getRecommendations();
+		const health = this.getHealth();
+		const utilizations = this.getCapabilityUtilization();
+		const bottlenecks = this.identifyBottlenecks();
+		const recommendations = this.getRecommendations();
 		const statusIcon =
-			h.status === "excellent"
+			health.status === "excellent"
 				? "🟢"
-				: h.status === "good"
+				: health.status === "good"
 					? "🟡"
-					: h.status === "fair"
+					: health.status === "fair"
 						? "🟠"
 						: "🔴";
-		const trendIcon = h.trend === "improving" ? "📈" : h.trend === "declining" ? "📉" : "➡️";
+		const trendIcon =
+			health.trend === "improving" ? "📈" : health.trend === "declining" ? "📉" : "➡️";
 		let out = "# Evolution Optimization Dashboard\n\n";
-		out += `${statusIcon} **Score:** ${h.overallScore}/100 (${h.status})\n${trendIcon} **Trend:** ${h.trend}\n\n`;
+		out += `${statusIcon} **Score:** ${health.overallScore}/100 (${health.status})\n${trendIcon} **Trend:** ${health.trend}\n\n`;
 		out += "## Components\n\n| Component | Score |\n|-----------|-------|\n";
-		for (const [k, v] of Object.entries(h.components)) out += `| ${k} | ${v} |\n`;
-		out += "\n## Utilization\n\n| Tool | Uses | Success |\n|------|------|---------|\n";
-		for (const x of u.slice(0, 5)) out += `| ${x.tool} | ${x.usageCount} | ${x.successRate}% |\n`;
-		if (b.length > 0) {
-			out += "\n## Bottlenecks\n\n";
-			for (const x of b) out += `- ${x.name}: ${x.description}\n`;
+		for (const [key, value] of Object.entries(health.components)) out += `| ${key} | ${value} |\n`;
+		out +=
+			"\n## Utilization\n\n| Tool | Uses | Success | Avg Time (ms) |\n|------|------|---------|---------------|\n";
+		for (const utilization of utilizations.slice(0, 5)) {
+			out += `| ${utilization.tool} | ${utilization.usageCount} | ${utilization.successRate}% | ${utilization.avgTime} |\n`;
 		}
-		if (r.length > 0) {
+		if (bottlenecks.length > 0) {
+			out += "\n## Bottlenecks\n\n";
+			for (const bottleneck of bottlenecks) {
+				out += `- **${bottleneck.name}**: ${bottleneck.description}\n`;
+			}
+		}
+		if (recommendations.length > 0) {
 			out += "\n## Recommendations\n\n";
-			for (const x of r) out += `- **${x.title}**: ${x.description}\n`;
+			for (const recommendation of recommendations) {
+				out += `- **${recommendation.title}**: ${recommendation.description}\n`;
+			}
 		}
 		return out;
 	}
@@ -286,14 +456,17 @@ export class OptimizationDashboardManager {
 	getConfig(): DashboardConfig {
 		return { ...this.config };
 	}
+
 	updateConfig(up: Partial<DashboardConfig>): DashboardConfig {
 		this.config = { ...this.config, ...up };
 		this.writeData();
 		return this.getConfig();
 	}
+
 	getStats(): DashboardStats {
-		return { ...this.stats };
+		return { ...this.stats, healthHistory: [...this.stats.healthHistory] };
 	}
+
 	resetStats(): void {
 		this.stats = {
 			totalViews: 0,
@@ -304,10 +477,12 @@ export class OptimizationDashboardManager {
 		this.history = [];
 		this.writeData();
 	}
+
 	markApplied(): void {
 		this.stats.optimizationsApplied++;
 		this.writeData();
 	}
+
 	exportData(): {
 		health: DashboardHealth;
 		utilizations: CapabilityUtilization[];

@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Data-Driven Optimization Dashboard - Replaced hardcoded optimization dashboard scores with live values derived from evolution metrics and tool usage analytics, added dependency injection for testable data sources, and covered dynamic health/utilization/bottleneck/comparison behavior with focused tests | ~25m | ❌ | test | Yes | High | evolve, explore-code, plan-architecture, review-changes | trustworthy-dashboard-signals, analytics-integration, better-task-selection |
 | 2026-04-16 | capability | Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution | ~20m | ✅ | lint (auto-fixed) | No | High | evolve, plan-architecture, review-changes | dashboard-visibility, optimization-monitoring, better-task-selection |
 | 2026-04-05 | capability | Evolution Optimization Dashboard (Phase 99) - OptimizationDashboardManager module for unified view of evolution metrics, health score with 5 components (successRate, timeEfficiency, errorRate, capabilityUtilization, memoryQuality), trend visualization, capability utilization tracking, bottleneck identification, recommendation engine, session comparison, generateReport function | ~15m | ✅ | none | No | High | evolve | unified-dashboard, health-monitoring, optimization-recommendations |
 | 2026-04-05 | reliability | Verify Capability Gap Detector Accuracy - Verified that the exclusion list correctly excludes model IDs (gpt-4o, o1, o3) and MCP server names (filesystem). Direct Node.js tests confirm 0 false positives. Coverage is excellent: 100% ROADMAP complete, 100% competitor patterns implemented, 92% overall coverage. No code changes needed - code is correct. | ~15m | ✅ | none | No | Medium | evolve | verified-accuracy, confirmed-coverage |
@@ -155,18 +156,18 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 100/109 = 92%
+- First Try Success Rate: 100/110 = 91%
 - Average Time: ~15 minutes
-- Rework Rate: 11/109 = 10%
+- Rework Rate: 12/110 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 104/109 = 95%
-- High Impact Capabilities: 94/104 = 90%
-- Capability Velocity: 104 capabilities in 3 days = 35/day
+- Capability Tasks: 105/110 = 95%
+- High Impact Capabilities: 95/105 = 90%
+- Capability Velocity: 105 capabilities in 3 days = 35/day
 
 ### Error Analysis
 - TypeScript Errors: 7
-- Test Failures: 0
+- Test Failures: 1
 - Lint Issues: 34
 - Runtime Errors: 0
 - File Corruption Issues: 1
