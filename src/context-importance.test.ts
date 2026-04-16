@@ -199,6 +199,58 @@ describe("ContextImportanceScorer", () => {
 			expect(score.canTruncate).toBe(false);
 		});
 
+		it("should preserve explicit implementation decisions over generic planning chatter", () => {
+			const implementationDecision: MessageForAnalysis = {
+				role: "assistant",
+				content:
+					"Design decision: chosen approach is to update files src/context-importance.ts and src/context-importance.test.ts. We will run build and test, then commit and push.",
+				index: 8,
+				totalMessages: 32,
+			};
+			const genericPlanningChatter: MessageForAnalysis = {
+				role: "assistant",
+				content:
+					"Possible option: maybe consider a plan for context work. We could brainstorm another approach and consider alternatives later.",
+				index: 8,
+				totalMessages: 32,
+			};
+
+			const decisionScore = scorer.scoreMessage(implementationDecision);
+			const genericScore = scorer.scoreMessage(genericPlanningChatter);
+
+			expect(decisionScore.factors.get("durable_anchor")).toBeGreaterThan(
+				genericScore.factors.get("durable_anchor") ?? 0,
+			);
+			expect(decisionScore.score).toBeGreaterThan(genericScore.score);
+			expect(decisionScore.canTruncate).toBe(false);
+		});
+
+		it("should preserve stale file-target commitments better than stale generic plans", () => {
+			const staleDecisionRecord: MessageForAnalysis = {
+				role: "assistant",
+				content:
+					"Selected task: improve context drift resistance. I will modify src/context-importance.ts and src/context-importance.test.ts, then run build and test.",
+				index: 7,
+				totalMessages: 40,
+			};
+			const staleGenericPlan: MessageForAnalysis = {
+				role: "assistant",
+				content:
+					"Plan update: possible next step is to consider options and maybe revisit the approach later.",
+				index: 7,
+				totalMessages: 40,
+			};
+
+			const decisionScore = scorer.scoreMessage(staleDecisionRecord);
+			const genericScore = scorer.scoreMessage(staleGenericPlan);
+
+			expect(decisionScore.factors.get("durable_anchor")).toBeGreaterThan(
+				genericScore.factors.get("durable_anchor") ?? 0,
+			);
+			expect(decisionScore.score).toBeGreaterThan(genericScore.score);
+			expect(decisionScore.canTruncate).toBe(false);
+		});
+
 		it("should classify content types correctly", () => {
 			const systemMessage: MessageForAnalysis = {
 				role: "system",

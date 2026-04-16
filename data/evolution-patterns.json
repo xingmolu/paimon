@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,21 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 124,
+      "sampleSize": 125,
       "examples": [
+        {
+          "taskDescription": "Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention",
+          "date": "2026-04-16",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions",
           "date": "2026-04-16",
@@ -242,22 +255,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Recommendation Deduping for Optimization Guidance - Finalized optimization dashboard recommendations through shared deduping and priority ordering so overlapping guidance stays unique, stable, and action-ranked; added focused tests to preserve clean recommendation output for future task selection",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "time-pattern-quick",
@@ -306,7 +306,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -358,7 +358,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "task-type-reliability",
@@ -404,12 +404,12 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     },
     {
       "id": "skill-combo-evo-pla-rev-usi",
       "type": "skill-combination",
-      "description": "Skills evolve + plan-architecture + review-changes + using-superpowers have 83% success rate",
+      "description": "Skills evolve + plan-architecture + review-changes + using-superpowers have 86% success rate",
       "characteristics": {
         "skills": [
           "evolve",
@@ -418,12 +418,25 @@
           "using-superpowers"
         ]
       },
-      "successRate": 83,
-      "firstTryRate": 83,
+      "successRate": 86,
+      "firstTryRate": 86,
       "averageTime": 18,
-      "confidence": 80,
-      "sampleSize": 6,
+      "confidence": 85,
+      "sampleSize": 7,
       "examples": [
+        {
+          "taskDescription": "Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention",
+          "date": "2026-04-16",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions",
           "date": "2026-04-16",
@@ -449,24 +462,11 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Recommendation Deduping for Optimization Guidance - Finalized optimization dashboard recommendations through shared deduping and priority ordering so overlapping guidance stays unique, stable, and action-ranked; added focused tests to preserve clean recommendation output for future task selection",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:54:56.916Z"
+      "lastUpdated": "2026-04-16T10:11:52.092Z"
     }
   ],
-  "lastUpdated": "2026-04-16T06:54:56.917Z",
-  "sessionCount": 136
+  "lastUpdated": "2026-04-16T10:11:52.092Z",
+  "sessionCount": 137
 }

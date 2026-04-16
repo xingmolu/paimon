@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 71.42857142857143,
+    "current": 75,
     "points": [
       {
         "date": "------",
@@ -19,17 +19,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 71.42857142857143,
+        "value": 75,
         "trend": "down"
       }
     ],
-    "weeklyAverage": 93.38235294117648,
-    "improvement": 71.42857142857143
+    "weeklyAverage": 93.43065693430657,
+    "improvement": 75
   },
   "time": {
-    "averageMinutes": 16.485294117647058,
+    "averageMinutes": 16.51094890510949,
     "byTaskType": {
-      "capability": 17.211382113821138,
+      "capability": 17.233870967741936,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -51,7 +51,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 19.285714285714285,
+        "value": 19.375,
         "trend": "down"
       }
     ],
@@ -59,8 +59,9 @@
     "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
   },
   "errors": {
-    "totalErrors": 83,
+    "totalErrors": 84,
     "byType": {
+      "test (fixed)": 1,
       "test": 2,
       "lint (auto-fixed)": 1,
       "lint (fixed)": 48,
@@ -74,6 +75,7 @@
       "TS": 2
     },
     "recentErrors": [
+      "2026-04-16: test (fixed) in \"Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions\"",
       "2026-04-16: test in \"Actionable Memory-Quality Recommendations - Replaced generic dashboard memory guidance with concrete recommendations derived from weak-signal skills, recurring error patterns, and low-impact capability trends; added focused tests and ensured self-improvement suggestions inherit the more actionable memory signals\"",
       "2026-04-16: test in \"Data-Driven Optimization Dashboard - Replaced hardcoded optimization dashboard scores with live values derived from evolution metrics and tool usage analytics, added dependency injection for testable data sources, and covered dynamic health/utilization/bottleneck/comparison behavior with focused tests\"",
       "2026-04-16: lint (auto-fixed) in \"Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution\"",
@@ -82,8 +84,7 @@
       "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\"",
       "2026-04-05: lint (fixed) in \"Shell Tab Completion Generation (Aider Pattern) - ShellCompletionGenerator module for generating shell tab completion scripts, shellCompletion tool with 10 actions (generate, install, bash, zsh, fish, instructions, config, stats, reset, help), bash/zsh/fish completion scripts, auto-detect shell from $SHELL, install completions to appropriate directories, installation instructions, competitor pattern added to capability-gap.ts\"",
-      "------: -------- in \"-----------------\"",
-      "2026-04-05: lint (fixed) in \"Reasoning Model Support (Aider Pattern) - ReasoningModelSupportManager module for advanced reasoning models, reasoningModel tool with 11 actions (detect, config, models, add, remove, validate, limitations, params, parse, stats, help), OpenAI o-series support (reasoning_effort: low/medium/high), Anthropic Claude support (thinking_tokens budget), DeepSeek R1 support (reasoning tag parsing), model limitations (temperature, streaming, system prompt), settings validation, API parameter generation, 12 default reasoning models, competitor pattern added to capability-gap.ts\""
+      "------: -------- in \"-----------------\""
     ],
     "points": [
       {
@@ -103,7 +104,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 3,
+        "value": 4,
         "trend": "up"
       }
     ],
@@ -118,9 +119,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 133,
-      "successRate": 93.98496240601504,
-      "averageTime": 16.74436090225564,
+      "usageCount": 134,
+      "successRate": 94.02985074626866,
+      "averageTime": 16.76865671641791,
       "trend": "improving"
     },
     {
@@ -132,23 +133,23 @@
     },
     {
       "skill": "plan-architecture",
-      "usageCount": 12,
-      "successRate": 75,
-      "averageTime": 18.333333333333332,
+      "usageCount": 13,
+      "successRate": 76.92307692307693,
+      "averageTime": 18.46153846153846,
       "trend": "stable"
     },
     {
       "skill": "using-superpowers",
-      "usageCount": 9,
-      "successRate": 88.88888888888889,
-      "averageTime": 16.666666666666668,
+      "usageCount": 10,
+      "successRate": 90,
+      "averageTime": 17,
       "trend": "improving"
     },
     {
       "skill": "review-changes",
-      "usageCount": 8,
-      "successRate": 62.5,
-      "averageTime": 18.75,
+      "usageCount": 9,
+      "successRate": 66.66666666666666,
+      "averageTime": 18.88888888888889,
       "trend": "declining"
     },
     {
@@ -211,17 +212,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 3.5
+        "value": 4
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 123,
-    "highImpactCount": 120,
-    "highImpactPercentage": 97.5609756097561
+    "totalCapabilities": 124,
+    "highImpactCount": 121,
+    "highImpactPercentage": 97.58064516129032
   },
-  "lastUpdated": "2026-04-16T06:54:56.777Z",
-  "iterationsAnalyzed": 136
+  "lastUpdated": "2026-04-16T10:11:51.953Z",
+  "iterationsAnalyzed": 137
 }

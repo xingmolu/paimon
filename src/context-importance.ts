@@ -622,6 +622,21 @@ export class ContextImportanceScorer {
 			"files to modify",
 			"build sequence",
 		];
+		const decisionPatterns = [
+			"selected task",
+			"we will",
+			"i will modify",
+			"modify files",
+			"update files",
+			"chosen approach",
+			"design decision",
+			"implementation blueprint",
+			"decision:",
+			"commit message",
+			"run build and test",
+			"then commit",
+			"then push",
+		];
 		const lightweightNoisePatterns = [
 			"progress update",
 			"still working",
@@ -630,13 +645,25 @@ export class ContextImportanceScorer {
 			"routine update",
 			"status update",
 		];
+		const genericPlanPatterns = ["could", "maybe", "option", "brainstorm", "possible", "consider"];
 
 		const durableHits = durablePatterns.filter((pattern) => lowerContent.includes(pattern)).length;
+		const decisionHits = decisionPatterns.filter((pattern) =>
+			lowerContent.includes(pattern),
+		).length;
 		const noiseHits = lightweightNoisePatterns.filter((pattern) =>
 			lowerContent.includes(pattern),
 		).length;
+		const genericPlanHits = genericPlanPatterns.filter((pattern) =>
+			lowerContent.includes(pattern),
+		).length;
 
-		let score = 20 + Math.min(4, durableHits) * 18 - noiseHits * 10;
+		let score =
+			20 +
+			Math.min(4, durableHits) * 14 +
+			Math.min(3, decisionHits) * 16 -
+			noiseHits * 10 -
+			genericPlanHits * 4;
 
 		if (message.role === "system") {
 			score += 15;
@@ -646,6 +673,10 @@ export class ContextImportanceScorer {
 
 		if (message.index < Math.max(3, Math.ceil(message.totalMessages * 0.15))) {
 			score += 10;
+		}
+
+		if (decisionHits > 0 && this.detectFileReference(message.content)) {
+			score += 8;
 		}
 
 		return Math.max(10, Math.min(100, score));

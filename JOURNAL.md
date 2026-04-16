@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 125 — Decision-Carrying Anchor Preservation for Context Drift (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Refined `ContextImportanceScorer` durable-anchor heuristic so explicit implementation decisions and file-target commitments score higher than generic planning chatter during long sessions
+- Added lightweight penalties for speculative planning language (`maybe`, `consider`, `possible`) so stale option-discussion decays faster than committed execution records
+- Added focused regression tests proving decision-carrying messages and stale file-target commitments remain above truncation thresholds better than same-age generic plans
+
+**Why this matters:**
+- Further reduces long-term context drift by preserving the concrete execution decisions that keep autonomous work aligned after many turns
+- Improves future iteration success rate by making compaction less likely to discard selected approach details, target files, and verification commitments
+- Advances the open context-drift issue with a minimal heuristic upgrade instead of a risky broad refactor
+
+---
+
 ## Day 124 — Durable Task Anchor Preservation for Context Drift (2026-04-16)
 
 **Task type:** capability
