@@ -1,14 +1,7 @@
 #!/usr/bin/env node
 import "dotenv/config";
 import { execSync } from "node:child_process";
-import {
-	appendFileSync,
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	readdirSync,
-	writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createAgent } from "../src/agent.js";
 
@@ -22,240 +15,46 @@ const COLORS = {
 };
 
 const DATE = new Date().toISOString().split("T")[0];
-const MAX_ITERATIONS = 3;
-const SESSION_DIR = "session_plan";
-const JOURNAL_ARCHIVE_DIR = "JOURNAL_ARCHIVE";
-const MAX_JOURNAL_DAYS = 7;
-
-/**
- * Skill audit logging for tracking superpowers usage
- */
-interface SkillAuditEntry {
-	timestamp: string;
-	iteration: number;
-	task: string;
-	availableSkills: string[];
-	matchedSkills: string[];
-	usedSkills: string[];
-	result: string;
-}
-
-function writeSkillAudit(entry: SkillAuditEntry): void {
-	if (!existsSync(SESSION_DIR)) {
-		mkdirSync(SESSION_DIR, { recursive: true });
-	}
-
-	const auditPath = join(SESSION_DIR, "skill_audit.jsonl");
-	const line = `${JSON.stringify(entry)}\n`;
-	appendFileSync(auditPath, line, "utf-8");
-}
-
-/**
- * Perform skill matching before task execution
- * Returns the skills that match the current task
- */
-function matchSkills(
-	taskDescription: string,
-	availableSkills: string[],
-): {
-	matchedSkills: string[];
-	reasoning: string;
-} {
-	const matchedSkills: string[] = [];
-	const reasoning: string[] = [];
-
-	// Simple keyword-based matching
-	const taskLower = taskDescription.toLowerCase();
-
-	// Match by task type keywords
-	if (taskLower.includes("fix") || taskLower.includes("bug") || taskLower.includes("debug")) {
-		matchedSkills.push("systematic-debugging");
-		reasoning.push("systematic-debugging: task involves fixing/debugging");
-	}
-
-	if (
-		taskLower.includes("plan") ||
-		taskLower.includes("implement") ||
-		taskLower.includes("feature")
-	) {
-		matchedSkills.push("writing-plans");
-		reasoning.push("writing-plans: task requires planning");
-	}
-
-	if (
-		taskLower.includes("brainstorm") ||
-		taskLower.includes("design") ||
-		taskLower.includes("explore")
-	) {
-		matchedSkills.push("brainstorming");
-		reasoning.push("brainstorming: task involves exploration/design");
-	}
-
-	if (
-		taskLower.includes("review") ||
-		taskLower.includes("verify") ||
-		taskLower.includes("complete")
-	) {
-		matchedSkills.push("verification-before-completion");
-		reasoning.push("verification-before-completion: task needs verification");
-	}
-
-	if (taskLower.includes("request review") || taskLower.includes("code review")) {
-		matchedSkills.push("requesting-code-review");
-		reasoning.push("requesting-code-review: task involves code review");
-	}
-
-	// Always suggest using-superpowers for guidance
-	if (
-		availableSkills.includes("using-superpowers") &&
-		!matchedSkills.includes("using-superpowers")
-	) {
-		matchedSkills.push("using-superpowers");
-		reasoning.push("using-superpowers: provides guidance on skill usage");
-	}
-
-	return {
-		matchedSkills,
-		reasoning: reasoning.join("; "),
-	};
-}
-
-function verifyBuild(): boolean {
-	try {
-		execSync("npm run build", { encoding: "utf-8", stdio: "pipe", timeout: 60000 });
-		return true;
-	} catch {
-		return false;
-	}
-}
 
 function archiveJournal(): void {
 	if (!existsSync("JOURNAL.md")) return;
 
 	const content = readFileSync("JOURNAL.md", "utf-8");
 	const dayEntries = content.split(/(?=^## Day )/m).filter(Boolean);
-
 	if (dayEntries.length === 0) return;
 
-	const now = new Date();
-	const cutoff = new Date(now.getTime() - MAX_JOURNAL_DAYS * 24 * 60 * 60 * 1000);
-
+	const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 	const recent: string[] = [];
 	const archived: string[] = [];
 
 	for (const entry of dayEntries) {
-		const dateMatch = entry.match(/## Day \d+ — .+ \((\d{4}-\d{2}-\d{2})\)/);
-		if (!dateMatch) {
+		const m = entry.match(/## Day \d+ — .+ \((\d{4}-\d{2}-\d{2})\)/);
+		if (!m) {
 			recent.push(entry);
 			continue;
 		}
-		const entryDate = new Date(dateMatch[1]);
-		if (entryDate < cutoff) {
-			archived.push(entry);
-		} else {
-			recent.push(entry);
-		}
+		(new Date(m[1]) < cutoff ? archived : recent).push(entry);
 	}
 
 	if (archived.length === 0) return;
 
-	if (!existsSync(JOURNAL_ARCHIVE_DIR)) {
-		mkdirSync(JOURNAL_ARCHIVE_DIR, { recursive: true });
-	}
+	const archiveDir = "JOURNAL_ARCHIVE";
+	if (!existsSync(archiveDir)) mkdirSync(archiveDir, { recursive: true });
 
-	const archiveMonth =
-		archived
-			.flatMap((e) => {
-				const m = e.match(/## Day \d+ — .+ \((\d{4}-\d{2})/);
-				return m ? [m[1]] : [];
-			})
-			.filter(Boolean)[0] || DATE.slice(0, 7);
-
-	const archivePath = join(JOURNAL_ARCHIVE_DIR, `${archiveMonth}.md`);
+	const month =
+		archived.flatMap((e) => {
+			const m = e.match(/\((\d{4}-\d{2})/);
+			return m ? [m[1]] : [];
+		})[0] || DATE.slice(0, 7);
+	const archivePath = join(archiveDir, `${month}.md`);
 	const existing = existsSync(archivePath) ? readFileSync(archivePath, "utf-8") : "";
 	writeFileSync(archivePath, `${existing}\n${archived.join("\n")}`, "utf-8");
 
-	const headerMatch = content.match(/^# Journal[\s\S]*?\n---\n/);
-	const header = headerMatch
-		? headerMatch[0]
-		: "# Journal\n\nA daily log of Paimon's self-improvements.\n\n---\n";
+	const header =
+		(content.match(/^# Journal[\s\S]*?\n---\n/) || [])[0] ||
+		"# Journal\n\nA daily log of Paimon's self-improvements.\n\n---\n";
 	writeFileSync("JOURNAL.md", `${header}\n${recent.join("\n")}`, "utf-8");
-
-	console.log(
-		`${COLORS.dim}  Archived ${archived.length} old journal entries to ${archivePath}${COLORS.reset}\n`,
-	);
-}
-
-function verifyTests(): boolean {
-	try {
-		execSync("npm test -- --run", { encoding: "utf-8", stdio: "pipe", timeout: 60000 });
-		return true;
-	} catch {
-		return false;
-	}
-}
-
-function writeReflection(
-	iteration: number,
-	error: string,
-	buildOk: boolean,
-	testOk: boolean,
-): void {
-	const dir = "session_plan";
-	if (!existsSync(dir)) {
-		mkdirSync(dir, { recursive: true });
-	}
-
-	const reflection = `# Reflection — Iteration ${iteration}
-
-## Status
-- Build: ${buildOk ? "PASS" : "FAIL"}
-- Tests: ${testOk ? "PASS" : "FAIL"}
-
-## Error
-${error}
-
-## Analysis
-I need to analyze why this iteration failed.
-
-## Next Steps
-1. Fix the issue identified above
-2. Re-run build and tests before committing
-
----
-Generated at ${new Date().toISOString()}
-`;
-
-	writeFileSync(`${dir}/reflection_${iteration}.md`, reflection);
-
-	// Also update MEMORY.md with learning (using new structured format)
-	const learning = `\n\n---
-
-### ${DATE}: Verification Before Commit
-
-**Type:** reliability
-
-**Context:** Iteration ${iteration} failed verification
-
-**Insight:** 
-- Build: ${buildOk ? "PASS" : "FAIL"}
-- Tests: ${testOk ? "PASS" : "FAIL"}
-- Error: ${error.slice(0, 200)}
-
-**Trigger:** Before committing any changes
-
-**Reuse Rule:** Always run \`npm run build && npm test -- --run\` before committing. Use assess({}) tool for verification.
-
-**Priority:** High
-
-`;
-
-	if (existsSync("MEMORY.md")) {
-		const memory = readFileSync("MEMORY.md", "utf-8");
-		if (!memory.includes("Verification Before Commit")) {
-			writeFileSync("MEMORY.md", memory + learning);
-		}
-	}
+	console.log(`${COLORS.dim}  Archived ${archived.length} old journal entries${COLORS.reset}\n`);
 }
 
 async function main() {
@@ -267,22 +66,8 @@ async function main() {
 		console.error("Error: Set PAIMON_API_KEY");
 		process.exit(1);
 	}
-	console.log(
-		`API Key found: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}\n`,
-	);
 
-	// Read superpowers skills from directory
-	const superpowersDir = "skills/superpowers";
-	const superpowersSkills = existsSync(superpowersDir)
-		? readdirSync(superpowersDir, { withFileTypes: true })
-				.filter((e) => e.isDirectory())
-				.map((e) => e.name)
-		: [];
-	console.log(
-		`${COLORS.dim}Superpowers: ${superpowersSkills.length} skills loaded${COLORS.reset}\n`,
-	);
-
-	// Archive old journal entries to keep context small
+	// Archive old journal entries
 	console.log("→ Archiving old journal entries...");
 	archiveJournal();
 
@@ -296,271 +81,123 @@ async function main() {
 		process.exit(1);
 	}
 
-	// Get issues
-	let issues = "No issues (gh CLI not available)";
-	try {
-		issues = execSync("gh issue list --state open --limit 10", {
-			encoding: "utf-8",
-		});
-	} catch {}
-
-	// Check for previous draft branches that can be continued
-	let draftBranches = "No draft branches";
-	try {
-		const branches = execSync(
-			`git branch -r --list 'origin/evolve/*' --format='%(refname:short)'`,
-			{ encoding: "utf-8" },
-		).trim();
-		if (branches) {
-			const branchList = branches
-				.split("\n")
-				.filter((b) => b.trim())
-				.map((b) => b.trim())
-				.join("\n  - ");
-			draftBranches = `Previous evolution branches found:\n  - ${branchList}\n\nTo continue a draft: \`git cherry-pick\` or read its changes with \`git diff main..origin/evolve/DATE-iterN\``;
+	// Gather context for the agent
+	const issues = (() => {
+		try {
+			return execSync("gh issue list --state open --limit 10", { encoding: "utf-8" });
+		} catch {
+			return "No issues (gh CLI not available)";
 		}
-	} catch {}
+	})();
+
+	const draftBranches = (() => {
+		try {
+			const b = execSync("git branch -r --list 'origin/evolve/*' --format='%(refname:short)'", {
+				encoding: "utf-8",
+			}).trim();
+			return b
+				? `Previous evolution branches:\n  - ${b
+						.split("\n")
+						.filter((x) => x.trim())
+						.join(
+							"\n  - ",
+						)}\n\nUse \`git diff main..origin/evolve/DATE-iterN\` to see what was attempted.`
+				: "No draft branches";
+		} catch {
+			return "No draft branches";
+		}
+	})();
+
+	const recentCommits = (() => {
+		try {
+			return execSync("git log --oneline -10", { encoding: "utf-8" });
+		} catch {
+			return "N/A";
+		}
+	})();
+
+	const superpowersDir = "skills/superpowers";
+	const superpowersSkills = existsSync(superpowersDir)
+		? readdirSync(superpowersDir, { withFileTypes: true })
+				.filter((e) => e.isDirectory())
+				.map((e) => e.name)
+		: [];
+	console.log(
+		`${COLORS.dim}Superpowers: ${superpowersSkills.length} skills loaded${COLORS.reset}\n`,
+	);
 
 	const prompt = `# Self-Evolution Mission
 
 Date: ${DATE}
 
+You are Paimon, an autonomous self-improving AI agent. You have full control over this session. You decide what to improve, implement it, verify it, and commit it.
+
 ## Available Skills
-- \`research\` — Search web, study other agents (Claude Code, Codex, Cursor, etc.)
-- \`self-improve\` — Guidelines for self-improvement
-- \`using-superpowers\` — How to use skills effectively
-- \`evolve\` — Self-evolution workflow with evolution value scoring (READ THIS FIRST)
+${superpowersSkills.map((s) => `- \`${s}\``).join("\n")}
 
-## Your Code
-- Use \`glob src/**/*.ts\` to find source files
-- Use \`read src/agent.ts\` to understand the agent
+Read any skill with: \`read skills/superpowers/<name>/SKILL.md\`
 
-## Previous Draft Branches
+## Context
+- **Recent commits:**
+${recentCommits
+	.split("\n")
+	.map((l) => `  ${l}`)
+	.join("\n")}
+
+- **Draft branches:**
 ${draftBranches}
 
-If there are recent draft branches (especially from today), **prioritize fixing and completing them**. Use \`git diff main..origin/evolve/DATE-iterN\` to see what was attempted, then fix build/lint errors.
-
-## Open Issues
+- **Open GitHub Issues:**
 ${issues}
 
-## Competitors to Study
-- **Claude Code** — Anthropic's CLI agent, excellent tool use
-- **OpenAI Codex** — Strong at code generation
-- **Cursor** — IDE integration, context management
+## How to Work
 
-Study them with:
-\`\`\`bash
-curl -s https://raw.githubusercontent.com/anthropics/claude-code/main/README.md | head -100
-\`\`\`
+You are fully autonomous. You must:
+
+1. **Gather context** — Read IDENTITY.md, MEMORY.md, ROADMAP.md, JOURNAL.md, skills/evolve/SKILL.md
+2. **Plan** — Select the highest-value task (prefer capability > reliability > feature). Use the evolution value scoring from skills/evolve/SKILL.md
+3. **Implement** — Write minimal, focused code
+4. **Verify yourself** — Run \`npm run build && npm test -- --run\`. If it fails, **fix it yourself** and retry. Do NOT stop until build and tests pass.
+5. **Commit** — Use git: \`git add -A && git commit -m "paimon: <description>"\`
+6. **Push** — Use git: \`git push\`
+7. **Record** — Update MEMORY.md scorecard, JOURNAL.md, and ROADMAP.md as appropriate
+
+You can do multiple improvements in this session. Keep going until you've exhausted the time or have nothing valuable left to improve.
 
 ## Rules
 - Do NOT modify files in \`.github/workflows/\` directory
-- Do NOT modify this evolution script
+- Do NOT modify scripts/evolve.ts
+- Always verify (\`npm run build && npm test -- --run\`) before committing
+- If build/tests fail, fix the error and retry — never leave broken code committed
 - Make minimal, focused changes
+- If there are draft branches from previous sessions, prioritize completing/fixing them first
 
-## Task Selection with Evolution Value Scoring (REQUIRED)
+## What to Improve
 
-**Do NOT just pick the first issue or ROADMAP item.** Instead:
+Read skills/evolve/SKILL.md for the detailed workflow with evolution value scoring. Prioritize tasks that improve your own ability to evolve (capability > reliability > feature).
 
-### Step 1: List ALL candidate tasks
-- Open GitHub issues (from above)
-- ROADMAP incomplete items (read ROADMAP.md)
-- Competitor research opportunities
+Start now. Read skills/evolve/SKILL.md first, then gather context and begin.`;
 
-### Step 2: Classify EACH task
-- \`capability\` — Improves self-evolution ability itself (HIGHEST PRIORITY)
-- \`reliability\` — Improves stability/safety/error handling (MEDIUM)
-- \`feature\` — Adds new general functionality (LOWER)
+	// Run a single long session — the agent is fully autonomous
+	console.log(`${COLORS.cyan}→ Starting autonomous evolution session${COLORS.reset}\n`);
 
-### Step 3: Score EACH task on evolution value (1-10)
-Scoring factors:
-- +3: Improves future iteration success rate
-- +2: Reduces failure/rework rate
-- +2: Improves memory/learning quality
-- +1: Improves tool chain reliability
-- -1 to -3: Implementation complexity
+	const { run } = createAgent({
+		apiKey,
+		model: process.env.PAIMON_MODEL || "gpt-5.4",
+		baseUrl: process.env.PAIMON_BASE_URL || "https://api.86gamestore.com/v1",
+		skillsDir: "./skills",
+		memoryPath: "./MEMORY.md",
+		mode: "evolve",
+	});
 
-### Step 4: SELECT highest-scoring capability task
-If no capability tasks available, select highest-scoring reliability task.
-
-### Step 5: OUTPUT your task selection
-Show a table with all candidates, their type, score, and reasoning. Then explain why you selected the task.
-
-Example output format:
-\`\`\`
-## Task Selection
-
-| Task | Type | Score | Reasoning |
-|------|------|-------|-----------|
-| Issue #20: Evolution scoring | capability | 9 | Directly improves task selection |
-| ROADMAP: Parallel execution | capability | 7 | Improves efficiency |
-
-Selected: Issue #20 (score 9)
-Reason: Highest-scoring capability task.
-\`\`\`
-
-## Process
-1. Read skills/evolve/SKILL.md for detailed workflow
-2. Read IDENTITY.md, JOURNAL.md, MEMORY.md, ROADMAP.md
-3. Score all candidate tasks and select the best one
-4. Implement → Test (\`npm run build && npm test -- --run\`) → Say "DONE"
-5. Update MEMORY.md scorecard with this iteration's result
-
-## Scorecard Update (REQUIRED)
-After each iteration, add a row to MEMORY.md's Evolution Scorecard:
-\`\`\`
-| ${DATE} | capability/reliability/feature | Brief description | ~Nm | ✅/❌ | none/TS/test/lint | Yes/No | High/Medium/Low | skill1, skill2 | enabled-capability |
-\`\`\`
-**Time:** Estimate minutes (e.g., ~10m)
-**Errors:** none, TS, test, lint, runtime
-**Skills Used:** List skills that were actively used during this iteration
-**Enables:** What future capabilities this task enables
-
-## IMPORTANT
-- Do NOT run git commit or git push - the script handles this
-- Just say "DONE" when complete
-- Changes will NOT be committed if build/tests fail
-- Always score tasks before selecting — prefer capability tasks
-
-When verification fails, a reflection is written to session_plan/reflection_N.md.
-
-Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, then score and select a task.`;
-
-	// Run iterations
-	for (let i = 1; i <= MAX_ITERATIONS; i++) {
-		console.log(`${COLORS.cyan}=== Iteration ${i}/${MAX_ITERATIONS} ===${COLORS.reset}\n`);
-
-		// Skill matching phase
-		const availableSkills = [
-			...superpowersSkills,
-			"evolve",
-			"research",
-			"self-improve",
-			"using-superpowers",
-		];
-		const skillMatchResult = matchSkills(issues, availableSkills);
-
-		console.log(`${COLORS.cyan}→ Skill Matching${COLORS.reset}`);
-		console.log(`${COLORS.dim}  Available: ${availableSkills.join(", ")}${COLORS.reset}`);
-		console.log(
-			`${COLORS.dim}  Matched: ${skillMatchResult.matchedSkills.join(", ") || "(none)"}${COLORS.reset}`,
-		);
-		console.log(
-			`${COLORS.dim}  Reasoning: ${skillMatchResult.reasoning || "(no direct matches)"}${COLORS.reset}\n`,
-		);
-
-		// Create enhanced prompt with skill matching output
-		const skillMatchingPrompt = `
-## Skill Matching Result (Iteration ${i})
-
-**Available Skills:** ${availableSkills.join(", ")}
-
-**Matched Skills:** ${skillMatchResult.matchedSkills.join(", ") || "None directly matched"}
-
-**Reasoning:** ${skillMatchResult.reasoning || "No keyword-based matches found. Consider reading skills/using-superpowers/SKILL.md for guidance."}
-
-**Recommendation:** If matched skills exist, read them first with \`read skills/superpowers/<name>/SKILL.md\` before starting the task.
-
-`;
-
-		const { run } = createAgent({
-			apiKey,
-			model: process.env.PAIMON_MODEL || "gpt-5.4",
-			baseUrl: process.env.PAIMON_BASE_URL || "https://api.86gamestore.com/v1",
-			skillsDir: "./skills",
-			memoryPath: "./MEMORY.md",
-			mode: "evolve", // Always use evolve mode for self-evolution
-		});
-
-		let runError: string | null = null;
-		let resultText = "";
-
-		try {
-			resultText = await run(skillMatchingPrompt + prompt);
-			console.log(`\n${resultText}\n`);
-		} catch (e) {
-			runError = String(e);
-			console.error(`${COLORS.red}Error: ${e}${COLORS.reset}`);
-		}
-
-		// Write skill audit entry
-		writeSkillAudit({
-			timestamp: new Date().toISOString(),
-			iteration: i,
-			task: issues.slice(0, 200),
-			availableSkills,
-			matchedSkills: skillMatchResult.matchedSkills,
-			usedSkills: [], // Would need agent output parsing to determine actual usage
-			result: runError ? `Error: ${runError}` : "Completed",
-		});
-
-		// Check if changes were made
-		const status = execSync("git status --porcelain", { encoding: "utf-8" });
-		if (!status.trim()) {
-			console.log(`${COLORS.yellow}  No changes in iteration ${i}${COLORS.reset}\n`);
-			continue;
-		}
-
-		// Create iteration branch and commit changes there
-		const branchName = `evolve/${DATE}-iter${i}`;
-		console.log(`→ Creating branch: ${branchName}`);
-		execSync(`git checkout -b ${branchName}`, { encoding: "utf-8", stdio: "pipe" });
-		execSync("git add -A", { encoding: "utf-8" });
-
-		// Verify before committing to main
-		console.log("→ Verifying build and tests...");
-		const buildOk = verifyBuild();
-		const testOk = verifyTests();
-
-		console.log(`  Build: ${buildOk ? `${COLORS.green}PASS` : `${COLORS.red}FAIL`}${COLORS.reset}`);
-		console.log(
-			`  Tests: ${testOk ? `${COLORS.green}PASS` : `${COLORS.red}FAIL`}${COLORS.reset}\n`,
-		);
-
-		const verified = buildOk && testOk && !runError;
-		const label = verified ? "verified" : "draft";
-		const commitMsg = `paimon: ${DATE} iteration ${i} (${label})`;
-
-		execSync(`git commit -m "${commitMsg}"`, { encoding: "utf-8" });
-
-		if (verified) {
-			// Merge verified changes into main
-			console.log("→ Merging verified changes into main...");
-			execSync("git checkout main", { encoding: "utf-8", stdio: "pipe" });
-			execSync(`git merge ${branchName}`, { encoding: "utf-8", stdio: "pipe" });
-			console.log(`${COLORS.green}  ✓ Merged to main${COLORS.reset}\n`);
-		} else {
-			// Write reflection for draft
-			writeReflection(
-				i,
-				runError || (buildOk ? "" : "Build failed") || "Tests failed",
-				buildOk,
-				testOk,
-			);
-			console.log(
-				`${COLORS.yellow}  ✗ Verification failed. Changes saved to branch ${branchName}${COLORS.reset}`,
-			);
-			console.log(
-				`${COLORS.yellow}  Reflection written to session_plan/reflection_${i}.md${COLORS.reset}\n`,
-			);
-			// Switch back to main for next iteration
-			execSync("git checkout main", { encoding: "utf-8", stdio: "pipe" });
-		}
-
-		// Push branch
-		execSync(`git push origin ${branchName} 2>/dev/null || true`, { encoding: "utf-8" });
-	}
-
-	// Push main
-	console.log("→ Pushing main...");
 	try {
-		execSync("git push", { encoding: "utf-8" });
-		console.log(`${COLORS.green}  Pushed${COLORS.reset}\n`);
-	} catch {
-		console.log(`${COLORS.yellow}  No changes on main${COLORS.reset}\n`);
+		const resultText = await run(prompt);
+		console.log(`\n${resultText}\n`);
+	} catch (e) {
+		console.error(`${COLORS.red}Session error: ${e}${COLORS.reset}`);
 	}
 
-	console.log(`${COLORS.cyan}=== Complete ===${COLORS.reset}\n`);
+	console.log(`${COLORS.cyan}=== Session Complete ===${COLORS.reset}\n`);
 }
 
 main().catch(console.error);

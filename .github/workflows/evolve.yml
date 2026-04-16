@@ -45,8 +45,8 @@ jobs:
           PAIMON_MODEL: ${{ vars.PAIMON_MODEL || 'gpt-5.4' }}
         run: npm run evolve
 
-      - name: Push changes
+      - name: Final push (safety net)
         run: |
           git reset HEAD -- .github/workflows/ 2>/dev/null || true
           git checkout -- .github/workflows/ 2>/dev/null || true
-          git push --all || echo "No changes to push"
+          git push --all 2>/dev/null || echo "Already pushed by agent or no changes"
