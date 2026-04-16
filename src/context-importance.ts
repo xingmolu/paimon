@@ -30,6 +30,7 @@ export type ImportanceFactor =
 	| "error_presence"
 	| "file_reference"
 	| "plan_reference"
+	| "durable_anchor"
 	| "size_factor";
 
 /**
@@ -286,7 +287,13 @@ export class ContextImportanceScorer {
 			totalWeight += 0.5;
 		}
 
-		// 8. Size factor (large messages may be truncatable) (weight: 0.5)
+		// 8. Durable anchor factor (task framing/constraints/acceptance criteria should persist) (weight: 1.5)
+		const durableAnchorScore = this.detectDurableAnchor(message);
+		factors.set("durable_anchor", durableAnchorScore);
+		weightedSum += durableAnchorScore * 1.5;
+		totalWeight += 1.5;
+
+		// 9. Size factor (large messages may be truncatable) (weight: 0.5)
 		const tokens = estimateTokens(message.content);
 		const sizeFactor = this.calculateSizeFactor(tokens);
 		factors.set("size_factor", sizeFactor);
@@ -582,6 +589,66 @@ export class ContextImportanceScorer {
 		];
 		const lowerContent = content.toLowerCase();
 		return planPatterns.some((pattern) => lowerContent.includes(pattern));
+	}
+
+	/**
+	 * Detect messages that encode durable task anchors worth preserving across long sessions.
+	 */
+	private detectDurableAnchor(message: MessageForAnalysis): number {
+		const lowerContent = message.content.toLowerCase();
+		const durablePatterns = [
+			"must",
+			"do not",
+			"always",
+			"never",
+			"required",
+			"acceptance criteria",
+			"success criteria",
+			"constraint",
+			"selected:",
+			"reason:",
+			"goal",
+			"task selection",
+			"implement",
+			"verify",
+			"commit",
+			"push",
+			"build",
+			"test",
+			"issue #",
+			"roadmap",
+			"src/",
+			".ts",
+			"files to modify",
+			"build sequence",
+		];
+		const lightweightNoisePatterns = [
+			"progress update",
+			"still working",
+			"continuing",
+			"verbose tool output",
+			"routine update",
+			"status update",
+		];
+
+		const durableHits = durablePatterns.filter((pattern) => lowerContent.includes(pattern)).length;
+		const noiseHits = lightweightNoisePatterns.filter((pattern) =>
+			lowerContent.includes(pattern),
+		).length;
+
+		let score = 20 + Math.min(4, durableHits) * 18 - noiseHits * 10;
+
+		if (message.role === "system") {
+			score += 15;
+		} else if (message.role === "user") {
+			score += 10;
+		}
+
+		if (message.index < Math.max(3, Math.ceil(message.totalMessages * 0.15))) {
+			score += 10;
+		}
+
+		return Math.max(10, Math.min(100, score));
 	}
 
 	/**

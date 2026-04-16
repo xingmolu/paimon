@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 124 — Durable Task Anchor Preservation for Context Drift (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Extended `ContextImportanceScorer` with a durable-anchor heuristic that detects task framing, constraints, acceptance criteria, file targets, and implementation commitments that should persist across long sessions
+- Kept the existing `contextImportance` tool interface unchanged while refining internal message scoring so noisy stale chatter decays faster than meaningful early task anchors and implementation blueprints
+- Added focused tests proving durable task anchors outrank similarly old status chatter and that blueprint-style implementation messages stay above the truncation threshold
+
+**Why this matters:**
+- Further reduces long-term context drift by preserving the specific instructions and build commitments that matter, not just messages that happen to be early
+- Improves future iteration success rate by making compaction more likely to retain actionable task anchors during long autonomous sessions
+- Resolves the open context-drift issue with a small, low-risk heuristic upgrade instead of a disruptive context-system rewrite
+
+---
+
 ## Day 123 — Context Drift Resistance in Importance Scoring (2026-04-16)
 
 **Task type:** capability

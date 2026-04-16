@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | durable-task-anchors, context-drift-resistance, smarter-context-compaction |
 | 2026-04-16 | capability | Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions | ~20m | ✅ | test (fixed) | No | High | using-superpowers, evolve, plan-architecture, review-changes | context-drift-resistance, smarter-context-compaction, longer-stable-sessions |
 | 2026-04-16 | capability | Enabler-Aware Optimization Recommendations - Extended optimization dashboard recommendations so weak health signals now point toward leverageful enabling capabilities like self-assessment, error-recovery, rag, and learning-transfer; added focused tests to preserve targeted recommendation output for future task selection | ~20m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | enabler-aware-task-selection, leverageful-dashboard-guidance, better-capability-prioritization |
 | 2026-04-16 | capability | Recommendation Deduping for Optimization Guidance - Finalized optimization dashboard recommendations through shared deduping and priority ordering so overlapping guidance stays unique, stable, and action-ranked; added focused tests to preserve clean recommendation output for future task selection | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | cleaner-recommendation-ranking, lower-guidance-noise, better-task-selection |
@@ -162,14 +163,14 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 105/116 = 91%
+- First Try Success Rate: 106/117 = 91%
 - Average Time: ~15 minutes
-- Rework Rate: 13/115 = 11%
+- Rework Rate: 13/116 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 111/116 = 96%
-- High Impact Capabilities: 101/111 = 91%
-- Capability Velocity: 111 capabilities in 3 days = 37/day
+- Capability Tasks: 112/117 = 96%
+- High Impact Capabilities: 102/112 = 91%
+- Capability Velocity: 112 capabilities in 3 days = 37/day
 
 ### Error Analysis
 - TypeScript Errors: 7

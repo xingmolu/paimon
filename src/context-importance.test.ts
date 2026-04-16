@@ -159,6 +159,46 @@ describe("ContextImportanceScorer", () => {
 			expect(score.factors.get("plan_reference")).toBe(70);
 		});
 
+		it("should preserve durable task anchors over stale chatter", () => {
+			const durableAnchor: MessageForAnalysis = {
+				role: "user",
+				content:
+					"Goal: implement issue #25. Must run build and test, do not modify .github/workflows/, and update src/context-importance.ts.",
+				index: 2,
+				totalMessages: 24,
+			};
+			const staleChatter: MessageForAnalysis = {
+				role: "assistant",
+				content: "Routine progress update: still working, continuing with a status update.",
+				index: 3,
+				totalMessages: 24,
+			};
+
+			const durableScore = scorer.scoreMessage(durableAnchor);
+			const chatterScore = scorer.scoreMessage(staleChatter);
+
+			expect(durableScore.factors.get("durable_anchor")).toBeGreaterThan(
+				chatterScore.factors.get("durable_anchor") ?? 0,
+			);
+			expect(durableScore.score).toBeGreaterThan(chatterScore.score);
+			expect(durableScore.canTruncate).toBe(false);
+		});
+
+		it("should keep implementation blueprint messages above truncation threshold", () => {
+			const blueprintMessage: MessageForAnalysis = {
+				role: "assistant",
+				content:
+					"Implementation Blueprint: Files to modify: src/context-importance.ts and src/context-importance.test.ts. Build sequence: implement, verify with build and test, then commit.",
+				index: 6,
+				totalMessages: 30,
+			};
+
+			const score = scorer.scoreMessage(blueprintMessage);
+			expect(score.factors.get("durable_anchor")).toBeGreaterThanOrEqual(70);
+			expect(score.score).toBeGreaterThanOrEqual(40);
+			expect(score.canTruncate).toBe(false);
+		});
+
 		it("should classify content types correctly", () => {
 			const systemMessage: MessageForAnalysis = {
 				role: "system",
