@@ -62,6 +62,7 @@ describe("SelfImprovementEngine", () => {
 		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
 		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
 		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
 		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
 
 		const dashboard = new OptimizationDashboardManager({
@@ -125,5 +126,44 @@ describe("SelfImprovementEngine", () => {
 			suggestions.find((item) => item.title === "Turn recurring errors into reusable guardrails")
 				?.description,
 		).toContain("lint");
+	});
+
+	it("adds evidence-based auto-context suggestions from the existing context capability", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getDashboardSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([
+			{
+				id: "self-improvement-best-practice-capability-high-global-0-use-auto-context",
+				category: "capability",
+				priority: "high",
+				title:
+					"Use auto-context detection for: Add a new self-evolution capability tool with tests and tool registration",
+				description:
+					"The existing context tool found 3 relevant files (78% confidence) for a representative evolution task. Start with src/tools/index.ts, src/self-improvement-engine.ts, src/tools/self-improvement-tool.ts.",
+				suggestedFix:
+					"Run context({action: 'analyze', taskDescription: 'Add a new self-evolution capability tool with tests and tool registration'}) before implementation to identify likely files automatically.",
+				impact:
+					"Reduces context gathering time and improves file-target selection using the existing context capability",
+				effort: "simple",
+				confidence: 82,
+				source: "best-practice",
+				timestamp: "2026-04-16T00:00:00.000Z",
+			},
+		]);
+
+		const suggestions = await engine.scanCodebase("src");
+		const suggestion = suggestions.find((item) =>
+			item.title.includes("Use auto-context detection"),
+		);
+
+		expect(suggestion).toBeDefined();
+		expect(suggestion?.description).toContain("src/tools/index.ts");
+		expect(suggestion?.suggestedFix).toContain("context({action: 'analyze'");
+		expect(suggestion?.impact).toContain("file-target selection");
 	});
 });

@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,20 +202,20 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 93% success, 93% high impact",
+      "description": "capability tasks: 92% success, 93% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 93,
-      "firstTryRate": 93,
+      "successRate": 92,
+      "firstTryRate": 92,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 126,
+      "sampleSize": 127,
       "examples": [
         {
           "taskDescription": "Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention",
@@ -257,7 +257,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "time-pattern-quick",
@@ -306,7 +306,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -358,7 +358,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "task-type-reliability",
@@ -404,7 +404,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     },
     {
       "id": "skill-combo-evo-pla-rev-usi",
@@ -464,9 +464,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T12:36:21.331Z"
+      "lastUpdated": "2026-04-16T13:00:42.817Z"
     }
   ],
-  "lastUpdated": "2026-04-16T12:36:21.332Z",
-  "sessionCount": 138
+  "lastUpdated": "2026-04-16T13:00:42.818Z",
+  "sessionCount": 139
 }

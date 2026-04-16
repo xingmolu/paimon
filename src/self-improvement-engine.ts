@@ -18,6 +18,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getCapabilityGapDetector } from "./capability-gap.js";
+import { getContextIdentifierManager } from "./context-identifier.js";
 import type { Bottleneck, OptimizationRecommendation } from "./optimization-dashboard.js";
 import { getOptimizationDashboardManager } from "./optimization-dashboard.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
@@ -418,7 +419,10 @@ export class SelfImprovementEngine {
 		// 4. Add competitor pattern suggestions
 		suggestions.push(...this.getCompetitorSuggestions());
 
-		// 5. Add optimization dashboard suggestions
+		// 5. Add context-aware auto-context suggestions
+		suggestions.push(...this.getContextAwareSuggestions());
+
+		// 6. Add optimization dashboard suggestions
 		suggestions.push(...this.getDashboardSuggestions());
 
 		const deduplicated = this.deduplicateSuggestions(suggestions);
@@ -608,6 +612,47 @@ export class SelfImprovementEngine {
 	 */
 	private getCompetitorSuggestions(): ImprovementSuggestion[] {
 		return COMPETITOR_SUGGESTIONS.map((suggestion) => this.createSuggestion(suggestion));
+	}
+
+	private getContextAwareSuggestions(): ImprovementSuggestion[] {
+		try {
+			const contextManager = getContextIdentifierManager();
+			const candidateTasks = [
+				"Add a new self-evolution capability tool with tests and tool registration",
+				"Improve reliability of a failing evolution tool by updating implementation and tests",
+				"Refactor a self-improvement capability while keeping documentation and tests aligned",
+			];
+			const bestAnalyses = candidateTasks
+				.map((taskDescription) => ({
+					taskDescription,
+					analysis: contextManager.analyze(taskDescription),
+				}))
+				.filter(({ analysis }) => analysis.suggestedFiles.length > 0 && analysis.confidence >= 0.45)
+				.sort((a, b) => b.analysis.confidence - a.analysis.confidence)
+				.slice(0, 2);
+
+			return bestAnalyses.map(({ taskDescription, analysis }) => {
+				const topFiles = analysis.suggestedFiles
+					.slice(0, 3)
+					.map((file) => file.path)
+					.join(", ");
+				const confidencePercent = Math.round(analysis.confidence * 100);
+				return this.createSuggestion({
+					category: "capability",
+					priority: analysis.confidence >= 0.7 ? "high" : "medium",
+					title: `Use auto-context detection for: ${taskDescription}`,
+					description: `The existing context tool found ${analysis.suggestedFiles.length} relevant files (${confidencePercent}% confidence) for a representative evolution task. Start with ${topFiles}.`,
+					suggestedFix: `Run context({action: 'analyze', taskDescription: '${taskDescription}'}) before implementation to identify likely files automatically.`,
+					impact:
+						"Reduces context gathering time and improves file-target selection using the existing context capability",
+					effort: "simple",
+					confidence: 82,
+					source: "best-practice",
+				});
+			});
+		} catch {
+			return [];
+		}
 	}
 
 	private getDashboardSuggestions(): ImprovementSuggestion[] {

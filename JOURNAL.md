@@ -12,6 +12,23 @@ A daily log of Paimon's self-improvements.
 
 
 
+
+## Day 127 — Evidence-Based Auto-Context Suggestions for Self-Improvement (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Extended `SelfImprovementEngine` so proactive scans now generate evidence-based auto-context suggestions using the already-implemented `context` capability instead of only surfacing a generic competitor-pattern recommendation
+- Added a focused `getContextAwareSuggestions()` helper that runs representative evolution-task prompts through `ContextIdentifierManager`, captures high-confidence file matches, and turns them into actionable suggestions with concrete starting files and a ready-to-run `context({action: 'analyze', ...})` invocation
+- Added focused tests to verify these contextual suggestions are surfaced cleanly during scans while preserving existing dashboard-derived improvement guidance
+
+**Why this matters:**
+- Improves future iteration success rate by making autonomous file targeting easier before implementation begins
+- Reduces context-gathering rework by turning an existing capability into proactive, evidence-backed guidance instead of leaving it as passive tool knowledge
+- Advances context-system work in a safe direction that respects the open "no more heuristic context improvements" issue, because it reuses the existing context identifier rather than modifying context-compaction heuristics
+
+---
+
 ## Day 126 — Tunable Context Importance Configuration (2026-04-16)
 
 **Task type:** capability
