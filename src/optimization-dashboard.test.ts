@@ -158,7 +158,7 @@ describe("OptimizationDashboardManager", () => {
 						byType: { lint: 3, test: 1 },
 						recentErrors: [],
 						points: [],
-						commonPatterns: ["lint", "test"],
+						commonPatterns: ["lint (fixed)", "test"],
 					},
 					skills: [
 						{
@@ -166,6 +166,13 @@ describe("OptimizationDashboardManager", () => {
 							usageCount: 3,
 							successRate: 62,
 							averageTime: 17,
+							trend: "declining",
+						},
+						{
+							skill: "-------------",
+							usageCount: 1,
+							successRate: 0,
+							averageTime: 5,
 							trend: "declining",
 						},
 						{
@@ -194,15 +201,21 @@ describe("OptimizationDashboardManager", () => {
 
 		const recommendations = manager.getRecommendations();
 		const titles = recommendations.map((item) => item.title);
+		const skillRecommendation = recommendations.find(
+			(item) => item.title === "Capture reusable lessons from weak-signal skills",
+		);
+		const errorRecommendation = recommendations.find(
+			(item) => item.title === "Turn recurring errors into reusable guardrails",
+		);
 
 		expect(titles).toContain("Capture reusable lessons from weak-signal skills");
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
 		expect(titles).toContain("Record why recent work was lower impact");
-		expect(
-			recommendations.find(
-				(item) => item.title === "Capture reusable lessons from weak-signal skills",
-			)?.description,
-		).toContain("review-changes (62%)");
+		expect(skillRecommendation?.description).toContain("review-changes (62%)");
+		expect(skillRecommendation?.description).toContain("plan-architecture (72%)");
+		expect(skillRecommendation?.description).not.toContain("-------------");
+		expect(errorRecommendation?.description).toContain("recurring lint errors");
+		expect(errorRecommendation?.description).not.toContain("lint (fixed)");
 	});
 
 	it("uses dynamic baseline values when comparing a session", () => {

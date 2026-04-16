@@ -179,15 +179,43 @@ export class OptimizationDashboardManager {
 		return this.clamp(skillsScore * 0.5 + iterationScore * 0.2 + capabilityScore * 0.3);
 	}
 
+	private isMeaningfulSkillName(skillName: string): boolean {
+		const normalized = skillName.trim();
+		if (!normalized) return false;
+		if (/^-+$/.test(normalized)) return false;
+		if (!/[a-zA-Z]/.test(normalized)) return false;
+		return true;
+	}
+
+	private formatErrorPattern(pattern: string): string {
+		return pattern
+			.trim()
+			.replace(/\s*\((fixed|auto-fixed)\)\s*/gi, "")
+			.replace(/\s+/g, " ");
+	}
+
 	private getLowConfidenceSkills(metrics: EvolutionMetrics): SkillMetric[] {
-		return metrics.skills
-			.filter((skill) => skill.successRate < 85)
+		const deduplicatedSkills = new Map<string, SkillMetric>();
+		for (const skill of metrics.skills) {
+			if (skill.successRate >= 85 || !this.isMeaningfulSkillName(skill.skill)) {
+				continue;
+			}
+			const normalizedName = skill.skill.trim().toLowerCase();
+			const existing = deduplicatedSkills.get(normalizedName);
+			if (!existing || skill.successRate < existing.successRate) {
+				deduplicatedSkills.set(normalizedName, skill);
+			}
+		}
+		return Array.from(deduplicatedSkills.values())
 			.sort((a, b) => a.successRate - b.successRate)
 			.slice(0, 2);
 	}
 
 	private getPrimaryErrorPattern(metrics: EvolutionMetrics): string | undefined {
-		return metrics.errors.commonPatterns.find((pattern) => pattern && pattern !== "none");
+		const formattedPatterns = metrics.errors.commonPatterns
+			.map((pattern) => this.formatErrorPattern(pattern))
+			.filter((pattern) => pattern && pattern !== "none");
+		return formattedPatterns[0];
 	}
 
 	private getMemoryRecommendations(

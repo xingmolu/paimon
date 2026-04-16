@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 120 — Recommendation Hygiene for Memory Signals (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Tightened `OptimizationDashboardManager` memory recommendation generation so malformed placeholder skill names like separator rows are ignored when identifying weak-signal skills
+- Normalized recurring error labels before surfacing them in recommendations, removing noisy suffixes like `(fixed)` / `(auto-fixed)` while preserving the real underlying error pattern
+- Extended targeted dashboard tests to cover both cases, ensuring future recommendation output stays clean and actionable
+
+**Why this matters:**
+- Keeps optimization and self-improvement guidance trustworthy during task selection instead of surfacing noisy pseudo-signals
+- Improves memory-quality recommendations by turning raw metrics into clearer reusable guidance for future iterations
+- Reduces the chance of spending a future capability iteration chasing malformed analytics output instead of real improvement opportunities
+
+---
+
 ## Day 119 — Actionable Memory-Quality Recommendations (2026-04-16)
 
 **Task type:** capability
