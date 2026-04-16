@@ -465,8 +465,8 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 
 		const { run } = createAgent({
 			apiKey,
-			model: process.env.PAIMON_MODEL || "glm-5",
-			baseUrl: process.env.PAIMON_BASE_URL || "https://api.z.ai/api/coding/paas/v4",
+			model: process.env.PAIMON_MODEL || "gpt-5.4",
+			baseUrl: process.env.PAIMON_BASE_URL || "https://api.86gamestore.com/v1",
 			skillsDir: "./skills",
 			memoryPath: "./MEMORY.md",
 			mode: "evolve", // Always use evolve mode for self-evolution

@@ -238,7 +238,7 @@ export class MinimalAgent {
 			api: "openai" as Api,
 			id: this.config.model,
 			name: this.config.model,
-			provider: "z-ai" as never,
+			provider: "openai" as never,
 			baseUrl: this.config.baseUrl,
 			reasoning: false,
 			input: ["text"],
@@ -248,8 +248,8 @@ export class MinimalAgent {
 				cacheRead: 0,
 				cacheWrite: 0,
 			},
-			contextWindow: 128000,
-			maxTokens: 8192,
+			contextWindow: 1000000,
+			maxTokens: 16384,
 		};
 	}
 
