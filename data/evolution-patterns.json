@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,21 @@
       "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 118,
+      "sampleSize": 119,
       "examples": [
+        {
+          "taskDescription": "Self-Improvement Signal Quality Upgrade - Made self-improvement suggestions deterministic and deduplicated, integrated live optimization dashboard health/bottleneck/recommendation signals into proactive scans, and added focused tests for stable IDs and dashboard-derived suggestions",
+          "date": "2026-04-16",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution",
           "date": "2026-04-16",
@@ -238,19 +251,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Fix Capability Gap Detector False Positives (Round 3) - Fixed detectToolGaps() to exclude model IDs (gpt-4o, o1, o3, etc.) and MCP server names (filesystem) that were incorrectly matched as tool names. Added 24 entries to excludeNames set including model IDs and display names from model-settings metadata. Zero false positives now detected - all actual tool gaps are legitimate.",
-          "date": "2026-04-05",
-          "time": 10,
-          "skillsUsed": [
-            "evolve"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "time-pattern-quick",
@@ -299,7 +302,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -351,7 +354,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     },
     {
       "id": "task-type-reliability",
@@ -397,9 +400,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T04:16:13.745Z"
+      "lastUpdated": "2026-04-16T04:47:17.966Z"
     }
   ],
-  "lastUpdated": "2026-04-16T04:16:13.745Z",
-  "sessionCount": 130
+  "lastUpdated": "2026-04-16T04:47:17.966Z",
+  "sessionCount": 131
 }
