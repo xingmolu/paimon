@@ -6,7 +6,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import type { EvolutionMetrics } from "./metrics.js";
+import type { EvolutionMetrics, SkillMetric } from "./metrics.js";
 import { getMetricsTracker } from "./metrics.js";
 import type { ToolUsageStats } from "./tool-usage-analytics.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
@@ -177,6 +177,81 @@ export class OptimizationDashboardManager {
 		const iterationScore = Math.min(metrics.iterationsAnalyzed, 25) * 2;
 		const capabilityScore = Math.min(metrics.capabilityVelocity.highImpactPercentage, 100);
 		return this.clamp(skillsScore * 0.5 + iterationScore * 0.2 + capabilityScore * 0.3);
+	}
+
+	private getLowConfidenceSkills(metrics: EvolutionMetrics): SkillMetric[] {
+		return metrics.skills
+			.filter((skill) => skill.successRate < 85)
+			.sort((a, b) => a.successRate - b.successRate)
+			.slice(0, 2);
+	}
+
+	private getPrimaryErrorPattern(metrics: EvolutionMetrics): string | undefined {
+		return metrics.errors.commonPatterns.find((pattern) => pattern && pattern !== "none");
+	}
+
+	private getMemoryRecommendations(
+		metrics: EvolutionMetrics,
+		memoryQuality: number,
+	): OptimizationRecommendation[] {
+		if (memoryQuality >= 80) {
+			return [];
+		}
+
+		const recommendations: OptimizationRecommendation[] = [];
+		const lowConfidenceSkills = this.getLowConfidenceSkills(metrics);
+		const primaryErrorPattern = this.getPrimaryErrorPattern(metrics);
+		const lowImpactRatio = Math.max(0, 100 - metrics.capabilityVelocity.highImpactPercentage);
+
+		if (lowConfidenceSkills.length > 0) {
+			const skillSummary = lowConfidenceSkills
+				.map((skill) => `${skill.skill} (${Math.round(skill.successRate)}%)`)
+				.join(", ");
+			recommendations.push({
+				priority: "high",
+				category: "memory",
+				title: "Capture reusable lessons from weak-signal skills",
+				description: `Recent skill effectiveness suggests weaker learning capture around ${skillSummary}. Record what worked, what failed, and when to invoke these skills in MEMORY.md.`,
+				expectedImpact: "Improves future skill selection and reduces repeated exploratory mistakes",
+				effort: "simple",
+			});
+		}
+
+		if (primaryErrorPattern) {
+			recommendations.push({
+				priority: "medium",
+				category: "memory",
+				title: "Turn recurring errors into reusable guardrails",
+				description: `Recent iterations still show recurring ${primaryErrorPattern} errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.`,
+				expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+				effort: "simple",
+			});
+		}
+
+		if (lowImpactRatio >= 25) {
+			recommendations.push({
+				priority: lowImpactRatio >= 40 ? "high" : "medium",
+				category: "memory",
+				title: "Record why recent work was lower impact",
+				description: `Only ${Math.round(metrics.capabilityVelocity.highImpactPercentage)}% of recent capability work was marked high impact. Capture stronger rationale in MEMORY.md about what made recent tasks less leverageful and what future tasks should optimize for.`,
+				expectedImpact: "Better task selection and clearer impact scoring in future iterations",
+				effort: "simple",
+			});
+		}
+
+		if (recommendations.length === 0) {
+			recommendations.push({
+				priority: "medium",
+				category: "memory",
+				title: "Strengthen learning capture",
+				description:
+					"Recent iteration history suggests memory quality or impact capture can improve.",
+				expectedImpact: "Better task selection and stronger cross-session transfer",
+				effort: "simple",
+			});
+		}
+
+		return recommendations;
 	}
 
 	private calculateCapabilityUtilization(toolStats: ToolUsageStats[]): number {
@@ -364,17 +439,9 @@ export class OptimizationDashboardManager {
 			});
 		}
 
-		if (health.components.memoryQuality < 80) {
-			recommendations.push({
-				priority: "medium",
-				category: "memory",
-				title: "Strengthen learning capture",
-				description:
-					"Recent iteration history suggests memory quality or impact capture can improve.",
-				expectedImpact: "Better task selection and stronger cross-session transfer",
-				effort: "simple",
-			});
-		}
+		recommendations.push(
+			...this.getMemoryRecommendations(metrics, health.components.memoryQuality),
+		);
 
 		this.stats.recommendationsGenerated += recommendations.length;
 		this.writeData();

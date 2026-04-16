@@ -120,5 +120,10 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).toContain("Reduce recurring errors");
 		expect(titles).toContain("Bottleneck: assess");
 		expect(titles).toContain("Optimization dashboard health is fair");
+		expect(titles).toContain("Turn recurring errors into reusable guardrails");
+		expect(
+			suggestions.find((item) => item.title === "Turn recurring errors into reusable guardrails")
+				?.description,
+		).toContain("lint");
 	});
 });

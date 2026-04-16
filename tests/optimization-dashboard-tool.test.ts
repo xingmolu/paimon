@@ -26,7 +26,7 @@ describe("optimizationDashboardTool", () => {
 			errorCount: 1,
 			capabilitiesUsed: 12,
 		});
-		expect(String(result.content[0]?.text)).toContain('"rating": "average"');
+		expect(String(result.content[0]?.text)).toContain('"rating": "above_average"');
 	});
 
 	it("updates config with partial values", async () => {

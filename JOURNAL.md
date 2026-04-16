@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 119 — Actionable Memory-Quality Recommendations (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Upgraded `OptimizationDashboardManager` so weak memory-quality signals now produce concrete recommendations instead of a single generic "Strengthen learning capture" fallback
+- Added targeted recommendation logic that points to weak-signal skills, recurring error patterns, and low-impact capability trends using existing live metrics
+- Extended self-improvement coverage and dashboard tests so these actionable memory recommendations propagate into proactive suggestions reliably
+
+**Why this matters:**
+- Makes memory-quality guidance directly actionable during task selection instead of requiring manual interpretation
+- Improves cross-session learning capture by turning recurring weak signals into explicit MEMORY.md follow-up guidance
+- Increases the value of the optimization dashboard/self-improvement integration by surfacing specific next steps
+
+---
+
 ## Day 118 — Self-Improvement Signal Quality Upgrade (2026-04-16)
 
 **Task type:** capability

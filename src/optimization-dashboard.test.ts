@@ -141,6 +141,70 @@ describe("OptimizationDashboardManager", () => {
 		expect(bottlenecks.some((item) => item.type === "memory-issues")).toBe(true);
 	});
 
+	it("generates actionable memory recommendations from live weak signals", () => {
+		const manager = new OptimizationDashboardManager({
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 82, points: [], weeklyAverage: 84, improvement: -3 },
+					time: {
+						averageMinutes: 18,
+						byTaskType: { capability: 18 },
+						points: [],
+						fastestTask: "Quick fix",
+						slowestTask: "Complex integration",
+					},
+					errors: {
+						totalErrors: 4,
+						byType: { lint: 3, test: 1 },
+						recentErrors: [],
+						points: [],
+						commonPatterns: ["lint", "test"],
+					},
+					skills: [
+						{
+							skill: "review-changes",
+							usageCount: 3,
+							successRate: 62,
+							averageTime: 17,
+							trend: "declining",
+						},
+						{
+							skill: "plan-architecture",
+							usageCount: 4,
+							successRate: 72,
+							averageTime: 20,
+							trend: "stable",
+						},
+					],
+					capabilityVelocity: {
+						current: 6,
+						points: [],
+						totalCapabilities: 40,
+						highImpactCount: 20,
+						highImpactPercentage: 50,
+					},
+					lastUpdated: "2026-04-16T00:00:00.000Z",
+					iterationsAnalyzed: 12,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [],
+			},
+		});
+
+		const recommendations = manager.getRecommendations();
+		const titles = recommendations.map((item) => item.title);
+
+		expect(titles).toContain("Capture reusable lessons from weak-signal skills");
+		expect(titles).toContain("Turn recurring errors into reusable guardrails");
+		expect(titles).toContain("Record why recent work was lower impact");
+		expect(
+			recommendations.find(
+				(item) => item.title === "Capture reusable lessons from weak-signal skills",
+			)?.description,
+		).toContain("review-changes (62%)");
+	});
+
 	it("uses dynamic baseline values when comparing a session", () => {
 		const manager = new OptimizationDashboardManager({
 			metricsTracker: {
