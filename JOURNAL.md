@@ -4,6 +4,24 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+
+## Day 116 — Optimization Dashboard Tool Integration (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Surfaced the existing `OptimizationDashboardManager` as a real `optimizationDashboard` tool
+- Registered the tool in the central tool index so it is available to the agent
+- Documented the new tool in the evolve prompt with concrete usage examples
+- Added focused tests covering report generation, compare validation, comparison output, and partial config updates
+
+**Why this matters:**
+- Converts an orphaned internal module into a usable self-evolution capability
+- Improves visibility into health, bottlenecks, and optimization recommendations for future iterations
+- Supports better task selection by making optimization signals directly accessible in-session
+
+---
+
 ## Archived Entries (Days 115-42)
 
 ## Day 122 — Evolution Optimization Dashboard (Phase 99) (2026-04-05)

@@ -63,6 +63,7 @@ import { modelSettingsTool } from "./model-settings-tool.js";
 import { multiAgentTool } from "./multi-agent-tool.js";
 import { multiFileContextTool } from "./multi-file-context-tool.js";
 import { notificationsToolDefinition } from "./notification-tool.js";
+import { optimizationDashboardTool } from "./optimization-dashboard-tool.js";
 import { parallelTool } from "./parallel-tool.js";
 import { patternAutoApplyToolDef } from "./pattern-auto-apply-tool.js";
 import { patternMinerTool } from "./pattern-miner-tool.js";
@@ -195,6 +196,7 @@ export const metaTools: AgentTool[] = [
 	contextIdentifierTool,
 	selfImprovementTool,
 	tokenBreakdownTool,
+	optimizationDashboardTool,
 ];
 
 /**
@@ -259,6 +261,12 @@ export {
 	resetTokenBreakdownManager,
 	TokenBreakdownManager,
 } from "./token-breakdown-tool.js";
+export {
+	optimizationDashboardTool,
+	getOptimizationDashboardManager,
+	resetOptimizationDashboardManager,
+	OptimizationDashboardManager,
+} from "./optimization-dashboard-tool.js";
 export { toolCacheTool } from "./tool-cache-tool.js";
 export { journalTool } from "./journal-tool.js";
 export { contextBudgetTool, createContextBudgetTool } from "./context-budget-tool.js";
