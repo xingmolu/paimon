@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,7 +202,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     },
     {
       "id": "task-type-capability",
@@ -215,8 +215,22 @@
       "firstTryRate": 92,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 129,
+      "sampleSize": 130,
       "examples": [
+        {
+          "taskDescription": "Context-Evidenced Optimization Recommendations - Extended `OptimizationDashboardManager` so weak-signal enabler recommendations now reuse shared `context-analysis` task-to-file insights, attach concrete likely starting files plus a ready-to-run `context(...)` command, and added focused tests to preserve Issue #25-aligned architectural reuse",
+          "date": "2026-04-16",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "explore-code",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Shared Context Analysis Refactor for Issue #25 - Extracted a reusable `context-analysis` helper so representative task-to-file analysis is shared across the context system, refactored `SelfImprovementEngine` to consume it instead of inline logic, and added focused tests to preserve structural behavior without continuing blocked heuristic-only context tweaks",
           "date": "2026-04-16",
@@ -243,22 +257,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Durable Task Anchor Preservation for Context Drift - Extended context importance scoring with a durable-anchor heuristic so task framing, constraints, file targets, and implementation commitments remain preserved across long sessions while stale status chatter stays truncatable; added focused tests for anchor preservation and blueprint retention",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.366Z"
     },
     {
       "id": "time-pattern-quick",
@@ -307,7 +308,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.366Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -359,7 +360,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     },
     {
       "id": "task-type-reliability",
@@ -405,7 +406,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.366Z"
     },
     {
       "id": "skill-combo-evo-pla-rev-usi",
@@ -465,9 +466,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T16:47:27.777Z"
+      "lastUpdated": "2026-04-16T17:21:25.365Z"
     }
   ],
-  "lastUpdated": "2026-04-16T16:47:27.779Z",
-  "sessionCount": 141
+  "lastUpdated": "2026-04-16T17:21:25.366Z",
+  "sessionCount": 142
 }

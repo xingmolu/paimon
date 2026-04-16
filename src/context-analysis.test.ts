@@ -4,6 +4,9 @@ import {
 	type ContextTaskCandidate,
 	analyzeContextTasks,
 	buildContextAnalyzeCommand,
+	formatContextAnalysis,
+	formatRelatedFileSuggestions,
+	groupFileSuggestions,
 } from "./context-analysis.js";
 import * as contextIdentifierModule from "./context-identifier.js";
 
@@ -97,6 +100,67 @@ describe("context-analysis helpers", () => {
 		]);
 
 		expect(insights).toEqual([]);
+	});
+
+	it("groups and formats context analysis output for shared reuse", () => {
+		const analysis = {
+			taskDescription: "Improve context tool output reuse",
+			suggestedFiles: [
+				{
+					path: "src/context-analysis.ts",
+					relevance: 0.88,
+					reason: "Matches shared context helper",
+					symbols: ["formatContextAnalysis", "groupFileSuggestions"],
+					category: "primary" as const,
+				},
+				{
+					path: "src/tools/context-identifier-tool.ts",
+					relevance: 0.61,
+					reason: "Tool formatting consumer",
+					symbols: ["executeContextIdentifierTool"],
+					category: "secondary" as const,
+				},
+				{
+					path: "README.md",
+					relevance: 0.33,
+					reason: "Reference docs",
+					symbols: [],
+					category: "reference" as const,
+				},
+			],
+			relevantSymbols: [],
+			confidence: 0.76,
+			reasoning: "High confidence shared helper refactor candidate.",
+		};
+
+		const grouped = groupFileSuggestions(analysis.suggestedFiles);
+		expect(grouped.primary).toHaveLength(1);
+		expect(grouped.secondary).toHaveLength(1);
+		expect(grouped.reference).toHaveLength(1);
+
+		const formatted = formatContextAnalysis(analysis);
+		expect(formatted).toContain("## Context Analysis Results");
+		expect(formatted).toContain("**Primary Files (highly relevant):**");
+		expect(formatted).toContain("src/context-analysis.ts");
+		expect(formatted).toContain("Reason: Matches shared context helper");
+		expect(formatted).toContain("**Secondary Files (moderately relevant):**");
+		expect(formatted).toContain("**Reference Files (may be useful):**");
+		expect(formatted).toContain("### Reasoning");
+	});
+
+	it("formats related file suggestions and empty states", () => {
+		expect(formatRelatedFileSuggestions([])).toBe("No related files found.");
+		expect(
+			formatRelatedFileSuggestions([
+				{
+					path: "src/context-identifier.ts",
+					relevance: 0.5,
+					reason: "",
+					symbols: ["ContextAnalysis"],
+					category: "secondary",
+				},
+			]),
+		).toContain("Shared symbols: ContextAnalysis");
 	});
 
 	it("formats reusable context analyze commands", () => {

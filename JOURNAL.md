@@ -13,6 +13,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 130 — Shared Context Output Formatting for Issue #25 (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Extended `src/context-analysis.ts` with reusable helpers for grouping suggested files plus canonical markdown formatting for full context analyses and related-file suggestions
+- Refactored `src/tools/context-identifier-tool.ts` to delegate presentation logic to the shared helper layer, keeping the tool wrapper thinner and aligning context output generation with the ongoing Issue #25 architectural refactor
+- Added focused tests proving grouped file sections, formatted analysis output, and related-file empty-state behavior stay stable for future context-system consumers
+
+**Why this matters:**
+- Advances the mandatory context-system refactor by moving another piece of duplicated context logic into a shared reusable layer instead of continuing heuristic-only scoring work
+- Reduces future rework for any capability that wants to reuse context output or categorized file suggestions, not just the `context` tool
+- Improves future iteration success rate by keeping context guidance formatting consistent across the system
+
+---
+
 ## Day 129 — Context-Evidenced Optimization Recommendations (2026-04-16)
 
 **Task type:** capability

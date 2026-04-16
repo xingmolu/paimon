@@ -7,11 +7,10 @@
 
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
+import { formatContextAnalysis, formatRelatedFileSuggestions } from "../context-analysis.js";
 import {
-	type ContextAnalysis,
 	type ContextIdentifierConfig,
 	type ContextIdentifierStats,
-	type FileSuggestion,
 	getContextIdentifierManager,
 	resetContextIdentifierInstance,
 } from "../context-identifier.js";
@@ -60,78 +59,6 @@ type ContextIdentifierToolParams = {
 	includeConfigs?: boolean;
 };
 
-function formatAnalysis(analysis: ContextAnalysis): string {
-	const lines: string[] = [];
-
-	lines.push("## Context Analysis Results\n");
-	lines.push(`**Task:** ${analysis.taskDescription}`);
-	lines.push(`**Confidence:** ${(analysis.confidence * 100).toFixed(0)}%\n`);
-
-	if (analysis.suggestedFiles.length > 0) {
-		lines.push("### Suggested Files\n");
-
-		const primary = analysis.suggestedFiles.filter((f) => f.category === "primary");
-		const secondary = analysis.suggestedFiles.filter((f) => f.category === "secondary");
-		const reference = analysis.suggestedFiles.filter((f) => f.category === "reference");
-
-		if (primary.length > 0) {
-			lines.push("**Primary Files (highly relevant):**");
-			for (const file of primary) {
-				lines.push(`- \`${file.path}\` (${(file.relevance * 100).toFixed(0)}%)`);
-				if (file.symbols.length > 0) {
-					lines.push(`  - Symbols: ${file.symbols.slice(0, 3).join(", ")}`);
-				}
-				lines.push(`  - Reason: ${file.reason}`);
-			}
-			lines.push("");
-		}
-
-		if (secondary.length > 0) {
-			lines.push("**Secondary Files (moderately relevant):**");
-			for (const file of secondary) {
-				lines.push(`- \`${file.path}\` (${(file.relevance * 100).toFixed(0)}%)`);
-				if (file.symbols.length > 0) {
-					lines.push(`  - Symbols: ${file.symbols.slice(0, 3).join(", ")}`);
-				}
-			}
-			lines.push("");
-		}
-
-		if (reference.length > 0) {
-			lines.push("**Reference Files (may be useful):**");
-			for (const file of reference) {
-				lines.push(`- \`${file.path}\` (${(file.relevance * 100).toFixed(0)}%)`);
-			}
-			lines.push("");
-		}
-	} else {
-		lines.push(
-			"No relevant files found. Consider providing more context in the task description.\n",
-		);
-	}
-
-	lines.push(`### Reasoning\n${analysis.reasoning}`);
-
-	return lines.join("\n");
-}
-
-function formatSuggestions(suggestions: FileSuggestion[]): string {
-	if (suggestions.length === 0) {
-		return "No related files found.";
-	}
-
-	const lines: string[] = ["## Related Files\n"];
-
-	for (const file of suggestions) {
-		lines.push(`- \`${file.path}\` (${(file.relevance * 100).toFixed(0)}%)`);
-		if (file.symbols.length > 0) {
-			lines.push(`  - Shared symbols: ${file.symbols.join(", ")}`);
-		}
-	}
-
-	return lines.join("\n");
-}
-
 async function executeContextIdentifierTool(_toolCallId: string, params: unknown): Promise<string> {
 	const typedParams = params as ContextIdentifierToolParams;
 	const manager = getContextIdentifierManager();
@@ -157,7 +84,7 @@ async function executeContextIdentifierTool(_toolCallId: string, params: unknown
 			}
 
 			const analysis = manager.analyze(typedParams.taskDescription);
-			return formatAnalysis(analysis);
+			return formatContextAnalysis(analysis);
 		}
 
 		case "suggest": {
@@ -166,7 +93,7 @@ async function executeContextIdentifierTool(_toolCallId: string, params: unknown
 			}
 
 			const suggestions = manager.suggestForFile(typedParams.filePath);
-			return formatSuggestions(suggestions);
+			return formatRelatedFileSuggestions(suggestions);
 		}
 
 		case "related": {

@@ -23,6 +23,7 @@ When evaluating tasks, classify them into these types:
 Track effectiveness of recent improvements:
 
 | Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+| 2026-04-16 | capability | Shared Context Output Formatting for Issue #25 - Extended `src/context-analysis.ts` with reusable grouped-suggestion and markdown-formatting helpers, refactored the `context` tool to consume the shared presentation layer instead of local duplicated formatting logic, and added focused regression tests for canonical context output reuse | ~15m | ✅ | lint (auto-fixed) | No | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | shared-context-output, thinner-context-tool, issue-25-integration |
 | 2026-04-16 | capability | Context-Evidenced Optimization Recommendations - Extended `OptimizationDashboardManager` so weak-signal enabler recommendations now reuse shared `context-analysis` task-to-file insights, attach concrete likely starting files plus a ready-to-run `context(...)` command, and added focused tests to preserve Issue #25-aligned architectural reuse | ~20m | ✅ | none | No | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | context-evidenced-dashboard-guidance, better-task-selection, issue-25-integration |
 | 2026-04-16 | capability | Shared Context Analysis Refactor for Issue #25 - Extracted a reusable `context-analysis` helper so representative task-to-file analysis is shared across the context system, refactored `SelfImprovementEngine` to consume it instead of inline logic, and added focused tests to preserve structural behavior without continuing blocked heuristic-only context tweaks | ~15m | ✅ | none | No | High | using-superpowers, evolve, plan-architecture, review-changes | shared-context-analysis, issue-25-alignment, lower-context-refactor-debt |
 | 2026-04-16 | capability | Evidence-Based Auto-Context Suggestions for Self-Improvement - Extended the `selfImprovement` engine so proactive scans now reuse the existing `context` capability to surface concrete file-target suggestions and ready-to-run context-analysis prompts for representative evolution tasks; added focused tests to preserve actionable scan output | ~15m | ✅ | none | No | High | using-superpowers, evolve, explore-code, plan-architecture, review-changes | proactive-file-targeting, better-context-gathering, stronger-self-improvement-guidance |
@@ -168,19 +169,19 @@ Track effectiveness of recent improvements:
 | 2026-03-30 | capability | Skill effectiveness tracking | ~10m | ✅ | none | No | High | evolve, using-superpowers, writing-plans | skill-analytics |
 
 ### Quality Metrics
-- First Try Success Rate: 109/121 = 90%
+- First Try Success Rate: 110/122 = 90%
 - Average Time: ~15 minutes
-- Rework Rate: 13/118 = 11%
+- Rework Rate: 13/119 = 11%
 
 ### Capability Metrics
-- Capability Tasks: 115/120 = 96%
-- High Impact Capabilities: 105/115 = 91%
-- Capability Velocity: 115 capabilities in 3 days = 38/day
+- Capability Tasks: 116/121 = 96%
+- High Impact Capabilities: 106/116 = 91%
+- Capability Velocity: 116 capabilities in 3 days = 39/day
 
 ### Error Analysis
 - TypeScript Errors: 7
 - Test Failures: 3
-- Lint Issues: 34
+- Lint Issues: 35
 - Runtime Errors: 0
 - File Corruption Issues: 1
 

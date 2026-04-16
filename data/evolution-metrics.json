@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 66.66666666666666,
+    "current": 69.23076923076923,
     "points": [
       {
         "date": "------",
@@ -19,17 +19,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 66.66666666666666,
+        "value": 69.23076923076923,
         "trend": "down"
       }
     ],
-    "weeklyAverage": 92.19858156028369,
-    "improvement": 66.66666666666666
+    "weeklyAverage": 92.25352112676056,
+    "improvement": 69.23076923076923
   },
   "time": {
-    "averageMinutes": 16.50354609929078,
+    "averageMinutes": 16.492957746478872,
     "byTaskType": {
-      "capability": 17.203125,
+      "capability": 17.186046511627907,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -51,7 +51,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 18.333333333333332,
+        "value": 18.076923076923077,
         "trend": "down"
       }
     ],
@@ -120,9 +120,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 138,
-      "successRate": 92.7536231884058,
-      "averageTime": 16.753623188405797,
+      "usageCount": 139,
+      "successRate": 92.80575539568345,
+      "averageTime": 16.741007194244606,
       "trend": "improving"
     },
     {
@@ -134,23 +134,23 @@
     },
     {
       "skill": "plan-architecture",
-      "usageCount": 17,
-      "successRate": 70.58823529411765,
-      "averageTime": 17.941176470588236,
+      "usageCount": 18,
+      "successRate": 72.22222222222221,
+      "averageTime": 17.77777777777778,
       "trend": "stable"
     },
     {
       "skill": "using-superpowers",
-      "usageCount": 14,
-      "successRate": 78.57142857142857,
-      "averageTime": 16.785714285714285,
+      "usageCount": 15,
+      "successRate": 80,
+      "averageTime": 16.666666666666668,
       "trend": "stable"
     },
     {
       "skill": "review-changes",
-      "usageCount": 13,
-      "successRate": 61.53846153846154,
-      "averageTime": 18.076923076923077,
+      "usageCount": 14,
+      "successRate": 64.28571428571429,
+      "averageTime": 17.857142857142858,
       "trend": "declining"
     },
     {
@@ -213,17 +213,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 6
+        "value": 6.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 128,
-    "highImpactCount": 125,
-    "highImpactPercentage": 97.65625
+    "totalCapabilities": 129,
+    "highImpactCount": 126,
+    "highImpactPercentage": 97.67441860465115
   },
-  "lastUpdated": "2026-04-16T16:47:27.642Z",
-  "iterationsAnalyzed": 141
+  "lastUpdated": "2026-04-16T17:21:25.203Z",
+  "iterationsAnalyzed": 142
 }
