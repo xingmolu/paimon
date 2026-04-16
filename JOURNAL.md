@@ -13,6 +13,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 129 — Context-Evidenced Optimization Recommendations (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Extended `OptimizationDashboardManager` so enabler-focused recommendations now reuse the shared `context-analysis` helper to attach concrete likely starting files plus a ready-to-run `context({action: 'analyze', ...})` command
+- Added optional structured `contextEvidence` on optimization recommendations while preserving backward compatibility for existing recommendation consumers
+- Added focused tests proving weak-component recommendations now surface task-to-file evidence, while keeping the existing Issue #25-aligned shared-context refactor direction instead of returning to blocked heuristic-only context scoring work
+
+**Why this matters:**
+- Improves future iteration success rate by turning generic dashboard advice into actionable next-step implementation guidance
+- Reduces context-gathering rework by reusing the shared context-system helper across another high-leverage capability instead of duplicating task-analysis logic
+- Advances the mandatory context-system refactor through architectural reuse and integration, not more `contextImportance` heuristics
+
+---
+
 ## Day 128 — Shared Context Analysis Refactor for Issue #25 (2026-04-16)
 
 **Task type:** capability

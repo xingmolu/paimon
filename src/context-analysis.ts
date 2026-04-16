@@ -26,9 +26,7 @@ function getPrimaryFiles(analysis: ContextAnalysis, maxFiles: number): FileSugge
 	return source.slice(0, maxFiles);
 }
 
-export function analyzeContextTasks(
-	candidates: ContextTaskCandidate[],
-): ContextTaskInsight[] {
+export function analyzeContextTasks(candidates: ContextTaskCandidate[]): ContextTaskInsight[] {
 	const manager = getContextIdentifierManager();
 	const insights: ContextTaskInsight[] = [];
 

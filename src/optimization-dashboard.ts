@@ -6,6 +6,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { analyzeContextTasks, buildContextAnalyzeCommand } from "./context-analysis.js";
 import type { EvolutionMetrics, SkillMetric } from "./metrics.js";
 import { getMetricsTracker } from "./metrics.js";
 import type { ToolUsageStats } from "./tool-usage-analytics.js";
@@ -43,6 +44,13 @@ export interface Bottleneck {
 	suggestion: string;
 }
 
+export interface RecommendationContextEvidence {
+	taskDescription: string;
+	topFiles: string[];
+	confidencePercent: number;
+	command: string;
+}
+
 export interface OptimizationRecommendation {
 	priority: "critical" | "high" | "medium" | "low";
 	category: "performance" | "reliability" | "capability" | "memory";
@@ -50,6 +58,7 @@ export interface OptimizationRecommendation {
 	description: string;
 	expectedImpact: string;
 	effort: "simple" | "moderate" | "complex";
+	contextEvidence?: RecommendationContextEvidence;
 }
 
 export interface SessionComparison {
@@ -91,6 +100,7 @@ interface EnablerRecommendationSignal {
 	effort: OptimizationRecommendation["effort"];
 	priority: OptimizationRecommendation["priority"];
 	enablers: string[];
+	taskDescription?: string;
 }
 
 export class OptimizationDashboardManager {
@@ -113,6 +123,8 @@ export class OptimizationDashboardManager {
 			effort: "simple",
 			priority: "high",
 			enablers: ["self-assessment", "error-recovery", "reflection"],
+			taskDescription:
+				"Improve self-assessment and error recovery loops for autonomous evolution reliability",
 		},
 		timeEfficiency: {
 			threshold: 75,
@@ -123,6 +135,8 @@ export class OptimizationDashboardManager {
 			effort: "simple",
 			priority: "medium",
 			enablers: ["better-planning", "parallel-execution", "tool-chain-reliability"],
+			taskDescription:
+				"Improve planning and tool-chain reliability for faster self-evolution iterations",
 		},
 		errorRate: {
 			threshold: 85,
@@ -133,6 +147,8 @@ export class OptimizationDashboardManager {
 			effort: "simple",
 			priority: "high",
 			enablers: ["error-recovery", "self-healing", "error-patterns"],
+			taskDescription:
+				"Improve error recovery, self-healing, and error-pattern learning for self-evolution",
 		},
 		capabilityUtilization: {
 			threshold: 60,
@@ -143,6 +159,8 @@ export class OptimizationDashboardManager {
 			effort: "simple",
 			priority: "medium",
 			enablers: ["repo-map", "auto-invoke-skills", "unified-intelligence"],
+			taskDescription:
+				"Improve tool discovery and context gathering for autonomous evolution tasks",
 		},
 		memoryQuality: {
 			threshold: 80,
@@ -153,6 +171,8 @@ export class OptimizationDashboardManager {
 			effort: "simple",
 			priority: "high",
 			enablers: ["memory-persistence", "rag", "learning-transfer"],
+			taskDescription:
+				"Improve memory persistence, retrieval, and learning transfer for future evolution sessions",
 		},
 	};
 
@@ -290,6 +310,49 @@ export class OptimizationDashboardManager {
 		return `${enablers.slice(0, -1).join(", ")}, and ${enablers[enablers.length - 1]}`;
 	}
 
+	private buildContextEvidence(
+		taskDescription?: string,
+	): RecommendationContextEvidence | undefined {
+		if (!taskDescription) {
+			return undefined;
+		}
+
+		const [insight] = analyzeContextTasks([
+			{
+				taskDescription,
+				minimumConfidence: 0.45,
+				maxFiles: 3,
+			},
+		]);
+
+		if (!insight || insight.topFiles.length === 0) {
+			return undefined;
+		}
+
+		return {
+			taskDescription,
+			topFiles: insight.topFiles,
+			confidencePercent: insight.confidencePercent,
+			command: buildContextAnalyzeCommand(taskDescription),
+		};
+	}
+
+	private appendContextEvidence(
+		recommendation: OptimizationRecommendation,
+		taskDescription?: string,
+	): OptimizationRecommendation {
+		const contextEvidence = this.buildContextEvidence(taskDescription);
+		if (!contextEvidence) {
+			return recommendation;
+		}
+
+		return {
+			...recommendation,
+			description: `${recommendation.description} Likely starting files (${contextEvidence.confidencePercent}% context confidence): ${contextEvidence.topFiles.join(", ")}.`,
+			contextEvidence,
+		};
+	}
+
 	private getEnablerRecommendations(health: HealthComponents): OptimizationRecommendation[] {
 		const recommendations: OptimizationRecommendation[] = [];
 
@@ -298,14 +361,19 @@ export class OptimizationDashboardManager {
 		>) {
 			if (!signal) continue;
 			if (health[component] >= signal.threshold) continue;
-			recommendations.push({
-				priority: signal.priority,
-				category: "capability",
-				title: signal.title,
-				description: `${signal.description} Recommended enablers: ${this.formatEnablerList(signal.enablers)}.`,
-				expectedImpact: signal.expectedImpact,
-				effort: signal.effort,
-			});
+			recommendations.push(
+				this.appendContextEvidence(
+					{
+						priority: signal.priority,
+						category: "capability",
+						title: signal.title,
+						description: `${signal.description} Recommended enablers: ${this.formatEnablerList(signal.enablers)}.`,
+						expectedImpact: signal.expectedImpact,
+						effort: signal.effort,
+					},
+					signal.taskDescription,
+				),
+			);
 		}
 
 		return recommendations;

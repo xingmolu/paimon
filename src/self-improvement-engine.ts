@@ -618,7 +618,8 @@ export class SelfImprovementEngine {
 		try {
 			const bestAnalyses = analyzeContextTasks([
 				{
-					taskDescription: "Add a new self-evolution capability tool with tests and tool registration",
+					taskDescription:
+						"Add a new self-evolution capability tool with tests and tool registration",
 					minimumConfidence: 0.45,
 					maxFiles: 3,
 				},

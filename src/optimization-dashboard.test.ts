@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import * as contextAnalysisModule from "./context-analysis.js";
 import { OptimizationDashboardManager } from "./optimization-dashboard.js";
 
 describe("OptimizationDashboardManager", () => {
@@ -219,6 +220,52 @@ describe("OptimizationDashboardManager", () => {
 	});
 
 	it("adds enabler-aware capability recommendations for weak dashboard components", () => {
+		vi.spyOn(contextAnalysisModule, "analyzeContextTasks").mockImplementation((candidates) =>
+			candidates.map((candidate) => ({
+				taskDescription: candidate.taskDescription,
+				analysis: {
+					taskDescription: candidate.taskDescription,
+					suggestedFiles: [
+						{
+							path: "src/assess.ts",
+							relevance: 0.82,
+							reason: "",
+							symbols: [],
+							category: "primary",
+						},
+						{
+							path: "src/reflection.ts",
+							relevance: 0.74,
+							reason: "",
+							symbols: [],
+							category: "secondary",
+						},
+					],
+					relevantSymbols: [],
+					confidence: 0.81,
+					reasoning: "",
+				},
+				primaryFiles: [
+					{
+						path: "src/assess.ts",
+						relevance: 0.82,
+						reason: "",
+						symbols: [],
+						category: "primary",
+					},
+					{
+						path: "src/reflection.ts",
+						relevance: 0.74,
+						reason: "",
+						symbols: [],
+						category: "secondary",
+					},
+				],
+				topFiles: ["src/assess.ts", "src/reflection.ts"],
+				confidencePercent: 81,
+			})),
+		);
+
 		const manager = new OptimizationDashboardManager({
 			metricsTracker: {
 				getMetrics: () => ({
@@ -285,8 +332,14 @@ describe("OptimizationDashboardManager", () => {
 
 		expect(successEnablerRecommendation?.description).toContain("self-assessment");
 		expect(successEnablerRecommendation?.description).toContain("error-recovery");
+		expect(successEnablerRecommendation?.description).toContain("Likely starting files");
+		expect(successEnablerRecommendation?.description).toContain("src/assess.ts");
+		expect(successEnablerRecommendation?.contextEvidence?.command).toContain(
+			"context({action: 'analyze'",
+		);
 		expect(memoryEnablerRecommendation?.description).toContain("memory-persistence");
 		expect(memoryEnablerRecommendation?.description).toContain("learning-transfer");
+		expect(memoryEnablerRecommendation?.contextEvidence?.confidencePercent).toBe(81);
 		expect(recommendations.some((item) => item.title === "Promote tool-discovery enablers")).toBe(
 			true,
 		);
