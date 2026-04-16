@@ -198,7 +198,7 @@ ${summary ? `## Conversation Summary\n\nThe following is a summary of earlier co
 
 Read EVOLVE_WORKFLOW.md for detailed tool usage and workflow instructions. Key rules:
 
-1. **Gather context**: Read IDENTITY.md, JOURNAL.md, MEMORY.md, ROADMAP.md
+1. **Gather context**: Read STRATEGY.md, IDENTITY.md, JOURNAL.md, MEMORY.md
 2. **Select task**: Score all candidates (capability > reliability > feature). Output selection table with reasoning.
 3. **Implement**: Minimal changes, use \`edit\` preferred. Create checkpoint before risky changes.
 4. **Verify**: \`assess({})\` before saying DONE. Use \`assess({maxAttempts: 5})\` for auto-retry.

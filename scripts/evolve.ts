@@ -154,7 +154,7 @@ ${issues}
 
 You are fully autonomous. You must:
 
-1. **Gather context** — Read IDENTITY.md, MEMORY.md, ROADMAP.md, JOURNAL.md, skills/evolve/SKILL.md
+1. **Gather context** — Read STRATEGY.md, IDENTITY.md, MEMORY.md, JOURNAL.md, skills/evolve/SKILL.md
 2. **Plan** — Select the highest-value task (prefer capability > reliability > feature). Use the evolution value scoring from skills/evolve/SKILL.md
 3. **Implement** — Write minimal, focused code
 4. **Verify yourself** — Run \`npm run build && npm test -- --run\`. If it fails, **fix it yourself** and retry. Do NOT stop until build and tests pass.
