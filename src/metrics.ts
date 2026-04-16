@@ -90,6 +90,8 @@ interface SessionEntry {
 	enables: string;
 }
 
+type ScorecardSchema = "legacy" | "compact";
+
 // Class
 
 export class EvolutionMetricsTracker {
@@ -116,41 +118,85 @@ export class EvolutionMetricsTracker {
 		}
 
 		const content = fs.readFileSync(memoryPath, "utf-8");
-
-		// Parse scorecard table
 		const lines = content.split("\n");
-		const tableStart = lines.findIndex((l) => l.includes("| Date | Task Type |"));
+		const scorecard = this.findScorecardTable(lines);
 
-		if (tableStart === -1) {
+		if (!scorecard) {
 			return;
 		}
 
-		// Skip header and separator lines
-		for (let i = tableStart + 2; i < lines.length; i++) {
+		for (let i = scorecard.tableStart + 2; i < lines.length; i++) {
 			const line = lines[i].trim();
 			if (!line.startsWith("|") || !line.endsWith("|")) {
 				break;
 			}
 
-			const cells = line
-				.split("|")
-				.map((c) => c.trim())
-				.filter((c) => c);
-			if (cells.length >= 9) {
-				this.sessions.push({
-					date: cells[0],
-					taskType: cells[1],
-					description: cells[2],
-					time: cells[3],
-					firstTry: cells[4],
-					errors: cells[5],
-					rework: cells[6],
-					impact: cells[7],
-					skillsUsed: cells[8],
-					enables: cells[9] || "",
-				});
+			const entry = this.parseScorecardRow(line, scorecard.schema);
+			if (entry) {
+				this.sessions.push(entry);
 			}
 		}
+	}
+
+	private findScorecardTable(
+		lines: string[],
+	): { tableStart: number; schema: ScorecardSchema } | null {
+		const schemas: Array<{ marker: string; schema: ScorecardSchema }> = [
+			{ marker: "| Date | Task Type |", schema: "legacy" },
+			{ marker: "| Date | Type | Description | Time | Result | Errors |", schema: "compact" },
+		];
+
+		for (const candidate of schemas) {
+			const tableStart = lines.findIndex((line) => line.includes(candidate.marker));
+			if (tableStart !== -1) {
+				return { tableStart, schema: candidate.schema };
+			}
+		}
+
+		return null;
+	}
+
+	private parseScorecardRow(line: string, schema: ScorecardSchema): SessionEntry | null {
+		const cells = line
+			.split("|")
+			.map((c) => c.trim())
+			.filter((c) => c);
+
+		if (schema === "legacy") {
+			if (cells.length < 10) {
+				return null;
+			}
+
+			return {
+				date: cells[0],
+				taskType: cells[1],
+				description: cells[2],
+				time: cells[3],
+				firstTry: cells[4],
+				errors: cells[5],
+				rework: cells[6],
+				impact: cells[7],
+				skillsUsed: cells[8],
+				enables: cells[9] || "",
+			};
+		}
+
+		if (cells.length < 6) {
+			return null;
+		}
+
+		return {
+			date: cells[0],
+			taskType: cells[1],
+			description: cells[2],
+			time: cells[3],
+			firstTry: cells[4],
+			errors: cells[5],
+			rework: cells[4] === "✅" ? "No" : "Yes",
+			impact: "Low",
+			skillsUsed: "",
+			enables: "",
+		};
 	}
 
 	/**

@@ -26,7 +26,13 @@ describe("optimizationDashboardTool", () => {
 			errorCount: 1,
 			capabilitiesUsed: 12,
 		});
-		expect(String(result.content[0]?.text)).toContain('"rating": "above_average"');
+		const comparison = JSON.parse(String(result.content[0]?.text)) as {
+			rating: string;
+			delta: { successRate: number; avgTime: number; errorCount: number; capabilitiesUsed: number };
+		};
+		expect(comparison.rating).toBe("average");
+		expect(comparison.delta.avgTime).toBeLessThan(0);
+		expect(comparison.delta.successRate).toBeLessThan(0);
 	});
 
 	it("updates config with partial values", async () => {

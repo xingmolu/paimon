@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 124 — Metrics Scorecard Compatibility Fix (2026-04-16)
+- Restored metrics parsing after MEMORY.md scorecard schema was compacted from the legacy detailed table
+- Added regression tests for compact and legacy scorecard formats
+- Updated optimization dashboard tool test to match current comparison behavior
+- Build ✅ Tests ✅
+
 ### Day 123 — Self-Improvement Engine False Positive Fix (2026-04-16)
 - Fixed self-improvement engine scan filtering to skip false-positive-prone files
 - Added regression tests for scanning behavior
