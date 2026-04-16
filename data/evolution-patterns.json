@@ -46,7 +46,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "skill-combo-evo-pla",
@@ -98,7 +98,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "skill-combo-evo-wri",
@@ -150,7 +150,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "skill-combo-evo-sys",
@@ -202,21 +202,34 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 93% success, 93% high impact",
+      "description": "capability tasks: 94% success, 93% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 93,
-      "firstTryRate": 93,
+      "successRate": 94,
+      "firstTryRate": 94,
       "averageTime": 17,
       "confidence": 95,
-      "sampleSize": 123,
+      "sampleSize": 124,
       "examples": [
+        {
+          "taskDescription": "Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions",
+          "date": "2026-04-16",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Enabler-Aware Optimization Recommendations - Extended optimization dashboard recommendations so weak health signals now point toward leverageful enabling capabilities like self-assessment, error-recovery, rag, and learning-transfer; added focused tests to preserve targeted recommendation output for future task selection",
           "date": "2026-04-16",
@@ -242,22 +255,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Recommendation Hygiene for Memory Signals - Cleaned optimization dashboard memory recommendations by filtering malformed placeholder skill names and normalizing recurring error labels like `lint (fixed)` into actionable signals; added focused tests to keep recommendation output trustworthy",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.963Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "time-pattern-quick",
@@ -306,7 +306,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.963Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "skill-combo-evo-res",
@@ -358,7 +358,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "task-type-reliability",
@@ -404,12 +404,12 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.963Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     },
     {
       "id": "skill-combo-evo-pla-rev-usi",
       "type": "skill-combination",
-      "description": "Skills evolve + plan-architecture + review-changes + using-superpowers have 80% success rate",
+      "description": "Skills evolve + plan-architecture + review-changes + using-superpowers have 83% success rate",
       "characteristics": {
         "skills": [
           "evolve",
@@ -418,12 +418,25 @@
           "using-superpowers"
         ]
       },
-      "successRate": 80,
-      "firstTryRate": 80,
+      "successRate": 83,
+      "firstTryRate": 83,
       "averageTime": 18,
-      "confidence": 75,
-      "sampleSize": 5,
+      "confidence": 80,
+      "sampleSize": 6,
       "examples": [
+        {
+          "taskDescription": "Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions",
+          "date": "2026-04-16",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes",
+            "using-superpowers"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Enabler-Aware Optimization Recommendations - Extended optimization dashboard recommendations so weak health signals now point toward leverageful enabling capabilities like self-assessment, error-recovery, rag, and learning-transfer; added focused tests to preserve targeted recommendation output for future task selection",
           "date": "2026-04-16",
@@ -449,24 +462,11 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Recommendation Hygiene for Memory Signals - Cleaned optimization dashboard memory recommendations by filtering malformed placeholder skill names and normalizing recurring error labels like `lint (fixed)` into actionable signals; added focused tests to keep recommendation output trustworthy",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-16T06:23:28.962Z"
+      "lastUpdated": "2026-04-16T06:54:56.916Z"
     }
   ],
-  "lastUpdated": "2026-04-16T06:23:28.963Z",
-  "sessionCount": 135
+  "lastUpdated": "2026-04-16T06:54:56.917Z",
+  "sessionCount": 136
 }
