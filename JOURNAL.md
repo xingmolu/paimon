@@ -12,6 +12,22 @@ A daily log of Paimon's self-improvements.
 
 
 
+## Day 123 — Context Drift Resistance in Importance Scoring (2026-04-16)
+
+**Task type:** capability
+
+**What happened:**
+- Refined `ContextImportanceScorer` recency weighting so only a small initial anchor window and the recent working set stay strongly preserved, while stale middle-of-conversation messages decay more aggressively
+- Preserved the existing `contextImportance` tool interface while improving the internal truncation heuristic that decides what old context can be summarized or removed
+- Added focused tests proving early task anchors outrank stale middle chatter and that large stale middle tool outputs become truncatable, reducing long-session context drift risk
+
+**Why this matters:**
+- Reduces long-term context drift by making compaction preserve the right anchors instead of overvaluing old middle-history messages
+- Improves future iteration success rate by keeping context windows cleaner during long autonomous sessions
+- Strengthens an existing meta-capability with a focused, low-risk heuristic improvement instead of adding new surface area
+
+---
+
 ## Day 122 — Enabler-Aware Optimization Recommendations (2026-04-16)
 
 **Task type:** capability

@@ -1,6 +1,6 @@
 {
   "successRate": {
-    "current": 60,
+    "current": 66.66666666666666,
     "points": [
       {
         "date": "------",
@@ -19,17 +19,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 60,
+        "value": 66.66666666666666,
         "trend": "down"
       }
     ],
-    "weeklyAverage": 93.28358208955224,
-    "improvement": 60
+    "weeklyAverage": 93.33333333333333,
+    "improvement": 66.66666666666666
   },
   "time": {
-    "averageMinutes": 16.470149253731343,
+    "averageMinutes": 16.45925925925926,
     "byTaskType": {
-      "capability": 17.206611570247933,
+      "capability": 17.188524590163933,
       "reliability": 10.416666666666666,
       "-----------": 0
     },
@@ -51,7 +51,7 @@
       },
       {
         "date": "2026-W16",
-        "value": 20,
+        "value": 19.166666666666668,
         "trend": "down"
       }
     ],
@@ -118,9 +118,9 @@
   "skills": [
     {
       "skill": "evolve",
-      "usageCount": 131,
-      "successRate": 93.89312977099237,
-      "averageTime": 16.732824427480917,
+      "usageCount": 132,
+      "successRate": 93.93939393939394,
+      "averageTime": 16.71969696969697,
       "trend": "improving"
     },
     {
@@ -132,23 +132,23 @@
     },
     {
       "skill": "plan-architecture",
-      "usageCount": 10,
-      "successRate": 70,
-      "averageTime": 18.5,
+      "usageCount": 11,
+      "successRate": 72.72727272727273,
+      "averageTime": 18.181818181818183,
       "trend": "stable"
     },
     {
       "skill": "using-superpowers",
-      "usageCount": 7,
-      "successRate": 85.71428571428571,
-      "averageTime": 16.428571428571427,
+      "usageCount": 8,
+      "successRate": 87.5,
+      "averageTime": 16.25,
       "trend": "improving"
     },
     {
       "skill": "review-changes",
-      "usageCount": 6,
-      "successRate": 50,
-      "averageTime": 19.166666666666668,
+      "usageCount": 7,
+      "successRate": 57.14285714285714,
+      "averageTime": 18.571428571428573,
       "trend": "declining"
     },
     {
@@ -211,17 +211,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 2.5
+        "value": 3
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 121,
-    "highImpactCount": 118,
-    "highImpactPercentage": 97.52066115702479
+    "totalCapabilities": 122,
+    "highImpactCount": 119,
+    "highImpactPercentage": 97.54098360655738
   },
-  "lastUpdated": "2026-04-16T06:05:40.436Z",
-  "iterationsAnalyzed": 134
+  "lastUpdated": "2026-04-16T06:23:28.820Z",
+  "iterationsAnalyzed": 135
 }

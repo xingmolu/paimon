@@ -444,12 +444,26 @@ export class ContextImportanceScorer {
 	 * More recent messages get higher scores.
 	 */
 	private calculateRecencyFactor(index: number, total: number): number {
-		if (total === 0) return 50;
-		const position = index / total;
-		// First 20% of messages get 100, last 20% get 100, middle gets lower
-		if (position < 0.2) return 100; // Initial context is important
-		if (position > 0.8) return 100; // Recent messages are important
-		return 50 + (position - 0.2) * 25; // Middle messages get 50-75
+		if (total <= 1) return 100;
+
+		const normalizedIndex = index / (total - 1);
+		const initialAnchorCount = Math.max(2, Math.ceil(total * 0.1));
+		const recentAnchorCount = Math.max(3, Math.ceil(total * 0.2));
+
+		// Preserve a small initial anchor window for task framing and constraints.
+		if (index < initialAnchorCount) {
+			return Math.max(75, 100 - index * 10);
+		}
+
+		// Preserve the recent working set most strongly.
+		if (index >= total - recentAnchorCount) {
+			const distanceFromEnd = total - 1 - index;
+			return Math.max(85, 100 - distanceFromEnd * 5);
+		}
+
+		// Stale middle conversation should decay to avoid long-term context drift.
+		const midpointDistance = Math.abs(normalizedIndex - 0.5) * 2; // 0 at middle, 1 near edges
+		return Math.round(20 + midpointDistance * 35); // 20-55 range for middle history
 	}
 
 	/**

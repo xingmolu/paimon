@@ -39,6 +39,29 @@ describe("ContextImportanceScorer", () => {
 	});
 
 	describe("scoreMessage", () => {
+		it("should preserve initial anchors more than stale middle messages", () => {
+			const earlyMessage: MessageForAnalysis = {
+				role: "user",
+				content: "Important initial task instructions and constraints.",
+				index: 1,
+				totalMessages: 20,
+			};
+			const staleMiddleMessage: MessageForAnalysis = {
+				role: "assistant",
+				content: "Routine progress update in the stale middle of the conversation.",
+				index: 10,
+				totalMessages: 20,
+			};
+
+			const earlyScore = scorer.scoreMessage(earlyMessage);
+			const staleScore = scorer.scoreMessage(staleMiddleMessage);
+
+			expect(earlyScore.factors.get("recency")).toBeGreaterThan(
+				staleScore.factors.get("recency") ?? 0,
+			);
+			expect(earlyScore.score).toBeGreaterThan(staleScore.score);
+		});
+
 		it("should score system messages as high importance", () => {
 			const message: MessageForAnalysis = {
 				role: "system",
@@ -75,6 +98,32 @@ describe("ContextImportanceScorer", () => {
 			const score = scorer.scoreMessage(message);
 			expect(score.contentType).toBe("tool_result");
 			expect(score.tokens).toBeGreaterThan(100);
+		});
+
+		it("should make stale middle large tool results truncatable to reduce context drift", () => {
+			const staleToolResult: MessageForAnalysis = {
+				role: "tool_result",
+				content: `Verbose tool output ${"x".repeat(12000)}`,
+				index: 15,
+				totalMessages: 30,
+				toolName: "read",
+				toolSuccess: true,
+			};
+			const recentToolResult: MessageForAnalysis = {
+				role: "tool_result",
+				content: `Recent tool output ${"y".repeat(12000)}`,
+				index: 28,
+				totalMessages: 30,
+				toolName: "read",
+				toolSuccess: true,
+			};
+
+			const staleScore = scorer.scoreMessage(staleToolResult);
+			const recentScore = scorer.scoreMessage(recentToolResult);
+
+			expect(staleScore.canTruncate).toBe(true);
+			expect(staleScore.truncationStrategy).toBe("summarize");
+			expect(staleScore.score).toBeLessThan(recentScore.score);
 		});
 
 		it("should detect error content", () => {
