@@ -304,6 +304,23 @@ async function main() {
 		});
 	} catch {}
 
+	// Check for previous draft branches that can be continued
+	let draftBranches = "No draft branches";
+	try {
+		const branches = execSync(
+			`git branch -r --list 'origin/evolve/*' --format='%(refname:short)'`,
+			{ encoding: "utf-8" },
+		).trim();
+		if (branches) {
+			const branchList = branches
+				.split("\n")
+				.filter((b) => b.trim())
+				.map((b) => b.trim())
+				.join("\n  - ");
+			draftBranches = `Previous evolution branches found:\n  - ${branchList}\n\nTo continue a draft: \`git cherry-pick\` or read its changes with \`git diff main..origin/evolve/DATE-iterN\``;
+		}
+	} catch {}
+
 	const prompt = `# Self-Evolution Mission
 
 Date: ${DATE}
@@ -317,6 +334,11 @@ Date: ${DATE}
 ## Your Code
 - Use \`glob src/**/*.ts\` to find source files
 - Use \`read src/agent.ts\` to understand the agent
+
+## Previous Draft Branches
+${draftBranches}
+
+If there are recent draft branches (especially from today), **prioritize fixing and completing them**. Use \`git diff main..origin/evolve/DATE-iterN\` to see what was attempted, then fix build/lint errors.
 
 ## Open Issues
 ${issues}
@@ -479,7 +501,13 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 			continue;
 		}
 
-		// Verify before committing
+		// Create iteration branch and commit changes there
+		const branchName = `evolve/${DATE}-iter${i}`;
+		console.log(`→ Creating branch: ${branchName}`);
+		execSync(`git checkout -b ${branchName}`, { encoding: "utf-8", stdio: "pipe" });
+		execSync("git add -A", { encoding: "utf-8" });
+
+		// Verify before committing to main
 		console.log("→ Verifying build and tests...");
 		const buildOk = verifyBuild();
 		const testOk = verifyTests();
@@ -489,37 +517,47 @@ Start now. Read skills/evolve/SKILL.md first, then MEMORY.md, then ROADMAP.md, t
 			`  Tests: ${testOk ? `${COLORS.green}PASS` : `${COLORS.red}FAIL`}${COLORS.reset}\n`,
 		);
 
-		if (!buildOk || !testOk || runError) {
-			// Write reflection and do NOT commit
+		const verified = buildOk && testOk && !runError;
+		const label = verified ? "verified" : "draft";
+		const commitMsg = `paimon: ${DATE} iteration ${i} (${label})`;
+
+		execSync(`git commit -m "${commitMsg}"`, { encoding: "utf-8" });
+
+		if (verified) {
+			// Merge verified changes into main
+			console.log("→ Merging verified changes into main...");
+			execSync("git checkout main", { encoding: "utf-8", stdio: "pipe" });
+			execSync(`git merge ${branchName}`, { encoding: "utf-8", stdio: "pipe" });
+			console.log(`${COLORS.green}  ✓ Merged to main${COLORS.reset}\n`);
+		} else {
+			// Write reflection for draft
 			writeReflection(
 				i,
 				runError || (buildOk ? "" : "Build failed") || "Tests failed",
 				buildOk,
 				testOk,
 			);
-			console.log(`${COLORS.red}✗ Verification failed. Changes NOT committed.${COLORS.reset}`);
+			console.log(
+				`${COLORS.yellow}  ✗ Verification failed. Changes saved to branch ${branchName}${COLORS.reset}`,
+			);
 			console.log(
 				`${COLORS.yellow}  Reflection written to session_plan/reflection_${i}.md${COLORS.reset}\n`,
 			);
-			continue;
+			// Switch back to main for next iteration
+			execSync("git checkout main", { encoding: "utf-8", stdio: "pipe" });
 		}
 
-		// Commit verified changes
-		console.log("→ Committing verified changes...");
-		execSync("git add -A", { encoding: "utf-8" });
-		execSync(`git commit -m "paimon: ${DATE} iteration ${i} (verified)"`, {
-			encoding: "utf-8",
-		});
-		console.log(`${COLORS.green}  ✓ Done${COLORS.reset}\n`);
+		// Push branch
+		execSync(`git push origin ${branchName} 2>/dev/null || true`, { encoding: "utf-8" });
 	}
 
-	// Push
-	console.log("→ Pushing...");
+	// Push main
+	console.log("→ Pushing main...");
 	try {
 		execSync("git push", { encoding: "utf-8" });
 		console.log(`${COLORS.green}  Pushed${COLORS.reset}\n`);
 	} catch {
-		console.log(`${COLORS.yellow}  No changes${COLORS.reset}\n`);
+		console.log(`${COLORS.yellow}  No changes on main${COLORS.reset}\n`);
 	}
 
 	console.log(`${COLORS.cyan}=== Complete ===${COLORS.reset}\n`);

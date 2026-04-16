@@ -47,7 +47,6 @@ jobs:
 
       - name: Push changes
         run: |
-          # Prevent workflow files from being pushed
           git reset HEAD -- .github/workflows/ 2>/dev/null || true
           git checkout -- .github/workflows/ 2>/dev/null || true
-          git push || echo "No changes to push"
+          git push --all || echo "No changes to push"
