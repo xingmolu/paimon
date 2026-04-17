@@ -18,11 +18,11 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (100/109)
+- First Try Success Rate: 92% (101/110)
 - Average Time: ~15 minutes
-- Rework Rate: 9%
-- Capability Tasks: 94% (103/109)
-- Capability Velocity: 34/day
+- Rework Rate: 8%
+- Capability Tasks: 94% (104/110)
+- Capability Velocity: 35/day
 
 ---
 
@@ -34,6 +34,7 @@ Persistent learnings stored across sessions.
 4. **Fix lint at source** — Run `biome check --fix` after edits to prevent accumulation.
 5. **Read skills first** — Always read matched skills before starting a task.
 6. **Keep parsers aligned with context file schema** — When STRATEGY/MEMORY/JOURNAL formats are refactored, update dependent analyzers and dashboard parsers in the same change to avoid silent degradation.
+7. **Filter self-improvement output for actionability** — Suppress suggestions from generated artifacts, tests, and already-implemented competitor ideas so scans stay high-signal and task selection remains trustworthy.
 
 ---
 
@@ -49,6 +50,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-17 | capability | Filter low-signal self-improvement suggestions | ~15m | ✅ | none |
 | 2026-04-16 | capability | Metrics scorecard compatibility fix | ~15m | ✅ | test |
 | 2026-04-16 | reliability | Self-improvement engine false positive fix | ~10m | ✅ | none |
 | 2026-04-05 | capability | Evolution Optimization Dashboard | ~15m | ✅ | none |

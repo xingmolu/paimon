@@ -388,6 +388,47 @@ export class SelfImprovementEngine {
 		return Array.from(deduplicated.values());
 	}
 
+	private isLowSignalCodeSuggestion(suggestion: ImprovementSuggestion): boolean {
+		if (suggestion.source !== "code-analysis" || !suggestion.filePath) {
+			return false;
+		}
+
+		const normalizedPath = suggestion.filePath.replace(/\\/g, "/");
+		if (
+			normalizedPath.startsWith("dist/") ||
+			normalizedPath.endsWith(".d.ts") ||
+			normalizedPath.endsWith(".test.ts")
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private isDuplicateCapabilitySuggestion(suggestion: ImprovementSuggestion): boolean {
+		if (suggestion.source !== "competitor-pattern") {
+			return false;
+		}
+
+		if (suggestion.title === "Auto-context detection") {
+			return true;
+		}
+
+		if (suggestion.title === "Parallel file analysis") {
+			return true;
+		}
+
+		return false;
+	}
+
+	private filterSuggestions(suggestions: ImprovementSuggestion[]): ImprovementSuggestion[] {
+		return suggestions.filter(
+			(suggestion) =>
+				!this.isLowSignalCodeSuggestion(suggestion) &&
+				!this.isDuplicateCapabilitySuggestion(suggestion),
+		);
+	}
+
 	private getDashboardManager(): {
 		getHealth(): { status: "excellent" | "good" | "fair" | "poor"; overallScore: number };
 		identifyBottlenecks(): Bottleneck[];
@@ -426,9 +467,10 @@ export class SelfImprovementEngine {
 		suggestions.push(...this.getDashboardSuggestions());
 
 		const deduplicated = this.deduplicateSuggestions(suggestions);
+		const actionable = this.filterSuggestions(deduplicated);
 
 		// Filter by confidence and dismissed
-		const filtered = deduplicated
+		const filtered = actionable
 			.filter((s) => s.confidence >= this.config.minConfidence)
 			.filter((s) => !this.dismissedIds.has(s.id))
 			.sort((a, b) => {

@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 125 — Self-Improvement Suggestion Quality Filter (2026-04-17)
+- Filtered low-signal self-improvement scan results so code-analysis suggestions from `dist/` and `*.test.ts` no longer crowd actionable output
+- Suppressed duplicate competitor suggestions for capabilities already implemented (`Auto-context detection`, `Parallel file analysis`)
+- Added regression tests covering low-signal scan suppression and duplicate suggestion filtering
+- Build ✅ Tests ✅
+
 ### Day 124 — Metrics Scorecard Compatibility Fix (2026-04-16)
 - Restored metrics parsing after MEMORY.md scorecard schema was compacted from the legacy detailed table
 - Added regression tests for compact and legacy scorecard formats

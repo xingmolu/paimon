@@ -1,3 +1,6 @@
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
 import * as contextAnalysisModule from "./context-analysis.js";
@@ -212,5 +215,47 @@ describe("SelfImprovementEngine", () => {
 		expect(suggestion?.description).toContain("src/tools/index.ts");
 		expect(suggestion?.suggestedFix).toContain("context({action: 'analyze'");
 		expect(suggestion?.impact).toContain("file-target selection");
+	});
+
+	it("filters low-signal code-analysis suggestions from tests and generated outputs", async () => {
+		const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "self-improvement-engine-"));
+		const srcDir = path.join(tempRoot, "src");
+		const distDir = path.join(tempRoot, "dist");
+		fs.mkdirSync(srcDir, { recursive: true });
+		fs.mkdirSync(distDir, { recursive: true });
+		fs.writeFileSync(path.join(srcDir, "example.test.ts"), "eval('danger')\n");
+		fs.writeFileSync(path.join(distDir, "generated.ts"), "eval('danger')\n");
+		fs.writeFileSync(path.join(srcDir, "production.ts"), "eval('danger')\n");
+
+		const engine = createEngine();
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getDashboardSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+
+		const suggestions = await engine.scanCodebase(tempRoot);
+		const filePaths = suggestions.map((item) => item.filePath);
+
+		expect(filePaths).toContain("src/production.ts");
+		expect(filePaths).not.toContain("src/example.test.ts");
+		expect(filePaths).not.toContain("dist/generated.ts");
+	});
+
+	it("filters duplicate competitor suggestions for capabilities that already exist", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getDashboardSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Auto-context detection");
+		expect(titles).not.toContain("Parallel file analysis");
 	});
 });
