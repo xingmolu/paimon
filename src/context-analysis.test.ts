@@ -9,6 +9,7 @@ import {
 	groupFileSuggestions,
 } from "./context-analysis.js";
 import * as contextIdentifierModule from "./context-identifier.js";
+import { executeContextIdentifierTool } from "./tools/context-identifier-tool.js";
 
 describe("context-analysis helpers", () => {
 	it("sorts context task insights by confidence and keeps top actionable files", () => {
@@ -167,5 +168,76 @@ describe("context-analysis helpers", () => {
 		expect(buildContextAnalyzeCommand("Add a new self-evolution capability tool")).toBe(
 			"context({action: 'analyze', taskDescription: 'Add a new self-evolution capability tool'})",
 		);
+	});
+
+	it("respects config flags when ranking tests and config files", () => {
+		const manager = new contextIdentifierModule.ContextIdentifierManager();
+		manager.updateConfig({ includeTests: false, includeConfigs: false });
+
+		const disabledTestScore = (
+			manager as unknown as {
+				calculateRelevance: (filePath: string, keywords: string[], taskTypes: string[]) => number;
+			}
+		).calculateRelevance("src/context-identifier.test.ts", ["context", "identifier"], []);
+		const disabledConfigScore = (
+			manager as unknown as {
+				calculateRelevance: (filePath: string, keywords: string[], taskTypes: string[]) => number;
+			}
+		).calculateRelevance("package.json", ["package", "config"], []);
+
+		manager.updateConfig({ includeTests: true, includeConfigs: true });
+		const enabledTestScore = (
+			manager as unknown as {
+				calculateRelevance: (filePath: string, keywords: string[], taskTypes: string[]) => number;
+			}
+		).calculateRelevance("src/context-identifier.test.ts", ["context", "identifier"], []);
+		const enabledConfigScore = (
+			manager as unknown as {
+				calculateRelevance: (filePath: string, keywords: string[], taskTypes: string[]) => number;
+			}
+		).calculateRelevance("package.json", ["package", "config"], []);
+
+		expect(enabledTestScore).toBeGreaterThan(disabledTestScore);
+		expect(enabledConfigScore).toBeGreaterThan(disabledConfigScore);
+	});
+
+	it("supports context tool action aliases for compatibility", async () => {
+		vi.spyOn(contextIdentifierModule, "getContextIdentifierManager").mockReturnValue({
+			suggestForFile: vi.fn(() => [
+				{
+					path: "src/context-identifier.ts",
+					relevance: 0.8,
+					reason: "",
+					symbols: ["ContextIdentifierManager"],
+					category: "secondary",
+				},
+			]),
+			getRelatedFiles: vi.fn(() => ["src/context-analysis.ts"]),
+			extractSymbols: vi.fn(() => [
+				{
+					name: "ContextIdentifierManager",
+					type: "class",
+					file: "src/context-identifier.ts",
+					line: 10,
+				},
+			]),
+		} as unknown as contextIdentifierModule.ContextIdentifierManager);
+
+		const getResult = await executeContextIdentifierTool("tool-1", {
+			action: "get",
+			filePath: "src/context-analysis.ts",
+		});
+		const listResult = await executeContextIdentifierTool("tool-2", {
+			action: "list",
+			filePath: "src/context-identifier.ts",
+		});
+		const formatResult = await executeContextIdentifierTool("tool-3", {
+			action: "format",
+			filePath: "src/context-identifier.ts",
+		});
+
+		expect(getResult).toContain("## Related Files");
+		expect(listResult).toContain("## Related Files for src/context-identifier.ts");
+		expect(formatResult).toContain("## Symbols in src/context-identifier.ts");
 	});
 });

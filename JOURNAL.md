@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 126 — Context Identifier Compatibility and Relevance Fix (2026-04-17)
+- Fixed the `context` tool so compatibility aliases (`get`, `list`, `format`) now map to the implemented actions instead of silently failing schema validation
+- Improved context relevance scoring for hyphenated task keywords and made `includeTests` / `includeConfigs` config flags actually affect ranking penalties
+- Added regression tests covering alias compatibility and config-aware relevance scoring so auto-context selection stays trustworthy for future iterations
+- Build ✅ Tests ✅
+
 ### Day 125 — Self-Improvement Suggestion Quality Filter (2026-04-17)
 - Filtered low-signal self-improvement scan results so code-analysis suggestions from `dist/` and `*.test.ts` no longer crowd actionable output
 - Suppressed duplicate competitor suggestions for capabilities already implemented (`Auto-context detection`, `Parallel file analysis`)

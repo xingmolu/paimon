@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (101/110)
+- First Try Success Rate: 92% (102/111)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 94% (104/110)
+- Capability Tasks: 95% (105/111)
 - Capability Velocity: 35/day
 
 ---
@@ -35,6 +35,7 @@ Persistent learnings stored across sessions.
 5. **Read skills first** — Always read matched skills before starting a task.
 6. **Keep parsers aligned with context file schema** — When STRATEGY/MEMORY/JOURNAL formats are refactored, update dependent analyzers and dashboard parsers in the same change to avoid silent degradation.
 7. **Filter self-improvement output for actionability** — Suppress suggestions from generated artifacts, tests, and already-implemented competitor ideas so scans stay high-signal and task selection remains trustworthy.
+8. **Keep tool aliases and schemas aligned** — If a tool advertises compatibility aliases (`get`, `list`, `format`), include them in the validation schema and normalize them in execution logic; otherwise capability silently degrades despite documentation claiming support.
 
 ---
 
@@ -50,6 +51,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-17 | capability | Fix context identifier alias compatibility and relevance scoring | ~15m | ✅ | none |
 | 2026-04-17 | capability | Filter low-signal self-improvement suggestions | ~15m | ✅ | none |
 | 2026-04-16 | capability | Metrics scorecard compatibility fix | ~15m | ✅ | test |
 | 2026-04-16 | reliability | Self-improvement engine false positive fix | ~10m | ✅ | none |

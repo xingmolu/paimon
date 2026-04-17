@@ -29,6 +29,9 @@ const ContextIdentifierParameters = Type.Object({
 		Type.Literal("clear"),
 		Type.Literal("reset"),
 		Type.Literal("help"),
+		Type.Literal("get"),
+		Type.Literal("list"),
+		Type.Literal("format"),
 	]),
 	taskDescription: Type.Optional(Type.String()),
 	filePath: Type.Optional(Type.String()),
@@ -50,7 +53,10 @@ type ContextIdentifierToolParams = {
 		| "disable"
 		| "clear"
 		| "reset"
-		| "help";
+		| "help"
+		| "get"
+		| "list"
+		| "format";
 	taskDescription?: string;
 	filePath?: string;
 	maxSuggestions?: number;
@@ -59,11 +65,23 @@ type ContextIdentifierToolParams = {
 	includeConfigs?: boolean;
 };
 
-async function executeContextIdentifierTool(_toolCallId: string, params: unknown): Promise<string> {
+export async function executeContextIdentifierTool(
+	_toolCallId: string,
+	params: unknown,
+): Promise<string> {
 	const typedParams = params as ContextIdentifierToolParams;
 	const manager = getContextIdentifierManager();
 
-	switch (typedParams.action) {
+	const normalizedAction =
+		typedParams.action === "get"
+			? "suggest"
+			: typedParams.action === "list"
+				? "related"
+				: typedParams.action === "format"
+					? "symbols"
+					: typedParams.action;
+
+	switch (normalizedAction) {
 		case "analyze": {
 			if (!typedParams.taskDescription) {
 				return "Error: taskDescription parameter required for analyze action";
@@ -189,9 +207,9 @@ Automatically identifies which files need to be edited for a given request.
 
 Actions:
 - analyze: Analyze a task description and identify relevant files (requires taskDescription)
-- suggest: Find files related to a specific file (requires filePath)
-- related: Get files that share symbols with a file (requires filePath)
-- symbols: Extract symbols from a file (requires filePath)
+- suggest/get: Find files related to a specific file (requires filePath)
+- related/list: Get files that share symbols with a file (requires filePath)
+- symbols/format: Extract symbols from a file (requires filePath)
 - stats: View usage statistics
 - config: View current configuration
 - enable: Enable context identifier

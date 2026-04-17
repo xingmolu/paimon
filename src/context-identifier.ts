@@ -295,11 +295,18 @@ export class ContextIdentifierManager {
 	private calculateRelevance(filePath: string, keywords: string[], taskTypes: string[]): number {
 		let score = 0;
 		const lowerPath = filePath.toLowerCase();
+		const baseName = path.basename(lowerPath, path.extname(lowerPath));
 
-		// Check keyword matches in filename
+		// Check keyword matches in file path and filename fragments
 		for (const keyword of keywords) {
 			if (lowerPath.includes(keyword)) {
 				score += 0.1;
+				continue;
+			}
+
+			const keywordParts = keyword.split(/[-_/]/).filter((part) => part.length >= 3);
+			if (keywordParts.some((part) => baseName.includes(part))) {
+				score += 0.08;
 			}
 		}
 
@@ -323,6 +330,12 @@ export class ContextIdentifierManager {
 					score += 0.2;
 					break;
 				}
+
+				const keywordParts = keyword.split(/[-_/]/).filter((part) => part.length >= 3);
+				if (keywordParts.some((part) => lowerSymbol.includes(part))) {
+					score += 0.12;
+					break;
+				}
 			}
 		}
 
@@ -332,16 +345,18 @@ export class ContextIdentifierManager {
 			score *= 1.2;
 		}
 
-		// Penalize test files unless explicitly requested
-		if (!taskTypes.includes("test") && (filePath.includes("test") || filePath.includes("spec"))) {
+		// Penalize test files unless explicitly requested or configured
+		if (
+			!this.config.includeTests &&
+			!taskTypes.includes("test") &&
+			(filePath.includes("test") || filePath.includes("spec"))
+		) {
 			score *= 0.3;
 		}
 
-		// Penalize config files unless explicitly requested
-		if (!taskTypes.includes("config")) {
-			if ([".json", ".yaml", ".yml", ".toml"].includes(ext)) {
-				score *= 0.5;
-			}
+		// Penalize config files unless explicitly requested or configured
+		if (!this.config.includeConfigs && [".json", ".yaml", ".yml", ".toml"].includes(ext)) {
+			score *= 0.5;
 		}
 
 		return Math.min(score, 1);
@@ -398,6 +413,13 @@ export class ContextIdentifierManager {
 		this.stats.avgConfidence =
 			(this.stats.avgConfidence * (this.stats.totalAnalyses - 1) + confidence) /
 			this.stats.totalAnalyses;
+		const categoryCounts = new Map<string, number>();
+		for (const suggestion of topSuggestions) {
+			categoryCounts.set(suggestion.category, (categoryCounts.get(suggestion.category) || 0) + 1);
+		}
+		this.stats.topCategories = Array.from(categoryCounts.entries())
+			.map(([category, count]) => ({ category, count }))
+			.sort((a, b) => b.count - a.count);
 		this.saveData();
 
 		return {

@@ -17,9 +17,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 12,
+    "averageMinutes": 12.5,
     "byTaskType": {
-      "capability": 12.5,
+      "capability": 13,
       "reliability": 10
     },
     "points": [
@@ -30,12 +30,12 @@
       },
       {
         "date": "2026-W16",
-        "value": 12.5,
-        "trend": "stable"
+        "value": 13.333333333333334,
+        "trend": "down"
       }
     ],
     "fastestTask": "Self-improvement engine false positive fix",
-    "slowestTask": "Metrics scorecard compatibility fix"
+    "slowestTask": "Filter low-signal self-improvement suggestions"
   },
   "errors": {
     "totalErrors": 2,
@@ -74,17 +74,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 0.5
+        "value": 1
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 4,
+    "totalCapabilities": 5,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-17T00:48:46.107Z",
-  "iterationsAnalyzed": 5
+  "lastUpdated": "2026-04-17T00:57:57.953Z",
+  "iterationsAnalyzed": 6
 }
