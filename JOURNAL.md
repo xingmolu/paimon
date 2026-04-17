@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 127 — Learning Transfer Scorecard Compatibility Fix (2026-04-17)
+- Restored `learningTransfer` scorecard ingestion after the context-file refactor by supporting both compact `## Recent Scorecard` and legacy `## Evolution Scorecard` markdown tables
+- Added row normalization so compact scorecard entries become reusable `SessionLearning` records instead of silently being skipped
+- Added regression tests covering both compact and legacy scorecard schemas to keep cross-session learning transfer trustworthy
+- Build ✅ Tests ✅
+
 ### Day 126 — Context Identifier Compatibility and Relevance Fix (2026-04-17)
 - Fixed the `context` tool so compatibility aliases (`get`, `list`, `format`) now map to the implemented actions instead of silently failing schema validation
 - Improved context relevance scoring for hyphenated task keywords and made `includeTests` / `includeConfigs` config flags actually affect ranking penalties

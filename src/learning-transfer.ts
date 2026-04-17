@@ -78,6 +78,7 @@ export interface LearningTransferConfig {
 	enableProactiveInjection: boolean;
 	dataPath: string;
 	excludeOlderThanDays: number;
+	memoryPath?: string;
 }
 
 export interface LearningTransferStats {
@@ -103,6 +104,7 @@ const DEFAULT_CONFIG: LearningTransferConfig = {
 	enableProactiveInjection: true,
 	dataPath: path.join(process.env.HOME || "/tmp", ".paimon"),
 	excludeOlderThanDays: 30,
+	memoryPath: path.join(process.cwd(), "MEMORY.md"),
 };
 
 /**
@@ -116,8 +118,8 @@ export class LearningTransferManager {
 	private dataFile: string;
 	private ragModule = new RagModule();
 
-	constructor(configPath?: string) {
-		this.config = { ...DEFAULT_CONFIG };
+	constructor(configPath?: string, configOverrides?: Partial<LearningTransferConfig>) {
+		this.config = { ...DEFAULT_CONFIG, ...configOverrides };
 		this.dataFile = path.join(this.config.dataPath, "learning-transfer.json");
 		this.stats = this.getEmptyStats();
 
@@ -169,82 +171,124 @@ export class LearningTransferManager {
 	}
 
 	private loadFromMemoryScorecard(): void {
-		const memoryPath = path.join(process.cwd(), "MEMORY.md");
+		const memoryPath = this.config.memoryPath || path.join(process.cwd(), "MEMORY.md");
 		try {
 			if (!fs.existsSync(memoryPath)) return;
 
 			const content = fs.readFileSync(memoryPath, "utf-8");
-			const scorecardSection = content.match(/## Evolution Scorecard\n\n.*?\n\n### Quality/);
+			const tableLines = this.extractScorecardTableLines(content);
+			if (tableLines.length < 3) return;
 
-			if (!scorecardSection) return;
+			const headers = tableLines[0]
+				.split("|")
+				.map((part) => part.trim())
+				.filter(Boolean);
+			const rows = tableLines.slice(2);
 
-			const lines = scorecardSection[0].split("\n");
-			// Parse scorecard entries (skip header lines)
-			for (let i = 4; i < lines.length; i++) {
-				const line = lines[i];
-				if (line.startsWith("|") && !line.includes("Date")) {
-					const parts = line.split("|").map((p) => p.trim());
-					if (parts.length >= 9) {
-						const [
-							date,
-							taskType,
-							description,
-							time,
-							firstTry,
-							errors,
-							rework,
-							impact,
-							skillsUsed,
-						] = parts.slice(1, 10);
-
-						// Skip if already processed
-						const sessionId = `scorecard-${date}-${description.slice(0, 30)}`;
-						if (this.sessions.has(sessionId)) continue;
-
-						// Parse errors
-						const errorList = errors === "none" ? [] : errors.split(",").map((e) => e.trim());
-
-						// Parse skills
-						const skillList = skillsUsed
-							.split(",")
-							.map((s) => s.trim())
-							.filter((s) => s);
-
-						// Extract keywords from description
-						const keywords = this.extractKeywords(description);
-
-						// Create session learning
-						const session: SessionLearning = {
-							sessionId,
-							taskDescription: description,
-							taskSignature: {
-								taskType,
-								keywords,
-								toolsUsed: [],
-								skillsUsed: skillList,
-								category: this.extractCategory(description),
-							},
-							success: firstTry.includes("✅"),
-							firstTry: firstTry.includes("✅"),
-							errors: errorList,
-							skillsUsed: skillList,
-							patternsLearned: [],
-							solutionsApplied: [],
-							pitfallsAvoided: errorList.length > 0 ? errorList : [],
-							durationMinutes: Number.parseInt(time.replace("~", "").replace("m", "")) || 15,
-							timestamp: date,
-						};
-
-						this.sessions.set(sessionId, session);
-					}
-				}
+			for (const line of rows) {
+				if (!line.startsWith("|")) continue;
+				const session = this.parseScorecardRow(line, headers);
+				if (!session || this.sessions.has(session.sessionId)) continue;
+				this.sessions.set(session.sessionId, session);
 			}
 
 			this.stats.sessionsProcessed = this.sessions.size;
 			this.saveData();
-		} catch (error) {
+		} catch {
 			// Ignore parsing errors
 		}
+	}
+
+	private extractScorecardTableLines(content: string): string[] {
+		const headings = ["## Recent Scorecard", "## Evolution Scorecard"];
+
+		for (const heading of headings) {
+			const start = content.indexOf(heading);
+			if (start === -1) continue;
+
+			const afterHeading = content.slice(start + heading.length);
+			const lines = afterHeading
+				.split("\n")
+				.map((line) => line.trim())
+				.filter((line, index, allLines) => line.length > 0 || index < allLines.length - 1);
+
+			const tableStart = lines.findIndex((line) => line.startsWith("|"));
+			if (tableStart === -1) continue;
+
+			const tableLines: string[] = [];
+			for (const line of lines.slice(tableStart)) {
+				if (!line.startsWith("|")) break;
+				tableLines.push(line);
+			}
+
+			if (tableLines.length >= 3) {
+				return tableLines;
+			}
+		}
+
+		return [];
+	}
+
+	private parseScorecardRow(line: string, headers: string[]): SessionLearning | null {
+		const values = line
+			.split("|")
+			.map((part) => part.trim())
+			.filter(Boolean);
+
+		if (values.length !== headers.length) {
+			return null;
+		}
+
+		const row = Object.fromEntries(
+			headers.map((header, index) => [header.toLowerCase(), values[index]]),
+		);
+		const date = row.date;
+		const taskType = row.type;
+		const description = row.description;
+		const time = row.time;
+		const errors = row.errors || "none";
+		const result = row.result || row["first try"] || "✅";
+		const skillsUsed = row["skills used"] || "";
+
+		if (!date || !taskType || !description || !time) {
+			return null;
+		}
+
+		const errorList =
+			errors === "none"
+				? []
+				: errors
+						.split(",")
+						.map((e) => e.trim())
+						.filter(Boolean);
+		const skillList = skillsUsed
+			.split(",")
+			.map((skill) => skill.trim())
+			.filter(Boolean);
+		const keywords = this.extractKeywords(description);
+		const sessionId = `scorecard-${date}-${description.slice(0, 30)}`;
+		const success = result.includes("✅");
+
+		return {
+			sessionId,
+			taskDescription: description,
+			taskSignature: {
+				taskType,
+				keywords,
+				toolsUsed: [],
+				skillsUsed: skillList,
+				category: this.extractCategory(description),
+			},
+			success,
+			firstTry: success,
+			errors: errorList,
+			skillsUsed: skillList,
+			patternsLearned: [],
+			solutionsApplied: [],
+			pitfallsAvoided: errorList,
+			durationMinutes: Number.parseInt(time.replace("~", "").replace("m", "")) || 15,
+			timestamp: date,
+		};
 	}
 
 	/**
@@ -826,8 +870,11 @@ export function getLearningTransferManager(): LearningTransferManager {
 	return learningTransferManagerInstance;
 }
 
-export function initLearningTransferManager(configPath?: string): LearningTransferManager {
-	learningTransferManagerInstance = new LearningTransferManager(configPath);
+export function initLearningTransferManager(
+	configPath?: string,
+	configOverrides?: Partial<LearningTransferConfig>,
+): LearningTransferManager {
+	learningTransferManagerInstance = new LearningTransferManager(configPath, configOverrides);
 	return learningTransferManagerInstance;
 }
 
