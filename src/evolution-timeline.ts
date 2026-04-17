@@ -13,6 +13,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { parseScorecardRows } from "./scorecard.js";
 
 // Types
 
@@ -75,6 +76,7 @@ export interface TimelineGeneratorConfig {
 	includeTrends: boolean;
 	maxDays: number;
 	groupByWeek: boolean;
+	memoryPath?: string;
 }
 
 export interface TimelineGeneratorStats {
@@ -92,6 +94,7 @@ const DEFAULT_CONFIG: TimelineGeneratorConfig = {
 	includeTrends: true,
 	maxDays: 90,
 	groupByWeek: false,
+	memoryPath: undefined,
 };
 
 /**
@@ -144,52 +147,28 @@ export class EvolutionTimelineGenerator {
 	 */
 	private parseScorecard(): TimelineEvent[] {
 		const events: TimelineEvent[] = [];
-		const memoryPath = path.join(process.cwd(), "MEMORY.md");
+		const memoryPath = this.config.memoryPath || path.join(process.cwd(), "MEMORY.md");
 
 		try {
 			if (!fs.existsSync(memoryPath)) return events;
 
 			const content = fs.readFileSync(memoryPath, "utf-8");
-			const scorecardMatch = content.match(/## Evolution Scorecard[\s\S]*?(?=###|$)/);
+			const rows = parseScorecardRows(content);
 
-			if (!scorecardMatch) return events;
-
-			const lines = scorecardMatch[0].split("\n");
-
-			for (const line of lines) {
-				if (!line.startsWith("|") || line.includes("Date")) continue;
-
-				const parts = line.split("|").map((p) => p.trim());
-				if (parts.length < 10) continue;
-
-				const [
-					date,
-					taskType,
-					description,
-					time,
-					firstTry,
-					errors,
-					_rework,
-					impact,
-					skillsUsed,
-					enables,
-				] = parts.slice(1, 11);
-
-				if (!date || !description) continue;
-
+			for (const row of rows) {
 				const event: TimelineEvent = {
-					date: date.trim(),
-					type: this.parseTaskType(taskType),
-					description: description.trim(),
-					impact: this.parseImpact(impact),
-					enables: enables
-						? enables
+					date: row.date.trim(),
+					type: this.parseTaskType(row.taskType),
+					description: row.description.trim(),
+					impact: this.parseImpact(row.impact || "medium"),
+					enables: row.enables
+						? row.enables
 								.split(",")
 								.map((s) => s.trim())
 								.filter(Boolean)
 						: [],
-					skillsUsed: skillsUsed
-						? skillsUsed
+					skillsUsed: row.skillsUsed
+						? row.skillsUsed
 								.split(",")
 								.map((s) => s.trim())
 								.filter(Boolean)

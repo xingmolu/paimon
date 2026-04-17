@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 128 — Shared Scorecard Parser Compatibility Fix (2026-04-17)
+- Restored `evolution-timeline` and `patternMiner` after the context-file refactor by introducing a shared scorecard parser that supports compact `## Recent Scorecard`, `## Scorecard`, and legacy `## Evolution Scorecard` tables
+- Updated `learningTransfer` to reuse the shared parser so scorecard compatibility logic stays aligned across memory-driven capabilities instead of drifting per module
+- Added regression tests for compact and legacy scorecard schemas covering the shared parser, timeline generation, and pattern mining
+- Build ✅ Tests ✅
+
 ### Day 127 — Learning Transfer Scorecard Compatibility Fix (2026-04-17)
 - Restored `learningTransfer` scorecard ingestion after the context-file refactor by supporting both compact `## Recent Scorecard` and legacy `## Evolution Scorecard` markdown tables
 - Added row normalization so compact scorecard entries become reusable `SessionLearning` records instead of silently being skipped

@@ -12,6 +12,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { parseScorecardRows } from "./scorecard.js";
 
 /**
  * A mined evolution pattern
@@ -99,9 +100,11 @@ export class PatternMiner {
 	private dataDir: string;
 	private patternsFile: string;
 	private sessions: SessionEntry[] = [];
+	private memoryPathOverride?: string;
 
-	constructor(dataDir?: string) {
+	constructor(dataDir?: string, memoryPath?: string) {
 		this.dataDir = dataDir || this.findDataDir();
+		this.memoryPathOverride = memoryPath;
 		this.patternsFile = path.join(this.dataDir, "evolution-patterns.json");
 		this.loadSessionsFromMemory();
 		this.loadPatterns();
@@ -135,6 +138,10 @@ export class PatternMiner {
 	}
 
 	private findMemoryPath(): string | null {
+		if (this.memoryPathOverride && fs.existsSync(this.memoryPathOverride)) {
+			return this.memoryPathOverride;
+		}
+
 		let dir = process.cwd();
 		for (let i = 0; i < 10; i++) {
 			const memoryPath = path.join(dir, "MEMORY.md");
@@ -150,43 +157,34 @@ export class PatternMiner {
 	 * Parse MEMORY.md scorecard table
 	 */
 	private parseScorecard(content: string): SessionEntry[] {
-		const sessions: SessionEntry[] = [];
+		return parseScorecardRows(content).map((row) => {
+			const time = Number.parseInt(row.time.replace(/[~m]/g, ""), 10) || 0;
+			const result = row.firstTry || row.result || "✅";
+			const errors = row.errors || "none";
+			const skillsUsed = row.skillsUsed || "";
 
-		// Find scorecard table
-		const scorecardMatch = content.match(/## Evolution Scorecard\n\n.*?\n\n([\s\S]*?)\n\n###/);
-		if (!scorecardMatch) return sessions;
-
-		const tableContent = scorecardMatch[1];
-		const rows = tableContent
-			.split("\n")
-			.filter((line) => line.startsWith("|") && !line.includes("---"));
-
-		for (const row of rows.slice(1)) {
-			// Skip header
-			const cells = row
-				.split("|")
-				.map((c) => c.trim())
-				.filter((c) => c);
-			if (cells.length >= 9) {
-				const timeStr = cells[3] || "~0m";
-				const time = Number.parseInt(timeStr.replace(/[~m]/g, ""), 10) || 0;
-
-				sessions.push({
-					date: cells[0] || "",
-					taskType: cells[1] || "feature",
-					taskDescription: cells[2] || "",
-					time,
-					firstTry: cells[4] === "✅",
-					errors: cells[5] ? cells[5].split(",").map((e) => e.trim()) : [],
-					rework: cells[6] === "Yes",
-					impact: cells[7] || "Medium",
-					skillsUsed: cells[8] ? cells[8].split(",").map((s) => s.trim()) : [],
-					enables: cells[9] || "",
-				});
-			}
-		}
-
-		return sessions;
+			return {
+				date: row.date,
+				taskType: row.taskType || "feature",
+				taskDescription: row.description,
+				time,
+				firstTry: result === "✅",
+				errors:
+					errors === "none"
+						? []
+						: errors
+								.split(",")
+								.map((error) => error.trim())
+								.filter(Boolean),
+				rework: (row.rework || "").toLowerCase() === "yes",
+				impact: row.impact || "Medium",
+				skillsUsed: skillsUsed
+					.split(",")
+					.map((skill) => skill.trim())
+					.filter(Boolean),
+				enables: row.enables || "",
+			};
+		});
 	}
 
 	/**

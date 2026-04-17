@@ -17,9 +17,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 12.857142857142858,
+    "averageMinutes": 13.88888888888889,
     "byTaskType": {
-      "capability": 13.333333333333334,
+      "capability": 14.375,
       "reliability": 10
     },
     "points": [
@@ -30,12 +30,12 @@
       },
       {
         "date": "2026-W16",
-        "value": 13.75,
+        "value": 15,
         "trend": "down"
       }
     ],
     "fastestTask": "Self-improvement engine false positive fix",
-    "slowestTask": "Fix context identifier alias compatibility and relevance scoring"
+    "slowestTask": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser"
   },
   "errors": {
     "totalErrors": 2,
@@ -74,17 +74,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 1.5
+        "value": 2.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 6,
+    "totalCapabilities": 8,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-17T01:36:20.627Z",
-  "iterationsAnalyzed": 7
+  "lastUpdated": "2026-04-17T01:58:43.546Z",
+  "iterationsAnalyzed": 9
 }

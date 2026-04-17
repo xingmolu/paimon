@@ -207,59 +207,17 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 92% success, 93% high impact",
+      "description": "capability tasks: 100% success, 0% high impact",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 92,
-      "firstTryRate": 92,
-      "averageTime": 17,
-      "confidence": 95,
-      "sampleSize": 130,
-      "examples": [
-        {
-          "taskDescription": "Context-Evidenced Optimization Recommendations - Extended `OptimizationDashboardManager` so weak-signal enabler recommendations now reuse shared `context-analysis` task-to-file insights, attach concrete likely starting files plus a ready-to-run `context(...)` command, and added focused tests to preserve Issue #25-aligned architectural reuse",
-          "date": "2026-04-16",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "explore-code",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Shared Context Analysis Refactor for Issue #25 - Extracted a reusable `context-analysis` helper so representative task-to-file analysis is shared across the context system, refactored `SelfImprovementEngine` to consume it instead of inline logic, and added focused tests to preserve structural behavior without continuing blocked heuristic-only context tweaks",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Evidence-Based Auto-Context Suggestions for Self-Improvement - Extended the `selfImprovement` engine so proactive scans now reuse the existing `context` capability to surface concrete file-target suggestions and ready-to-run context-analysis prompts for representative evolution tasks; added focused tests to preserve actionable scan output",
-          "date": "2026-04-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "explore-code",
-            "plan-architecture",
-            "review-changes",
-            "using-superpowers"
-          ],
-          "success": true,
-          "firstTry": true
-        }
-      ],
-      "lastUpdated": "2026-04-16T17:21:25.366Z"
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 14,
+      "confidence": 64,
+      "sampleSize": 8,
+      "examples": [],
+      "lastUpdated": "2026-04-17T01:58:43.605Z"
     },
     {
       "id": "time-pattern-quick",
@@ -467,8 +425,53 @@
         }
       ],
       "lastUpdated": "2026-04-16T17:21:25.365Z"
+    },
+    {
+      "id": "error-avoidance-clean",
+      "type": "error-avoidance",
+      "description": "Error-free sessions often use: ",
+      "characteristics": {
+        "skills": [],
+        "errorsAvoided": [
+          "lint",
+          "TS",
+          "test"
+        ]
+      },
+      "successRate": 100,
+      "firstTryRate": 100,
+      "averageTime": 14,
+      "confidence": 81,
+      "sampleSize": 7,
+      "examples": [
+        {
+          "taskDescription": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser",
+          "date": "2026-04-17",
+          "time": 20,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix learningTransfer scorecard compatibility with compact and legacy MEMORY schemas",
+          "date": "2026-04-17",
+          "time": 15,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Fix context identifier alias compatibility and relevance scoring",
+          "date": "2026-04-17",
+          "time": 15,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        }
+      ],
+      "lastUpdated": "2026-04-17T01:58:43.605Z"
     }
   ],
-  "lastUpdated": "2026-04-17T01:36:20.695Z",
-  "sessionCount": 0
+  "lastUpdated": "2026-04-17T01:58:43.605Z",
+  "sessionCount": 9
 }

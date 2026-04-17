@@ -18,6 +18,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { RagModule, type RagSearchResult } from "./rag.js";
+import { parseScorecardRows } from "./scorecard.js";
 
 // Types for learning transfer
 
@@ -176,18 +177,11 @@ export class LearningTransferManager {
 			if (!fs.existsSync(memoryPath)) return;
 
 			const content = fs.readFileSync(memoryPath, "utf-8");
-			const tableLines = this.extractScorecardTableLines(content);
-			if (tableLines.length < 3) return;
+			const rows = parseScorecardRows(content);
+			if (rows.length === 0) return;
 
-			const headers = tableLines[0]
-				.split("|")
-				.map((part) => part.trim())
-				.filter(Boolean);
-			const rows = tableLines.slice(2);
-
-			for (const line of rows) {
-				if (!line.startsWith("|")) continue;
-				const session = this.parseScorecardRow(line, headers);
+			for (const row of rows) {
+				const session = this.parseScorecardRow(row);
 				if (!session || this.sessions.has(session.sessionId)) continue;
 				this.sessions.set(session.sessionId, session);
 			}
@@ -199,56 +193,20 @@ export class LearningTransferManager {
 		}
 	}
 
-	private extractScorecardTableLines(content: string): string[] {
-		const headings = ["## Recent Scorecard", "## Evolution Scorecard"];
-
-		for (const heading of headings) {
-			const start = content.indexOf(heading);
-			if (start === -1) continue;
-
-			const afterHeading = content.slice(start + heading.length);
-			const lines = afterHeading
-				.split("\n")
-				.map((line) => line.trim())
-				.filter((line, index, allLines) => line.length > 0 || index < allLines.length - 1);
-
-			const tableStart = lines.findIndex((line) => line.startsWith("|"));
-			if (tableStart === -1) continue;
-
-			const tableLines: string[] = [];
-			for (const line of lines.slice(tableStart)) {
-				if (!line.startsWith("|")) break;
-				tableLines.push(line);
-			}
-
-			if (tableLines.length >= 3) {
-				return tableLines;
-			}
-		}
-
-		return [];
-	}
-
-	private parseScorecardRow(line: string, headers: string[]): SessionLearning | null {
-		const values = line
-			.split("|")
-			.map((part) => part.trim())
-			.filter(Boolean);
-
-		if (values.length !== headers.length) {
-			return null;
-		}
-
-		const row = Object.fromEntries(
-			headers.map((header, index) => [header.toLowerCase(), values[index]]),
-		);
-		const date = row.date;
-		const taskType = row.type;
-		const description = row.description;
-		const time = row.time;
+	private parseScorecardRow(row: {
+		date: string;
+		taskType: string;
+		description: string;
+		time: string;
+		result?: string;
+		firstTry?: string;
+		errors?: string;
+		skillsUsed?: string;
+	}): SessionLearning | null {
+		const { date, taskType, description, time } = row;
 		const errors = row.errors || "none";
-		const result = row.result || row["first try"] || "✅";
-		const skillsUsed = row["skills used"] || "";
+		const result = row.result || row.firstTry || "✅";
+		const skillsUsed = row.skillsUsed || "";
 
 		if (!date || !taskType || !description || !time) {
 			return null;

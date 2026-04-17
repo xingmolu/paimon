@@ -18,11 +18,11 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (103/112)
+- First Try Success Rate: 92% (104/113)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 95% (106/112)
-- Capability Velocity: 35/day
+- Capability Tasks: 95% (107/113)
+- Capability Velocity: 36/day
 
 ---
 
@@ -37,6 +37,7 @@ Persistent learnings stored across sessions.
 7. **Filter self-improvement output for actionability** — Suppress suggestions from generated artifacts, tests, and already-implemented competitor ideas so scans stay high-signal and task selection remains trustworthy.
 8. **Keep tool aliases and schemas aligned** — If a tool advertises compatibility aliases (`get`, `list`, `format`), include them in the validation schema and normalize them in execution logic; otherwise capability silently degrades despite documentation claiming support.
 9. **Update scorecard parsers when MEMORY schema changes** — Compacting or renaming scorecard sections (`Recent Scorecard` vs `Evolution Scorecard`) can silently break downstream learning systems; parsers should accept both current and legacy layouts until all dependents are migrated.
+10. **Centralize schema compatibility logic once multiple modules depend on it** — After a context-file refactor, duplicate ad-hoc parsers drift quickly. Shared parsing utilities reduce repeated fixes and keep timeline, metrics, learning, and recommendation systems consistent.
 
 ---
 
@@ -52,6 +53,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-17 | capability | Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser | ~20m | ✅ | none |
 | 2026-04-17 | capability | Fix learningTransfer scorecard compatibility with compact and legacy MEMORY schemas | ~15m | ✅ | none |
 | 2026-04-17 | capability | Fix context identifier alias compatibility and relevance scoring | ~15m | ✅ | none |
 | 2026-04-17 | capability | Filter low-signal self-improvement suggestions | ~15m | ✅ | none |
