@@ -388,6 +388,17 @@ export class SelfImprovementEngine {
 		return Array.from(deduplicated.values());
 	}
 
+	private isInternalDetectorDefinitionPath(normalizedPath: string): boolean {
+		const internalDetectorFiles = new Set([
+			"src/hooks.ts",
+			"src/prompt.ts",
+			"src/safety-gates.ts",
+			"src/security-guidance.ts",
+			"src/tools/assess-tool.ts",
+		]);
+		return internalDetectorFiles.has(normalizedPath);
+	}
+
 	private isLowSignalCodeSuggestion(suggestion: ImprovementSuggestion): boolean {
 		if (suggestion.source !== "code-analysis" || !suggestion.filePath) {
 			return false;
@@ -398,6 +409,13 @@ export class SelfImprovementEngine {
 			normalizedPath.startsWith("dist/") ||
 			normalizedPath.endsWith(".d.ts") ||
 			normalizedPath.endsWith(".test.ts")
+		) {
+			return true;
+		}
+
+		if (
+			suggestion.category === "security" &&
+			this.isInternalDetectorDefinitionPath(normalizedPath)
 		) {
 			return true;
 		}

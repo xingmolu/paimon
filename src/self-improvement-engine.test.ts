@@ -217,14 +217,18 @@ describe("SelfImprovementEngine", () => {
 		expect(suggestion?.impact).toContain("file-target selection");
 	});
 
-	it("filters low-signal code-analysis suggestions from tests and generated outputs", async () => {
+	it("filters low-signal code-analysis suggestions from tests, generated outputs, and internal detector files", async () => {
 		const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "self-improvement-engine-"));
 		const srcDir = path.join(tempRoot, "src");
 		const distDir = path.join(tempRoot, "dist");
+		const toolsDir = path.join(srcDir, "tools");
 		fs.mkdirSync(srcDir, { recursive: true });
 		fs.mkdirSync(distDir, { recursive: true });
+		fs.mkdirSync(toolsDir, { recursive: true });
 		fs.writeFileSync(path.join(srcDir, "example.test.ts"), "eval('danger')\n");
 		fs.writeFileSync(path.join(distDir, "generated.ts"), "eval('danger')\n");
+		fs.writeFileSync(path.join(srcDir, "security-guidance.ts"), "eval('danger')\n");
+		fs.writeFileSync(path.join(toolsDir, "assess-tool.ts"), "new Function('danger')\n");
 		fs.writeFileSync(path.join(srcDir, "production.ts"), "eval('danger')\n");
 
 		const engine = createEngine();
@@ -241,6 +245,8 @@ describe("SelfImprovementEngine", () => {
 		expect(filePaths).toContain("src/production.ts");
 		expect(filePaths).not.toContain("src/example.test.ts");
 		expect(filePaths).not.toContain("dist/generated.ts");
+		expect(filePaths).not.toContain("src/security-guidance.ts");
+		expect(filePaths).not.toContain("src/tools/assess-tool.ts");
 	});
 
 	it("filters duplicate competitor suggestions for capabilities that already exist", async () => {

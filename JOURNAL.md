@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 130 — Self-Improvement Security False-Positive Filter (2026-04-17)
+- Filtered self-improvement code-analysis security suggestions from internal detector-definition files such as `security-guidance`, `safety-gates`, `hooks`, `prompt`, and `assess-tool`
+- Kept actionable security findings from normal source files while suppressing self-referential noise from regex/prompt definition files
+- Added regression coverage proving internal detector files are ignored while real production files still surface security suggestions
+- Build ✅ Tests ✅
+
 ### Day 129 — Metrics Shared Scorecard Parser Migration (2026-04-17)
 - Migrated `metrics.ts` off its bespoke scorecard schema detection and onto the shared `parseScorecardRows()` utility
 - Preserved compact and legacy MEMORY scorecard behavior while removing one more source of parser drift in memory-driven capabilities
