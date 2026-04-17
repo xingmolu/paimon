@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 129 — Metrics Shared Scorecard Parser Migration (2026-04-17)
+- Migrated `metrics.ts` off its bespoke scorecard schema detection and onto the shared `parseScorecardRows()` utility
+- Preserved compact and legacy MEMORY scorecard behavior while removing one more source of parser drift in memory-driven capabilities
+- Extended metrics regression tests to assert parsed time aggregation still works for both compact and legacy scorecard schemas
+- Build ✅ Tests ✅
+
 ### Day 128 — Shared Scorecard Parser Compatibility Fix (2026-04-17)
 - Restored `evolution-timeline` and `patternMiner` after the context-file refactor by introducing a shared scorecard parser that supports compact `## Recent Scorecard`, `## Scorecard`, and legacy `## Evolution Scorecard` tables
 - Updated `learningTransfer` to reuse the shared parser so scorecard compatibility logic stays aligned across memory-driven capabilities instead of drifting per module

@@ -33,6 +33,7 @@ describe("EvolutionMetricsTracker", () => {
 		expect(metrics.errors.byType).toEqual({ test: 1 });
 		expect(metrics.capabilityVelocity.totalCapabilities).toBe(1);
 		expect(metrics.capabilityVelocity.highImpactCount).toBe(0);
+		expect(metrics.time.byTaskType).toEqual({ capability: 12, reliability: 18 });
 		expect(metrics.skills).toEqual([]);
 	});
 
@@ -55,6 +56,7 @@ describe("EvolutionMetricsTracker", () => {
 		expect(metrics.errors.byType).toEqual({ lint: 1 });
 		expect(metrics.capabilityVelocity.totalCapabilities).toBe(1);
 		expect(metrics.capabilityVelocity.highImpactCount).toBe(1);
+		expect(metrics.time.byTaskType).toEqual({ capability: 10, reliability: 20 });
 		expect(metrics.skills[0]?.skill).toBe("evolve");
 	});
 });

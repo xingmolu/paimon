@@ -13,6 +13,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { parseScorecardRows } from "./scorecard.js";
 
 // Types
 
@@ -90,8 +91,6 @@ interface SessionEntry {
 	enables: string;
 }
 
-type ScorecardSchema = "legacy" | "compact";
-
 // Class
 
 export class EvolutionMetricsTracker {
@@ -118,85 +117,23 @@ export class EvolutionMetricsTracker {
 		}
 
 		const content = fs.readFileSync(memoryPath, "utf-8");
-		const lines = content.split("\n");
-		const scorecard = this.findScorecardTable(lines);
-
-		if (!scorecard) {
-			return;
-		}
-
-		for (let i = scorecard.tableStart + 2; i < lines.length; i++) {
-			const line = lines[i].trim();
-			if (!line.startsWith("|") || !line.endsWith("|")) {
-				break;
-			}
-
-			const entry = this.parseScorecardRow(line, scorecard.schema);
-			if (entry) {
-				this.sessions.push(entry);
-			}
-		}
-	}
-
-	private findScorecardTable(
-		lines: string[],
-	): { tableStart: number; schema: ScorecardSchema } | null {
-		const schemas: Array<{ marker: string; schema: ScorecardSchema }> = [
-			{ marker: "| Date | Task Type |", schema: "legacy" },
-			{ marker: "| Date | Type | Description | Time | Result | Errors |", schema: "compact" },
-		];
-
-		for (const candidate of schemas) {
-			const tableStart = lines.findIndex((line) => line.includes(candidate.marker));
-			if (tableStart !== -1) {
-				return { tableStart, schema: candidate.schema };
-			}
-		}
-
-		return null;
-	}
-
-	private parseScorecardRow(line: string, schema: ScorecardSchema): SessionEntry | null {
-		const cells = line
-			.split("|")
-			.map((c) => c.trim())
-			.filter((c) => c);
-
-		if (schema === "legacy") {
-			if (cells.length < 10) {
-				return null;
-			}
+		this.sessions = parseScorecardRows(content).map((row) => {
+			const firstTry = row.firstTry || row.result || "✅";
+			const errors = row.errors || "none";
 
 			return {
-				date: cells[0],
-				taskType: cells[1],
-				description: cells[2],
-				time: cells[3],
-				firstTry: cells[4],
-				errors: cells[5],
-				rework: cells[6],
-				impact: cells[7],
-				skillsUsed: cells[8],
-				enables: cells[9] || "",
+				date: row.date,
+				taskType: row.taskType,
+				description: row.description,
+				time: row.time,
+				firstTry,
+				errors,
+				rework: row.rework || (firstTry === "✅" ? "No" : "Yes"),
+				impact: row.impact || "Low",
+				skillsUsed: row.skillsUsed || "",
+				enables: row.enables || "",
 			};
-		}
-
-		if (cells.length < 6) {
-			return null;
-		}
-
-		return {
-			date: cells[0],
-			taskType: cells[1],
-			description: cells[2],
-			time: cells[3],
-			firstTry: cells[4],
-			errors: cells[5],
-			rework: cells[4] === "✅" ? "No" : "Yes",
-			impact: "Low",
-			skillsUsed: "",
-			enables: "",
-		};
+		});
 	}
 
 	/**

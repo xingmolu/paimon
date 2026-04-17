@@ -38,6 +38,7 @@ Persistent learnings stored across sessions.
 8. **Keep tool aliases and schemas aligned** — If a tool advertises compatibility aliases (`get`, `list`, `format`), include them in the validation schema and normalize them in execution logic; otherwise capability silently degrades despite documentation claiming support.
 9. **Update scorecard parsers when MEMORY schema changes** — Compacting or renaming scorecard sections (`Recent Scorecard` vs `Evolution Scorecard`) can silently break downstream learning systems; parsers should accept both current and legacy layouts until all dependents are migrated.
 10. **Centralize schema compatibility logic once multiple modules depend on it** — After a context-file refactor, duplicate ad-hoc parsers drift quickly. Shared parsing utilities reduce repeated fixes and keep timeline, metrics, learning, and recommendation systems consistent.
+11. **Migrate remaining consumers off bespoke compatibility parsers** — Leaving even one metrics/dashboard consumer on duplicated table parsing reintroduces silent schema drift risk; shared parser adoption should be completed everywhere.
 
 ---
 
@@ -53,6 +54,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-17 | capability | Centralize metrics scorecard parsing on shared parser | ~10m | ✅ | none |
 | 2026-04-17 | capability | Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser | ~20m | ✅ | none |
 | 2026-04-17 | capability | Fix learningTransfer scorecard compatibility with compact and legacy MEMORY schemas | ~15m | ✅ | none |
 | 2026-04-17 | capability | Fix context identifier alias compatibility and relevance scoring | ~15m | ✅ | none |
