@@ -1,229 +1,90 @@
 {
   "successRate": {
-    "current": 69.23076923076923,
+    "current": 100,
     "points": [
-      {
-        "date": "------",
-        "value": 0,
-        "trend": "stable"
-      },
-      {
-        "date": "2026-W14",
-        "value": 94.78260869565217,
-        "trend": "up"
-      },
       {
         "date": "2026-W15",
         "value": 100,
-        "trend": "up"
-      },
-      {
-        "date": "2026-W16",
-        "value": 69.23076923076923,
-        "trend": "down"
-      }
-    ],
-    "weeklyAverage": 92.25352112676056,
-    "improvement": 69.23076923076923
-  },
-  "time": {
-    "averageMinutes": 16.492957746478872,
-    "byTaskType": {
-      "capability": 17.186046511627907,
-      "reliability": 10.416666666666666,
-      "-----------": 0
-    },
-    "points": [
-      {
-        "date": "------",
-        "value": 0,
         "trend": "stable"
       },
       {
-        "date": "2026-W14",
-        "value": 16.582608695652173,
-        "trend": "down"
-      },
+        "date": "2026-W16",
+        "value": 100,
+        "trend": "stable"
+      }
+    ],
+    "weeklyAverage": 100,
+    "improvement": 0
+  },
+  "time": {
+    "averageMinutes": 12,
+    "byTaskType": {
+      "capability": 12.5,
+      "reliability": 10
+    },
+    "points": [
       {
         "date": "2026-W15",
-        "value": 15.384615384615385,
-        "trend": "up"
+        "value": 11.666666666666666,
+        "trend": "stable"
       },
       {
         "date": "2026-W16",
-        "value": 18.076923076923077,
-        "trend": "down"
+        "value": 12.5,
+        "trend": "stable"
       }
     ],
-    "fastestTask": "-----------------",
-    "slowestTask": "Feature Dev 7-Phase Workflow (Claude Code Pattern) - Comprehensive workflow for feature development: Discovery → Exploration → Questions → Architecture → Implementation → Review → Summary with agent orchestration"
+    "fastestTask": "Self-improvement engine false positive fix",
+    "slowestTask": "Metrics scorecard compatibility fix"
   },
   "errors": {
-    "totalErrors": 86,
+    "totalErrors": 2,
     "byType": {
-      "TS, test": 1,
-      "test": 3,
-      "test (fixed)": 1,
-      "lint (auto-fixed)": 1,
-      "lint (fixed)": 48,
-      "--------": 1,
-      "TS (fixed), lint (fixed)": 5,
-      "lint (fixed), test (fixed)": 7,
-      "lint (fixed), TS (fixed)": 2,
-      "TS (fixed)": 5,
-      "TS (file corruption)": 1,
-      "lint": 9,
-      "TS": 2
+      "test": 1,
+      "lint": 1
     },
     "recentErrors": [
-      "2026-04-16: TS, test in \"Tunable Context Importance Configuration - Upgraded the `contextImportance` tool so `update-config` now safely applies numeric, boolean, and weight-map config changes with validation, added focused tool tests, and stabilized a flaky agent import test timeout so full verification passes reliably\"",
-      "2026-04-16: test in \"Decision-Carrying Anchor Preservation for Context Drift - Refined context importance scoring so explicit implementation decisions, chosen approaches, and file-target commitments outrank generic planning chatter during long sessions; added focused tests to keep committed execution records preserved above truncation thresholds\"",
-      "2026-04-16: test (fixed) in \"Context Drift Resistance in Importance Scoring - Refined context importance recency weighting so only early task anchors and the recent working set stay strongly preserved while stale middle conversation decays into truncatable context; added focused tests to prevent long-session context drift regressions\"",
-      "2026-04-16: test in \"Actionable Memory-Quality Recommendations - Replaced generic dashboard memory guidance with concrete recommendations derived from weak-signal skills, recurring error patterns, and low-impact capability trends; added focused tests and ensured self-improvement suggestions inherit the more actionable memory signals\"",
-      "2026-04-16: test in \"Data-Driven Optimization Dashboard - Replaced hardcoded optimization dashboard scores with live values derived from evolution metrics and tool usage analytics, added dependency injection for testable data sources, and covered dynamic health/utilization/bottleneck/comparison behavior with focused tests\"",
-      "2026-04-16: lint (auto-fixed) in \"Optimization Dashboard Tool Integration - Surfaced the existing OptimizationDashboardManager as the `optimizationDashboard` tool, registered it in the tool index, documented it in prompt.ts, and added focused tests so dashboard health, bottlenecks, recommendations, config, and session comparison are directly accessible during evolution\"",
-      "2026-04-05: lint (fixed) in \"OK Shortcut Command (Aider Pattern) - Added 'ok' action to chatModes tool for quickly accepting proposed changes and proceeding with implementation, switches from ask to code mode, optional instructions parameter, usage tracking, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Token Breakdown Display (Aider /tokens Pattern) - TokenBreakdownManager module for detailed token usage analysis, tokenBreakdown tool with 6 actions (breakdown, summary, models, compare, cost, context, help), shows token distribution across system messages/chat history/repo map/files, cost estimation, context window utilization percentage, remaining tokens warning, model cost comparison, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Model Aliases (Aider Pattern) - ModelAliasManager module for managing model aliases, modelAliases tool with 12 actions (list, add, remove, get, resolve, import, export, enable, disable, stats, reset, help), YAML/JSON config file support, command-line alias definitions, default aliases (fast, smart, reasoner, deepseek), team-shared configurations, quick model switching, competitor pattern added to capability-gap.ts\"",
-      "2026-04-05: lint (fixed) in \"Interactive Linting with Auto-Fix (Aider Pattern) - LintingManager module for interactive linting, linting tool with 12 actions (run, auto-fix, linters, linter, add-linter, remove-linter, enable, disable, config, stats, reset, help), built-in linters for 8 languages (TypeScript, JavaScript, Python, Rust, Go, JSON, YAML, Markdown), auto-fix strategies for common lint errors, per-language linter configuration, competitor pattern added to capability-gap.ts\""
+      "2026-04-16: test in \"Metrics scorecard compatibility fix\"",
+      "2026-04-05: lint in \"OK Shortcut Command (Aider Pattern)\""
     ],
     "points": [
       {
-        "date": "------",
+        "date": "2026-W15",
         "value": 1,
         "trend": "stable"
       },
       {
-        "date": "2026-W14",
-        "value": 71,
-        "trend": "down"
-      },
-      {
-        "date": "2026-W15",
-        "value": 8,
-        "trend": "up"
-      },
-      {
         "date": "2026-W16",
-        "value": 6,
-        "trend": "up"
+        "value": 1,
+        "trend": "stable"
       }
     ],
     "commonPatterns": [
-      "lint (fixed)",
-      "lint",
-      "lint (fixed), test (fixed)",
-      "ts (fixed), lint (fixed)",
-      "ts (fixed)"
+      "test",
+      "lint"
     ]
   },
-  "skills": [
-    {
-      "skill": "evolve",
-      "usageCount": 139,
-      "successRate": 92.80575539568345,
-      "averageTime": 16.741007194244606,
-      "trend": "improving"
-    },
-    {
-      "skill": "research",
-      "usageCount": 46,
-      "successRate": 91.30434782608695,
-      "averageTime": 18.804347826086957,
-      "trend": "improving"
-    },
-    {
-      "skill": "plan-architecture",
-      "usageCount": 18,
-      "successRate": 72.22222222222221,
-      "averageTime": 17.77777777777778,
-      "trend": "stable"
-    },
-    {
-      "skill": "using-superpowers",
-      "usageCount": 15,
-      "successRate": 80,
-      "averageTime": 16.666666666666668,
-      "trend": "stable"
-    },
-    {
-      "skill": "review-changes",
-      "usageCount": 14,
-      "successRate": 64.28571428571429,
-      "averageTime": 17.857142857142858,
-      "trend": "declining"
-    },
-    {
-      "skill": "writing-plans",
-      "usageCount": 6,
-      "successRate": 100,
-      "averageTime": 15.833333333333334,
-      "trend": "improving"
-    },
-    {
-      "skill": "explore-code",
-      "usageCount": 5,
-      "successRate": 20,
-      "averageTime": 18,
-      "trend": "stable"
-    },
-    {
-      "skill": "systematic-debugging",
-      "usageCount": 4,
-      "successRate": 100,
-      "averageTime": 13.75,
-      "trend": "stable"
-    },
-    {
-      "skill": "-------------",
-      "usageCount": 1,
-      "successRate": 0,
-      "averageTime": 0,
-      "trend": "stable"
-    },
-    {
-      "skill": "dispatching-parallel-agents",
-      "usageCount": 1,
-      "successRate": 100,
-      "averageTime": 20,
-      "trend": "stable"
-    },
-    {
-      "skill": "verification-before-completion",
-      "usageCount": 1,
-      "successRate": 100,
-      "averageTime": 15,
-      "trend": "stable"
-    }
-  ],
+  "skills": [],
   "capabilityVelocity": {
     "current": 0,
     "points": [
       {
-        "date": "------",
-        "value": 0
-      },
-      {
-        "date": "2026-W14",
-        "value": 52.5
-      },
-      {
         "date": "2026-W15",
-        "value": 5.5
+        "value": 1.5
       },
       {
         "date": "2026-W16",
-        "value": 6.5
+        "value": 0.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 129,
-    "highImpactCount": 126,
-    "highImpactPercentage": 97.67441860465115
+    "totalCapabilities": 4,
+    "highImpactCount": 0,
+    "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-16T17:21:25.203Z",
-  "iterationsAnalyzed": 142
+  "lastUpdated": "2026-04-17T00:48:46.107Z",
+  "iterationsAnalyzed": 5
 }
