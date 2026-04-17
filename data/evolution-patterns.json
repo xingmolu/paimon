@@ -214,10 +214,10 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 14,
-      "confidence": 64,
-      "sampleSize": 8,
+      "confidence": 67,
+      "sampleSize": 9,
       "examples": [],
-      "lastUpdated": "2026-04-17T01:58:43.605Z"
+      "lastUpdated": "2026-04-17T02:48:09.548Z"
     },
     {
       "id": "time-pattern-quick",
@@ -441,9 +441,17 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 14,
-      "confidence": 81,
-      "sampleSize": 7,
+      "confidence": 84,
+      "sampleSize": 8,
       "examples": [
+        {
+          "taskDescription": "Centralize metrics scorecard parsing on shared parser",
+          "date": "2026-04-17",
+          "time": 10,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser",
           "date": "2026-04-17",
@@ -459,19 +467,11 @@
           "skillsUsed": [],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Fix context identifier alias compatibility and relevance scoring",
-          "date": "2026-04-17",
-          "time": 15,
-          "skillsUsed": [],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-17T01:58:43.605Z"
+      "lastUpdated": "2026-04-17T02:48:09.548Z"
     }
   ],
-  "lastUpdated": "2026-04-17T01:58:43.605Z",
-  "sessionCount": 9
+  "lastUpdated": "2026-04-17T02:48:09.549Z",
+  "sessionCount": 10
 }

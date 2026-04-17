@@ -17,9 +17,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 13.88888888888889,
+    "averageMinutes": 13.5,
     "byTaskType": {
-      "capability": 14.375,
+      "capability": 13.88888888888889,
       "reliability": 10
     },
     "points": [
@@ -30,11 +30,11 @@
       },
       {
         "date": "2026-W16",
-        "value": 15,
+        "value": 14.285714285714286,
         "trend": "down"
       }
     ],
-    "fastestTask": "Self-improvement engine false positive fix",
+    "fastestTask": "Centralize metrics scorecard parsing on shared parser",
     "slowestTask": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser"
   },
   "errors": {
@@ -74,17 +74,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 2.5
+        "value": 3
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 8,
+    "totalCapabilities": 9,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-17T01:58:43.546Z",
-  "iterationsAnalyzed": 9
+  "lastUpdated": "2026-04-17T02:48:09.475Z",
+  "iterationsAnalyzed": 10
 }
