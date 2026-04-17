@@ -17,9 +17,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 12.5,
+    "averageMinutes": 12.857142857142858,
     "byTaskType": {
-      "capability": 13,
+      "capability": 13.333333333333334,
       "reliability": 10
     },
     "points": [
@@ -30,12 +30,12 @@
       },
       {
         "date": "2026-W16",
-        "value": 13.333333333333334,
+        "value": 13.75,
         "trend": "down"
       }
     ],
     "fastestTask": "Self-improvement engine false positive fix",
-    "slowestTask": "Filter low-signal self-improvement suggestions"
+    "slowestTask": "Fix context identifier alias compatibility and relevance scoring"
   },
   "errors": {
     "totalErrors": 2,
@@ -74,17 +74,17 @@
       },
       {
         "date": "2026-W16",
-        "value": 1
+        "value": 1.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 5,
+    "totalCapabilities": 6,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-17T00:57:57.953Z",
-  "iterationsAnalyzed": 6
+  "lastUpdated": "2026-04-17T01:36:20.627Z",
+  "iterationsAnalyzed": 7
 }
