@@ -33,6 +33,7 @@ describe("EvolutionMetricsTracker", () => {
 		expect(metrics.errors.byType).toEqual({ test: 1 });
 		expect(metrics.capabilityVelocity.totalCapabilities).toBe(1);
 		expect(metrics.capabilityVelocity.highImpactCount).toBe(0);
+		expect(metrics.capabilityVelocity.highImpactPercentage).toBe(0);
 		expect(metrics.time.byTaskType).toEqual({ capability: 12, reliability: 18 });
 		expect(metrics.skills).toEqual([]);
 	});
@@ -56,7 +57,27 @@ describe("EvolutionMetricsTracker", () => {
 		expect(metrics.errors.byType).toEqual({ lint: 1 });
 		expect(metrics.capabilityVelocity.totalCapabilities).toBe(1);
 		expect(metrics.capabilityVelocity.highImpactCount).toBe(1);
+		expect(metrics.capabilityVelocity.highImpactPercentage).toBe(100);
 		expect(metrics.time.byTaskType).toEqual({ capability: 10, reliability: 20 });
 		expect(metrics.skills[0]?.skill).toBe("evolve");
+	});
+
+	it("does not treat missing impact columns in compact scorecards as low impact capability work", () => {
+		const memoryFile = createMemoryFile(`# Memory
+
+## Recent Scorecard
+
+| Date | Type | Description | Time | Result | Errors |
+|------|------|-------------|------|--------|--------|
+| 2026-04-16 | capability | Compact capability one | ~12m | ✅ | none |
+| 2026-04-15 | capability | Compact capability two | ~18m | ✅ | none |
+`);
+
+		const tracker = new EvolutionMetricsTracker({ memoryFile });
+		const metrics = tracker.getMetrics();
+
+		expect(metrics.capabilityVelocity.totalCapabilities).toBe(2);
+		expect(metrics.capabilityVelocity.highImpactCount).toBe(0);
+		expect(metrics.capabilityVelocity.highImpactPercentage).toBe(0);
 	});
 });

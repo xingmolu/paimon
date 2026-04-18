@@ -390,7 +390,12 @@ export class OptimizationDashboardManager {
 		const recommendations: OptimizationRecommendation[] = [];
 		const lowConfidenceSkills = this.getLowConfidenceSkills(metrics);
 		const primaryErrorPattern = this.getPrimaryErrorPattern(metrics);
-		const lowImpactRatio = Math.max(0, 100 - metrics.capabilityVelocity.highImpactPercentage);
+		const hasCapabilityImpactData =
+			metrics.capabilityVelocity.highImpactCount > 0 ||
+			metrics.capabilityVelocity.highImpactPercentage > 0;
+		const lowImpactRatio = hasCapabilityImpactData
+			? Math.max(0, 100 - metrics.capabilityVelocity.highImpactPercentage)
+			: null;
 
 		if (lowConfidenceSkills.length > 0) {
 			const skillSummary = lowConfidenceSkills
@@ -417,12 +422,12 @@ export class OptimizationDashboardManager {
 			});
 		}
 
-		if (lowImpactRatio >= 25) {
+		if (lowImpactRatio !== null && lowImpactRatio >= 25) {
 			recommendations.push({
 				priority: lowImpactRatio >= 40 ? "high" : "medium",
 				category: "memory",
 				title: "Record why recent work was lower impact",
-				description: `Only ${Math.round(metrics.capabilityVelocity.highImpactPercentage)}% of recent capability work was marked high impact. Capture stronger rationale in MEMORY.md about what made recent tasks less leverageful and what future tasks should optimize for.`,
+				description: `Only ${Math.round(metrics.capabilityVelocity.highImpactPercentage)}% of recent capability work with recorded impact was marked high impact. Capture stronger rationale in MEMORY.md about what made recent tasks less leverageful and what future tasks should optimize for.`,
 				expectedImpact: "Better task selection and clearer impact scoring in future iterations",
 				effort: "simple",
 			});

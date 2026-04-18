@@ -87,6 +87,7 @@ interface SessionEntry {
 	errors: string;
 	rework: string;
 	impact: string;
+	hasImpactData: boolean;
 	skillsUsed: string;
 	enables: string;
 }
@@ -120,6 +121,7 @@ export class EvolutionMetricsTracker {
 		this.sessions = parseScorecardRows(content).map((row) => {
 			const firstTry = row.firstTry || row.result || "✅";
 			const errors = row.errors || "none";
+			const impact = row.impact?.trim() || "";
 
 			return {
 				date: row.date,
@@ -129,7 +131,8 @@ export class EvolutionMetricsTracker {
 				firstTry,
 				errors,
 				rework: row.rework || (firstTry === "✅" ? "No" : "Yes"),
-				impact: row.impact || "Low",
+				impact,
+				hasImpactData: impact.length > 0,
 				skillsUsed: row.skillsUsed || "",
 				enables: row.enables || "",
 			};
@@ -492,12 +495,19 @@ export class EvolutionMetricsTracker {
 		// Total capabilities
 		const totalCapabilities = this.sessions.filter((s) => s.taskType === "capability").length;
 
+		const capabilitySessions = this.sessions.filter((s) => s.taskType === "capability");
+		const capabilitySessionsWithImpactData = capabilitySessions.filter((s) => s.hasImpactData);
+
 		// High impact count
-		const highImpactCount = this.sessions.filter((s) => s.impact === "High").length;
+		const highImpactCount = capabilitySessionsWithImpactData.filter(
+			(s) => s.impact === "High",
+		).length;
 
 		// High impact percentage
 		const highImpactPercentage =
-			totalCapabilities > 0 ? (highImpactCount / totalCapabilities) * 100 : 0;
+			capabilitySessionsWithImpactData.length > 0
+				? (highImpactCount / capabilitySessionsWithImpactData.length) * 100
+				: 0;
 
 		// Current velocity (last week)
 		const current = points.length > 0 ? points[points.length - 1].value : 0;

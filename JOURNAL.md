@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 131 — Impact-Aware Memory Quality Recommendations (2026-04-18)
+- Stopped metrics from treating compact MEMORY scorecards with no Impact column as implicitly low-impact capability work
+- Updated optimization dashboard memory recommendations so "lower impact" guidance only appears when impact data is actually recorded
+- Added regression coverage for compact scorecards without impact data and for dashboard recommendation suppression when impact evidence is unavailable
+- Build ✅ Tests ✅
+
 ### Day 130 — Self-Improvement Security False-Positive Filter (2026-04-17)
 - Filtered self-improvement code-analysis security suggestions from internal detector-definition files such as `security-guidance`, `safety-gates`, `hooks`, `prompt`, and `assess-tool`
 - Kept actionable security findings from normal source files while suppressing self-referential noise from regex/prompt definition files

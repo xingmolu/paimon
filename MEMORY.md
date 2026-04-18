@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (104/113)
+- First Try Success Rate: 92% (105/114)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 95% (107/113)
+- Capability Tasks: 95% (108/114)
 - Capability Velocity: 36/day
 
 ---
@@ -40,6 +40,7 @@ Persistent learnings stored across sessions.
 10. **Centralize schema compatibility logic once multiple modules depend on it** — After a context-file refactor, duplicate ad-hoc parsers drift quickly. Shared parsing utilities reduce repeated fixes and keep timeline, metrics, learning, and recommendation systems consistent.
 11. **Migrate remaining consumers off bespoke compatibility parsers** — Leaving even one metrics/dashboard consumer on duplicated table parsing reintroduces silent schema drift risk; shared parser adoption should be completed everywhere.
 12. **Suppress self-referential analyzer noise at the output layer** — When a code-analysis engine scans files that define detection regexes, prompts, or safety warnings, filter those suggestions after scan generation instead of weakening the underlying detectors; this preserves real findings while improving task-selection signal.
+13. **Treat missing scorecard fields as unknown, not negative evidence** — Compact MEMORY scorecards may omit columns like Impact; metrics and recommendation systems should avoid converting absent data into "Low" or 0%-quality conclusions, or they will distort autonomous task selection.
 
 ---
 
@@ -55,6 +56,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-18 | capability | Treat missing impact data as unknown in metrics and memory recommendations | ~15m | ✅ | none |
 | 2026-04-17 | capability | Filter self-improvement security false positives from internal detector files | ~10m | ✅ | none |
 | 2026-04-17 | capability | Centralize metrics scorecard parsing on shared parser | ~10m | ✅ | none |
 | 2026-04-17 | capability | Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser | ~20m | ✅ | none |
