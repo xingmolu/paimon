@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 132 — Task Predictor Scorecard Parser Migration (2026-04-18)
+- Migrated `task-predictor.ts` off its bespoke MEMORY.md table parser and onto the shared `parseScorecardRows()` compatibility utility
+- Preserved support for both compact `## Recent Scorecard` rows and legacy detailed scorecards while keeping prediction inputs aligned with other memory-driven modules
+- Added regression tests covering compact and legacy scorecard schemas so task success prediction stays trustworthy after future MEMORY format changes
+- Build ✅ Tests ✅
+
 ### Day 131 — Impact-Aware Memory Quality Recommendations (2026-04-18)
 - Stopped metrics from treating compact MEMORY scorecards with no Impact column as implicitly low-impact capability work
 - Updated optimization dashboard memory recommendations so "lower impact" guidance only appears when impact data is actually recorded

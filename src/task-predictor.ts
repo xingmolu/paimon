@@ -5,6 +5,8 @@
  * Uses historical session data from MEMORY.md scorecard to predict outcomes.
  */
 
+import { parseScorecardRows } from "./scorecard.js";
+
 export interface TaskPrediction {
 	successProbability: number; // 0-1 probability of success
 	confidence: number; // 0-100 confidence in prediction
@@ -58,6 +60,10 @@ interface SessionEntry {
 	skillsUsed: string;
 }
 
+export interface TaskSuccessPredictorOptions {
+	memoryPath?: string;
+}
+
 /**
  * TaskSuccessPredictor class for predicting task outcomes
  */
@@ -71,8 +77,10 @@ export class TaskSuccessPredictor {
 		accuracyRate: 0,
 		predictionsByType: {},
 	};
+	private readonly memoryPath: string;
 
-	constructor() {
+	constructor(options: TaskSuccessPredictorOptions = {}) {
+		this.memoryPath = options.memoryPath || "MEMORY.md";
 		this.loadSessions();
 		this.minePatterns();
 	}
@@ -83,53 +91,24 @@ export class TaskSuccessPredictor {
 	private loadSessions(): void {
 		try {
 			const fs = require("node:fs");
-			const memoryPath = "MEMORY.md";
-			if (!fs.existsSync(memoryPath)) {
+			if (!fs.existsSync(this.memoryPath)) {
 				return;
 			}
 
-			const content = fs.readFileSync(memoryPath, "utf-8");
-			const lines = content.split("\n");
+			const content = fs.readFileSync(this.memoryPath, "utf-8");
+			const rows = parseScorecardRows(content);
 
-			// Find scorecard table
-			const tableStart = lines.findIndex(
-				(line: string) => line.includes("| Date |") && line.includes("Task Type"),
-			);
-			if (tableStart === -1) {
-				return;
-			}
-
-			// Parse table rows
-			for (let i = tableStart + 2; i < lines.length; i++) {
-				const line = lines[i].trim();
-				if (!line.startsWith("|") || line.includes("---")) {
-					continue;
-				}
-
-				const cells = line
-					.split("|")
-					.map((c: string) => c.trim())
-					.filter(Boolean);
-				if (cells.length >= 9) {
-					const skillsStr = cells[8] || "";
-					const skills = skillsStr
-						.split(",")
-						.map((s: string) => s.trim())
-						.filter(Boolean);
-
-					this.sessions.push({
-						date: cells[0],
-						taskType: cells[1],
-						taskDescription: cells[2],
-						time: cells[3],
-						firstTry: cells[4],
-						errors: cells[5],
-						rework: cells[6],
-						impact: cells[7],
-						skillsUsed: skillsStr,
-					});
-				}
-			}
+			this.sessions = rows.map((row) => ({
+				date: row.date,
+				taskType: row.taskType,
+				taskDescription: row.description,
+				time: row.time,
+				firstTry: row.firstTry || row.result || "",
+				errors: row.errors || "none",
+				rework: row.rework || "",
+				impact: row.impact || "",
+				skillsUsed: row.skillsUsed || "",
+			}));
 		} catch {
 			// Ignore errors, use empty sessions
 		}
