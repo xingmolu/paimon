@@ -14,6 +14,11 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 134 — Evolution Strategy Scorecard History Fix (2026-04-19)
+- Replaced `evolution-strategy`'s hardcoded evolution start date with parsing of the earliest MEMORY.md scorecard entry via the shared scorecard compatibility utility
+- Added regression tests covering compact `## Recent Scorecard`, legacy `## Evolution Scorecard`, and missing-scorecard fallback behavior so strategic analysis stays aligned with memory history
+- Build ✅ Tests ✅
+
 ### Day 133 — Self-Improvement Config Output Fix (2026-04-19)
 - Fixed the `selfImprovement` tool `config` action so it returns the actual engine configuration instead of incorrectly reusing statistics output
 - Added regression coverage proving config responses include configured values and no longer render the statistics section

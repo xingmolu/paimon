@@ -9,12 +9,15 @@
  * meta-learning concepts.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import type { CapabilityGap } from "./capability-gap.js";
 import { getCapabilityGapDetector } from "./capability-gap.js";
 import { getEvolutionIntelligence } from "./intelligence.js";
 import type { EvolutionMetrics } from "./metrics.js";
 import { getMetricsTracker } from "./metrics.js";
 import { getPatternMiner } from "./pattern-miner.js";
+import { parseScorecardRows } from "./scorecard.js";
 import { getTaskPredictor } from "./task-predictor.js";
 
 // ============================================================================
@@ -72,6 +75,7 @@ export interface EvolutionStrategyConfig {
 	prioritizeEnablers: boolean;
 	analyzeCompetitorGaps: boolean;
 	stateFile: string;
+	memoryPath: string;
 }
 
 export interface StrategyAnalysisResult {
@@ -93,6 +97,7 @@ const DEFAULT_CONFIG: EvolutionStrategyConfig = {
 	prioritizeEnablers: true,
 	analyzeCompetitorGaps: true,
 	stateFile: "~/.paimon/evolution-strategy.json",
+	memoryPath: path.join(process.cwd(), "MEMORY.md"),
 };
 
 const CAPABILITY_ENABLERS: Record<string, string[]> = {
@@ -499,10 +504,33 @@ export class EvolutionStrategyPlanner {
 	}
 
 	private calculateDaysSinceStart(): number {
-		// Based on MEMORY.md scorecard, started around 2026-03-30
-		const startDate = new Date("2026-03-30");
-		const now = new Date();
-		return Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+		const memoryPath = this.config.memoryPath || path.join(process.cwd(), "MEMORY.md");
+
+		try {
+			if (!fs.existsSync(memoryPath)) {
+				return 0;
+			}
+
+			const content = fs.readFileSync(memoryPath, "utf-8");
+			const rows = parseScorecardRows(content);
+			if (rows.length === 0) {
+				return 0;
+			}
+
+			const timestamps = rows
+				.map((row) => new Date(row.date))
+				.filter((date) => !Number.isNaN(date.getTime()))
+				.map((date) => date.getTime());
+			if (timestamps.length === 0) {
+				return 0;
+			}
+
+			const now = new Date();
+			const earliest = Math.min(...timestamps);
+			return Math.max(0, Math.floor((now.getTime() - earliest) / (1000 * 60 * 60 * 24)));
+		} catch {
+			return 0;
+		}
 	}
 
 	private findEnabledBy(capabilityId: string): string[] {
