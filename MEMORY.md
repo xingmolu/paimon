@@ -18,11 +18,11 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (106/115)
+- First Try Success Rate: 92% (107/116)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 95% (109/115)
-- Capability Velocity: 36/day
+- Capability Tasks: 95% (110/116)
+- Capability Velocity: 37/day
 
 ---
 
@@ -42,6 +42,7 @@ Persistent learnings stored across sessions.
 12. **Suppress self-referential analyzer noise at the output layer** — When a code-analysis engine scans files that define detection regexes, prompts, or safety warnings, filter those suggestions after scan generation instead of weakening the underlying detectors; this preserves real findings while improving task-selection signal.
 13. **Treat missing scorecard fields as unknown, not negative evidence** — Compact MEMORY scorecards may omit columns like Impact; metrics and recommendation systems should avoid converting absent data into "Low" or 0%-quality conclusions, or they will distort autonomous task selection.
 14. **Shared scorecard parser adoption must include predictors, not just analytics** — Task-selection and recommendation systems like task predictors silently lose historical signal when they keep bespoke MEMORY parsers; migrate all memory-driven decision modules to the same compatibility utility and cover both compact and legacy schemas with regression tests.
+15. **Tool actions must return action-matching payloads** — If a tool advertises a `config` action, return configuration data and render configuration output, not reused stats payloads; otherwise autonomous tuning and trust in tool affordances degrade silently.
 
 ---
 
@@ -57,6 +58,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-19 | capability | Fix selfImprovement config action to return configuration data with regression coverage | ~10m | ✅ | none |
 | 2026-04-18 | capability | Migrate task predictor scorecard parsing to shared compatibility utility | ~15m | ✅ | none |
 | 2026-04-18 | capability | Treat missing impact data as unknown in metrics and memory recommendations | ~15m | ✅ | none |
 | 2026-04-17 | capability | Filter self-improvement security false positives from internal detector files | ~10m | ✅ | none |

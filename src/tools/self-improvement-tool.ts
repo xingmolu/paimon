@@ -11,6 +11,7 @@ import {
 	type ImprovementCategory,
 	type ImprovementSuggestion,
 	type Priority,
+	type SuggestionEngineConfig,
 	type SuggestionEngineStats,
 	getSelfImprovementEngine,
 } from "../self-improvement-engine.js";
@@ -40,6 +41,7 @@ interface ToolResult {
 	suggestions?: ImprovementSuggestion[];
 	suggestion?: ImprovementSuggestion;
 	stats?: SuggestionEngineStats;
+	config?: SuggestionEngineConfig;
 	count?: number;
 }
 
@@ -123,7 +125,7 @@ async function handleAction(
 			return {
 				success: true,
 				message: "Retrieved configuration",
-				stats: engine.getStats(),
+				config: engine.getConfig(),
 			};
 		}
 
@@ -226,6 +228,11 @@ selfImprovement({action: 'stats'})`,
 
 		if (result.stats) {
 			output += `\n\n${engine.formatStats(result.stats)}`;
+		}
+
+		if (result.config) {
+			output += "\n\n## Self-Improvement Engine Configuration\n\n";
+			output += `\n\`\`\`json\n${JSON.stringify(result.config, null, 2)}\n\`\`\``;
 		}
 
 		if (result.count !== undefined) {

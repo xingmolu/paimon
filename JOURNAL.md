@@ -14,6 +14,11 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 133 — Self-Improvement Config Output Fix (2026-04-19)
+- Fixed the `selfImprovement` tool `config` action so it returns the actual engine configuration instead of incorrectly reusing statistics output
+- Added regression coverage proving config responses include configured values and no longer render the statistics section
+- Build ✅ Tests ✅
+
 ### Day 132 — Task Predictor Scorecard Parser Migration (2026-04-18)
 - Migrated `task-predictor.ts` off its bespoke MEMORY.md table parser and onto the shared `parseScorecardRows()` compatibility utility
 - Preserved support for both compact `## Recent Scorecard` rows and legacy detailed scorecards while keeping prediction inputs aligned with other memory-driven modules
