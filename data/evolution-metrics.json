@@ -11,6 +11,11 @@
         "date": "2026-W16",
         "value": 100,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W17",
+        "value": 100,
+        "trend": "stable"
       }
     ],
     "weeklyAverage": 100,
@@ -19,7 +24,7 @@
   "time": {
     "averageMinutes": 13.333333333333334,
     "byTaskType": {
-      "capability": 13.636363636363637,
+      "capability": 13.571428571428571,
       "reliability": 10
     },
     "points": [
@@ -30,11 +35,16 @@
       },
       {
         "date": "2026-W16",
-        "value": 13.88888888888889,
+        "value": 14,
         "trend": "down"
+      },
+      {
+        "date": "2026-W17",
+        "value": 12.5,
+        "trend": "up"
       }
     ],
-    "fastestTask": "Filter self-improvement security false positives from internal detector files",
+    "fastestTask": "Fix selfImprovement config action to return configuration data with regression coverage",
     "slowestTask": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser"
   },
   "errors": {
@@ -57,6 +67,11 @@
         "date": "2026-W16",
         "value": 1,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W17",
+        "value": 0,
+        "trend": "up"
       }
     ],
     "commonPatterns": [
@@ -74,17 +89,21 @@
       },
       {
         "date": "2026-W16",
-        "value": 4
+        "value": 4.5
+      },
+      {
+        "date": "2026-W17",
+        "value": 1
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 11,
+    "totalCapabilities": 14,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-18T16:46:57.019Z",
-  "iterationsAnalyzed": 12
+  "lastUpdated": "2026-04-20T02:57:14.777Z",
+  "iterationsAnalyzed": 15
 }

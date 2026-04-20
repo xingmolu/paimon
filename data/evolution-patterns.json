@@ -214,10 +214,10 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 14,
-      "confidence": 73,
-      "sampleSize": 11,
+      "confidence": 82,
+      "sampleSize": 14,
       "examples": [],
-      "lastUpdated": "2026-04-18T16:46:57.086Z"
+      "lastUpdated": "2026-04-20T02:57:14.850Z"
     },
     {
       "id": "time-pattern-quick",
@@ -440,38 +440,38 @@
       },
       "successRate": 100,
       "firstTryRate": 100,
-      "averageTime": 14,
-      "confidence": 90,
-      "sampleSize": 10,
+      "averageTime": 13,
+      "confidence": 95,
+      "sampleSize": 13,
       "examples": [
         {
-          "taskDescription": "Treat missing impact data as unknown in metrics and memory recommendations",
-          "date": "2026-04-18",
+          "taskDescription": "Derive evolution strategy history start from MEMORY scorecard parser with regression coverage",
+          "date": "2026-04-19",
           "time": 15,
           "skillsUsed": [],
           "success": true,
           "firstTry": true
         },
         {
-          "taskDescription": "Filter self-improvement security false positives from internal detector files",
-          "date": "2026-04-17",
+          "taskDescription": "Fix selfImprovement config action to return configuration data with regression coverage",
+          "date": "2026-04-19",
           "time": 10,
           "skillsUsed": [],
           "success": true,
           "firstTry": true
         },
         {
-          "taskDescription": "Centralize metrics scorecard parsing on shared parser",
-          "date": "2026-04-17",
-          "time": 10,
+          "taskDescription": "Migrate task predictor scorecard parsing to shared compatibility utility",
+          "date": "2026-04-18",
+          "time": 15,
           "skillsUsed": [],
           "success": true,
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-18T16:46:57.086Z"
+      "lastUpdated": "2026-04-20T02:57:14.850Z"
     }
   ],
-  "lastUpdated": "2026-04-18T16:46:57.086Z",
-  "sessionCount": 12
+  "lastUpdated": "2026-04-20T02:57:14.850Z",
+  "sessionCount": 15
 }
