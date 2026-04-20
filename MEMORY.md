@@ -46,6 +46,7 @@ Persistent learnings stored across sessions.
 16. **Avoid hardcoded evolution-history dates when MEMORY already records them** — Strategy and planning modules should derive timeline baselines from the shared scorecard parser so compact and legacy MEMORY schemas stay aligned and long-term strategic analysis does not drift.
 17. **Fallback memory systems should reuse MEMORY.md scorecard history before giving empty guidance** — If a planning or reasoning tool has sparse first-party state, synthesize compatible historical records from the shared scorecard parser so early-use guidance still benefits from proven prior iterations.
 18. **Memory-quality heuristics should blend live metrics with parsed scorecard evidence** — When skill/error telemetry is sparse, recommendation engines should reuse shared MEMORY scorecard history for recent successful tasks, skills, and recurring errors instead of emitting generic weak-signal advice.
+19. **Pattern suggestion engines should fall back to MEMORY scorecards before returning empty matches** — If replay-specific pattern stores are sparse, synthesize lightweight patterns from shared scorecard rows so auto-apply and recommendation tools still provide concrete, memory-backed guidance.
 
 ---
 
@@ -61,6 +62,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-20 | capability | Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage | ~20m | ✅ | none |
 | 2026-04-20 | capability | Improve optimization dashboard memory recommendations with shared MEMORY scorecard fallback | ~20m | ✅ | none |
 | 2026-04-20 | capability | Add MEMORY.md scorecard fallback guidance to reasoning memory with regression coverage | ~15m | ✅ | none |
 | 2026-04-19 | capability | Derive evolution strategy history start from MEMORY scorecard parser with regression coverage | ~15m | ✅ | none |

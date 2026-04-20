@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 137 — Pattern Auto-Apply Scorecard Fallback (2026-04-20)
+- Taught `pattern-auto-apply` to synthesize fallback `success-pattern` / `failure-pattern` suggestions directly from MEMORY.md scorecard rows when session-replay patterns are unavailable
+- Reused the shared `parseScorecardRows()` utility so fallback patterns inherit task type, skills, errors, and enabled follow-on work without adding another bespoke MEMORY parser
+- Added regression coverage proving fallback suggestions appear when replay history is sparse, disappear when replay-derived patterns exist, and surface through the available-pattern listing
+- Build ✅ Tests ✅
+
 ### Day 136 — Memory-Aware Optimization Recommendations (2026-04-20)
 - Taught `optimization-dashboard` to reuse the shared `parseScorecardRows()` utility and derive lightweight memory signals directly from MEMORY.md when live skill metrics are sparse
 - Improved memory-quality scoring and recommendations with scorecard-backed successful task, skill, and error summaries so autonomous guidance stays evidence-based instead of defaulting to weak generic advice

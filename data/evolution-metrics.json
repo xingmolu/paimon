@@ -22,9 +22,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 13.4375,
+    "averageMinutes": 14.166666666666666,
     "byTaskType": {
-      "capability": 13.666666666666666,
+      "capability": 14.411764705882353,
       "reliability": 10
     },
     "points": [
@@ -40,12 +40,12 @@
       },
       {
         "date": "2026-W17",
-        "value": 13.333333333333334,
-        "trend": "stable"
+        "value": 16,
+        "trend": "down"
       }
     ],
     "fastestTask": "Fix selfImprovement config action to return configuration data with regression coverage",
-    "slowestTask": "Restore evolution-timeline and pattern-miner scorecard compatibility with shared parser"
+    "slowestTask": "Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage"
   },
   "errors": {
     "totalErrors": 2,
@@ -93,17 +93,17 @@
       },
       {
         "date": "2026-W17",
-        "value": 1.5
+        "value": 2.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 15,
+    "totalCapabilities": 17,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-20T15:54:55.629Z",
-  "iterationsAnalyzed": 16
+  "lastUpdated": "2026-04-20T17:21:26.938Z",
+  "iterationsAnalyzed": 18
 }

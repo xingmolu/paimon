@@ -20,6 +20,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { parseScorecardRows } from "./scorecard.js";
 import type { ExtractedPattern, PatternType } from "./session-replay.js";
 import { getSessionReplayManager } from "./session-replay.js";
 
@@ -98,6 +99,10 @@ export interface PatternAutoApplyConfig {
 	learnFromResults: boolean;
 	/** Auto-apply pattern types */
 	autoApplyPatternTypes: PatternType[];
+	/** Optional MEMORY.md path for scorecard fallbacks */
+	memoryPath?: string;
+	/** Maximum fallback patterns derived from MEMORY.md */
+	fallbackMaxPatterns: number;
 }
 
 /**
@@ -155,6 +160,8 @@ const DEFAULT_CONFIG: PatternAutoApplyConfig = {
 	maxSuggestions: 5,
 	learnFromResults: true,
 	autoApplyPatternTypes: ["success-pattern", "tool-sequence", "skill-usage"],
+	memoryPath: join(process.cwd(), "MEMORY.md"),
+	fallbackMaxPatterns: 5,
 };
 
 /**
@@ -299,17 +306,7 @@ export class PatternAutoApplier {
 			return [];
 		}
 
-		const replayManager = getSessionReplayManager();
-		const allPatterns = replayManager.getPatterns();
-
-		// Also include patterns received from proactive feeding
-		const combinedPatterns = [...allPatterns];
-		for (const receivedPattern of this.receivedPatterns) {
-			if (!combinedPatterns.find((p) => p.id === receivedPattern.id)) {
-				combinedPatterns.push(receivedPattern);
-			}
-		}
-
+		const combinedPatterns = this.getCandidatePatterns();
 		if (combinedPatterns.length === 0) {
 			return [];
 		}
@@ -336,6 +333,72 @@ export class PatternAutoApplier {
 		this.saveState();
 
 		return matches.slice(0, this.config.maxSuggestions);
+	}
+
+	private getCandidatePatterns(): ExtractedPattern[] {
+		const replayManager = getSessionReplayManager();
+		const allPatterns = replayManager.getPatterns();
+
+		const combinedPatterns = [...allPatterns];
+		for (const receivedPattern of this.receivedPatterns) {
+			if (!combinedPatterns.find((p) => p.id === receivedPattern.id)) {
+				combinedPatterns.push(receivedPattern);
+			}
+		}
+
+		if (combinedPatterns.length > 0) {
+			return combinedPatterns;
+		}
+
+		return this.getScorecardFallbackPatterns();
+	}
+
+	private getScorecardFallbackPatterns(): ExtractedPattern[] {
+		const memoryPath = this.config.memoryPath;
+		if (!memoryPath || !existsSync(memoryPath)) {
+			return [];
+		}
+
+		try {
+			const content = readFileSync(memoryPath, "utf-8");
+			const rows = parseScorecardRows(content).slice(0, this.config.fallbackMaxPatterns);
+			return rows.map((row, index) => {
+				const successful = row.result === "✅" || row.firstTry === "✅" || !row.result;
+				const skills = (row.skillsUsed || "")
+					.split(",")
+					.map((skill) => skill.trim())
+					.filter(Boolean);
+				const errors = row.errors && row.errors !== "none" ? [row.errors] : [];
+				const suggestionParts = [`Reuse the MEMORY.md approach from ${row.date}`];
+				if (skills.length > 0) {
+					suggestionParts.push(`consider skills: ${skills.join(", ")}`);
+				}
+				if (row.enables) {
+					suggestionParts.push(`enabled follow-on work: ${row.enables}`);
+				}
+
+				return {
+					id: `scorecard-pattern-${row.date}-${index}`,
+					type: successful ? "success-pattern" : "failure-pattern",
+					description: row.description,
+					confidence: successful ? 78 : 60,
+					foundIn: ["MEMORY.md"],
+					successCorrelation: successful ? 0.78 : 0.35,
+					suggestedApplication: suggestionParts.join("; "),
+					details: {
+						source: "scorecard",
+						date: row.date,
+						taskType: row.taskType,
+						time: row.time,
+						skills,
+						errors,
+						enables: row.enables || "",
+					},
+				};
+			});
+		} catch {
+			return [];
+		}
 	}
 
 	/**
@@ -489,8 +552,7 @@ export class PatternAutoApplier {
 	 * Apply a specific pattern
 	 */
 	applyPattern(patternId: string, context: PatternContext): AutoApplyResult {
-		const replayManager = getSessionReplayManager();
-		const patterns = replayManager.getPatterns();
+		const patterns = this.getCandidatePatterns();
 		const pattern = patterns.find((p) => p.id === patternId);
 
 		if (!pattern) {
@@ -633,25 +695,14 @@ export class PatternAutoApplier {
 	 * Get all available patterns with match potential
 	 */
 	getAvailablePatterns(): ExtractedPattern[] {
-		const replayManager = getSessionReplayManager();
-		const patterns = replayManager.getPatterns();
-
-		// Include patterns received from proactive feeding
-		for (const receivedPattern of this.receivedPatterns) {
-			if (!patterns.find((p) => p.id === receivedPattern.id)) {
-				patterns.push(receivedPattern);
-			}
-		}
-
-		return patterns;
+		return this.getCandidatePatterns();
 	}
 
 	/**
 	 * Get patterns by type
 	 */
 	getPatternsByType(type: PatternType): ExtractedPattern[] {
-		const replayManager = getSessionReplayManager();
-		return replayManager.getPatterns(type);
+		return this.getCandidatePatterns().filter((pattern) => pattern.type === type);
 	}
 
 	/**
