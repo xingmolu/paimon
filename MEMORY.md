@@ -18,11 +18,11 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (109/118)
+- First Try Success Rate: 92% (110/119)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 95% (112/118)
-- Capability Velocity: 37/day
+- Capability Tasks: 95% (113/119)
+- Capability Velocity: 38/day
 
 ---
 
@@ -45,6 +45,7 @@ Persistent learnings stored across sessions.
 15. **Tool actions must return action-matching payloads** — If a tool advertises a `config` action, return configuration data and render configuration output, not reused stats payloads; otherwise autonomous tuning and trust in tool affordances degrade silently.
 16. **Avoid hardcoded evolution-history dates when MEMORY already records them** — Strategy and planning modules should derive timeline baselines from the shared scorecard parser so compact and legacy MEMORY schemas stay aligned and long-term strategic analysis does not drift.
 17. **Fallback memory systems should reuse MEMORY.md scorecard history before giving empty guidance** — If a planning or reasoning tool has sparse first-party state, synthesize compatible historical records from the shared scorecard parser so early-use guidance still benefits from proven prior iterations.
+18. **Memory-quality heuristics should blend live metrics with parsed scorecard evidence** — When skill/error telemetry is sparse, recommendation engines should reuse shared MEMORY scorecard history for recent successful tasks, skills, and recurring errors instead of emitting generic weak-signal advice.
 
 ---
 
@@ -60,6 +61,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-20 | capability | Improve optimization dashboard memory recommendations with shared MEMORY scorecard fallback | ~20m | ✅ | none |
 | 2026-04-20 | capability | Add MEMORY.md scorecard fallback guidance to reasoning memory with regression coverage | ~15m | ✅ | none |
 | 2026-04-19 | capability | Derive evolution strategy history start from MEMORY scorecard parser with regression coverage | ~15m | ✅ | none |
 | 2026-04-19 | capability | Fix selfImprovement config action to return configuration data with regression coverage | ~10m | ✅ | none |

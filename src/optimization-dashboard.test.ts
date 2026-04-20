@@ -1,3 +1,7 @@
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+
 import { describe, expect, it, vi } from "vitest";
 
 import * as contextAnalysisModule from "./context-analysis.js";
@@ -267,6 +271,78 @@ describe("OptimizationDashboardManager", () => {
 		expect(skillRecommendation?.description).not.toContain("-------------");
 		expect(errorRecommendation?.description).toContain("recurring lint errors");
 		expect(errorRecommendation?.description).not.toContain("lint (fixed)");
+	});
+
+	it("falls back to shared MEMORY.md scorecard history when live skill signals are sparse", () => {
+		const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "optimization-dashboard-"));
+		const memoryFile = path.join(tempDir, "MEMORY.md");
+		fs.writeFileSync(
+			memoryFile,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-04-20 | capability | Add MEMORY scorecard fallback guidance | ~15m | ✅ | none | evolve, plan-architecture |",
+				"| 2026-04-19 | capability | Fix self-improvement config output | ~10m | ✅ | lint | evolve, review-changes |",
+			].join("\n"),
+		);
+
+		const manager = new OptimizationDashboardManager({
+			memoryFile,
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 78, points: [], weeklyAverage: 80, improvement: -2 },
+					time: {
+						averageMinutes: 20,
+						byTaskType: { capability: 20 },
+						points: [],
+						fastestTask: "Quick fix",
+						slowestTask: "Large feature",
+					},
+					errors: {
+						totalErrors: 0,
+						byType: {},
+						recentErrors: [],
+						points: [],
+						commonPatterns: [],
+					},
+					skills: [],
+					capabilityVelocity: {
+						current: 4,
+						points: [],
+						totalCapabilities: 20,
+						highImpactCount: 0,
+						highImpactPercentage: 0,
+					},
+					lastUpdated: "2026-04-20T00:00:00.000Z",
+					iterationsAnalyzed: 2,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [],
+			},
+		});
+
+		const health = manager.getHealth();
+		const recommendations = manager.getRecommendations();
+		const titles = recommendations.map((item) => item.title);
+
+		expect(health.components.memoryQuality).toBeGreaterThan(55);
+		expect(titles).toContain("Preserve successful skill combinations in memory");
+		expect(titles).toContain("Promote proven memory-backed tasks");
+		expect(
+			recommendations.find(
+				(item) => item.title === "Preserve successful skill combinations in memory",
+			)?.description,
+		).toContain("evolve");
+		expect(
+			recommendations.find((item) => item.title === "Promote proven memory-backed tasks")
+				?.description,
+		).toContain("Add MEMORY scorecard fallback guidance");
+		fs.rmSync(tempDir, { recursive: true, force: true });
 	});
 
 	it("adds enabler-aware capability recommendations for weak dashboard components", () => {

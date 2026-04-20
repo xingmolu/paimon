@@ -132,6 +132,78 @@ describe("SelfImprovementEngine", () => {
 		).toContain("lint");
 	});
 
+	it("surfaces memory-backed dashboard recommendations through self-improvement suggestions", async () => {
+		const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "self-improvement-memory-"));
+		const memoryFile = path.join(tempDir, "MEMORY.md");
+		fs.writeFileSync(
+			memoryFile,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-04-20 | capability | Add MEMORY scorecard fallback guidance | ~15m | ✅ | none | evolve, plan-architecture |",
+				"| 2026-04-19 | capability | Fix self-improvement config output | ~10m | ✅ | lint | evolve, review-changes |",
+			].join("\n"),
+		);
+
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+
+		const dashboard = new OptimizationDashboardManager({
+			memoryFile,
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 76, points: [], weeklyAverage: 78, improvement: -2 },
+					time: {
+						averageMinutes: 19,
+						byTaskType: { capability: 19 },
+						points: [],
+						fastestTask: "Quick fix",
+						slowestTask: "Large feature",
+					},
+					errors: {
+						totalErrors: 0,
+						byType: {},
+						recentErrors: [],
+						points: [],
+						commonPatterns: [],
+					},
+					skills: [],
+					capabilityVelocity: {
+						current: 4,
+						points: [],
+						totalCapabilities: 20,
+						highImpactCount: 0,
+						highImpactPercentage: 0,
+					},
+					lastUpdated: "2026-04-20T00:00:00.000Z",
+					iterationsAnalyzed: 2,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [],
+			},
+		});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue(dashboard);
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).toContain("Preserve successful skill combinations in memory");
+		expect(
+			suggestions.some((item) => item.title === "Preserve successful skill combinations in memory"),
+		).toBe(true);
+		fs.rmSync(tempDir, { recursive: true, force: true });
+	});
+
 	it("adds evidence-based auto-context suggestions from the shared context analysis helper", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);

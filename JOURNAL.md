@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 136 — Memory-Aware Optimization Recommendations (2026-04-20)
+- Taught `optimization-dashboard` to reuse the shared `parseScorecardRows()` utility and derive lightweight memory signals directly from MEMORY.md when live skill metrics are sparse
+- Improved memory-quality scoring and recommendations with scorecard-backed successful task, skill, and error summaries so autonomous guidance stays evidence-based instead of defaulting to weak generic advice
+- Added regression coverage proving dashboard fallback behavior and that `self-improvement-engine` surfaces the stronger memory-backed recommendations through existing dashboard integration
+- Build ✅ Tests ✅
+
 ### Day 135 — Reasoning Memory Scorecard Guidance Fallback (2026-04-20)
 - Taught `reasoning-memory` to fall back to parsed MEMORY.md scorecard entries when no stored reasoning chains match a new task
 - Added scorecard-backed pseudo-chain generation so guidance can surface relevant successful historical iterations without requiring prior reasoning-memory adoption

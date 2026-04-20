@@ -9,6 +9,7 @@ import * as path from "node:path";
 import { analyzeContextTasks, buildContextAnalyzeCommand } from "./context-analysis.js";
 import type { EvolutionMetrics, SkillMetric } from "./metrics.js";
 import { getMetricsTracker } from "./metrics.js";
+import { parseScorecardRows } from "./scorecard.js";
 import type { ToolUsageStats } from "./tool-usage-analytics.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
 
@@ -90,6 +91,14 @@ export interface OptimizationDashboardDependencies {
 	toolUsageAnalyticsManager?: {
 		getToolStats(): ToolUsageStats[];
 	};
+	memoryFile?: string;
+}
+
+interface ScorecardMemorySignals {
+	recentSuccessfulDescriptions: string[];
+	recentSkillNames: string[];
+	recentErrorPatterns: string[];
+	hasStructuredHistory: boolean;
 }
 
 interface EnablerRecommendationSignal {
@@ -110,6 +119,7 @@ export class OptimizationDashboardManager {
 	private history: DashboardHealth[] = [];
 	private readonly metricsTracker: { getMetrics(): EvolutionMetrics };
 	private readonly toolUsageAnalyticsManager: { getToolStats(): ToolUsageStats[] };
+	private readonly memoryFile: string;
 	private readonly enablerSignals: Record<
 		keyof HealthComponents,
 		EnablerRecommendationSignal | null
@@ -194,6 +204,7 @@ export class OptimizationDashboardManager {
 		this.metricsTracker = dependencies.metricsTracker ?? getMetricsTracker();
 		this.toolUsageAnalyticsManager =
 			dependencies.toolUsageAnalyticsManager ?? getToolUsageAnalyticsManager();
+		this.memoryFile = dependencies.memoryFile ?? path.join(process.cwd(), "MEMORY.md");
 		this.readData();
 	}
 
@@ -254,14 +265,87 @@ export class OptimizationDashboardManager {
 		return this.clamp((baselineMinutes / averageMinutes) * 100);
 	}
 
+	private loadScorecardMemorySignals(): ScorecardMemorySignals {
+		try {
+			if (!fs.existsSync(this.memoryFile)) {
+				return {
+					recentSuccessfulDescriptions: [],
+					recentSkillNames: [],
+					recentErrorPatterns: [],
+					hasStructuredHistory: false,
+				};
+			}
+
+			const rows = parseScorecardRows(fs.readFileSync(this.memoryFile, "utf-8"));
+			if (rows.length === 0) {
+				return {
+					recentSuccessfulDescriptions: [],
+					recentSkillNames: [],
+					recentErrorPatterns: [],
+					hasStructuredHistory: false,
+				};
+			}
+
+			const recentRows = rows.slice(0, 8);
+			const successfulRows = recentRows.filter(
+				(row) => (row.firstTry || row.result || "") === "✅",
+			);
+			const recentSkillNames = Array.from(
+				new Set(
+					recentRows
+						.flatMap((row) => (row.skillsUsed || "").split(","))
+						.map((skill) => skill.trim())
+						.filter((skill) => this.isMeaningfulSkillName(skill)),
+				),
+			).slice(0, 6);
+			const recentErrorPatterns = Array.from(
+				new Set(
+					recentRows
+						.map((row) => this.formatErrorPattern(row.errors || ""))
+						.filter((pattern) => pattern && pattern !== "none"),
+				),
+			).slice(0, 4);
+
+			return {
+				recentSuccessfulDescriptions: successfulRows.map((row) => row.description).slice(0, 3),
+				recentSkillNames,
+				recentErrorPatterns,
+				hasStructuredHistory: true,
+			};
+		} catch {
+			return {
+				recentSuccessfulDescriptions: [],
+				recentSkillNames: [],
+				recentErrorPatterns: [],
+				hasStructuredHistory: false,
+			};
+		}
+	}
+
 	private calculateMemoryQuality(metrics: EvolutionMetrics): number {
+		const scorecardSignals = this.loadScorecardMemorySignals();
 		const skillsScore =
 			metrics.skills.length > 0
 				? metrics.skills.reduce((sum, skill) => sum + skill.successRate, 0) / metrics.skills.length
-				: 75;
+				: scorecardSignals.recentSkillNames.length > 0
+					? 82
+					: 75;
 		const iterationScore = Math.min(metrics.iterationsAnalyzed, 25) * 2;
 		const capabilityScore = Math.min(metrics.capabilityVelocity.highImpactPercentage, 100);
-		return this.clamp(skillsScore * 0.5 + iterationScore * 0.2 + capabilityScore * 0.3);
+		const scorecardScore = scorecardSignals.hasStructuredHistory
+			? this.clamp(
+					65 +
+						scorecardSignals.recentSuccessfulDescriptions.length * 8 +
+						scorecardSignals.recentSkillNames.length * 3 -
+						scorecardSignals.recentErrorPatterns.length * 2,
+				)
+			: 0;
+		const scorecardWeight = scorecardSignals.hasStructuredHistory ? 0.35 : 0;
+		const baseWeight = 1 - scorecardWeight;
+		return this.clamp(
+			(skillsScore * 0.5 + iterationScore * 0.2 + capabilityScore * 0.3) * baseWeight +
+				scorecardScore * scorecardWeight,
+		);
 	}
 
 	private isMeaningfulSkillName(skillName: string): boolean {
@@ -388,6 +472,7 @@ export class OptimizationDashboardManager {
 		}
 
 		const recommendations: OptimizationRecommendation[] = [];
+		const scorecardSignals = this.loadScorecardMemorySignals();
 		const lowConfidenceSkills = this.getLowConfidenceSkills(metrics);
 		const primaryErrorPattern = this.getPrimaryErrorPattern(metrics);
 		const hasCapabilityImpactData =
@@ -411,13 +496,38 @@ export class OptimizationDashboardManager {
 			});
 		}
 
-		if (primaryErrorPattern) {
+		const fallbackErrorPattern = scorecardSignals.recentErrorPatterns[0];
+		if (primaryErrorPattern || fallbackErrorPattern) {
+			const errorPattern = primaryErrorPattern || fallbackErrorPattern;
 			recommendations.push({
 				priority: "medium",
 				category: "memory",
 				title: "Turn recurring errors into reusable guardrails",
-				description: `Recent iterations still show recurring ${primaryErrorPattern} errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.`,
+				description: `Recent iterations still show recurring ${errorPattern} errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.`,
 				expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+				effort: "simple",
+			});
+		}
+
+		if (lowConfidenceSkills.length === 0 && scorecardSignals.recentSkillNames.length > 0) {
+			recommendations.push({
+				priority: "medium",
+				category: "memory",
+				title: "Preserve successful skill combinations in memory",
+				description: `Recent MEMORY.md scorecard history references repeat skill usage such as ${scorecardSignals.recentSkillNames.join(", ")}. Capture why these combinations worked so future sessions can reuse them intentionally instead of rediscovering them.`,
+				expectedImpact:
+					"Better recall of successful execution patterns when live skill metrics are sparse",
+				effort: "simple",
+			});
+		}
+
+		if (scorecardSignals.recentSuccessfulDescriptions.length > 0) {
+			recommendations.push({
+				priority: "medium",
+				category: "memory",
+				title: "Promote proven memory-backed tasks",
+				description: `Recent successful iterations include ${scorecardSignals.recentSuccessfulDescriptions.join("; ")}. Use these concrete wins to guide future task selection and keep new work aligned with demonstrated high-signal improvements.`,
+				expectedImpact: "More evidence-based task selection from existing MEMORY.md history",
 				effort: "simple",
 			});
 		}
