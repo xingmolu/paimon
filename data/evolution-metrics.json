@@ -22,9 +22,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 13.333333333333334,
+    "averageMinutes": 13.4375,
     "byTaskType": {
-      "capability": 13.571428571428571,
+      "capability": 13.666666666666666,
       "reliability": 10
     },
     "points": [
@@ -40,8 +40,8 @@
       },
       {
         "date": "2026-W17",
-        "value": 12.5,
-        "trend": "up"
+        "value": 13.333333333333334,
+        "trend": "stable"
       }
     ],
     "fastestTask": "Fix selfImprovement config action to return configuration data with regression coverage",
@@ -93,17 +93,17 @@
       },
       {
         "date": "2026-W17",
-        "value": 1
+        "value": 1.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 14,
+    "totalCapabilities": 15,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-20T02:57:14.777Z",
-  "iterationsAnalyzed": 15
+  "lastUpdated": "2026-04-20T15:54:55.629Z",
+  "iterationsAnalyzed": 16
 }

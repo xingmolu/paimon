@@ -214,10 +214,10 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 14,
-      "confidence": 82,
-      "sampleSize": 14,
+      "confidence": 85,
+      "sampleSize": 15,
       "examples": [],
-      "lastUpdated": "2026-04-20T02:57:14.850Z"
+      "lastUpdated": "2026-04-20T15:54:55.696Z"
     },
     {
       "id": "time-pattern-quick",
@@ -440,10 +440,18 @@
       },
       "successRate": 100,
       "firstTryRate": 100,
-      "averageTime": 13,
+      "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 13,
+      "sampleSize": 14,
       "examples": [
+        {
+          "taskDescription": "Add MEMORY.md scorecard fallback guidance to reasoning memory with regression coverage",
+          "date": "2026-04-20",
+          "time": 15,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Derive evolution strategy history start from MEMORY scorecard parser with regression coverage",
           "date": "2026-04-19",
@@ -459,19 +467,11 @@
           "skillsUsed": [],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Migrate task predictor scorecard parsing to shared compatibility utility",
-          "date": "2026-04-18",
-          "time": 15,
-          "skillsUsed": [],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-20T02:57:14.850Z"
+      "lastUpdated": "2026-04-20T15:54:55.696Z"
     }
   ],
-  "lastUpdated": "2026-04-20T02:57:14.850Z",
-  "sessionCount": 15
+  "lastUpdated": "2026-04-20T15:54:55.697Z",
+  "sessionCount": 16
 }
