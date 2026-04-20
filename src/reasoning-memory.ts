@@ -12,6 +12,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { type ScorecardRow, parseScorecardRows } from "./scorecard.js";
 
 // Types
 export interface ReasoningStep {
@@ -76,6 +77,7 @@ export interface SimilarChainResult {
 	similarity: number;
 	matchingKeywords: string[];
 	matchingTags: string[];
+	source?: "chain" | "scorecard";
 }
 
 // Default configuration
@@ -285,42 +287,12 @@ export class ReasoningMemoryManager {
 		taskType?: "capability" | "reliability" | "feature",
 		limit = 5,
 	): SimilarChainResult[] {
-		const keywords = this.extractKeywords(taskDescription);
-		const tags = this.extractTags(taskDescription);
-
-		const results: SimilarChainResult[] = [];
-
-		for (const chain of this.chains) {
-			if (taskType && chain.taskType !== taskType) continue;
-
-			const chainKeywords = this.extractKeywords(chain.taskDescription);
-			const keywordMatches = keywords.filter((k) => chainKeywords.includes(k));
-			const tagMatches = tags.filter((t) => chain.tags.includes(t));
-
-			const keywordSimilarity =
-				keywords.length > 0
-					? keywordMatches.length / Math.max(keywords.length, chainKeywords.length)
-					: 0;
-			const tagSimilarity =
-				tags.length > 0 ? tagMatches.length / Math.max(tags.length, chain.tags.length) : 0;
-
-			// Weight successful chains higher
-			const outcomeBoost =
-				chain.outcome === "success" ? 0.2 : chain.outcome === "partial" ? 0.1 : 0;
-
-			const similarity = keywordSimilarity * 0.5 + tagSimilarity * 0.3 + outcomeBoost;
-
-			if (similarity >= this.config.similarityThreshold) {
-				results.push({
-					chain,
-					similarity,
-					matchingKeywords: keywordMatches,
-					matchingTags: tagMatches,
-				});
-			}
+		const chainResults = this.findSimilarStoredChains(taskDescription, taskType, limit);
+		if (chainResults.length > 0) {
+			return chainResults;
 		}
 
-		return results.sort((a, b) => b.similarity - a.similarity).slice(0, limit);
+		return this.getScorecardFallbackResults(taskDescription, taskType, limit);
 	}
 
 	public getReasoningGuidance(
@@ -333,7 +305,12 @@ export class ReasoningMemoryManager {
 		const lines: string[] = ["## Reasoning Memory Guidance", ""];
 
 		if (similarChains.length > 0) {
-			lines.push("### Similar Past Iterations");
+			const hasScorecardFallback = similarChains.some((result) => result.source === "scorecard");
+			lines.push(
+				hasScorecardFallback
+					? "### Related MEMORY.md Scorecard Entries"
+					: "### Similar Past Iterations",
+			);
 			lines.push("");
 			for (const result of similarChains) {
 				const outcome =
@@ -345,6 +322,9 @@ export class ReasoningMemoryManager {
 				lines.push(
 					`${outcome} **${result.chain.taskDescription.slice(0, 60)}...** (${Math.round(result.similarity * 100)}% similar)`,
 				);
+				if (result.source === "scorecard") {
+					lines.push(`   - Source: MEMORY.md scorecard (${result.chain.taskType})`);
+				}
 				if (result.chain.learnings && result.chain.learnings.length > 0) {
 					lines.push(`   - Learning: ${result.chain.learnings[0].slice(0, 80)}...`);
 				}
@@ -367,6 +347,140 @@ export class ReasoningMemoryManager {
 		}
 
 		return lines.join("\n");
+	}
+
+	private findSimilarStoredChains(
+		taskDescription: string,
+		taskType?: "capability" | "reliability" | "feature",
+		limit = 5,
+	): SimilarChainResult[] {
+		const keywords = this.extractKeywords(taskDescription);
+		const tags = this.extractTags(taskDescription);
+		const results: SimilarChainResult[] = [];
+
+		for (const chain of this.chains) {
+			if (taskType && chain.taskType !== taskType) continue;
+
+			const chainKeywords = this.extractKeywords(chain.taskDescription);
+			const keywordMatches = keywords.filter((k) => chainKeywords.includes(k));
+			const tagMatches = tags.filter((t) => chain.tags.includes(t));
+
+			const keywordSimilarity =
+				keywords.length > 0
+					? keywordMatches.length / Math.max(keywords.length, chainKeywords.length)
+					: 0;
+			const tagSimilarity =
+				tags.length > 0 ? tagMatches.length / Math.max(tags.length, chain.tags.length) : 0;
+			const outcomeBoost =
+				chain.outcome === "success" ? 0.2 : chain.outcome === "partial" ? 0.1 : 0;
+			const similarity = keywordSimilarity * 0.5 + tagSimilarity * 0.3 + outcomeBoost;
+
+			if (similarity >= this.config.similarityThreshold) {
+				results.push({
+					chain,
+					similarity,
+					matchingKeywords: keywordMatches,
+					matchingTags: tagMatches,
+					source: "chain",
+				});
+			}
+		}
+
+		return results.sort((a, b) => b.similarity - a.similarity).slice(0, limit);
+	}
+
+	private getScorecardFallbackResults(
+		taskDescription: string,
+		taskType?: "capability" | "reliability" | "feature",
+		limit = 5,
+	): SimilarChainResult[] {
+		const rows = this.loadScorecardRows();
+		const keywords = this.extractKeywords(taskDescription);
+		const tags = this.extractTags(taskDescription);
+
+		const results = rows
+			.filter((row) => !taskType || row.taskType === taskType)
+			.map((row) => {
+				const rowKeywords = this.extractKeywords(row.description);
+				const matchingKeywords = keywords.filter((keyword) => rowKeywords.includes(keyword));
+				const rowTags = this.extractTags(row.description);
+				const matchingTags = tags.filter((tag) => rowTags.includes(tag));
+				const keywordSimilarity =
+					keywords.length > 0
+						? matchingKeywords.length / Math.max(keywords.length, rowKeywords.length)
+						: 0;
+				const tagSimilarity =
+					tags.length > 0 ? matchingTags.length / Math.max(tags.length, rowTags.length) : 0;
+				const successBoost = row.result === "✅" || row.firstTry === "✅" ? 0.2 : 0;
+				const similarity = keywordSimilarity * 0.6 + tagSimilarity * 0.2 + successBoost;
+
+				return {
+					chain: this.createPseudoChainFromScorecard(row),
+					similarity,
+					matchingKeywords,
+					matchingTags,
+					source: "scorecard" as const,
+				};
+			})
+			.filter((result) => result.similarity >= this.config.similarityThreshold)
+			.sort((a, b) => b.similarity - a.similarity)
+			.slice(0, limit);
+
+		return results;
+	}
+
+	private loadScorecardRows(): ScorecardRow[] {
+		try {
+			const memoryPath = path.join(process.cwd(), "MEMORY.md");
+			if (!fs.existsSync(memoryPath)) {
+				return [];
+			}
+			const content = fs.readFileSync(memoryPath, "utf-8");
+			return parseScorecardRows(content);
+		} catch {
+			return [];
+		}
+	}
+
+	private createPseudoChainFromScorecard(row: ScorecardRow): ReasoningChain {
+		const learnings = [
+			`Historical ${row.taskType} iteration completed in ${row.time}${row.errors && row.errors !== "none" ? ` with errors: ${row.errors}` : " without recorded errors"}.`,
+		];
+		if (row.skillsUsed) {
+			learnings.push(`Skills used: ${row.skillsUsed}`);
+		}
+		if (row.enables) {
+			learnings.push(`Enabled future work: ${row.enables}`);
+		}
+
+		return {
+			id: `scorecard-${row.date}-${row.description
+				.toLowerCase()
+				.replace(/[^a-z0-9]+/g, "-")
+				.replace(/^-|-$/g, "")
+				.slice(0, 40)}`,
+			taskDescription: row.description,
+			taskType: (row.taskType as "capability" | "reliability" | "feature") || "capability",
+			steps: [],
+			outcome:
+				row.result === "✅" || row.firstTry === "✅"
+					? "success"
+					: row.result === "❌"
+						? "failure"
+						: "partial",
+			durationMs: this.parseDurationMs(row.time),
+			filesModified: [],
+			errors: row.errors && row.errors !== "none" ? [row.errors] : [],
+			learnings,
+			timestamp: new Date(`${row.date}T00:00:00.000Z`).toISOString(),
+			tags: this.extractTags(row.description),
+		};
+	}
+
+	private parseDurationMs(value: string): number {
+		const match = value.match(/~?(\d+)\s*m/i);
+		if (!match) return 0;
+		return Number.parseInt(match[1] || "0", 10) * 60 * 1000;
 	}
 
 	public getChain(chainId: string): ReasoningChain | undefined {

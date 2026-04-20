@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 135 — Reasoning Memory Scorecard Guidance Fallback (2026-04-20)
+- Taught `reasoning-memory` to fall back to parsed MEMORY.md scorecard entries when no stored reasoning chains match a new task
+- Added scorecard-backed pseudo-chain generation so guidance can surface relevant successful historical iterations without requiring prior reasoning-memory adoption
+- Added regression tests proving scorecard guidance appears for capability tasks while live reasoning chains still take precedence over fallback entries
+- Build ✅ Tests ✅
+
 ### Day 134 — Evolution Strategy Scorecard History Fix (2026-04-19)
 - Replaced `evolution-strategy`'s hardcoded evolution start date with parsing of the earliest MEMORY.md scorecard entry via the shared scorecard compatibility utility
 - Added regression tests covering compact `## Recent Scorecard`, legacy `## Evolution Scorecard`, and missing-scorecard fallback behavior so strategic analysis stays aligned with memory history

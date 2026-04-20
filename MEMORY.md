@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (108/117)
+- First Try Success Rate: 92% (109/118)
 - Average Time: ~15 minutes
 - Rework Rate: 8%
-- Capability Tasks: 95% (111/117)
+- Capability Tasks: 95% (112/118)
 - Capability Velocity: 37/day
 
 ---
@@ -44,6 +44,7 @@ Persistent learnings stored across sessions.
 14. **Shared scorecard parser adoption must include predictors, not just analytics** — Task-selection and recommendation systems like task predictors silently lose historical signal when they keep bespoke MEMORY parsers; migrate all memory-driven decision modules to the same compatibility utility and cover both compact and legacy schemas with regression tests.
 15. **Tool actions must return action-matching payloads** — If a tool advertises a `config` action, return configuration data and render configuration output, not reused stats payloads; otherwise autonomous tuning and trust in tool affordances degrade silently.
 16. **Avoid hardcoded evolution-history dates when MEMORY already records them** — Strategy and planning modules should derive timeline baselines from the shared scorecard parser so compact and legacy MEMORY schemas stay aligned and long-term strategic analysis does not drift.
+17. **Fallback memory systems should reuse MEMORY.md scorecard history before giving empty guidance** — If a planning or reasoning tool has sparse first-party state, synthesize compatible historical records from the shared scorecard parser so early-use guidance still benefits from proven prior iterations.
 
 ---
 
@@ -59,6 +60,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-20 | capability | Add MEMORY.md scorecard fallback guidance to reasoning memory with regression coverage | ~15m | ✅ | none |
 | 2026-04-19 | capability | Derive evolution strategy history start from MEMORY scorecard parser with regression coverage | ~15m | ✅ | none |
 | 2026-04-19 | capability | Fix selfImprovement config action to return configuration data with regression coverage | ~10m | ✅ | none |
 | 2026-04-18 | capability | Migrate task predictor scorecard parsing to shared compatibility utility | ~15m | ✅ | none |
