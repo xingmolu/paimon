@@ -12,6 +12,18 @@ export interface ScorecardRow {
 	enables?: string;
 }
 
+export function isPositiveScorecardResult(value?: string): boolean {
+	return (value || "").trim() === "✅";
+}
+
+export function isNegativeScorecardResult(value?: string): boolean {
+	return (value || "").trim() === "❌";
+}
+
+export function hasRecordedImpact(value?: string): boolean {
+	return /^(high|medium|low)$/i.test((value || "").trim());
+}
+
 function normalizeHeader(header: string): string {
 	return header
 		.toLowerCase()

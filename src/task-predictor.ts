@@ -5,7 +5,7 @@
  * Uses historical session data from MEMORY.md scorecard to predict outcomes.
  */
 
-import { parseScorecardRows } from "./scorecard.js";
+import { isPositiveScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 export interface TaskPrediction {
 	successProbability: number; // 0-1 probability of success
@@ -130,7 +130,7 @@ export class TaskSuccessPredictor {
 				byType[type] = { successes: 0, failures: 0, times: [], errors: [] };
 			}
 
-			if (session.firstTry === "✅") {
+			if (isPositiveScorecardResult(session.firstTry)) {
 				byType[type].successes++;
 			} else {
 				byType[type].failures++;
@@ -190,7 +190,7 @@ export class TaskSuccessPredictor {
 		const skillCounts: Record<string, number> = {};
 
 		for (const session of this.sessions) {
-			if (session.taskType !== type || session.firstTry !== "✅") {
+			if (session.taskType !== type || !isPositiveScorecardResult(session.firstTry)) {
 				continue;
 			}
 
@@ -216,7 +216,7 @@ export class TaskSuccessPredictor {
 		const skillCounts: Record<string, number> = {};
 
 		for (const session of this.sessions) {
-			if (session.taskType !== type || session.firstTry === "✅") {
+			if (session.taskType !== type || isPositiveScorecardResult(session.firstTry)) {
 				continue;
 			}
 
@@ -358,7 +358,7 @@ export class TaskSuccessPredictor {
 				continue;
 			}
 
-			const isSuccessful = session.firstTry === "✅";
+			const isSuccessful = isPositiveScorecardResult(session.firstTry);
 			if (isSuccessful !== successful) {
 				continue;
 			}

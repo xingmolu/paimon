@@ -12,7 +12,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { parseScorecardRows } from "./scorecard.js";
+import { hasRecordedImpact, isPositiveScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 /**
  * A mined evolution pattern
@@ -159,16 +159,16 @@ export class PatternMiner {
 	private parseScorecard(content: string): SessionEntry[] {
 		return parseScorecardRows(content).map((row) => {
 			const time = Number.parseInt(row.time.replace(/[~m]/g, ""), 10) || 0;
-			const result = row.firstTry || row.result || "✅";
 			const errors = row.errors || "none";
 			const skillsUsed = row.skillsUsed || "";
+			const positiveResult = isPositiveScorecardResult(row.firstTry || row.result);
 
 			return {
 				date: row.date,
 				taskType: row.taskType || "feature",
 				taskDescription: row.description,
 				time,
-				firstTry: result === "✅",
+				firstTry: positiveResult,
 				errors:
 					errors === "none"
 						? []
@@ -177,7 +177,7 @@ export class PatternMiner {
 								.map((error) => error.trim())
 								.filter(Boolean),
 				rework: (row.rework || "").toLowerCase() === "yes",
-				impact: row.impact || "Medium",
+				impact: hasRecordedImpact(row.impact) ? row.impact || "" : "",
 				skillsUsed: skillsUsed
 					.split(",")
 					.map((skill) => skill.trim())
@@ -314,13 +314,21 @@ export class PatternMiner {
 
 			const successes = sessions.filter((s) => s.firstTry);
 			const successRate = Math.round((successes.length / sessions.length) * 100);
-			const highImpact = sessions.filter((s) => s.impact === "High").length;
-			const impactRate = Math.round((highImpact / sessions.length) * 100);
+			const recordedImpactSessions = sessions.filter((s) => hasRecordedImpact(s.impact));
+			const highImpact = recordedImpactSessions.filter((s) => s.impact === "High").length;
+			const impactRate =
+				recordedImpactSessions.length > 0
+					? Math.round((highImpact / recordedImpactSessions.length) * 100)
+					: 0;
+			const impactSummary =
+				recordedImpactSessions.length > 0
+					? `${impactRate}% high impact`
+					: "impact not yet recorded";
 
 			const pattern: EvolutionPattern = {
 				id: `task-type-${taskType}`,
 				type: "task-type-success",
-				description: `${taskType} tasks: ${successRate}% success, ${impactRate}% high impact`,
+				description: `${taskType} tasks: ${successRate}% success, ${impactSummary}`,
 				characteristics: { taskType },
 				successRate,
 				firstTryRate: successRate,
@@ -328,7 +336,7 @@ export class PatternMiner {
 				confidence: Math.min(95, 40 + sessions.length * 3),
 				sampleSize: sessions.length,
 				examples: sessions
-					.filter((s) => s.firstTry && s.impact === "High")
+					.filter((s) => s.firstTry && (!hasRecordedImpact(s.impact) || s.impact === "High"))
 					.slice(0, 3)
 					.map((s) => ({
 						taskDescription: s.taskDescription,

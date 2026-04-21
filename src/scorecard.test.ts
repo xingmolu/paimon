@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { extractScorecardTableLines, parseScorecardRows } from "./scorecard.js";
+import {
+	extractScorecardTableLines,
+	hasRecordedImpact,
+	isNegativeScorecardResult,
+	isPositiveScorecardResult,
+	parseScorecardRows,
+} from "./scorecard.js";
 
 describe("scorecard parsing", () => {
 	it("parses the current compact Recent Scorecard schema", () => {
@@ -86,5 +92,15 @@ describe("scorecard parsing", () => {
 		expect(row?.taskType).toBe("capability");
 		expect(row?.description).toBe("Keep aliases compatible");
 		expect(row?.enables).toBe("scorecard");
+	});
+
+	it("exposes helpers for interpreting scorecard result and impact fields", () => {
+		expect(isPositiveScorecardResult("✅")).toBe(true);
+		expect(isPositiveScorecardResult("")).toBe(false);
+		expect(isNegativeScorecardResult("❌")).toBe(true);
+		expect(isNegativeScorecardResult("✅")).toBe(false);
+		expect(hasRecordedImpact("High")).toBe(true);
+		expect(hasRecordedImpact("medium")).toBe(true);
+		expect(hasRecordedImpact("")).toBe(false);
 	});
 });

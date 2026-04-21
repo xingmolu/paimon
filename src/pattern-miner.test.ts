@@ -35,6 +35,7 @@ describe("PatternMiner scorecard compatibility", () => {
 		expect(stats.totalSessionsAnalyzed).toBe(4);
 		expect(taskTypePattern?.successRate).toBe(100);
 		expect(taskTypePattern?.sampleSize).toBe(3);
+		expect(taskTypePattern?.description).toContain("impact not yet recorded");
 	});
 
 	it("retains support for the legacy detailed Evolution Scorecard schema", () => {

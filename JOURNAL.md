@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 138 — Scorecard Interpretation Normalization (2026-04-21)
+- Added shared `scorecard.ts` helpers for interpreting positive/negative result markers and distinguishing recorded impact from omitted impact fields
+- Updated memory-driven modules (`pattern-miner`, `task-predictor`, `reasoning-memory`) to reuse the shared helpers so compact scorecards no longer silently imply success or medium impact when data is missing
+- Added regression coverage proving omitted impact stays unknown and compact success/failure markers are interpreted consistently across downstream consumers
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 137 — Pattern Auto-Apply Scorecard Fallback (2026-04-20)
 - Taught `pattern-auto-apply` to synthesize fallback `success-pattern` / `failure-pattern` suggestions directly from MEMORY.md scorecard rows when session-replay patterns are unavailable
 - Reused the shared `parseScorecardRows()` utility so fallback patterns inherit task type, skills, errors, and enabled follow-on work without adding another bespoke MEMORY parser

@@ -12,7 +12,12 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { type ScorecardRow, parseScorecardRows } from "./scorecard.js";
+import {
+	type ScorecardRow,
+	isNegativeScorecardResult,
+	isPositiveScorecardResult,
+	parseScorecardRows,
+} from "./scorecard.js";
 
 // Types
 export interface ReasoningStep {
@@ -411,7 +416,7 @@ export class ReasoningMemoryManager {
 						: 0;
 				const tagSimilarity =
 					tags.length > 0 ? matchingTags.length / Math.max(tags.length, rowTags.length) : 0;
-				const successBoost = row.result === "✅" || row.firstTry === "✅" ? 0.2 : 0;
+				const successBoost = isPositiveScorecardResult(row.result || row.firstTry) ? 0.2 : 0;
 				const similarity = keywordSimilarity * 0.6 + tagSimilarity * 0.2 + successBoost;
 
 				return {
@@ -462,12 +467,11 @@ export class ReasoningMemoryManager {
 			taskDescription: row.description,
 			taskType: (row.taskType as "capability" | "reliability" | "feature") || "capability",
 			steps: [],
-			outcome:
-				row.result === "✅" || row.firstTry === "✅"
-					? "success"
-					: row.result === "❌"
-						? "failure"
-						: "partial",
+			outcome: isPositiveScorecardResult(row.result || row.firstTry)
+				? "success"
+				: isNegativeScorecardResult(row.result || row.firstTry)
+					? "failure"
+					: "partial",
 			durationMs: this.parseDurationMs(row.time),
 			filesModified: [],
 			errors: row.errors && row.errors !== "none" ? [row.errors] : [],

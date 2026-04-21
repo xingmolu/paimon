@@ -36,6 +36,7 @@ describe("TaskSuccessPredictor scorecard compatibility", () => {
 
 		expect(capabilityPattern?.avgSuccessRate).toBe(1);
 		expect(capabilityPattern?.avgTime).toBe(10);
+		expect(reliabilityPattern?.avgSuccessRate).toBe(0);
 		expect(reliabilityPattern?.commonErrors).toEqual(["test"]);
 		expect(prediction.similarSuccessfulTasks).toContain("Improve task predictor parser reuse");
 	});
