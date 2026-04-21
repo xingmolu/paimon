@@ -9,7 +9,7 @@ import * as path from "node:path";
 import { analyzeContextTasks, buildContextAnalyzeCommand } from "./context-analysis.js";
 import type { EvolutionMetrics, SkillMetric } from "./metrics.js";
 import { getMetricsTracker } from "./metrics.js";
-import { parseScorecardRows } from "./scorecard.js";
+import { isPositiveScorecardResult, parseScorecardRows } from "./scorecard.js";
 import type { ToolUsageStats } from "./tool-usage-analytics.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
 
@@ -287,8 +287,8 @@ export class OptimizationDashboardManager {
 			}
 
 			const recentRows = rows.slice(0, 8);
-			const successfulRows = recentRows.filter(
-				(row) => (row.firstTry || row.result || "") === "✅",
+			const successfulRows = recentRows.filter((row) =>
+				isPositiveScorecardResult(row.firstTry || row.result),
 			);
 			const recentSkillNames = Array.from(
 				new Set(

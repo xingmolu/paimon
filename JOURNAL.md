@@ -14,6 +14,11 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 139 — Optimization Dashboard Scorecard Result Normalization (2026-04-21)
+- Updated `optimization-dashboard` to reuse the shared `isPositiveScorecardResult()` helper instead of locally comparing scorecard markers, keeping MEMORY-backed success detection aligned across compact and legacy schemas
+- Expanded regression coverage so dashboard memory recommendations work for both compact `Result` tables and legacy `First Try` scorecards
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 138 — Scorecard Interpretation Normalization (2026-04-21)
 - Added shared `scorecard.ts` helpers for interpreting positive/negative result markers and distinguishing recorded impact from omitted impact fields
 - Updated memory-driven modules (`pattern-miner`, `task-predictor`, `reasoning-memory`) to reuse the shared helpers so compact scorecards no longer silently imply success or medium impact when data is missing

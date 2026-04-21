@@ -48,6 +48,7 @@ Persistent learnings stored across sessions.
 18. **Memory-quality heuristics should blend live metrics with parsed scorecard evidence** — When skill/error telemetry is sparse, recommendation engines should reuse shared MEMORY scorecard history for recent successful tasks, skills, and recurring errors instead of emitting generic weak-signal advice.
 19. **Pattern suggestion engines should fall back to MEMORY scorecards before returning empty matches** — If replay-specific pattern stores are sparse, synthesize lightweight patterns from shared scorecard rows so auto-apply and recommendation tools still provide concrete, memory-backed guidance.
 20. **Interpret scorecard result and impact fields through shared helpers, not local defaults** — Compact scorecards often omit fields; downstream modules should centralize ✅/❌ and impact-presence logic so missing values stay unknown instead of being silently treated as success or medium impact.
+21. **Shared scorecard result helpers must be adopted by recommendation engines too** — Even read-only recommendation modules like optimization dashboards can silently drift when they compare `row.firstTry || row.result` directly; use shared helpers everywhere MEMORY success semantics matter.
 
 ---
 
@@ -63,6 +64,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-21 | capability | Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas | ~10m | ✅ | none |
 | 2026-04-21 | capability | Normalize scorecard result and impact interpretation across memory-driven modules | ~15m | ✅ | none |
 | 2026-04-20 | capability | Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage | ~20m | ✅ | none |
 | 2026-04-20 | capability | Improve optimization dashboard memory recommendations with shared MEMORY scorecard fallback | ~20m | ✅ | none |
