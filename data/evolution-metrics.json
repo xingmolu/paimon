@@ -22,9 +22,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 14.166666666666666,
+    "averageMinutes": 14.210526315789474,
     "byTaskType": {
-      "capability": 14.411764705882353,
+      "capability": 14.444444444444445,
       "reliability": 10
     },
     "points": [
@@ -40,7 +40,7 @@
       },
       {
         "date": "2026-W17",
-        "value": 16,
+        "value": 15.833333333333334,
         "trend": "down"
       }
     ],
@@ -93,17 +93,17 @@
       },
       {
         "date": "2026-W17",
-        "value": 2.5
+        "value": 3
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 17,
+    "totalCapabilities": 18,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-21T02:50:58.911Z",
-  "iterationsAnalyzed": 18
+  "lastUpdated": "2026-04-21T17:08:16.001Z",
+  "iterationsAnalyzed": 19
 }
