@@ -288,7 +288,7 @@ export class OptimizationDashboardManager {
 
 			const recentRows = rows.slice(0, 8);
 			const successfulRows = recentRows.filter((row) =>
-				isPositiveScorecardResult(row.firstTry || row.result),
+				isPositiveScorecardResult(row.result, row.firstTry),
 			);
 			const recentSkillNames = Array.from(
 				new Set(

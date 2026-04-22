@@ -29,12 +29,12 @@ export function normalizeScorecardResult(
 	return "unknown";
 }
 
-export function isPositiveScorecardResult(value?: string): boolean {
-	return normalizeScorecardResult(value) === "positive";
+export function isPositiveScorecardResult(result?: string, firstTry?: string): boolean {
+	return normalizeScorecardResult(result, firstTry) === "positive";
 }
 
-export function isNegativeScorecardResult(value?: string): boolean {
-	return normalizeScorecardResult(value) === "negative";
+export function isNegativeScorecardResult(result?: string, firstTry?: string): boolean {
+	return normalizeScorecardResult(result, firstTry) === "negative";
 }
 
 export function hasRecordedImpact(value?: string): boolean {

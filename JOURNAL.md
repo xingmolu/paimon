@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 141 — Scorecard Helper Call-Site Normalization (2026-04-22)
+- Updated `scorecard.ts` helper signatures so callers pass `Result` and `First Try` fields directly instead of collapsing them before normalization
+- Normalized remaining drift-prone consumers in `metrics`, `reasoning-memory`, `pattern-miner`, and `optimization-dashboard` so explicit compact `Result` markers remain authoritative when both schemas appear together
+- Added regression coverage for helper precedence and reasoning-memory fallback behavior, then verified with build, tests, and lint
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 140 — Remaining Scorecard Result Consumer Normalization (2026-04-22)
 - Added `normalizeScorecardResult()` to the shared scorecard utilities so compact `Result` and legacy `First Try` markers resolve through one compatibility path
 - Updated `learning-transfer`, `task-predictor`, and `pattern-auto-apply` to stop using ad-hoc success/failure defaults when ingesting MEMORY-backed scorecard rows

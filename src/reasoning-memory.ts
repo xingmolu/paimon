@@ -416,7 +416,7 @@ export class ReasoningMemoryManager {
 						: 0;
 				const tagSimilarity =
 					tags.length > 0 ? matchingTags.length / Math.max(tags.length, rowTags.length) : 0;
-				const successBoost = isPositiveScorecardResult(row.result || row.firstTry) ? 0.2 : 0;
+				const successBoost = isPositiveScorecardResult(row.result, row.firstTry) ? 0.2 : 0;
 				const similarity = keywordSimilarity * 0.6 + tagSimilarity * 0.2 + successBoost;
 
 				return {
@@ -467,9 +467,9 @@ export class ReasoningMemoryManager {
 			taskDescription: row.description,
 			taskType: (row.taskType as "capability" | "reliability" | "feature") || "capability",
 			steps: [],
-			outcome: isPositiveScorecardResult(row.result || row.firstTry)
+			outcome: isPositiveScorecardResult(row.result, row.firstTry)
 				? "success"
-				: isNegativeScorecardResult(row.result || row.firstTry)
+				: isNegativeScorecardResult(row.result, row.firstTry)
 					? "failure"
 					: "partial",
 			durationMs: this.parseDurationMs(row.time),

@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (112/121)
+- First Try Success Rate: 92% (113/122)
 - Average Time: ~15 minutes
 - Rework Rate: 7%
-- Capability Tasks: 95% (115/121)
+- Capability Tasks: 95% (116/122)
 - Capability Velocity: 39/day
 
 ---
@@ -50,6 +50,7 @@ Persistent learnings stored across sessions.
 20. **Interpret scorecard result and impact fields through shared helpers, not local defaults** — Compact scorecards often omit fields; downstream modules should centralize ✅/❌ and impact-presence logic so missing values stay unknown instead of being silently treated as success or medium impact.
 21. **Shared scorecard result helpers must be adopted by recommendation engines too** — Even read-only recommendation modules like optimization dashboards can silently drift when they compare `row.firstTry || row.result` directly; use shared helpers everywhere MEMORY success semantics matter.
 22. **Do not default compact scorecard rows to success when result markers are explicit** — MEMORY fallbacks for pattern, prediction, or learning systems should preserve explicit ❌ rows as failures and leave only truly absent result fields as unknown/default-safe states.
+23. **Scorecard success helpers should accept both result columns directly** — Passing `row.firstTry || row.result` into shared helpers can silently reintroduce precedence drift when both columns exist; let the helper resolve `Result` and `First Try` together so explicit compact markers stay authoritative.
 
 ---
 
@@ -66,6 +67,7 @@ Persistent learnings stored across sessions.
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
 | 2026-04-22 | capability | Normalize remaining MEMORY scorecard result consumers to shared helper semantics | ~15m | ✅ | test |
+| 2026-04-22 | capability | Normalize scorecard helper call sites to accept Result and First Try fields together | ~15m | ✅ | test |
 | 2026-04-21 | capability | Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas | ~10m | ✅ | none |
 | 2026-04-21 | capability | Normalize scorecard result and impact interpretation across memory-driven modules | ~15m | ✅ | none |
 | 2026-04-20 | capability | Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage | ~20m | ✅ | none |

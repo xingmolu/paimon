@@ -102,9 +102,13 @@ describe("scorecard parsing", () => {
 		expect(normalizeScorecardResult("❌")).toBe("negative");
 		expect(normalizeScorecardResult("")).toBe("unknown");
 		expect(isPositiveScorecardResult("✅")).toBe(true);
+		expect(isPositiveScorecardResult(undefined, "✅")).toBe(true);
+		expect(isPositiveScorecardResult("❌", "✅")).toBe(true);
 		expect(isPositiveScorecardResult("")).toBe(false);
 		expect(isNegativeScorecardResult("❌")).toBe(true);
 		expect(isNegativeScorecardResult("✅")).toBe(false);
+		expect(isNegativeScorecardResult("❌", "✅")).toBe(false);
+		expect(isNegativeScorecardResult("", "❌")).toBe(true);
 		expect(hasRecordedImpact("High")).toBe(true);
 		expect(hasRecordedImpact("medium")).toBe(true);
 		expect(hasRecordedImpact("")).toBe(false);

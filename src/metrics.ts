@@ -13,7 +13,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { parseScorecardRows } from "./scorecard.js";
+import { isPositiveScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 // Types
 
@@ -119,7 +119,8 @@ export class EvolutionMetricsTracker {
 
 		const content = fs.readFileSync(memoryPath, "utf-8");
 		this.sessions = parseScorecardRows(content).map((row) => {
-			const firstTry = row.firstTry || row.result || "✅";
+			const positiveResult = isPositiveScorecardResult(row.result, row.firstTry);
+			const firstTry = positiveResult ? "✅" : row.result || row.firstTry || "✅";
 			const errors = row.errors || "none";
 			const impact = row.impact?.trim() || "";
 
@@ -130,7 +131,7 @@ export class EvolutionMetricsTracker {
 				time: row.time,
 				firstTry,
 				errors,
-				rework: row.rework || (firstTry === "✅" ? "No" : "Yes"),
+				rework: row.rework || (positiveResult ? "No" : "Yes"),
 				impact,
 				hasImpactData: impact.length > 0,
 				skillsUsed: row.skillsUsed || "",

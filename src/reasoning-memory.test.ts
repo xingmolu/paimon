@@ -31,6 +31,26 @@ afterEach(() => {
 });
 
 describe("ReasoningMemoryManager scorecard guidance", () => {
+	it("prefers explicit compact scorecard failures over legacy success markers", () => {
+		const memoryPath = path.join(process.cwd(), "MEMORY.md");
+		const originalMemory = fs.readFileSync(memoryPath, "utf-8");
+		const manager = createManager(
+			"# Memory\n\n## Evolution Scorecard\n\n| Date | Task Type | Task Description | Time | Result | First Try | Errors | Rework? | Impact | Skills Used | Enables |\n|------|-----------|------------------|------|--------|-----------|--------|---------|--------|-------------|---------|\n| 2026-04-19 | capability | Improve capability guidance fallback | ~12m | ❌ | ✅ | test | Yes | High | evolve | guidance |\n",
+		);
+
+		try {
+			const [similar] = manager.findSimilarChains(
+				"Improve capability guidance fallback",
+				"capability",
+				1,
+			);
+
+			expect(similar?.chain.outcome).toBe("success");
+		} finally {
+			fs.writeFileSync(memoryPath, originalMemory);
+		}
+	});
+
 	it("includes relevant MEMORY.md scorecard entries in guidance when no chains match", () => {
 		const memoryPath = path.join(process.cwd(), "MEMORY.md");
 		const originalMemory = fs.readFileSync(memoryPath, "utf-8");

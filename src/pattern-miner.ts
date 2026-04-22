@@ -161,7 +161,7 @@ export class PatternMiner {
 			const time = Number.parseInt(row.time.replace(/[~m]/g, ""), 10) || 0;
 			const errors = row.errors || "none";
 			const skillsUsed = row.skillsUsed || "";
-			const positiveResult = isPositiveScorecardResult(row.firstTry || row.result);
+			const positiveResult = isPositiveScorecardResult(row.result, row.firstTry);
 
 			return {
 				date: row.date,

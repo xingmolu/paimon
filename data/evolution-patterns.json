@@ -215,8 +215,16 @@
       "firstTryRate": 100,
       "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 19,
+      "sampleSize": 20,
       "examples": [
+        {
+          "taskDescription": "Normalize remaining MEMORY scorecard result consumers to shared helper semantics",
+          "date": "2026-04-22",
+          "time": 15,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas",
           "date": "2026-04-21",
@@ -232,17 +240,9 @@
           "skillsUsed": [],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage",
-          "date": "2026-04-20",
-          "time": 20,
-          "skillsUsed": [],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-22T02:51:42.106Z"
+      "lastUpdated": "2026-04-22T17:10:41.638Z"
     },
     {
       "id": "time-pattern-quick",
@@ -494,9 +494,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-22T02:51:42.106Z"
+      "lastUpdated": "2026-04-22T17:10:41.638Z"
     }
   ],
-  "lastUpdated": "2026-04-22T02:51:42.106Z",
-  "sessionCount": 20
+  "lastUpdated": "2026-04-22T17:10:41.638Z",
+  "sessionCount": 21
 }
