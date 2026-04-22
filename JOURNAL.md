@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 140 — Remaining Scorecard Result Consumer Normalization (2026-04-22)
+- Added `normalizeScorecardResult()` to the shared scorecard utilities so compact `Result` and legacy `First Try` markers resolve through one compatibility path
+- Updated `learning-transfer`, `task-predictor`, and `pattern-auto-apply` to stop using ad-hoc success/failure defaults when ingesting MEMORY-backed scorecard rows
+- Added regression coverage proving explicit compact failures remain failures in learning transfer and task prediction, while shared scorecard helper behavior is covered directly
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 139 — Optimization Dashboard Scorecard Result Normalization (2026-04-21)
 - Updated `optimization-dashboard` to reuse the shared `isPositiveScorecardResult()` helper instead of locally comparing scorecard markers, keeping MEMORY-backed success detection aligned across compact and legacy schemas
 - Expanded regression coverage so dashboard memory recommendations work for both compact `Result` tables and legacy `First Try` scorecards

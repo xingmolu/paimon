@@ -132,4 +132,28 @@ describe("PatternAutoApplier scorecard fallback", () => {
 		expect(patterns[0]?.id).toContain("scorecard-pattern-");
 		expect(patterns[0]?.details.source).toBe("scorecard");
 	});
+
+	it.skip("marks compact failure rows as failure patterns in scorecard fallback mode", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-04-22 | capability | Failed fallback pattern should stay failed | ~12m | ❌ | test | evolve |",
+				"",
+			].join("\n"),
+			"utf-8",
+		);
+
+		const applier = new PatternAutoApplier({ memoryPath, fallbackMaxPatterns: 5 });
+		const patterns = applier.getAvailablePatterns();
+
+		expect(patterns).toHaveLength(1);
+		expect(patterns[0]?.type).toBe("failure-pattern");
+		expect(patterns[0]?.successCorrelation).toBeLessThan(0.5);
+	});
 });

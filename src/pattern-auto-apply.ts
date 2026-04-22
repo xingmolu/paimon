@@ -20,7 +20,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { parseScorecardRows } from "./scorecard.js";
+import { normalizeScorecardResult, parseScorecardRows } from "./scorecard.js";
 import type { ExtractedPattern, PatternType } from "./session-replay.js";
 import { getSessionReplayManager } from "./session-replay.js";
 
@@ -363,7 +363,8 @@ export class PatternAutoApplier {
 			const content = readFileSync(memoryPath, "utf-8");
 			const rows = parseScorecardRows(content).slice(0, this.config.fallbackMaxPatterns);
 			return rows.map((row, index) => {
-				const successful = row.result === "✅" || row.firstTry === "✅" || !row.result;
+				const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+				const successful = normalizedResult !== "negative";
 				const skills = (row.skillsUsed || "")
 					.split(",")
 					.map((skill) => skill.trim())

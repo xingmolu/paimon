@@ -5,6 +5,7 @@ import {
 	hasRecordedImpact,
 	isNegativeScorecardResult,
 	isPositiveScorecardResult,
+	normalizeScorecardResult,
 	parseScorecardRows,
 } from "./scorecard.js";
 
@@ -95,6 +96,11 @@ describe("scorecard parsing", () => {
 	});
 
 	it("exposes helpers for interpreting scorecard result and impact fields", () => {
+		expect(normalizeScorecardResult("✅")).toBe("positive");
+		expect(normalizeScorecardResult(undefined, "✅")).toBe("positive");
+		expect(normalizeScorecardResult("❌", "✅")).toBe("positive");
+		expect(normalizeScorecardResult("❌")).toBe("negative");
+		expect(normalizeScorecardResult("")).toBe("unknown");
 		expect(isPositiveScorecardResult("✅")).toBe(true);
 		expect(isPositiveScorecardResult("")).toBe(false);
 		expect(isNegativeScorecardResult("❌")).toBe(true);

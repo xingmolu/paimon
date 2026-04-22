@@ -18,7 +18,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { RagModule, type RagSearchResult } from "./rag.js";
-import { parseScorecardRows } from "./scorecard.js";
+import { normalizeScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 // Types for learning transfer
 
@@ -205,7 +205,7 @@ export class LearningTransferManager {
 	}): SessionLearning | null {
 		const { date, taskType, description, time } = row;
 		const errors = row.errors || "none";
-		const result = row.result || row.firstTry || "✅";
+		const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
 		const skillsUsed = row.skillsUsed || "";
 
 		if (!date || !taskType || !description || !time) {
@@ -225,7 +225,7 @@ export class LearningTransferManager {
 			.filter(Boolean);
 		const keywords = this.extractKeywords(description);
 		const sessionId = `scorecard-${date}-${description.slice(0, 30)}`;
-		const success = result.includes("✅");
+		const success = normalizedResult === "positive";
 
 		return {
 			sessionId,

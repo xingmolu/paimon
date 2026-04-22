@@ -12,12 +12,29 @@ export interface ScorecardRow {
 	enables?: string;
 }
 
+export function normalizeScorecardResult(
+	result?: string,
+	firstTry?: string,
+): "positive" | "negative" | "unknown" {
+	const values = [result, firstTry].map((value) => (value || "").trim()).filter(Boolean);
+
+	if (values.some((value) => value === "✅")) {
+		return "positive";
+	}
+
+	if (values.some((value) => value === "❌")) {
+		return "negative";
+	}
+
+	return "unknown";
+}
+
 export function isPositiveScorecardResult(value?: string): boolean {
-	return (value || "").trim() === "✅";
+	return normalizeScorecardResult(value) === "positive";
 }
 
 export function isNegativeScorecardResult(value?: string): boolean {
-	return (value || "").trim() === "❌";
+	return normalizeScorecardResult(value) === "negative";
 }
 
 export function hasRecordedImpact(value?: string): boolean {

@@ -67,4 +67,23 @@ describe("TaskSuccessPredictor scorecard compatibility", () => {
 		expect(capabilityPattern?.successfulSkills).toContain("evolve");
 		expect(prediction.similarSuccessfulTasks).toContain("Improve historical task matching");
 	});
+
+	it("treats explicit compact failures as failures instead of unknown outcomes", () => {
+		const memoryPath = createMemoryFile(`# Memory
+
+## Recent Scorecard
+
+| Date | Type | Description | Time | Result | Errors |
+|------|------|-------------|------|--------|--------|
+| 2026-04-22 | capability | Compact scorecard failure remains negative | ~12m | ❌ | test |
+`);
+
+		const predictor = new TaskSuccessPredictor({ memoryPath });
+		const capabilityPattern = predictor
+			.getPatterns()
+			.find((pattern) => pattern.taskType === "capability");
+
+		expect(capabilityPattern?.avgSuccessRate).toBe(0);
+		expect(capabilityPattern?.commonErrors).toEqual(["test"]);
+	});
 });

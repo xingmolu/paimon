@@ -94,4 +94,31 @@ describe("LearningTransferManager scorecard ingestion", () => {
 		expect(importedSession?.skillsUsed).toEqual(["evolve", "review-changes"]);
 		expect(importedSession?.taskSignature.category).toBe("memory");
 	});
+
+	it("treats explicit compact failures as failed sessions instead of defaulting to success", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors |",
+				"|------|------|-------------|------|--------|--------|",
+				"| 2026-04-22 | capability | Compact failure should stay failed | ~12m | ❌ | test |",
+				"",
+			].join("\n"),
+			"utf-8",
+		);
+
+		const manager = new LearningTransferManager(dataDir, { memoryPath });
+		const importedSession = manager
+			.getSessions()
+			.find((session) => session.taskDescription === "Compact failure should stay failed");
+
+		expect(importedSession).toBeDefined();
+		expect(importedSession?.success).toBe(false);
+		expect(importedSession?.firstTry).toBe(false);
+		expect(importedSession?.errors).toEqual(["test"]);
+	});
 });

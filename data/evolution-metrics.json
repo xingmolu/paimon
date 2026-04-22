@@ -22,9 +22,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 14.210526315789474,
+    "averageMinutes": 14,
     "byTaskType": {
-      "capability": 14.444444444444445,
+      "capability": 14.210526315789474,
       "reliability": 10
     },
     "points": [
@@ -40,11 +40,11 @@
       },
       {
         "date": "2026-W17",
-        "value": 15.833333333333334,
-        "trend": "down"
+        "value": 15,
+        "trend": "stable"
       }
     ],
-    "fastestTask": "Fix selfImprovement config action to return configuration data with regression coverage",
+    "fastestTask": "Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas",
     "slowestTask": "Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage"
   },
   "errors": {
@@ -93,17 +93,17 @@
       },
       {
         "date": "2026-W17",
-        "value": 3
+        "value": 3.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 18,
+    "totalCapabilities": 19,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-21T17:08:16.001Z",
-  "iterationsAnalyzed": 19
+  "lastUpdated": "2026-04-22T02:51:42.037Z",
+  "iterationsAnalyzed": 20
 }

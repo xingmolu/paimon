@@ -5,7 +5,11 @@
  * Uses historical session data from MEMORY.md scorecard to predict outcomes.
  */
 
-import { isPositiveScorecardResult, parseScorecardRows } from "./scorecard.js";
+import {
+	isPositiveScorecardResult,
+	normalizeScorecardResult,
+	parseScorecardRows,
+} from "./scorecard.js";
 
 export interface TaskPrediction {
 	successProbability: number; // 0-1 probability of success
@@ -103,7 +107,12 @@ export class TaskSuccessPredictor {
 				taskType: row.taskType,
 				taskDescription: row.description,
 				time: row.time,
-				firstTry: row.firstTry || row.result || "",
+				firstTry:
+					normalizeScorecardResult(row.result, row.firstTry) === "positive"
+						? "✅"
+						: normalizeScorecardResult(row.result, row.firstTry) === "negative"
+							? "❌"
+							: "",
 				errors: row.errors || "none",
 				rework: row.rework || "",
 				impact: row.impact || "",
