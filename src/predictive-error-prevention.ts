@@ -17,6 +17,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { type ScorecardRow, parseScorecardRows } from "./scorecard.js";
 
 // Types
 export interface ErrorPrediction {
@@ -34,6 +35,7 @@ export interface ErrorPrediction {
 	preventionSuggestions: string[];
 	relatedPatterns: string[];
 	detectedAt: string;
+	source?: "pattern" | "memory";
 }
 
 export interface PredictionContext {
@@ -230,6 +232,8 @@ const DEFAULT_CONFIG: PredictiveErrorPreventionConfig = {
 	patternRetentionDays: 30,
 };
 
+const MEMORY_FALLBACK_LOOKBACK = 10;
+
 let managerInstance: PredictiveErrorPreventionManager | null = null;
 
 export class PredictiveErrorPreventionManager {
@@ -340,9 +344,21 @@ export class PredictiveErrorPreventionManager {
 			return [];
 		}
 
+		const predictions = this.generatePredictions(context);
+
+		// Store predictions
+		for (const pred of predictions) {
+			this.predictions.push(pred);
+			this.updateStats(pred, context);
+		}
+
+		this.saveData();
+		return predictions;
+	}
+
+	private generatePredictions(context: PredictionContext): ErrorPrediction[] {
 		const predictions: ErrorPrediction[] = [];
 		const now = new Date().toISOString();
-
 		for (const pattern of this.patterns) {
 			const probability = this.calculateProbability(pattern, context);
 			const confidence = this.calculateConfidence(pattern, context);
@@ -362,20 +378,34 @@ export class PredictiveErrorPreventionManager {
 					preventionSuggestions: pattern.preventionStrategies,
 					relatedPatterns: [pattern.id],
 					detectedAt: now,
+					source: "pattern",
 				});
 			}
 		}
 
-		// Sort by probability * confidence
-		predictions.sort((a, b) => b.probability * b.confidence - a.probability * a.confidence);
-
-		// Store predictions
-		for (const pred of predictions) {
-			this.predictions.push(pred);
-			this.updateStats(pred, context);
+		for (const fallback of this.getMemoryFallbackPredictions(context, now)) {
+			const existingPrediction = predictions.find(
+				(prediction) => prediction.predictedErrorType === fallback.predictedErrorType,
+			);
+			if (existingPrediction) {
+				existingPrediction.preventionSuggestions = Array.from(
+					new Set([...existingPrediction.preventionSuggestions, ...fallback.preventionSuggestions]),
+				).slice(0, 4);
+				existingPrediction.relatedPatterns = Array.from(
+					new Set([...existingPrediction.relatedPatterns, ...fallback.relatedPatterns]),
+				);
+				existingPrediction.context.complexityIndicators = Array.from(
+					new Set([
+						...(existingPrediction.context.complexityIndicators || []),
+						...(fallback.context.complexityIndicators || []),
+					]),
+				);
+				continue;
+			}
+			predictions.push(fallback);
 		}
 
-		this.saveData();
+		predictions.sort((a, b) => b.probability * b.confidence - a.probability * a.confidence);
 		return predictions;
 	}
 
@@ -509,6 +539,109 @@ export class PredictiveErrorPreventionManager {
 		return "night";
 	}
 
+	private getMemoryFallbackPredictions(
+		context: PredictionContext,
+		detectedAt: string,
+	): ErrorPrediction[] {
+		const rows = this.loadScorecardRows();
+		if (rows.length === 0) {
+			return [];
+		}
+
+		const relevantRows = rows
+			.filter((row) => !context.taskType || row.taskType === context.taskType)
+			.slice(0, MEMORY_FALLBACK_LOOKBACK);
+		if (relevantRows.length === 0) {
+			return [];
+		}
+
+		const errorSignals = new Map<
+			string,
+			{ count: number; suggestions: Set<string>; relatedPatterns: Set<string> }
+		>();
+
+		for (const row of relevantRows) {
+			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
+			for (const errorType of normalizedErrors) {
+				const signal = errorSignals.get(errorType) ?? {
+					count: 0,
+					suggestions: new Set<string>(),
+					relatedPatterns: new Set<string>(),
+				};
+				signal.count++;
+				signal.relatedPatterns.add(`scorecard-${row.date}`);
+				signal.suggestions.add(
+					`Recent MEMORY.md scorecard entries recorded ${errorType} errors for ${context.taskType || row.taskType} work; review similar fixes before implementation.`,
+				);
+				if (row.description) {
+					signal.suggestions.add(`Relevant recent task: ${row.description}`);
+				}
+				if (row.skillsUsed) {
+					signal.suggestions.add(
+						`Reuse skills from recent successful work when applicable: ${row.skillsUsed}`,
+					);
+				}
+				errorSignals.set(errorType, signal);
+			}
+		}
+
+		const fallbackPredictions: ErrorPrediction[] = [];
+		for (const [errorType, signal] of errorSignals) {
+			const probability = Math.min(0.2 + signal.count * 0.15, 0.65);
+			const confidence = Math.min(0.45 + signal.count * 0.12, 0.85);
+			if (probability < this.config.minProbability || confidence < this.config.minConfidence) {
+				continue;
+			}
+
+			fallbackPredictions.push({
+				id: `pred-memory-${errorType}-${Date.now()}`,
+				predictedErrorType: errorType,
+				probability,
+				confidence,
+				context: {
+					taskType: context.taskType,
+					filePatterns: context.files?.map((file) => path.extname(file)),
+					toolSequence: context.toolsUsed,
+					timeContext: this.getTimeContext(context.timeOfDay),
+					complexityIndicators: ["memory-scorecard-fallback"],
+				},
+				preventionSuggestions: Array.from(signal.suggestions).slice(0, 3),
+				relatedPatterns: Array.from(signal.relatedPatterns),
+				detectedAt,
+				source: "memory",
+			});
+		}
+
+		return fallbackPredictions;
+	}
+
+	private loadScorecardRows(): ScorecardRow[] {
+		try {
+			const memoryPath = path.join(process.cwd(), "MEMORY.md");
+			if (!fs.existsSync(memoryPath)) {
+				return [];
+			}
+			return parseScorecardRows(fs.readFileSync(memoryPath, "utf-8"));
+		} catch {
+			return [];
+		}
+	}
+
+	private normalizeScorecardErrors(errors?: string): string[] {
+		const normalized = (errors || "").trim().toLowerCase();
+		if (!normalized || normalized === "none") {
+			return [];
+		}
+		return normalized
+			.split(/[\/,]|\band\b/)
+			.map((part) => part.trim())
+			.filter(Boolean)
+			.map((part) => {
+				if (part === "ts") return "typescript";
+				return part;
+			});
+	}
+
 	private updateStats(prediction: ErrorPrediction, context: PredictionContext): void {
 		this.stats.totalPredictions++;
 
@@ -593,8 +726,9 @@ export class PredictiveErrorPreventionManager {
 			// Top 3 predictions
 			const probStr = Math.round(pred.probability * 100);
 			const confStr = Math.round(pred.confidence * 100);
+			const sourceLabel = pred.source === "memory" ? " [MEMORY]" : "";
 			warnings.push(
-				`⚠️ Predicted error: ${pred.predictedErrorType} (${probStr}% probability, ${confStr}% confidence)`,
+				`⚠️ Predicted error${sourceLabel}: ${pred.predictedErrorType} (${probStr}% probability, ${confStr}% confidence)`,
 			);
 			if (pred.preventionSuggestions.length > 0) {
 				warnings.push(`   Prevention: ${pred.preventionSuggestions[0]}`);
@@ -750,7 +884,9 @@ export class PredictiveErrorPreventionManager {
 			const probStr = `${Math.round(pred.probability * 100)}%`;
 			const confStr = `${Math.round(pred.confidence * 100)}%`;
 			const prevention = pred.preventionSuggestions[0]?.slice(0, 40) || "N/A";
-			lines.push(`| ${pred.predictedErrorType} | ${probStr} | ${confStr} | ${prevention}... |`);
+			const label =
+				pred.source === "memory" ? `${pred.predictedErrorType} (memory)` : pred.predictedErrorType;
+			lines.push(`| ${label} | ${probStr} | ${confStr} | ${prevention}... |`);
 		}
 
 		return lines.join("\n");

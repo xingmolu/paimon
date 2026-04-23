@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 143 — Predictive Error Prevention MEMORY Fallback (2026-04-23)
+- Taught `predictive-error-prevention` to parse recent MEMORY.md scorecard rows and synthesize fallback prevention guidance from repeated recorded errors in matching task types
+- Merged MEMORY-backed prevention suggestions into existing pattern predictions for the same error type, while still surfacing standalone memory-only predictions when no built-in rule matches
+- Added regression tests covering compact and legacy scorecard rows, merged TypeScript guidance, and temporary HOME restoration; verified with build, full tests, and lint
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 142 — Scorecard Result Precedence Normalization (2026-04-23)
 - Updated shared `scorecard.ts` result helpers so compact `Result` markers take precedence over legacy `First Try` markers when both appear, matching current MEMORY schema intent
 - Finished migrating `task-predictor` call sites to pass both fields through shared helpers and preserved explicit positive/negative outcomes when loading compact scorecard rows
