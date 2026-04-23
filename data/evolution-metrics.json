@@ -22,9 +22,9 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 14.047619047619047,
+    "averageMinutes": 14.090909090909092,
     "byTaskType": {
-      "capability": 14.25,
+      "capability": 14.285714285714286,
       "reliability": 10
     },
     "points": [
@@ -48,13 +48,14 @@
     "slowestTask": "Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage"
   },
   "errors": {
-    "totalErrors": 3,
+    "totalErrors": 4,
     "byType": {
-      "test": 2,
+      "test": 3,
       "lint": 1
     },
     "recentErrors": [
       "2026-04-22: test in \"Normalize remaining MEMORY scorecard result consumers to shared helper semantics\"",
+      "2026-04-22: test in \"Normalize scorecard helper call sites to accept Result and First Try fields together\"",
       "2026-04-16: test in \"Metrics scorecard compatibility fix\"",
       "2026-04-05: lint in \"OK Shortcut Command (Aider Pattern)\""
     ],
@@ -71,8 +72,8 @@
       },
       {
         "date": "2026-W17",
-        "value": 1,
-        "trend": "stable"
+        "value": 2,
+        "trend": "down"
       }
     ],
     "commonPatterns": [
@@ -94,17 +95,17 @@
       },
       {
         "date": "2026-W17",
-        "value": 4
+        "value": 4.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 20,
+    "totalCapabilities": 21,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-22T17:10:41.564Z",
-  "iterationsAnalyzed": 21
+  "lastUpdated": "2026-04-23T02:52:29.389Z",
+  "iterationsAnalyzed": 22
 }
