@@ -215,8 +215,16 @@
       "firstTryRate": 100,
       "averageTime": 14,
       "confidence": 95,
-      "sampleSize": 21,
+      "sampleSize": 22,
       "examples": [
+        {
+          "taskDescription": "Normalize shared scorecard result precedence so compact Result markers override legacy First Try data",
+          "date": "2026-04-23",
+          "time": 15,
+          "skillsUsed": [],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Normalize remaining MEMORY scorecard result consumers to shared helper semantics",
           "date": "2026-04-22",
@@ -232,17 +240,9 @@
           "skillsUsed": [],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas",
-          "date": "2026-04-21",
-          "time": 10,
-          "skillsUsed": [],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-23T02:52:29.457Z"
+      "lastUpdated": "2026-04-23T17:41:21.976Z"
     },
     {
       "id": "time-pattern-quick",
@@ -494,9 +494,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-04-23T02:52:29.457Z"
+      "lastUpdated": "2026-04-23T17:41:21.976Z"
     }
   ],
-  "lastUpdated": "2026-04-23T02:52:29.457Z",
-  "sessionCount": 22
+  "lastUpdated": "2026-04-23T17:41:21.976Z",
+  "sessionCount": 23
 }
