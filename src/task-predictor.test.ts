@@ -86,4 +86,32 @@ describe("TaskSuccessPredictor scorecard compatibility", () => {
 		expect(capabilityPattern?.avgSuccessRate).toBe(0);
 		expect(capabilityPattern?.commonErrors).toEqual(["test"]);
 	});
+
+	it("treats explicit compact result markers as authoritative when legacy first-try data disagrees", () => {
+		const memoryPath = createMemoryFile(`# Memory
+
+## Recent Scorecard
+
+| Date | Type | Description | Time | Result | First Try | Errors | Skills Used |
+|------|------|-------------|------|--------|-----------|--------|-------------|
+| 2026-04-22 | capability | Compact failure beats legacy success | ~12m | ❌ | ✅ | test | evolve |
+| 2026-04-21 | capability | Compact success beats legacy failure | ~8m | ✅ | ❌ | none | evolve, review-changes |
+`);
+
+		const predictor = new TaskSuccessPredictor({ memoryPath });
+		const capabilityPattern = predictor
+			.getPatterns()
+			.find((pattern) => pattern.taskType === "capability");
+		const prediction = predictor.predict({
+			taskDescription: "Compact failure beats legacy success",
+			taskType: "capability",
+			skillsAvailable: ["evolve"],
+		});
+
+		expect(capabilityPattern?.avgSuccessRate).toBe(0.5);
+		expect(capabilityPattern?.commonErrors).toEqual(["test"]);
+		expect(capabilityPattern?.successfulSkills).toContain("evolve");
+		expect(prediction.similarFailedTasks).toContain("Compact failure beats legacy success");
+		expect(prediction.similarSuccessfulTasks).not.toContain("Compact failure beats legacy success");
+	});
 });

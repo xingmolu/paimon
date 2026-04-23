@@ -57,6 +57,7 @@ interface SessionEntry {
 	taskType: string;
 	taskDescription: string;
 	time: string;
+	result: string;
 	firstTry: string;
 	errors: string;
 	rework: string;
@@ -102,22 +103,26 @@ export class TaskSuccessPredictor {
 			const content = fs.readFileSync(this.memoryPath, "utf-8");
 			const rows = parseScorecardRows(content);
 
-			this.sessions = rows.map((row) => ({
-				date: row.date,
-				taskType: row.taskType,
-				taskDescription: row.description,
-				time: row.time,
-				firstTry:
-					normalizeScorecardResult(row.result, row.firstTry) === "positive"
-						? "✅"
-						: normalizeScorecardResult(row.result, row.firstTry) === "negative"
-							? "❌"
-							: "",
-				errors: row.errors || "none",
-				rework: row.rework || "",
-				impact: row.impact || "",
-				skillsUsed: row.skillsUsed || "",
-			}));
+			this.sessions = rows.map((row) => {
+				const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+				return {
+					date: row.date,
+					taskType: row.taskType,
+					taskDescription: row.description,
+					time: row.time,
+					result: row.result || "",
+					firstTry:
+						normalizedResult === "positive"
+							? "✅"
+							: normalizedResult === "negative"
+								? "❌"
+								: row.firstTry || "",
+					errors: row.errors || "none",
+					rework: row.rework || "",
+					impact: row.impact || "",
+					skillsUsed: row.skillsUsed || "",
+				};
+			});
 		} catch {
 			// Ignore errors, use empty sessions
 		}
@@ -139,7 +144,7 @@ export class TaskSuccessPredictor {
 				byType[type] = { successes: 0, failures: 0, times: [], errors: [] };
 			}
 
-			if (isPositiveScorecardResult(session.firstTry)) {
+			if (isPositiveScorecardResult(session.result, session.firstTry)) {
 				byType[type].successes++;
 			} else {
 				byType[type].failures++;
@@ -199,7 +204,10 @@ export class TaskSuccessPredictor {
 		const skillCounts: Record<string, number> = {};
 
 		for (const session of this.sessions) {
-			if (session.taskType !== type || !isPositiveScorecardResult(session.firstTry)) {
+			if (
+				session.taskType !== type ||
+				!isPositiveScorecardResult(session.result, session.firstTry)
+			) {
 				continue;
 			}
 
@@ -225,7 +233,10 @@ export class TaskSuccessPredictor {
 		const skillCounts: Record<string, number> = {};
 
 		for (const session of this.sessions) {
-			if (session.taskType !== type || isPositiveScorecardResult(session.firstTry)) {
+			if (
+				session.taskType !== type ||
+				isPositiveScorecardResult(session.result, session.firstTry)
+			) {
 				continue;
 			}
 
@@ -367,7 +378,7 @@ export class TaskSuccessPredictor {
 				continue;
 			}
 
-			const isSuccessful = isPositiveScorecardResult(session.firstTry);
+			const isSuccessful = isPositiveScorecardResult(session.result, session.firstTry);
 			if (isSuccessful !== successful) {
 				continue;
 			}

@@ -16,13 +16,19 @@ export function normalizeScorecardResult(
 	result?: string,
 	firstTry?: string,
 ): "positive" | "negative" | "unknown" {
-	const values = [result, firstTry].map((value) => (value || "").trim()).filter(Boolean);
-
-	if (values.some((value) => value === "✅")) {
+	const normalizedResult = (result || "").trim();
+	if (normalizedResult === "✅") {
 		return "positive";
 	}
+	if (normalizedResult === "❌") {
+		return "negative";
+	}
 
-	if (values.some((value) => value === "❌")) {
+	const normalizedFirstTry = (firstTry || "").trim();
+	if (normalizedFirstTry === "✅") {
+		return "positive";
+	}
+	if (normalizedFirstTry === "❌") {
 		return "negative";
 	}
 

@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 92% (113/122)
+- First Try Success Rate: 93% (114/123)
 - Average Time: ~15 minutes
 - Rework Rate: 7%
-- Capability Tasks: 95% (116/122)
+- Capability Tasks: 95% (117/123)
 - Capability Velocity: 39/day
 
 ---
@@ -51,6 +51,7 @@ Persistent learnings stored across sessions.
 21. **Shared scorecard result helpers must be adopted by recommendation engines too** — Even read-only recommendation modules like optimization dashboards can silently drift when they compare `row.firstTry || row.result` directly; use shared helpers everywhere MEMORY success semantics matter.
 22. **Do not default compact scorecard rows to success when result markers are explicit** — MEMORY fallbacks for pattern, prediction, or learning systems should preserve explicit ❌ rows as failures and leave only truly absent result fields as unknown/default-safe states.
 23. **Scorecard success helpers should accept both result columns directly** — Passing `row.firstTry || row.result` into shared helpers can silently reintroduce precedence drift when both columns exist; let the helper resolve `Result` and `First Try` together so explicit compact markers stay authoritative.
+24. **When compact `Result` and legacy `First Try` disagree, `Result` must win** — Shared MEMORY scorecard helpers should treat explicit compact result markers as authoritative and tests across predictors/guidance modules should cover conflicting columns so schema migrations do not silently flip failures into successes.
 
 ---
 
@@ -66,6 +67,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-23 | capability | Normalize shared scorecard result precedence so compact Result markers override legacy First Try data | ~15m | ✅ | test |
 | 2026-04-22 | capability | Normalize remaining MEMORY scorecard result consumers to shared helper semantics | ~15m | ✅ | test |
 | 2026-04-22 | capability | Normalize scorecard helper call sites to accept Result and First Try fields together | ~15m | ✅ | test |
 | 2026-04-21 | capability | Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas | ~10m | ✅ | none |

@@ -45,7 +45,7 @@ describe("ReasoningMemoryManager scorecard guidance", () => {
 				1,
 			);
 
-			expect(similar?.chain.outcome).toBe("success");
+			expect(similar?.chain.outcome).toBe("failure");
 		} finally {
 			fs.writeFileSync(memoryPath, originalMemory);
 		}

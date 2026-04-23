@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 142 — Scorecard Result Precedence Normalization (2026-04-23)
+- Updated shared `scorecard.ts` result helpers so compact `Result` markers take precedence over legacy `First Try` markers when both appear, matching current MEMORY schema intent
+- Finished migrating `task-predictor` call sites to pass both fields through shared helpers and preserved explicit positive/negative outcomes when loading compact scorecard rows
+- Added regression coverage for conflicting `Result` / `First Try` data in `scorecard`, `task-predictor`, and `reasoning-memory`, then verified with build, full tests, and lint
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 141 — Scorecard Helper Call-Site Normalization (2026-04-22)
 - Updated `scorecard.ts` helper signatures so callers pass `Result` and `First Try` fields directly instead of collapsing them before normalization
 - Normalized remaining drift-prone consumers in `metrics`, `reasoning-memory`, `pattern-miner`, and `optimization-dashboard` so explicit compact `Result` markers remain authoritative when both schemas appear together
