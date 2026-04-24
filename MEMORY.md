@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 93% (116/125)
+- First Try Success Rate: 93% (117/126)
 - Average Time: ~15 minutes
 - Rework Rate: 7%
-- Capability Tasks: 95% (119/125)
+- Capability Tasks: 95% (120/126)
 - Capability Velocity: 40/day
 
 ---
@@ -54,6 +54,7 @@ Persistent learnings stored across sessions.
 24. **When compact `Result` and legacy `First Try` disagree, `Result` must win** — Shared MEMORY scorecard helpers should treat explicit compact result markers as authoritative and tests across predictors/guidance modules should cover conflicting columns so schema migrations do not silently flip failures into successes.
 25. **Predictive guidance should fall back to MEMORY scorecards when live telemetry is sparse** — Proactive error prevention remains useful early in adoption if it reuses recent scorecard error history and merges that guidance into built-in predictions instead of returning only generic rule-based warnings.
 26. **Documented tool outcome variants need regression coverage** — If a tool advertises multiple record/result states, tests should verify each branch and parameter validation so telemetry and learning stats do not silently collapse to a single default path.
+27. **Tool config actions should support lightweight updates when documentation promises tuning** — If a capability advertises `config: View or update configuration`, expose typed update parameters and regression coverage for persisted config changes; otherwise autonomous calibration silently degrades despite documented support.
 
 ---
 
@@ -69,6 +70,7 @@ Persistent learnings stored across sessions.
 
 | Date | Type | Description | Time | Result | Errors |
 |------|------|-------------|------|--------|--------|
+| 2026-04-24 | capability | Add predictiveErrorPrevention config updates and regression coverage | ~15m | ✅ | none |
 | 2026-04-24 | capability | Fix predictiveErrorPrevention record outcome routing and regression coverage | ~15m | ✅ | test |
 | 2026-04-23 | capability | Add MEMORY.md scorecard fallback guidance to predictive error prevention | ~20m | ✅ | test |
 | 2026-04-23 | capability | Normalize shared scorecard result precedence so compact Result markers override legacy First Try data | ~15m | ✅ | test |

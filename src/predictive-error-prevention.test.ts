@@ -120,4 +120,29 @@ describe("predictiveErrorPreventionTool", () => {
 			manager.getStats().byErrorType[manager.getPredictions()[0].predictedErrorType]?.prevented,
 		).toBe(1);
 	});
+
+	it("updates config values through the config action", async () => {
+		const tool = await loadTool();
+		const result = await tool.execute("tool-call", {
+			action: "config",
+			minProbability: 0.6,
+			minConfidence: 0.7,
+			proactiveWarnings: false,
+			patternRetentionDays: 14,
+		});
+
+		expect(result.content[0]?.type).toBe("text");
+		const resultText = result.content[0]?.type === "text" ? result.content[0].text : "";
+		expect(resultText).toContain("Config Updated");
+		expect(resultText).toContain("**Min Probability:** 0.6");
+		expect(resultText).toContain("**Min Confidence:** 0.7");
+		expect(resultText).toContain("**Proactive Warnings:** false");
+		expect(resultText).toContain("**Pattern Retention Days:** 14");
+
+		const manager = await loadManager();
+		expect(manager.getConfig().minProbability).toBe(0.6);
+		expect(manager.getConfig().minConfidence).toBe(0.7);
+		expect(manager.getConfig().proactiveWarnings).toBe(false);
+		expect(manager.getConfig().patternRetentionDays).toBe(14);
+	});
 });

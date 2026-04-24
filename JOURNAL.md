@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 145 — Predictive Error Prevention Config Update Support (2026-04-24)
+- Updated `predictiveErrorPrevention`'s `config` action to accept typed configuration overrides for thresholds and toggles instead of acting as read-only output despite promising updates
+- Added focused regression coverage proving config updates persist through the tool action and render the updated values, preserving autonomous tuning capability
+- Verified with build, full tests, and lint
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 144 — Predictive Error Prevention Record Action Fix (2026-04-24)
 - Fixed `predictiveErrorPrevention`'s `record` action to honor documented outcome variants by requiring `recordAction` and routing `occurred`, `prevented`, and `false-positive` to distinct telemetry paths
 - Added focused regression coverage for manager outcome accounting, tool validation, and prevented-outcome recording, plus a singleton reset helper for isolated tests

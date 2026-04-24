@@ -110,6 +110,51 @@ predictiveErrorPrevention({action: 'stats'})`,
 				description: "Whether prevention strategy worked (for learning)",
 			}),
 		),
+		enabled: Type.Optional(
+			Type.Boolean({
+				description: "Enable or disable predictive error prevention",
+			}),
+		),
+		minProbability: Type.Optional(
+			Type.Number({
+				minimum: 0,
+				maximum: 1,
+				description: "Minimum probability threshold for surfaced predictions (0-1)",
+			}),
+		),
+		minConfidence: Type.Optional(
+			Type.Number({
+				minimum: 0,
+				maximum: 1,
+				description: "Minimum confidence threshold for surfaced predictions (0-1)",
+			}),
+		),
+		proactiveWarnings: Type.Optional(
+			Type.Boolean({
+				description: "Whether proactive warning output is enabled",
+			}),
+		),
+		sessionStartPredictions: Type.Optional(
+			Type.Boolean({
+				description: "Whether to generate predictions at session start",
+			}),
+		),
+		preToolUseChecks: Type.Optional(
+			Type.Boolean({
+				description: "Whether to generate predictions before tool usage",
+			}),
+		),
+		learningEnabled: Type.Optional(
+			Type.Boolean({
+				description: "Whether learning from observed errors is enabled",
+			}),
+		),
+		patternRetentionDays: Type.Optional(
+			Type.Number({
+				minimum: 1,
+				description: "How long learned patterns are retained, in days",
+			}),
+		),
 		patternId: Type.Optional(
 			Type.String({
 				description: "Pattern ID for getting pattern details",
@@ -129,6 +174,14 @@ predictiveErrorPrevention({action: 'stats'})`,
 			predictionId?: string;
 			recordAction?: "occurred" | "prevented" | "false-positive";
 			preventionWorked?: boolean;
+			enabled?: boolean;
+			minProbability?: number;
+			minConfidence?: number;
+			proactiveWarnings?: boolean;
+			sessionStartPredictions?: boolean;
+			preToolUseChecks?: boolean;
+			learningEnabled?: boolean;
+			patternRetentionDays?: number;
 			patternId?: string;
 		};
 
@@ -247,9 +300,30 @@ predictiveErrorPrevention({action: 'stats'})`,
 				}
 
 				case "config": {
+					const updates = Object.fromEntries(
+						Object.entries({
+							enabled: args.enabled,
+							minProbability: args.minProbability,
+							minConfidence: args.minConfidence,
+							proactiveWarnings: args.proactiveWarnings,
+							sessionStartPredictions: args.sessionStartPredictions,
+							preToolUseChecks: args.preToolUseChecks,
+							learningEnabled: args.learningEnabled,
+							patternRetentionDays: args.patternRetentionDays,
+						}).filter(([, value]) => value !== undefined),
+					) as Partial<ReturnType<typeof manager.getConfig>>;
+
+					if (Object.keys(updates).length > 0) {
+						manager.updateConfig(updates);
+					}
+
 					const config = manager.getConfig();
+					const heading =
+						Object.keys(updates).length > 0
+							? "## Predictive Error Prevention Config Updated"
+							: "## Predictive Error Prevention Config";
 					result = [
-						"## Predictive Error Prevention Config",
+						heading,
 						"",
 						`- **Enabled:** ${config.enabled}`,
 						`- **Min Probability:** ${config.minProbability}`,
@@ -258,6 +332,7 @@ predictiveErrorPrevention({action: 'stats'})`,
 						`- **Session Start Predictions:** ${config.sessionStartPredictions}`,
 						`- **Pre Tool-Use Checks:** ${config.preToolUseChecks}`,
 						`- **Learning Enabled:** ${config.learningEnabled}`,
+						`- **Pattern Retention Days:** ${config.patternRetentionDays}`,
 					].join("\n");
 					break;
 				}
