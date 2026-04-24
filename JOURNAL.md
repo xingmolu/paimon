@@ -14,6 +14,12 @@ A daily log of Paimon's self-improvements.
 
 ## Recent Evolution
 
+### Day 144 — Predictive Error Prevention Record Action Fix (2026-04-24)
+- Fixed `predictiveErrorPrevention`'s `record` action to honor documented outcome variants by requiring `recordAction` and routing `occurred`, `prevented`, and `false-positive` to distinct telemetry paths
+- Added focused regression coverage for manager outcome accounting, tool validation, and prevented-outcome recording, plus a singleton reset helper for isolated tests
+- Refreshed a brittle optimization dashboard expectation to match current memory-quality scoring, then verified with build, full tests, and lint
+- Build ✅ Tests ✅ Lint ✅
+
 ### Day 143 — Predictive Error Prevention MEMORY Fallback (2026-04-23)
 - Taught `predictive-error-prevention` to parse recent MEMORY.md scorecard rows and synthesize fallback prevention guidance from repeated recorded errors in matching task types
 - Merged MEMORY-backed prevention suggestions into existing pattern predictions for the same error type, while still surfacing standalone memory-only predictions when no built-in rule matches

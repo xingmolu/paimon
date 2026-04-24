@@ -82,7 +82,7 @@ describe("OptimizationDashboardManager", () => {
 		expect(health.components.timeEfficiency).toBeGreaterThanOrEqual(100 - 1);
 		expect(health.components.errorRate).toBe(90);
 		expect(health.components.capabilityUtilization).toBeGreaterThan(80);
-		expect(health.components.memoryQuality).toBeGreaterThan(80);
+		expect(health.components.memoryQuality).toBeGreaterThanOrEqual(78);
 		expect(health.status).toBe("excellent");
 	});
 

@@ -3,16 +3,6 @@
     "current": 100,
     "points": [
       {
-        "date": "2026-W15",
-        "value": 100,
-        "trend": "stable"
-      },
-      {
-        "date": "2026-W16",
-        "value": 100,
-        "trend": "stable"
-      },
-      {
         "date": "2026-W17",
         "value": 100,
         "trend": "stable"
@@ -22,64 +12,37 @@
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 14.130434782608695,
+    "averageMinutes": 20,
     "byTaskType": {
-      "capability": 14.318181818181818,
-      "reliability": 10
+      "capability": 20
     },
     "points": [
       {
-        "date": "2026-W15",
-        "value": 11.666666666666666,
-        "trend": "stable"
-      },
-      {
-        "date": "2026-W16",
-        "value": 14,
-        "trend": "down"
-      },
-      {
         "date": "2026-W17",
-        "value": 15,
+        "value": 20,
         "trend": "stable"
       }
     ],
-    "fastestTask": "Normalize optimization dashboard scorecard success interpretation across compact and legacy MEMORY schemas",
-    "slowestTask": "Add MEMORY.md scorecard fallback patterns to pattern auto-apply with regression coverage"
+    "fastestTask": "Add MEMORY.md scorecard fallback guidance to predictive error prevention",
+    "slowestTask": "Add MEMORY.md scorecard fallback guidance to predictive error prevention"
   },
   "errors": {
-    "totalErrors": 5,
+    "totalErrors": 1,
     "byType": {
-      "test": 4,
-      "lint": 1
+      "test": 1
     },
     "recentErrors": [
-      "2026-04-23: test in \"Normalize shared scorecard result precedence so compact Result markers override legacy First Try data\"",
-      "2026-04-22: test in \"Normalize remaining MEMORY scorecard result consumers to shared helper semantics\"",
-      "2026-04-22: test in \"Normalize scorecard helper call sites to accept Result and First Try fields together\"",
-      "2026-04-16: test in \"Metrics scorecard compatibility fix\"",
-      "2026-04-05: lint in \"OK Shortcut Command (Aider Pattern)\""
+      "2026-04-23: test in \"Add MEMORY.md scorecard fallback guidance to predictive error prevention\""
     ],
     "points": [
       {
-        "date": "2026-W15",
-        "value": 1,
-        "trend": "stable"
-      },
-      {
-        "date": "2026-W16",
-        "value": 1,
-        "trend": "stable"
-      },
-      {
         "date": "2026-W17",
-        "value": 3,
-        "trend": "down"
+        "value": 1,
+        "trend": "stable"
       }
     ],
     "commonPatterns": [
-      "test",
-      "lint"
+      "test"
     ]
   },
   "skills": [],
@@ -87,26 +50,18 @@
     "current": 0,
     "points": [
       {
-        "date": "2026-W15",
-        "value": 1.5
-      },
-      {
-        "date": "2026-W16",
-        "value": 4.5
-      },
-      {
         "date": "2026-W17",
-        "value": 5
+        "value": 0.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 22,
+    "totalCapabilities": 1,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-23T17:41:21.846Z",
-  "iterationsAnalyzed": 23
+  "lastUpdated": "2026-04-24T02:55:29.551Z",
+  "iterationsAnalyzed": 1
 }

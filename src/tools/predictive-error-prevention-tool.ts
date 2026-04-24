@@ -99,6 +99,12 @@ predictiveErrorPrevention({action: 'stats'})`,
 				description: "Prediction ID for recording outcomes",
 			}),
 		),
+		recordAction: Type.Optional(
+			Type.String({
+				enum: ["occurred", "prevented", "false-positive"],
+				description: "Outcome to record for record action: occurred, prevented, or false-positive",
+			}),
+		),
 		preventionWorked: Type.Optional(
 			Type.Boolean({
 				description: "Whether prevention strategy worked (for learning)",
@@ -121,6 +127,7 @@ predictiveErrorPrevention({action: 'stats'})`,
 			recentErrors?: string[];
 			errorType?: string;
 			predictionId?: string;
+			recordAction?: "occurred" | "prevented" | "false-positive";
 			preventionWorked?: boolean;
 			patternId?: string;
 		};
@@ -212,8 +219,25 @@ predictiveErrorPrevention({action: 'stats'})`,
 						result = "Error: Prediction ID required for record action";
 						break;
 					}
-					manager.recordOccurrence(args.predictionId);
-					result = `Recorded occurrence for prediction: ${args.predictionId}`;
+					if (!args.recordAction) {
+						result =
+							"Error: recordAction required for record action (occurred, prevented, or false-positive)";
+						break;
+					}
+					switch (args.recordAction) {
+						case "occurred":
+							manager.recordOccurrence(args.predictionId);
+							result = `Recorded occurred outcome for prediction: ${args.predictionId}`;
+							break;
+						case "prevented":
+							manager.recordPrevention(args.predictionId);
+							result = `Recorded prevented outcome for prediction: ${args.predictionId}`;
+							break;
+						case "false-positive":
+							manager.recordFalsePositive(args.predictionId);
+							result = `Recorded false-positive outcome for prediction: ${args.predictionId}`;
+							break;
+					}
 					break;
 				}
 
@@ -294,6 +318,9 @@ predictiveErrorPrevention({action: 'stats'})`,
 						"",
 						"// Learn from an error",
 						"predictiveErrorPrevention({action: 'learn', errorType: 'typescript', preventionWorked: true})",
+						"",
+						"// Record prediction outcome",
+						"predictiveErrorPrevention({action: 'record', predictionId: 'pred-123', recordAction: 'prevented'})",
 						"",
 						"// View statistics",
 						"predictiveErrorPrevention({action: 'stats'})",

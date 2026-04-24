@@ -934,3 +934,7 @@ export function initPredictiveErrorPreventionManager(
 	}
 	return managerInstance;
 }
+
+export function resetPredictiveErrorPreventionManager(): void {
+	managerInstance = null;
+}

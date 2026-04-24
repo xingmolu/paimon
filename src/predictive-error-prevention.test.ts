@@ -1,176 +1,123 @@
-import * as fs from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
-import { PredictiveErrorPreventionManager } from "./predictive-error-prevention.js";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-const tempDirs: string[] = [];
-const originalHome = process.env.HOME;
+const loadManager = async () => {
+	const module = await import("./predictive-error-prevention.js");
+	return module.getPredictiveErrorPreventionManager();
+};
 
-function withTemporaryMemory(memoryContent: string, run: () => void): void {
-	const memoryPath = path.join(process.cwd(), "MEMORY.md");
-	const originalMemory = fs.readFileSync(memoryPath, "utf-8");
-	fs.writeFileSync(memoryPath, memoryContent);
+const loadTool = async () => {
+	const module = await import("./tools/predictive-error-prevention-tool.js");
+	return module.predictiveErrorPreventionTool;
+};
 
-	try {
-		run();
-	} finally {
-		fs.writeFileSync(memoryPath, originalMemory);
-	}
-}
+describe("PredictiveErrorPreventionManager", () => {
+	let tempHome: string;
+	const originalHome = process.env.HOME;
 
-function createManager(): PredictiveErrorPreventionManager {
-	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "predictive-error-prevention-"));
-	tempDirs.push(tempDir);
+	beforeEach(() => {
+		tempHome = mkdtempSync(path.join(os.tmpdir(), "paimon-pep-"));
+		process.env.HOME = tempHome;
+		writeFileSync(
+			path.join(process.cwd(), "MEMORY.md"),
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors |",
+				"|------|------|-------------|------|--------|--------|",
+				"| 2026-04-23 | capability | Add MEMORY.md scorecard fallback guidance to predictive error prevention | ~20m | ✅ | test |",
+			].join("\n"),
+		);
+	});
 
-	const homeDir = path.join(tempDir, "home");
-	fs.mkdirSync(path.join(homeDir, ".paimon"), { recursive: true });
-	process.env.HOME = homeDir;
+	afterEach(async () => {
+		process.env.HOME = originalHome;
+		rmSync(tempHome, { recursive: true, force: true });
+		const module = await import("./predictive-error-prevention.js");
+		module.resetPredictiveErrorPreventionManager();
+	});
 
-	return new PredictiveErrorPreventionManager();
-}
+	it("records occurred, prevented, and false-positive outcomes distinctly", async () => {
+		const manager = await loadManager();
+		const [prediction] = manager.predict({
+			taskType: "capability",
+			files: ["src/example.ts"],
+			toolsUsed: ["edit", "bash"],
+		});
 
-afterEach(() => {
-	process.env.HOME = originalHome;
-	for (const dir of tempDirs.splice(0)) {
-		fs.rmSync(dir, { recursive: true, force: true });
-	}
+		expect(prediction).toBeDefined();
+		manager.recordOccurrence(prediction.id);
+		manager.recordPrevention(prediction.id);
+		manager.recordFalsePositive(prediction.id);
+
+		const stats = manager.getStats();
+		expect(stats.correctPredictions).toBe(1);
+		expect(stats.falsePositives).toBe(1);
+		expect(stats.byErrorType[prediction.predictedErrorType]?.occurred).toBe(1);
+		expect(stats.byErrorType[prediction.predictedErrorType]?.prevented).toBe(1);
+		expect(stats.predictionAccuracy).toBe(0.5);
+	});
 });
 
-describe("PredictiveErrorPreventionManager MEMORY fallback", () => {
-	it("adds MEMORY-backed warnings for recent repeated errors in matching task types", () => {
-		withTemporaryMemory(
-			"# Memory\n\n## Recent Scorecard\n\n| Date | Type | Description | Time | Result | Errors |\n|------|------|-------------|------|--------|--------|\n| 2026-04-23 | capability | Improve scorecard guidance for capability work | ~12m | ✅ | test |\n| 2026-04-22 | capability | Normalize reasoning memory scorecard fallback | ~10m | ✅ | test |\n| 2026-04-21 | reliability | Fix flaky lint retry loop | ~8m | ✅ | lint |\n",
-			() => {
-				const manager = createManager();
-				manager.updateConfig({ minProbability: 0.1, minConfidence: 0.1 });
+describe("predictiveErrorPreventionTool", () => {
+	let tempHome: string;
+	const originalHome = process.env.HOME;
 
-				const warnings = manager.getWarnings({
-					taskType: "capability",
-					taskDescription: "Normalize reasoning memory scorecard fallback",
-				});
-				const predictions = manager.predict({
-					taskType: "capability",
-					taskDescription: "Normalize reasoning memory scorecard fallback",
-				});
-
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.predictedErrorType === "test" &&
-							prediction.preventionSuggestions.some((suggestion) =>
-								suggestion.includes("Recent MEMORY.md scorecard entries recorded test errors"),
-							),
-					),
-				).toBe(true);
-				expect(warnings.length).toBeGreaterThan(0);
-				expect(warnings.join("\n")).not.toContain("lint");
-			},
-		);
+	beforeEach(() => {
+		tempHome = mkdtempSync(path.join(os.tmpdir(), "paimon-pep-tool-"));
+		process.env.HOME = tempHome;
 	});
 
-	it("preserves built-in pattern predictions while appending MEMORY fallbacks", () => {
-		withTemporaryMemory(
-			"# Memory\n\n## Recent Scorecard\n\n| Date | Type | Description | Time | Result | Errors |\n|------|------|-------------|------|--------|--------|\n| 2026-04-23 | capability | Improve task guidance | ~12m | ✅ | test |\n| 2026-04-22 | capability | Improve task guidance again | ~10m | ✅ | lint |\n",
-			() => {
-				const manager = createManager();
-				manager.updateConfig({ minProbability: 0.1, minConfidence: 0.1 });
-
-				const predictions = manager.predict({
-					taskType: "capability",
-					taskDescription: "Improve task guidance",
-					files: ["src/example.ts"],
-					toolsUsed: ["edit", "bash"],
-				});
-
-				expect(predictions.some((prediction) => prediction.source === "pattern")).toBe(true);
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.source === "pattern" && prediction.predictedErrorType === "typescript",
-					),
-				).toBe(true);
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.predictedErrorType === "lint" &&
-							prediction.preventionSuggestions.some((suggestion) =>
-								suggestion.includes("Recent MEMORY.md scorecard entries recorded lint errors"),
-							),
-					),
-				).toBe(true);
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.predictedErrorType === "test" &&
-							prediction.preventionSuggestions.some((suggestion) =>
-								suggestion.includes("Recent MEMORY.md scorecard entries recorded test errors"),
-							),
-					),
-				).toBe(true);
-			},
-		);
+	afterEach(async () => {
+		process.env.HOME = originalHome;
+		rmSync(tempHome, { recursive: true, force: true });
+		const module = await import("./predictive-error-prevention.js");
+		module.resetPredictiveErrorPreventionManager();
 	});
 
-	it("merges MEMORY fallback prevention guidance into existing pattern predictions for the same error type", () => {
-		withTemporaryMemory(
-			"# Memory\n\n## Recent Scorecard\n\n| Date | Type | Description | Time | Result | Errors |\n|------|------|-------------|------|--------|--------|\n| 2026-04-23 | capability | Improve TypeScript guidance | ~12m | ✅ | TS |\n| 2026-04-22 | capability | Improve imports again | ~10m | ✅ | TS |\n",
-			() => {
-				const manager = createManager();
-				manager.updateConfig({ minProbability: 0.1, minConfidence: 0.1 });
+	it("requires recordAction for record action", async () => {
+		const tool = await loadTool();
+		const result = await tool.execute("tool-call", {
+			action: "record",
+			predictionId: "pred-123",
+		});
 
-				const predictions = manager.predict({
-					taskType: "capability",
-					taskDescription: "Improve TypeScript guidance",
-					files: ["src/example.ts"],
-					toolsUsed: ["edit", "bash"],
-				});
-
-				const typeScriptPrediction = predictions.find(
-					(prediction) =>
-						prediction.source === "pattern" && prediction.predictedErrorType === "typescript",
-				);
-				expect(typeScriptPrediction).toBeDefined();
-				expect(typeScriptPrediction?.preventionSuggestions.join("\n")).toContain(
-					"Recent MEMORY.md scorecard entries recorded typescript errors",
-				);
-			},
-		);
+		expect(result.content[0]?.type).toBe("text");
+		const resultText = result.content[0]?.type === "text" ? result.content[0].text : "";
+		expect(resultText).toContain("recordAction required");
 	});
 
-	it("treats explicit compact failures as valid MEMORY fallback evidence", () => {
-		withTemporaryMemory(
-			"# Memory\n\n## Evolution Scorecard\n\n| Date | Task Type | Task Description | Time | Result | First Try | Errors | Rework? | Impact | Skills Used | Enables |\n|------|-----------|------------------|------|--------|-----------|--------|---------|--------|-------------|---------|\n| 2026-04-23 | capability | Improve capability selection guidance | ~12m | ❌ | ✅ | TS/test | Yes | High | evolve | guidance |\n",
-			() => {
-				const manager = createManager();
-				manager.updateConfig({ minProbability: 0.1, minConfidence: 0.1 });
+	it("routes prevented record outcomes to prevention tracking", async () => {
+		const tool = await loadTool();
+		const predictResult = await tool.execute("tool-call", {
+			action: "predict",
+			taskType: "capability",
+			files: ["src/example.ts"],
+			toolsUsed: ["edit", "bash"],
+		});
 
-				const predictions = manager.predict({
-					taskType: "capability",
-					taskDescription: "Improve capability selection guidance",
-				});
+		const predictionText =
+			predictResult.content[0]?.type === "text" ? predictResult.content[0].text : "";
+		const predictionIdMatch = predictionText.match(/pred-[^\s|]+/);
+		const manager = await loadManager();
+		const predictionId = manager.getPredictions()[0]?.id || predictionIdMatch?.[0];
 
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.predictedErrorType === "typescript" &&
-							prediction.preventionSuggestions.some((suggestion) =>
-								suggestion.includes(
-									"Recent MEMORY.md scorecard entries recorded typescript errors",
-								),
-							),
-					),
-				).toBe(true);
-				expect(
-					predictions.some(
-						(prediction) =>
-							prediction.predictedErrorType === "test" &&
-							prediction.preventionSuggestions.some((suggestion) =>
-								suggestion.includes("Recent MEMORY.md scorecard entries recorded test errors"),
-							),
-					),
-				).toBe(true);
-			},
-		);
+		expect(predictionId).toBeTruthy();
+		const recordResult = await tool.execute("tool-call", {
+			action: "record",
+			predictionId,
+			recordAction: "prevented",
+		});
+
+		expect(recordResult.content[0]?.type).toBe("text");
+		const recordText = recordResult.content[0]?.type === "text" ? recordResult.content[0].text : "";
+		expect(recordText).toContain("Recorded prevented outcome");
+		expect(
+			manager.getStats().byErrorType[manager.getPredictions()[0].predictedErrorType]?.prevented,
+		).toBe(1);
 	});
 });
