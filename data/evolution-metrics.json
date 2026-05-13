@@ -1,43 +1,44 @@
 {
   "successRate": {
-    "current": 100,
+    "current": 50,
     "points": [
       {
         "date": "2026-W17",
-        "value": 100,
+        "value": 50,
         "trend": "stable"
       }
     ],
-    "weeklyAverage": 100,
+    "weeklyAverage": 50,
     "improvement": 0
   },
   "time": {
-    "averageMinutes": 20,
+    "averageMinutes": 17.5,
     "byTaskType": {
-      "capability": 20
+      "capability": 17.5
     },
     "points": [
       {
         "date": "2026-W17",
-        "value": 20,
+        "value": 17.5,
         "trend": "stable"
       }
     ],
-    "fastestTask": "Add MEMORY.md scorecard fallback guidance to predictive error prevention",
-    "slowestTask": "Add MEMORY.md scorecard fallback guidance to predictive error prevention"
+    "fastestTask": "Fix predictive fallback after failing regression",
+    "slowestTask": "Add predictive fallback coverage with rework"
   },
   "errors": {
-    "totalErrors": 1,
+    "totalErrors": 2,
     "byType": {
-      "test": 1
+      "test": 2
     },
     "recentErrors": [
-      "2026-04-23: test in \"Add MEMORY.md scorecard fallback guidance to predictive error prevention\""
+      "2026-04-24: test in \"Fix predictive fallback after failing regression\"",
+      "2026-04-23: test in \"Add predictive fallback coverage with rework\""
     ],
     "points": [
       {
         "date": "2026-W17",
-        "value": 1,
+        "value": 2,
         "trend": "stable"
       }
     ],
@@ -45,23 +46,45 @@
       "test"
     ]
   },
-  "skills": [],
+  "skills": [
+    {
+      "skill": "systematic-debugging",
+      "usageCount": 1,
+      "successRate": 0,
+      "averageTime": 15,
+      "trend": "stable"
+    },
+    {
+      "skill": "evolve",
+      "usageCount": 1,
+      "successRate": 100,
+      "averageTime": 20,
+      "trend": "stable"
+    },
+    {
+      "skill": "review-changes",
+      "usageCount": 1,
+      "successRate": 100,
+      "averageTime": 20,
+      "trend": "stable"
+    }
+  ],
   "capabilityVelocity": {
     "current": 0,
     "points": [
       {
         "date": "2026-W17",
-        "value": 0.5
+        "value": 1
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 1,
+    "totalCapabilities": 2,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-04-24T02:55:29.551Z",
-  "iterationsAnalyzed": 1
+  "lastUpdated": "2026-05-13T03:45:22.156Z",
+  "iterationsAnalyzed": 2
 }

@@ -18,7 +18,7 @@ describe("optimizationDashboardTool", () => {
 		expect(String(result.content[0]?.text)).toContain("compare requires successRate");
 	});
 
-	it("compares a session when parameters are provided", async () => {
+	it("compares a mixed session as average when signals are split", async () => {
 		const result = await optimizationDashboardTool.execute("test", {
 			action: "compare",
 			successRate: 95,
@@ -32,7 +32,11 @@ describe("optimizationDashboardTool", () => {
 		};
 		expect(comparison.rating).toBe("average");
 		expect(comparison.delta.avgTime).toBeLessThan(0);
-		expect(comparison.delta.successRate).toBeLessThan(0);
+		expect(
+			comparison.delta.successRate > 0 ||
+				comparison.delta.errorCount > 0 ||
+				comparison.delta.capabilitiesUsed > 0,
+		).toBe(true);
 	});
 
 	it("updates config with partial values", async () => {

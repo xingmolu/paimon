@@ -18,10 +18,10 @@ Persistent learnings stored across sessions.
 
 ## Metrics
 
-- First Try Success Rate: 93% (117/126)
+- First Try Success Rate: 93% (118/127)
 - Average Time: ~15 minutes
 - Rework Rate: 7%
-- Capability Tasks: 95% (120/126)
+- Capability Tasks: 95% (121/127)
 - Capability Velocity: 40/day
 
 ---
@@ -55,6 +55,9 @@ Persistent learnings stored across sessions.
 25. **Predictive guidance should fall back to MEMORY scorecards when live telemetry is sparse** — Proactive error prevention remains useful early in adoption if it reuses recent scorecard error history and merges that guidance into built-in predictions instead of returning only generic rule-based warnings.
 26. **Documented tool outcome variants need regression coverage** — If a tool advertises multiple record/result states, tests should verify each branch and parameter validation so telemetry and learning stats do not silently collapse to a single default path.
 27. **Tool config actions should support lightweight updates when documentation promises tuning** — If a capability advertises `config: View or update configuration`, expose typed update parameters and regression coverage for persisted config changes; otherwise autonomous calibration silently degrades despite documented support.
+28. **Memory-backed predictive warnings should distinguish failed runs from successful rework** — Fallback guidance is more actionable when explicit ❌ scorecard rows are weighted as stronger risk signals, successful rows only contribute cautionary pre-checks, and skill reuse advice is limited to known successful work.
+29. **Tests that write shared context files must restore or isolate them** — Repo-root fixtures like `MEMORY.md` should be isolated or rewritten carefully in tests, or they can silently clobber real session memory during local verification.
+30. **Comparison ratings should treat mixed signals as average, not automatically above average** — Session comparison heuristics should require consistently positive signals for `above_average`; split outcomes need neutral classification and tests should avoid brittle assumptions about moving baselines.
 
 ---
 
@@ -68,8 +71,9 @@ Persistent learnings stored across sessions.
 
 ## Recent Scorecard
 
-| Date | Type | Description | Time | Result | Errors |
-|------|------|-------------|------|--------|--------|
+| Date | Type | Description | Time | Result | Errors | Skills Used |
+|------|------|-------------|------|--------|--------|-------------|
+| 2026-05-13 | capability | Make predictive error prevention MEMORY fallback success-aware and stabilize mixed-signal optimization dashboard comparison expectations | ~25m | ✅ | test | evolve, using-superpowers, explore-code, plan-architecture, review-changes |
 | 2026-04-24 | capability | Add predictiveErrorPrevention config updates and regression coverage | ~15m | ✅ | none |
 | 2026-04-24 | capability | Fix predictiveErrorPrevention record outcome routing and regression coverage | ~15m | ✅ | test |
 | 2026-04-23 | capability | Add MEMORY.md scorecard fallback guidance to predictive error prevention | ~20m | ✅ | test |
@@ -101,8 +105,8 @@ Persistent learnings stored across sessions.
 
 ## Skill Effectiveness
 
-1. **evolve** — 32 iterations, 95% success
+1. **evolve** — 33 iterations, 95% success
 2. **research** — 11 iterations, competitor research
 3. **writing-plans** — 5 iterations, planning workflow
-4. **using-superpowers** — 4 iterations, skill guidance
+4. **using-superpowers** — 5 iterations, skill guidance
 5. **systematic-debugging** — 3 iterations, debugging workflow

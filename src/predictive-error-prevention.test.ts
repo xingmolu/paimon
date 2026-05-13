@@ -27,9 +27,9 @@ describe("PredictiveErrorPreventionManager", () => {
 				"",
 				"## Recent Scorecard",
 				"",
-				"| Date | Type | Description | Time | Result | Errors |",
-				"|------|------|-------------|------|--------|--------|",
-				"| 2026-04-23 | capability | Add MEMORY.md scorecard fallback guidance to predictive error prevention | ~20m | ✅ | test |",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-04-23 | capability | Add MEMORY.md scorecard fallback guidance to predictive error prevention | ~20m | ✅ | test | evolve, review-changes |",
 			].join("\n"),
 		);
 	});
@@ -60,6 +60,43 @@ describe("PredictiveErrorPreventionManager", () => {
 		expect(stats.byErrorType[prediction.predictedErrorType]?.occurred).toBe(1);
 		expect(stats.byErrorType[prediction.predictedErrorType]?.prevented).toBe(1);
 		expect(stats.predictionAccuracy).toBe(0.5);
+	});
+
+	it("builds memory fallback guidance that distinguishes failures from successful rework", async () => {
+		writeFileSync(
+			path.join(process.cwd(), "MEMORY.md"),
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-04-24 | capability | Fix predictive fallback after failing regression | ~15m | ❌ | test | systematic-debugging |",
+				"| 2026-04-23 | capability | Add predictive fallback coverage with rework | ~20m | ✅ | test | evolve, review-changes |",
+			].join("\n"),
+		);
+
+		const manager = await loadManager();
+		const predictions = manager.predict({
+			taskType: "capability",
+			files: ["docs/notes.md"],
+			toolsUsed: ["read"],
+		});
+		const memoryPrediction = predictions.find(
+			(prediction) => prediction.source === "memory" && prediction.predictedErrorType === "test",
+		);
+
+		expect(memoryPrediction).toBeDefined();
+		expect(memoryPrediction?.preventionSuggestions[0]).toContain(
+			"Recent MEMORY.md failures recorded test errors",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).not.toContain(
+			"Reuse skills from recent successful work when applicable: systematic-debugging",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).toContain(
+			"Recent successful capability work still encountered test rework",
+		);
 	});
 });
 

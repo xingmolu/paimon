@@ -17,7 +17,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { type ScorecardRow, parseScorecardRows } from "./scorecard.js";
+import { type ScorecardRow, normalizeScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 // Types
 export interface ErrorPrediction {
@@ -557,26 +557,52 @@ export class PredictiveErrorPreventionManager {
 
 		const errorSignals = new Map<
 			string,
-			{ count: number; suggestions: Set<string>; relatedPatterns: Set<string> }
+			{
+				count: number;
+				failureCount: number;
+				successCount: number;
+				unknownCount: number;
+				suggestions: Set<string>;
+				relatedPatterns: Set<string>;
+			}
 		>();
 
 		for (const row of relevantRows) {
 			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
+			const result = normalizeScorecardResult(row.result, row.firstTry);
 			for (const errorType of normalizedErrors) {
 				const signal = errorSignals.get(errorType) ?? {
 					count: 0,
+					failureCount: 0,
+					successCount: 0,
+					unknownCount: 0,
 					suggestions: new Set<string>(),
 					relatedPatterns: new Set<string>(),
 				};
 				signal.count++;
 				signal.relatedPatterns.add(`scorecard-${row.date}`);
-				signal.suggestions.add(
-					`Recent MEMORY.md scorecard entries recorded ${errorType} errors for ${context.taskType || row.taskType} work; review similar fixes before implementation.`,
-				);
+
+				if (result === "negative") {
+					signal.failureCount++;
+					signal.suggestions.add(
+						`Recent MEMORY.md failures recorded ${errorType} errors for ${context.taskType || row.taskType} work; review those fixes before implementation.`,
+					);
+				} else if (result === "positive") {
+					signal.successCount++;
+					signal.suggestions.add(
+						`Recent successful ${context.taskType || row.taskType} work still encountered ${errorType} rework; add an explicit pre-check for it before implementation.`,
+					);
+				} else {
+					signal.unknownCount++;
+					signal.suggestions.add(
+						`Recent MEMORY.md scorecard entries recorded ${errorType} errors for ${context.taskType || row.taskType} work; review similar fixes before implementation.`,
+					);
+				}
+
 				if (row.description) {
 					signal.suggestions.add(`Relevant recent task: ${row.description}`);
 				}
-				if (row.skillsUsed) {
+				if (row.skillsUsed && result === "positive") {
 					signal.suggestions.add(
 						`Reuse skills from recent successful work when applicable: ${row.skillsUsed}`,
 					);
@@ -587,8 +613,14 @@ export class PredictiveErrorPreventionManager {
 
 		const fallbackPredictions: ErrorPrediction[] = [];
 		for (const [errorType, signal] of errorSignals) {
-			const probability = Math.min(0.2 + signal.count * 0.15, 0.65);
-			const confidence = Math.min(0.45 + signal.count * 0.12, 0.85);
+			const weightedCount =
+				signal.failureCount * 1.25 + signal.unknownCount + signal.successCount * 0.75;
+			const probability = Math.min(0.2 + weightedCount * 0.15, 0.65);
+			const confidence = Math.min(
+				0.45 +
+					(signal.failureCount * 0.15 + signal.unknownCount * 0.12 + signal.successCount * 0.08),
+				0.85,
+			);
 			if (probability < this.config.minProbability || confidence < this.config.minConfidence) {
 				continue;
 			}
