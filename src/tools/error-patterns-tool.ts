@@ -293,6 +293,7 @@ function formatMatchResult(match: ErrorMatch): string {
 		`**Type:** ${match.pattern.type}`,
 		`**Description:** ${match.pattern.description}`,
 		`**Confidence:** ${match.confidence}%`,
+		`**Source:** ${match.source === "memory" ? "MEMORY.md fallback" : "pattern"}`,
 		"",
 		"**Solution:**",
 		match.suggestion,
@@ -319,6 +320,7 @@ function formatSuggestions(suggestions: ErrorMatch[]): string {
 		lines.push(`### Suggestion ${i + 1} (${s.confidence}% confidence)`);
 		lines.push("");
 		lines.push(`**Pattern:** ${s.pattern.id}`);
+		lines.push(`**Source:** ${s.source === "memory" ? "MEMORY.md fallback" : "pattern"}`);
 		lines.push(`**Description:** ${s.pattern.description}`);
 		lines.push("");
 		lines.push("**Solution:**");

@@ -845,7 +845,8 @@ export class OptimizationDashboardManager {
 		};
 		const positiveSignals = [delta.successRate > 0, delta.avgTime < 0, delta.errorCount < 0];
 		const pos = positiveSignals.filter(Boolean).length;
-		const rating = pos === positiveSignals.length ? "above_average" : pos === 0 ? "below_average" : "average";
+		const rating =
+			pos === positiveSignals.length ? "above_average" : pos === 0 ? "below_average" : "average";
 		return { current: cur, average: avg, delta, rating };
 	}
 

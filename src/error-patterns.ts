@@ -7,6 +7,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { normalizeScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 export interface ErrorPattern {
 	id: string;
@@ -25,6 +26,7 @@ export interface ErrorMatch {
 	match: string;
 	suggestion: string;
 	confidence: number;
+	source?: "pattern" | "memory";
 }
 
 export interface PatternStats {
@@ -35,6 +37,8 @@ export interface PatternStats {
 }
 
 // Common error patterns with known solutions
+const MEMORY_FALLBACK_LOOKBACK = 10;
+
 const DEFAULT_PATTERNS: ErrorPattern[] = [
 	// TypeScript errors
 	{
@@ -403,31 +407,8 @@ export class ErrorPatternLearner {
 	 * Match error against known patterns
 	 */
 	matchError(message: string): ErrorMatch | null {
-		const type = this.detectErrorType(message);
-
-		// Sort patterns by confidence and occurrences
-		const sortedPatterns = Array.from(this.patterns.values())
-			.filter((p) => p.type === type)
-			.sort((a, b) => b.confidence + b.occurrences - (a.confidence + a.occurrences));
-
-		for (const pattern of sortedPatterns) {
-			try {
-				const regex = new RegExp(pattern.pattern, "i");
-				const match = regex.exec(message);
-				if (match) {
-					return {
-						pattern,
-						match: match[0],
-						suggestion: pattern.solution,
-						confidence: Math.min(100, pattern.confidence + Math.min(pattern.occurrences * 2, 10)),
-					};
-				}
-			} catch {
-				// Invalid regex, skip
-			}
-		}
-
-		return null;
+		const directMatches = this.getSuggestions(message, 1);
+		return directMatches[0] ?? null;
 	}
 
 	/**
@@ -448,6 +429,7 @@ export class ErrorPatternLearner {
 						match: message,
 						suggestion: pattern.solution,
 						confidence: Math.min(100, pattern.confidence + Math.min(pattern.occurrences * 2, 10)),
+						source: "pattern",
 					});
 				}
 			} catch {
@@ -457,7 +439,89 @@ export class ErrorPatternLearner {
 			if (suggestions.length >= maxSuggestions) break;
 		}
 
-		return suggestions.sort((a, b) => b.confidence - a.confidence);
+		if (suggestions.length > 0) {
+			return suggestions.sort((a, b) => b.confidence - a.confidence).slice(0, maxSuggestions);
+		}
+
+		return this.getMemorySuggestions(message, type, maxSuggestions);
+	}
+
+	private getMemorySuggestions(
+		message: string,
+		type: "typescript" | "test" | "lint" | "runtime",
+		maxSuggestions: number,
+	): ErrorMatch[] {
+		const rows = this.loadScorecardRows().slice(0, MEMORY_FALLBACK_LOOKBACK);
+		const suggestions: ErrorMatch[] = [];
+
+		for (const row of rows) {
+			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
+			if (!normalizedErrors.includes(type)) {
+				continue;
+			}
+
+			const result = normalizeScorecardResult(row.result, row.firstTry);
+			const summary =
+				result === "negative"
+					? `Recent MEMORY.md failure on ${row.date}: ${row.description}. Review the failing implementation path before retrying.`
+					: result === "positive"
+						? `Recent successful session on ${row.date} still hit ${type} issues during ${row.description}. Reuse the proven fix path before retrying.`
+						: `Recent MEMORY.md history on ${row.date}: ${row.description}. Review it for prior ${type} recovery context.`;
+			const skillsNote =
+				row.skillsUsed && result === "positive" ? ` Successful skills: ${row.skillsUsed}.` : "";
+			const pattern: ErrorPattern = {
+				id: `memory-${type}-${row.date}`,
+				type,
+				pattern: "MEMORY fallback",
+				description: `MEMORY.md fallback from ${row.date}`,
+				solution: `${summary}${skillsNote}`,
+				confidence: result === "negative" ? 88 : result === "positive" ? 80 : 72,
+				occurrences: 1,
+				lastSeen: row.date,
+				examples: row.description ? [row.description] : [],
+			};
+
+			suggestions.push({
+				pattern,
+				match: message,
+				suggestion: pattern.solution,
+				confidence: pattern.confidence,
+				source: "memory",
+			});
+
+			if (suggestions.length >= maxSuggestions) {
+				break;
+			}
+		}
+
+		return suggestions;
+	}
+
+	private loadScorecardRows() {
+		try {
+			const memoryPath = path.join(process.cwd(), "MEMORY.md");
+			if (!fs.existsSync(memoryPath)) {
+				return [];
+			}
+			return parseScorecardRows(fs.readFileSync(memoryPath, "utf-8"));
+		} catch {
+			return [];
+		}
+	}
+
+	private normalizeScorecardErrors(errors?: string): string[] {
+		const normalized = (errors || "").trim().toLowerCase();
+		if (!normalized || normalized === "none") {
+			return [];
+		}
+		return normalized
+			.split(/[\/,]|\band\b/)
+			.map((part) => part.trim())
+			.filter(Boolean)
+			.map((part) => {
+				if (part === "ts") return "typescript";
+				return part;
+			}) as Array<"typescript" | "test" | "lint" | "runtime">;
 	}
 
 	/**
