@@ -19,7 +19,11 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { getCapabilityGapDetector } from "./capability-gap.js";
 import { analyzeContextTasks, buildContextAnalyzeCommand } from "./context-analysis.js";
-import type { Bottleneck, OptimizationRecommendation } from "./optimization-dashboard.js";
+import type {
+	Bottleneck,
+	HealthComponents,
+	OptimizationRecommendation,
+} from "./optimization-dashboard.js";
 import { getOptimizationDashboardManager } from "./optimization-dashboard.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
 
@@ -428,31 +432,98 @@ export class SelfImprovementEngine {
 			return false;
 		}
 
-		if (suggestion.title === "Auto-context detection") {
-			return true;
-		}
+		const implementedCompetitorTitles = new Set([
+			"Auto-context detection",
+			"Parallel file analysis",
+			"Code generation templates",
+		]);
 
-		if (suggestion.title === "Parallel file analysis") {
-			return true;
-		}
-
-		return false;
+		return implementedCompetitorTitles.has(suggestion.title);
 	}
 
 	private filterSuggestions(suggestions: ImprovementSuggestion[]): ImprovementSuggestion[] {
+		const health = this.safeGetDashboardHealth();
 		return suggestions.filter(
 			(suggestion) =>
 				!this.isLowSignalCodeSuggestion(suggestion) &&
-				!this.isDuplicateCapabilitySuggestion(suggestion),
+				!this.isDuplicateCapabilitySuggestion(suggestion) &&
+				!this.isSatisfiedBestPracticeSuggestion(suggestion, health),
 		);
 	}
 
 	private getDashboardManager(): {
-		getHealth(): { status: "excellent" | "good" | "fair" | "poor"; overallScore: number };
+		getHealth(): {
+			status: "excellent" | "good" | "fair" | "poor";
+			overallScore: number;
+			components?: Partial<HealthComponents>;
+		};
 		identifyBottlenecks(): Bottleneck[];
 		getRecommendations(): OptimizationRecommendation[];
 	} {
 		return getOptimizationDashboardManager();
+	}
+
+	private safeGetDashboardHealth(): {
+		status: "excellent" | "good" | "fair" | "poor";
+		overallScore: number;
+		components?: Partial<HealthComponents>;
+	} | null {
+		try {
+			return this.getDashboardManager().getHealth();
+		} catch {
+			return null;
+		}
+	}
+
+	private isSatisfiedBestPracticeSuggestion(
+		suggestion: ImprovementSuggestion,
+		health: {
+			status: "excellent" | "good" | "fair" | "poor";
+			overallScore: number;
+			components?: Partial<HealthComponents>;
+		} | null,
+	): boolean {
+		if (suggestion.source !== "best-practice") {
+			return false;
+		}
+
+		if (suggestion.title.startsWith("Optimization dashboard health is ")) {
+			return health?.status === "excellent" || health?.status === "good";
+		}
+
+		if (suggestion.title === "Strengthen self-assessment enablers") {
+			return (health?.components?.successRate ?? 0) >= 90;
+		}
+
+		if (suggestion.title === "Expand error-recovery enablers") {
+			return (health?.components?.errorRate ?? 0) >= 85;
+		}
+
+		if (suggestion.title === "Improve planning and tool-chain enablers") {
+			return (health?.components?.timeEfficiency ?? 0) >= 75;
+		}
+
+		if (suggestion.title === "Promote tool-discovery enablers") {
+			return (health?.components?.capabilityUtilization ?? 0) >= 60;
+		}
+
+		if (suggestion.title === "Invest in memory-persistence enablers") {
+			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
+		if (suggestion.title === "Improve iteration speed") {
+			return (health?.components?.timeEfficiency ?? 0) >= 70;
+		}
+
+		if (suggestion.title === "Reduce recurring errors") {
+			return (health?.components?.errorRate ?? 0) >= 85;
+		}
+
+		if (suggestion.title === "Increase tool utilization") {
+			return (health?.components?.capabilityUtilization ?? 0) >= 60;
+		}
+
+		return false;
 	}
 
 	/**

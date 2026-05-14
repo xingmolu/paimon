@@ -335,5 +335,64 @@ describe("SelfImprovementEngine", () => {
 
 		expect(titles).not.toContain("Auto-context detection");
 		expect(titles).not.toContain("Parallel file analysis");
+		expect(titles).not.toContain("Code generation templates");
+	});
+
+	it("suppresses best-practice suggestions that are already satisfied by current health", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "good",
+				overallScore: 91,
+				components: {
+					successRate: 95,
+					timeEfficiency: 81,
+					errorRate: 92,
+					capabilityUtilization: 72,
+					memoryQuality: 88,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "critical",
+					category: "capability",
+					title: "Optimization dashboard health is poor",
+					description: "This should be hidden when health is already good.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Strengthen self-assessment enablers",
+					description: "This should be hidden when success rate is already strong.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Preserve successful skill combinations in memory",
+					description:
+						"This should remain because it is not directly satisfied by health thresholds.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Optimization dashboard health is poor");
+		expect(titles).not.toContain("Strengthen self-assessment enablers");
+		expect(titles).toContain("Preserve successful skill combinations in memory");
 	});
 });
