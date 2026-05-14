@@ -533,7 +533,7 @@ export class CapabilityGapDetector {
 	private stats: GapDetectionStats;
 	private dataPath: string;
 
-	constructor(configPath?: string) {
+	constructor(configPathOrOverrides?: string | Partial<GapDetectionConfig>) {
 		this.config = DEFAULT_CONFIG;
 		const homeDir = process.env.HOME || ".";
 		this.dataPath = path.join(homeDir, ".paimon", "capability-gaps.json");
@@ -546,16 +546,20 @@ export class CapabilityGapDetector {
 			lastDetectionTime: "",
 			topGapCategories: [],
 		};
-		this.loadConfig();
+		this.loadConfig(typeof configPathOrOverrides === "string" ? configPathOrOverrides : undefined);
+		if (configPathOrOverrides && typeof configPathOrOverrides !== "string") {
+			this.config = { ...this.config, ...configPathOrOverrides };
+		}
 		this.loadData();
 	}
 
-	private loadConfig(): void {
+	private loadConfig(configPath?: string): void {
 		try {
 			const homeDir = process.env.HOME || ".";
-			const configPath = path.join(homeDir, ".paimon", "gap-detection-config.json");
-			if (fs.existsSync(configPath)) {
-				const loaded = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+			const resolvedConfigPath =
+				configPath || path.join(homeDir, ".paimon", "gap-detection-config.json");
+			if (fs.existsSync(resolvedConfigPath)) {
+				const loaded = JSON.parse(fs.readFileSync(resolvedConfigPath, "utf-8"));
 				this.config = { ...DEFAULT_CONFIG, ...loaded };
 			}
 		} catch {
@@ -968,51 +972,60 @@ export class CapabilityGapDetector {
 
 	public getCapabilityCoverage(): CapabilityCoverage {
 		const roadmapPath = path.resolve(this.config.roadmapPath);
-		let totalExpected = 57;
+		let roadmapExpected = 57;
+		let roadmapImplemented = 0;
 		if (fs.existsSync(roadmapPath)) {
 			const content = fs.readFileSync(roadmapPath, "utf-8");
 			const phases = content.match(/## Phase \d+:/g) || [];
-			totalExpected = phases.length;
+			roadmapExpected = phases.length;
+			roadmapImplemented = (content.match(/\[x\]/g) || []).length;
 		}
 
 		const toolsDir = path.resolve(this.config.toolsDir);
-		let totalImplemented = 0;
+		let toolsImplemented = 0;
 		if (fs.existsSync(toolsDir)) {
-			totalImplemented = fs
+			toolsImplemented = fs
 				.readdirSync(toolsDir)
 				.filter((f) => f.endsWith(".ts") && !f.includes("index")).length;
 		}
+		const toolsExpected = Math.max(60, toolsImplemented);
+
+		const competitorImplemented = KNOWN_COMPETITOR_PATTERNS.filter(
+			(p) => p.implementationStatus === "implemented",
+		).length;
+		const competitorExpected = KNOWN_COMPETITOR_PATTERNS.length;
+
+		const currentCapabilityExpected = toolsExpected + competitorExpected;
+		const currentCapabilityImplemented = toolsImplemented + competitorImplemented;
+
+		const percentage = (implemented: number, expected: number): number =>
+			expected > 0 ? Math.round((implemented / expected) * 100) : 0;
 
 		const byCategory: Record<
 			string,
 			{ expected: number; implemented: number; percentage: number }
 		> = {
 			tools: {
-				expected: 60,
-				implemented: totalImplemented,
-				percentage: Math.round((totalImplemented / 60) * 100),
+				expected: toolsExpected,
+				implemented: toolsImplemented,
+				percentage: percentage(toolsImplemented, toolsExpected),
 			},
-			roadmap: { expected: totalExpected, implemented: totalExpected, percentage: 100 },
 			"competitor-patterns": {
-				expected: KNOWN_COMPETITOR_PATTERNS.length,
-				implemented: KNOWN_COMPETITOR_PATTERNS.filter(
-					(p) => p.implementationStatus === "implemented",
-				).length,
-				percentage: Math.round(
-					(KNOWN_COMPETITOR_PATTERNS.filter((p) => p.implementationStatus === "implemented")
-						.length /
-						KNOWN_COMPETITOR_PATTERNS.length) *
-						100,
-				),
+				expected: competitorExpected,
+				implemented: competitorImplemented,
+				percentage: percentage(competitorImplemented, competitorExpected),
+			},
+			roadmap: {
+				expected: roadmapExpected,
+				implemented: roadmapImplemented,
+				percentage: percentage(roadmapImplemented, roadmapExpected),
 			},
 		};
 
-		const coveragePercentage = Math.round((totalImplemented / totalExpected) * 100);
-
 		return {
-			totalExpected,
-			totalImplemented,
-			coveragePercentage,
+			totalExpected: currentCapabilityExpected,
+			totalImplemented: currentCapabilityImplemented,
+			coveragePercentage: percentage(currentCapabilityImplemented, currentCapabilityExpected),
 			byCategory,
 			gaps: this.gaps,
 		};
@@ -1188,7 +1201,9 @@ export function getCapabilityGapDetector(): CapabilityGapDetector {
 	return detectorInstance;
 }
 
-export function initCapabilityGapDetector(configPath?: string): CapabilityGapDetector {
-	detectorInstance = new CapabilityGapDetector(configPath);
+export function initCapabilityGapDetector(
+	configPathOrOverrides?: string | Partial<GapDetectionConfig>,
+): CapabilityGapDetector {
+	detectorInstance = new CapabilityGapDetector(configPathOrOverrides);
 	return detectorInstance;
 }

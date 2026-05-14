@@ -152,9 +152,10 @@ export class EvolutionStrategyPlanner {
 		const metricsTracker = getMetricsTracker();
 		const metrics = metricsTracker.getMetrics();
 
-		// Gather capability gaps
+		// Gather capability gaps and current coverage
 		const gapDetector = getCapabilityGapDetector();
 		const gaps = await gapDetector.getAllGaps();
+		const coverage = gapDetector.getCapabilityCoverage();
 
 		// Gather patterns
 		const patternMiner = getPatternMiner();
@@ -162,9 +163,9 @@ export class EvolutionStrategyPlanner {
 
 		// Build state
 		const state: EvolutionState = {
-			capabilitiesImplemented: this.countImplementedCapabilities(metrics),
-			capabilitiesTotal: this.countTotalCapabilities(metrics),
-			coveragePercentage: this.calculateCoverage(metrics),
+			capabilitiesImplemented: coverage.totalImplemented,
+			capabilitiesTotal: coverage.totalExpected,
+			coveragePercentage: coverage.coveragePercentage,
 			recentSuccessRate: metrics.successRate.current / 100 || 0.91,
 			averageIterationTime: metrics.time.averageMinutes || 14,
 			topErrors: this.extractTopErrors(metrics),
@@ -467,19 +468,6 @@ export class EvolutionStrategyPlanner {
 	// ============================================================================
 	// Private Helper Methods
 	// ============================================================================
-
-	private countImplementedCapabilities(metrics: EvolutionMetrics): number {
-		return metrics.capabilityVelocity?.totalCapabilities || 95;
-	}
-
-	private countTotalCapabilities(metrics: EvolutionMetrics): number {
-		return 100; // Target total capabilities
-	}
-
-	private calculateCoverage(metrics: EvolutionMetrics): number {
-		const implemented = this.countImplementedCapabilities(metrics);
-		return Math.round((implemented / this.countTotalCapabilities(metrics)) * 100);
-	}
 
 	private extractTopErrors(metrics: EvolutionMetrics): string[] {
 		return metrics.errors?.commonPatterns || [];
