@@ -526,6 +526,10 @@ const KNOWN_COMPETITOR_PATTERNS: CompetitorPattern[] = [
 
 let detectorInstance: CapabilityGapDetector | null = null;
 
+export function resetCapabilityGapDetector(): void {
+	detectorInstance = null;
+}
+
 export class CapabilityGapDetector {
 	private config: GapDetectionConfig;
 	private gaps: CapabilityGap[] = [];
@@ -977,7 +981,8 @@ export class CapabilityGapDetector {
 		if (fs.existsSync(roadmapPath)) {
 			const content = fs.readFileSync(roadmapPath, "utf-8");
 			const phases = content.match(/## Phase \d+:/g) || [];
-			roadmapExpected = phases.length;
+			const roadmapItems = content.match(/- \[[ x]\]/g) || [];
+			roadmapExpected = roadmapItems.length > 0 ? roadmapItems.length : phases.length;
 			roadmapImplemented = (content.match(/\[x\]/g) || []).length;
 		}
 
