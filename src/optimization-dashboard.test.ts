@@ -364,49 +364,39 @@ describe("OptimizationDashboardManager", () => {
 
 	it("adds enabler-aware capability recommendations for weak dashboard components", () => {
 		vi.spyOn(contextAnalysisModule, "analyzeContextTasks").mockImplementation((candidates) =>
-			candidates.map((candidate) => ({
-				taskDescription: candidate.taskDescription,
-				analysis: {
-					taskDescription: candidate.taskDescription,
-					suggestedFiles: [
-						{
-							path: "src/assess.ts",
-							relevance: 0.82,
+			candidates.map((candidate) => {
+				const taskDescription = candidate.taskDescription;
+				const topFiles = taskDescription.includes("MEMORY scorecard")
+					? ["MEMORY.md", "src/learning-transfer.ts"]
+					: taskDescription.includes("self-healing")
+						? ["src/error-patterns.ts", "src/self-healing.ts"]
+						: ["src/assess.ts", "src/reflection.ts"];
+				return {
+					taskDescription,
+					analysis: {
+						taskDescription,
+						suggestedFiles: topFiles.map((filePath, index) => ({
+							path: filePath,
+							relevance: index === 0 ? 0.82 : 0.74,
 							reason: "",
 							symbols: [],
-							category: "primary",
-						},
-						{
-							path: "src/reflection.ts",
-							relevance: 0.74,
-							reason: "",
-							symbols: [],
-							category: "secondary",
-						},
-					],
-					relevantSymbols: [],
-					confidence: 0.81,
-					reasoning: "",
-				},
-				primaryFiles: [
-					{
-						path: "src/assess.ts",
-						relevance: 0.82,
+							category: index === 0 ? "primary" : "secondary",
+						})),
+						relevantSymbols: [],
+						confidence: 0.81,
+						reasoning: "",
+					},
+					primaryFiles: topFiles.map((filePath, index) => ({
+						path: filePath,
+						relevance: index === 0 ? 0.82 : 0.74,
 						reason: "",
 						symbols: [],
-						category: "primary",
-					},
-					{
-						path: "src/reflection.ts",
-						relevance: 0.74,
-						reason: "",
-						symbols: [],
-						category: "secondary",
-					},
-				],
-				topFiles: ["src/assess.ts", "src/reflection.ts"],
-				confidencePercent: 81,
-			})),
+						category: index === 0 ? "primary" : "secondary",
+					})),
+					topFiles,
+					confidencePercent: 81,
+				};
+			}),
 		);
 
 		const manager = new OptimizationDashboardManager({
@@ -480,9 +470,28 @@ describe("OptimizationDashboardManager", () => {
 		expect(successEnablerRecommendation?.contextEvidence?.command).toContain(
 			"context({action: 'analyze'",
 		);
+		expect(successEnablerRecommendation?.contextEvidence?.taskDescription).toContain("assess tool");
+		expect(successEnablerRecommendation?.contextEvidence?.topFiles).toEqual([
+			"src/assess.ts",
+			"src/reflection.ts",
+		]);
 		expect(memoryEnablerRecommendation?.description).toContain("memory-persistence");
 		expect(memoryEnablerRecommendation?.description).toContain("learning-transfer");
 		expect(memoryEnablerRecommendation?.contextEvidence?.confidencePercent).toBe(81);
+		expect(memoryEnablerRecommendation?.contextEvidence?.taskDescription).toContain(
+			"MEMORY scorecard",
+		);
+		expect(memoryEnablerRecommendation?.contextEvidence?.topFiles).toEqual([
+			"MEMORY.md",
+			"src/learning-transfer.ts",
+		]);
+		const errorRecoveryRecommendation = recommendations.find(
+			(item) => item.title === "Expand error-recovery enablers",
+		);
+		expect(errorRecoveryRecommendation?.contextEvidence?.topFiles).toEqual([
+			"src/error-patterns.ts",
+			"src/self-healing.ts",
+		]);
 		expect(recommendations.some((item) => item.title === "Promote tool-discovery enablers")).toBe(
 			true,
 		);

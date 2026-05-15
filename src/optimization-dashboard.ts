@@ -134,7 +134,7 @@ export class OptimizationDashboardManager {
 			priority: "high",
 			enablers: ["self-assessment", "error-recovery", "reflection"],
 			taskDescription:
-				"Improve self-assessment and error recovery loops for autonomous evolution reliability",
+				"Improve self-assessment, assess tool guidance, and failure reflection loops for autonomous evolution reliability",
 		},
 		timeEfficiency: {
 			threshold: 75,
@@ -158,7 +158,7 @@ export class OptimizationDashboardManager {
 			priority: "high",
 			enablers: ["error-recovery", "self-healing", "error-patterns"],
 			taskDescription:
-				"Improve error recovery, self-healing, and error-pattern learning for self-evolution",
+				"Improve error recovery guidance, self-healing fixes, and error-pattern learning for self-evolution",
 		},
 		capabilityUtilization: {
 			threshold: 60,
@@ -182,7 +182,7 @@ export class OptimizationDashboardManager {
 			priority: "high",
 			enablers: ["memory-persistence", "rag", "learning-transfer"],
 			taskDescription:
-				"Improve memory persistence, retrieval, and learning transfer for future evolution sessions",
+				"Improve MEMORY scorecard capture, RAG retrieval, and learning-transfer reuse for future evolution sessions",
 		},
 	};
 
