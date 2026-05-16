@@ -511,6 +511,22 @@ export class SelfImprovementEngine {
 			return (health?.components?.memoryQuality ?? 0) >= 80;
 		}
 
+		if (suggestion.title === "Capture reusable lessons from weak-signal skills") {
+			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
+		if (suggestion.title === "Turn recurring errors into reusable guardrails") {
+			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
+		if (suggestion.title === "Promote proven memory-backed tasks") {
+			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
+		if (suggestion.title === "Record why recent work was lower impact") {
+			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
 		if (suggestion.title === "Improve iteration speed") {
 			return (health?.components?.timeEfficiency ?? 0) >= 70;
 		}

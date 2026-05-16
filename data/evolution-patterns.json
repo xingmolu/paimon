@@ -207,7 +207,7 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 67% success, impact not yet recorded",
+      "description": "capability tasks: 67% success, 67% high impact",
       "characteristics": {
         "taskType": "capability"
       },
@@ -218,8 +218,8 @@
       "sampleSize": 3,
       "examples": [
         {
-          "taskDescription": "Improve optimization dashboard context-evidence targeting for enabler recommendations",
-          "date": "2026-05-15",
+          "taskDescription": "Harden scorecard parsing compatibility for richer MEMORY schema and dependent modules",
+          "date": "2026-05-16",
           "time": 15,
           "skillsUsed": [
             "evolve",
@@ -241,7 +241,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-16T03:22:35.047Z"
+      "lastUpdated": "2026-05-16T17:00:31.626Z"
     },
     {
       "id": "time-pattern-quick",
@@ -496,6 +496,6 @@
       "lastUpdated": "2026-05-13T03:36:05.387Z"
     }
   ],
-  "lastUpdated": "2026-05-16T03:27:17.025Z",
+  "lastUpdated": "2026-05-16T17:04:50.200Z",
   "sessionCount": 2
 }

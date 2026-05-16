@@ -395,4 +395,52 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).not.toContain("Strengthen self-assessment enablers");
 		expect(titles).toContain("Preserve successful skill combinations in memory");
 	});
+
+	it("suppresses memory-only dashboard recommendations when memory health is already strong", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "good",
+				overallScore: 92,
+				components: {
+					successRate: 95,
+					timeEfficiency: 81,
+					errorRate: 91,
+					capabilityUtilization: 72,
+					memoryQuality: 88,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "memory",
+					title: "Capture reusable lessons from weak-signal skills",
+					description: "This should be hidden when memory quality is already strong.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Turn recurring errors into reusable guardrails",
+					description: "This should also be hidden when memory quality is already strong.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Capture reusable lessons from weak-signal skills");
+		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
+	});
 });

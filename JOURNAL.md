@@ -11,3 +11,4 @@ A daily log of Paimon's self-improvements.
 - 2026-05-13 — capability — Refined predictive error prevention MEMORY fallback guidance to distinguish failed runs from successful rework, added regression coverage, and tightened optimization dashboard mixed-signal comparison semantics so verification stays green.
 - 2026-05-13 — capability — Added MEMORY.md scorecard fallback suggestions to errorPatterns so unmatched errors still surface prior recovery guidance and successful skill reuse from recent sessions.
 - 2026-05-16 — capability — Hardened shared MEMORY scorecard parsing so compact and detailed schemas normalize first-try/rework consistently across learning-transfer and other memory-driven modules, with regression coverage.
+- 2026-05-16 — capability — Tightened self-improvement suggestion filtering so memory-only dashboard recommendations are suppressed once memory-quality health is already strong, with focused regression coverage.
