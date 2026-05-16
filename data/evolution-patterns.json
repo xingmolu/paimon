@@ -213,17 +213,16 @@
       },
       "successRate": 67,
       "firstTryRate": 67,
-      "averageTime": 18,
+      "averageTime": 17,
       "confidence": 49,
       "sampleSize": 3,
       "examples": [
         {
-          "taskDescription": "Fix capability coverage reporting for evolution strategy",
-          "date": "2026-05-14",
-          "time": 20,
+          "taskDescription": "Improve optimization dashboard context-evidence targeting for enabler recommendations",
+          "date": "2026-05-15",
+          "time": 15,
           "skillsUsed": [
             "evolve",
-            "explore-code",
             "plan-architecture",
             "review-changes"
           ],
@@ -242,7 +241,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-15T03:40:04.499Z"
+      "lastUpdated": "2026-05-16T03:22:35.047Z"
     },
     {
       "id": "time-pattern-quick",
@@ -497,6 +496,6 @@
       "lastUpdated": "2026-05-13T03:36:05.387Z"
     }
   ],
-  "lastUpdated": "2026-05-15T17:43:20.755Z",
+  "lastUpdated": "2026-05-16T03:27:17.025Z",
   "sessionCount": 2
 }
