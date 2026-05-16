@@ -12,6 +12,25 @@ export interface ScorecardRow {
 	enables?: string;
 }
 
+export function normalizeBooleanFlag(value?: string): "yes" | "no" | "unknown" {
+	const normalized = (value || "").trim().toLowerCase();
+	if (["yes", "y", "true", "✅"].includes(normalized)) {
+		return "yes";
+	}
+	if (["no", "n", "false", "❌"].includes(normalized)) {
+		return "no";
+	}
+	return "unknown";
+}
+
+export function normalizeImpact(value?: string): "high" | "medium" | "low" | "unknown" {
+	const normalized = (value || "").trim().toLowerCase();
+	if (normalized === "high") return "high";
+	if (normalized === "medium") return "medium";
+	if (normalized === "low") return "low";
+	return "unknown";
+}
+
 export function normalizeScorecardResult(
 	result?: string,
 	firstTry?: string,
@@ -44,7 +63,7 @@ export function isNegativeScorecardResult(result?: string, firstTry?: string): b
 }
 
 export function hasRecordedImpact(value?: string): boolean {
-	return /^(high|medium|low)$/i.test((value || "").trim());
+	return normalizeImpact(value) !== "unknown";
 }
 
 function normalizeHeader(header: string): string {
@@ -123,15 +142,35 @@ export function parseScorecardRows(content: string): ScorecardRow[] {
 
 		if (!date || !taskType || !description || !time) continue;
 
+		const result = getCell(row, "Result");
+		const firstTry = getCell(row, "First Try");
+		const rework = getCell(row, "Rework", "Rework?");
+		const normalizedResult = normalizeScorecardResult(result, firstTry);
+		const normalizedRework = normalizeBooleanFlag(rework);
+		const inferredFirstTry =
+			firstTry ||
+			(normalizedResult === "positive" ? "✅" : normalizedResult === "negative" ? "❌" : "");
+		const inferredRework =
+			rework ||
+			(normalizedRework !== "unknown"
+				? normalizedRework === "yes"
+					? "Yes"
+					: "No"
+				: normalizedResult === "positive"
+					? "No"
+					: normalizedResult === "negative"
+						? "Yes"
+						: "");
+
 		parsedRows.push({
 			date,
 			taskType,
 			description,
 			time,
-			result: getCell(row, "Result"),
-			firstTry: getCell(row, "First Try"),
+			result,
+			firstTry: inferredFirstTry,
 			errors: getCell(row, "Errors"),
-			rework: getCell(row, "Rework", "Rework?"),
+			rework: inferredRework,
 			impact: getCell(row, "Impact"),
 			skillsUsed: getCell(row, "Skills Used"),
 			enables: getCell(row, "Enables"),

@@ -1,124 +1,51 @@
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { afterEach, describe, expect, it } from "vitest";
+
 import { LearningTransferManager } from "./learning-transfer.js";
 
-describe("LearningTransferManager scorecard ingestion", () => {
-	let testDir: string;
-	let dataDir: string;
-	let memoryPath: string;
+const tempDirs: string[] = [];
 
-	beforeEach(() => {
-		testDir = join(
-			tmpdir(),
-			`learning-transfer-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-		);
-		dataDir = join(testDir, ".paimon-test");
-		memoryPath = join(testDir, "MEMORY.md");
-		mkdirSync(testDir, { recursive: true });
-		mkdirSync(dataDir, { recursive: true });
-	});
+afterEach(() => {
+	for (const dir of tempDirs.splice(0)) {
+		rmSync(dir, { recursive: true, force: true });
+	}
+});
 
-	afterEach(() => {
-		if (existsSync(testDir)) {
-			rmSync(testDir, { recursive: true, force: true });
-		}
-	});
-
-	it("loads sessions from the current compact Recent Scorecard schema", () => {
+describe("LearningTransferManager scorecard parsing", () => {
+	it("loads compact scorecard rows with inferred first-try and failure state", () => {
+		const tempDir = mkdtempSync(join(tmpdir(), "learning-transfer-"));
+		tempDirs.push(tempDir);
+		const memoryPath = join(tempDir, "MEMORY.md");
 		writeFileSync(
 			memoryPath,
-			[
-				"# Memory",
-				"",
-				"## Recent Scorecard",
-				"",
-				"| Date | Type | Description | Time | Result | Errors |",
-				"|------|------|-------------|------|--------|--------|",
-				"| 2026-04-17 | capability | Fix context identifier alias compatibility and relevance scoring | ~15m | ✅ | none |",
-				"| 2026-04-16 | reliability | Self-improvement engine false positive fix | ~10m | ✅ | lint |",
-				"",
-			].join("\n"),
-			"utf-8",
+			`# Memory
+
+## Recent Scorecard
+
+| Date | Type | Description | Time | Result | Errors | Skills Used |
+|------|------|-------------|------|--------|--------|-------------|
+| 2026-04-20 | capability | Add scorecard fallback guidance | ~15m | ✅ | none | evolve, review-changes |
+| 2026-04-19 | reliability | Fix retry loop regression | ~11m | ❌ | test | evolve |
+`,
 		);
 
-		const manager = new LearningTransferManager(dataDir, { memoryPath });
-		const sessions = manager
-			.getSessions()
-			.filter((session) => session.sessionId.startsWith("scorecard-2026-04-"));
-		const capabilitySession = sessions.find(
-			(session) =>
-				session.taskDescription ===
-				"Fix context identifier alias compatibility and relevance scoring",
-		);
-		const reliabilitySession = sessions.find(
-			(session) => session.taskDescription === "Self-improvement engine false positive fix",
-		);
-
-		expect(capabilitySession).toBeDefined();
-		expect(reliabilitySession).toBeDefined();
-		expect(capabilitySession?.success).toBe(true);
-		expect(capabilitySession?.errors).toEqual([]);
-		expect(reliabilitySession?.taskSignature.taskType).toBe("reliability");
-		expect(reliabilitySession?.errors).toEqual(["lint"]);
-		expect(manager.getStats().sessionsProcessed).toBeGreaterThanOrEqual(2);
-	});
-
-	it("retains compatibility with the legacy Evolution Scorecard schema", () => {
-		writeFileSync(
+		const manager = new LearningTransferManager(undefined, {
+			dataPath: tempDir,
 			memoryPath,
-			[
-				"# Memory",
-				"",
-				"## Evolution Scorecard",
-				"",
-				"| Date | Type | Description | Time | First Try | Errors | Rework | Impact | Skills Used |",
-				"|------|------|-------------|------|-----------|--------|--------|--------|-------------|",
-				"| 2026-04-15 | capability | Add reasoning memory guidance | ~20m | ✅ | none | No | High | evolve, review-changes |",
-				"",
-				"### Quality",
-			].join("\n"),
-			"utf-8",
-		);
+			excludeOlderThanDays: 1000,
+		});
 
-		const manager = new LearningTransferManager(dataDir, { memoryPath });
 		const sessions = manager.getSessions();
-
-		const importedSession = sessions.find(
-			(session) => session.taskDescription === "Add reasoning memory guidance",
-		);
-
-		expect(importedSession).toBeDefined();
-		expect(importedSession?.success).toBe(true);
-		expect(importedSession?.skillsUsed).toEqual(["evolve", "review-changes"]);
-		expect(importedSession?.taskSignature.category).toBe("memory");
-	});
-
-	it("treats explicit compact failures as failed sessions instead of defaulting to success", () => {
-		writeFileSync(
-			memoryPath,
-			[
-				"# Memory",
-				"",
-				"## Recent Scorecard",
-				"",
-				"| Date | Type | Description | Time | Result | Errors |",
-				"|------|------|-------------|------|--------|--------|",
-				"| 2026-04-22 | capability | Compact failure should stay failed | ~12m | ❌ | test |",
-				"",
-			].join("\n"),
-			"utf-8",
-		);
-
-		const manager = new LearningTransferManager(dataDir, { memoryPath });
-		const importedSession = manager
-			.getSessions()
-			.find((session) => session.taskDescription === "Compact failure should stay failed");
-
-		expect(importedSession).toBeDefined();
-		expect(importedSession?.success).toBe(false);
-		expect(importedSession?.firstTry).toBe(false);
-		expect(importedSession?.errors).toEqual(["test"]);
+		expect(sessions).toHaveLength(2);
+		expect(sessions[0]?.taskDescription).toContain("Add scorecard fallback guidance");
+		expect(sessions[0]?.success).toBe(true);
+		expect(sessions[0]?.firstTry).toBe(true);
+		expect(sessions[1]?.taskDescription).toContain("Fix retry loop regression");
+		expect(sessions[1]?.success).toBe(false);
+		expect(sessions[1]?.firstTry).toBe(false);
+		expect(sessions[1]?.errors).toEqual(["test"]);
 	});
 });

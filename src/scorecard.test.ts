@@ -5,6 +5,8 @@ import {
 	hasRecordedImpact,
 	isNegativeScorecardResult,
 	isPositiveScorecardResult,
+	normalizeBooleanFlag,
+	normalizeImpact,
 	normalizeScorecardResult,
 	parseScorecardRows,
 } from "./scorecard.js";
@@ -29,9 +31,9 @@ describe("scorecard parsing", () => {
 				description: "Fix compact parser compatibility",
 				time: "~15m",
 				result: "✅",
-				firstTry: "",
+				firstTry: "✅",
 				errors: "none",
-				rework: "",
+				rework: "No",
 				impact: "",
 				skillsUsed: "",
 				enables: "",
@@ -42,9 +44,9 @@ describe("scorecard parsing", () => {
 				description: "Stabilize recovery loop",
 				time: "~10m",
 				result: "❌",
-				firstTry: "",
+				firstTry: "❌",
 				errors: "test",
-				rework: "",
+				rework: "Yes",
 				impact: "",
 				skillsUsed: "",
 				enables: "",
@@ -95,6 +97,40 @@ describe("scorecard parsing", () => {
 		expect(row?.enables).toBe("scorecard");
 	});
 
+	it("infers first-try and rework defaults for compact scorecards without those columns", () => {
+		const content = `# Memory
+
+## Recent Scorecard
+
+| Date | Type | Description | Time | Result | Errors |
+|------|------|-------------|------|--------|--------|
+| 2026-04-13 | capability | Improve memory fallback | ~9m | ✅ | none |
+| 2026-04-12 | reliability | Fix retry path | ~12m | ❌ | test |
+`;
+
+		const rows = parseScorecardRows(content);
+		expect(rows[0]?.firstTry).toBe("✅");
+		expect(rows[0]?.rework).toBe("No");
+		expect(rows[1]?.firstTry).toBe("❌");
+		expect(rows[1]?.rework).toBe("Yes");
+	});
+
+	it("preserves explicit first-try and rework values when present", () => {
+		const content = `# Memory
+
+## Evolution Scorecard
+
+| Date | Task Type | Task Description | Time | Result | First Try | Errors | Rework? | Impact | Skills Used | Enables |
+|------|-----------|------------------|------|--------|-----------|--------|---------|--------|-------------|---------|
+| 2026-04-11 | capability | Capture structured history | ~14m | ✅ | ❌ | lint | Yes | High | evolve | memory |
+`;
+
+		const [row] = parseScorecardRows(content);
+		expect(row?.result).toBe("✅");
+		expect(row?.firstTry).toBe("❌");
+		expect(row?.rework).toBe("Yes");
+	});
+
 	it("exposes helpers for interpreting scorecard result and impact fields", () => {
 		expect(normalizeScorecardResult("✅")).toBe("positive");
 		expect(normalizeScorecardResult(undefined, "✅")).toBe("positive");
@@ -102,6 +138,12 @@ describe("scorecard parsing", () => {
 		expect(normalizeScorecardResult("✅", "❌")).toBe("positive");
 		expect(normalizeScorecardResult("❌")).toBe("negative");
 		expect(normalizeScorecardResult("")).toBe("unknown");
+		expect(normalizeBooleanFlag("Yes")).toBe("yes");
+		expect(normalizeBooleanFlag("❌")).toBe("no");
+		expect(normalizeBooleanFlag("maybe")).toBe("unknown");
+		expect(normalizeImpact("High")).toBe("high");
+		expect(normalizeImpact("LOW")).toBe("low");
+		expect(normalizeImpact("unknown")).toBe("unknown");
 		expect(isPositiveScorecardResult("✅")).toBe(true);
 		expect(isPositiveScorecardResult(undefined, "✅")).toBe(true);
 		expect(isPositiveScorecardResult("❌", "✅")).toBe(false);
