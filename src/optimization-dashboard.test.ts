@@ -146,6 +146,48 @@ describe("OptimizationDashboardManager", () => {
 		expect(bottlenecks.some((item) => item.type === "memory-issues")).toBe(true);
 	});
 
+	it("suppresses generic fallback memory recommendations without evidence", () => {
+		const manager = new OptimizationDashboardManager({
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 82, points: [], weeklyAverage: 84, improvement: -3 },
+					time: {
+						averageMinutes: 18,
+						byTaskType: { capability: 18 },
+						points: [],
+						fastestTask: "Quick fix",
+						slowestTask: "Complex integration",
+					},
+					errors: {
+						totalErrors: 0,
+						byType: {},
+						recentErrors: [],
+						points: [],
+						commonPatterns: [],
+					},
+					skills: [],
+					capabilityVelocity: {
+						current: 6,
+						points: [],
+						totalCapabilities: 40,
+						highImpactCount: 0,
+						highImpactPercentage: 0,
+					},
+					lastUpdated: "2026-04-16T00:00:00.000Z",
+					iterationsAnalyzed: 0,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [],
+			},
+		});
+
+		const recommendations = manager.getRecommendations();
+		const titles = recommendations.map((item) => item.title);
+
+		expect(titles).not.toContain("Strengthen learning capture");
+	});
+
 	it("does not claim recent capability work was low impact when impact data is unavailable", () => {
 		const manager = new OptimizationDashboardManager({
 			metricsTracker: {

@@ -396,6 +396,53 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).toContain("Preserve successful skill combinations in memory");
 	});
 
+	it("suppresses low-signal generic memory dashboard fallbacks without actionable evidence", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		const dashboard = {
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 61,
+				components: {
+					successRate: 82,
+					timeEfficiency: 74,
+					errorRate: 88,
+					capabilityUtilization: 63,
+					memoryQuality: 45,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Strengthen learning capture",
+					description:
+						"Recent iteration history suggests memory quality or impact capture can improve.",
+					expectedImpact: "Better task selection and stronger cross-session transfer",
+					effort: "simple",
+				},
+			],
+		};
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue(dashboard);
+		vi.spyOn(engine as never, "safeGetDashboardHealth" as never).mockReturnValue(dashboard.getHealth());
+
+		const suggestions = await engine.scanCodebase("src");
+		const fallbackSuggestions = suggestions.filter(
+			(item) =>
+				item.title === "Strengthen learning capture" &&
+				item.description ===
+					"Recent iteration history suggests memory quality or impact capture can improve.",
+		);
+
+		expect(fallbackSuggestions).toHaveLength(0);
+	});
+
 	it("suppresses memory-only dashboard recommendations when memory health is already strong", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);

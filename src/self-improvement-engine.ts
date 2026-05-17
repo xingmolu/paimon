@@ -527,6 +527,11 @@ export class SelfImprovementEngine {
 			return (health?.components?.memoryQuality ?? 0) >= 80;
 		}
 
+		if (suggestion.title === "Strengthen learning capture") {
+			return suggestion.description.trim() ===
+				"Recent iteration history suggests memory quality or impact capture can improve.";
+		}
+
 		if (suggestion.title === "Improve iteration speed") {
 			return (health?.components?.timeEfficiency ?? 0) >= 70;
 		}

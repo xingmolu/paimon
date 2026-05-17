@@ -207,28 +207,16 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 67% success, 67% high impact",
+      "description": "capability tasks: 33% success, impact not yet recorded",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 67,
-      "firstTryRate": 67,
-      "averageTime": 17,
+      "successRate": 33,
+      "firstTryRate": 33,
+      "averageTime": 18,
       "confidence": 49,
       "sampleSize": 3,
       "examples": [
-        {
-          "taskDescription": "Harden scorecard parsing compatibility for richer MEMORY schema and dependent modules",
-          "date": "2026-05-16",
-          "time": 15,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes"
-          ],
-          "success": true,
-          "firstTry": true
-        },
         {
           "taskDescription": "Add predictive fallback coverage with rework",
           "date": "2026-04-23",
@@ -241,7 +229,7 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-16T17:00:31.626Z"
+      "lastUpdated": "2026-05-17T16:59:28.810Z"
     },
     {
       "id": "time-pattern-quick",
@@ -496,6 +484,6 @@
       "lastUpdated": "2026-05-13T03:36:05.387Z"
     }
   ],
-  "lastUpdated": "2026-05-16T17:04:50.200Z",
+  "lastUpdated": "2026-05-17T17:04:02.572Z",
   "sessionCount": 2
 }

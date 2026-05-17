@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-17 — capability — Suppressed low-signal generic memory-quality recommendations unless they carry actionable evidence, keeping self-improvement guidance focused on concrete scorecard/context-backed work with regression coverage.
 - 2026-05-15 — capability — Improved optimization dashboard enabler recommendations so context-evidence task descriptions point memory, error-recovery, and self-assessment suggestions at more relevant files, with regression coverage.
 - 2026-05-15 — capability — Fixed roadmap category capability coverage so capability-gap analytics measure completed ROADMAP checklist items instead of phase count, preventing impossible percentages and adding regression coverage.
 - 2026-05-14 — capability — Fixed capability coverage reporting so evolution strategy recommendations use current implemented capability inventory instead of stale scorecard velocity heuristics, with regression coverage for the new coverage path.

@@ -575,6 +575,23 @@ export class OptimizationDashboardManager {
 		}[effort];
 	}
 
+	private isLowSignalMemoryRecommendation(recommendation: OptimizationRecommendation): boolean {
+		if (recommendation.category !== "memory") {
+			return false;
+		}
+
+		if (recommendation.contextEvidence) {
+			return false;
+		}
+
+		if (recommendation.title !== "Strengthen learning capture") {
+			return false;
+		}
+
+		return recommendation.description.trim() ===
+			"Recent iteration history suggests memory quality or impact capture can improve.";
+	}
+
 	private finalizeRecommendations(
 		recommendations: OptimizationRecommendation[],
 	): OptimizationRecommendation[] {
@@ -611,13 +628,15 @@ export class OptimizationDashboardManager {
 			merged.set(key, mergedRecommendation);
 		}
 
-		return Array.from(merged.values()).sort((a, b) => {
-			const priorityDelta = this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority);
-			if (priorityDelta !== 0) return priorityDelta;
-			const effortDelta = this.getEffortWeight(a.effort) - this.getEffortWeight(b.effort);
-			if (effortDelta !== 0) return effortDelta;
-			return a.title.localeCompare(b.title);
-		});
+		return Array.from(merged.values())
+			.filter((recommendation) => !this.isLowSignalMemoryRecommendation(recommendation))
+			.sort((a, b) => {
+				const priorityDelta = this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority);
+				if (priorityDelta !== 0) return priorityDelta;
+				const effortDelta = this.getEffortWeight(a.effort) - this.getEffortWeight(b.effort);
+				if (effortDelta !== 0) return effortDelta;
+				return a.title.localeCompare(b.title);
+			});
 	}
 
 	private calculateCapabilityUtilization(toolStats: ToolUsageStats[]): number {
