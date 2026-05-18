@@ -588,8 +588,10 @@ export class OptimizationDashboardManager {
 			return false;
 		}
 
-		return recommendation.description.trim() ===
-			"Recent iteration history suggests memory quality or impact capture can improve.";
+		return (
+			recommendation.description.trim() ===
+			"Recent iteration history suggests memory quality or impact capture can improve."
+		);
 	}
 
 	private finalizeRecommendations(
@@ -631,7 +633,8 @@ export class OptimizationDashboardManager {
 		return Array.from(merged.values())
 			.filter((recommendation) => !this.isLowSignalMemoryRecommendation(recommendation))
 			.sort((a, b) => {
-				const priorityDelta = this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority);
+				const priorityDelta =
+					this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority);
 				if (priorityDelta !== 0) return priorityDelta;
 				const effortDelta = this.getEffortWeight(a.effort) - this.getEffortWeight(b.effort);
 				if (effortDelta !== 0) return effortDelta;

@@ -4,10 +4,10 @@
 
 | Date | Type | Description | Time | Result | Errors | Skills Used |
 |------|------|-------------|------|--------|--------|-------------|
-| 2026-05-17 | capability | Suppress low-signal generic memory-quality recommendations unless backed by actionable evidence | ~15m | ✅ | test | evolve, plan-architecture, review-changes |
+| 2026-05-18 | capability | Suppress redundant self-improvement enabler recommendations unless backed by contextual file evidence | ~20m | ✅ | lint | evolve, plan-architecture, review-changes |
 | 2026-04-24 | capability | Fix predictive fallback after failing regression | ~15m | ❌ | test | systematic-debugging |
 | 2026-04-23 | capability | Add predictive fallback coverage with rework | ~20m | ✅ | test | evolve, review-changes |
 
 ## Learnings
 
-- Generic memory-quality fallback advice should stay hidden unless it includes concrete scorecard evidence or contextual file targets; otherwise self-improvement suggestions drift back toward vague documentation-only work.
+- Self-improvement best-practice suggestions should hide dashboard enabler recommendations that only restate already-implemented capabilities unless they include concrete contextual file evidence; otherwise task selection drifts toward redundant capability work.

@@ -430,7 +430,9 @@ describe("SelfImprovementEngine", () => {
 			],
 		};
 		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue(dashboard);
-		vi.spyOn(engine as never, "safeGetDashboardHealth" as never).mockReturnValue(dashboard.getHealth());
+		vi.spyOn(engine as never, "safeGetDashboardHealth" as never).mockReturnValue(
+			dashboard.getHealth(),
+		);
 
 		const suggestions = await engine.scanCodebase("src");
 		const fallbackSuggestions = suggestions.filter(
@@ -489,5 +491,75 @@ describe("SelfImprovementEngine", () => {
 
 		expect(titles).not.toContain("Capture reusable lessons from weak-signal skills");
 		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
+	});
+
+	it("suppresses redundant implemented enabler suggestions without contextual file evidence", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 63,
+				components: {
+					successRate: 82,
+					timeEfficiency: 72,
+					errorRate: 78,
+					capabilityUtilization: 55,
+					memoryQuality: 62,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "capability",
+					title: "Invest in memory-persistence enablers",
+					description:
+						"Memory-quality signals are weak. Prioritize enablers that improve capture, retrieval, and transfer of lessons across sessions. Recommended enablers: memory-persistence, rag, and learning-transfer.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Expand error-recovery enablers",
+					description:
+						"Error pressure is elevated. Prioritize capabilities that turn recurring failures into faster recovery and prevention loops. Recommended enablers: error-recovery, self-healing, and error-patterns.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Strengthen self-assessment enablers",
+					description:
+						"Success rate is below target. Invest in capabilities that strengthen pre-merge verification and error recovery loops before adding more surface area. Recommended enablers: self-assessment, error-recovery, and reflection.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Keep actionable evidence-backed enabler guidance",
+					description:
+						"Use contextual evidence when recommending next work. Recommended enablers: memory-persistence, rag, and learning-transfer. Likely starting files (81% context confidence): MEMORY.md, src/learning-transfer.ts.",
+					expectedImpact: "n/a",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Invest in memory-persistence enablers");
+		expect(titles).not.toContain("Expand error-recovery enablers");
+		expect(titles).not.toContain("Strengthen self-assessment enablers");
+		expect(titles).toContain("Keep actionable evidence-backed enabler guidance");
 	});
 });

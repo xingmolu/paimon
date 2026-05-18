@@ -475,6 +475,47 @@ export class SelfImprovementEngine {
 		}
 	}
 
+	private isRedundantImplementedEnablerSuggestion(suggestion: ImprovementSuggestion): boolean {
+		if (suggestion.source !== "best-practice") {
+			return false;
+		}
+
+		const description = suggestion.description.toLowerCase();
+		if (!description.includes("recommended enablers:")) {
+			return false;
+		}
+
+		if (description.includes("likely starting files")) {
+			return false;
+		}
+
+		const implementedEnablerTitles = new Set([
+			"self-assessment",
+			"error-recovery",
+			"reflection",
+			"better-planning",
+			"tool-chain-reliability",
+			"repo-map",
+			"auto-invoke-skills",
+			"unified-intelligence",
+			"memory-persistence",
+			"rag",
+			"learning-transfer",
+			"self-healing",
+			"error-patterns",
+		]);
+		const enablerSection = description.split("recommended enablers:")[1]?.split(".")[0] ?? "";
+		const recommendedEnablers = enablerSection
+			.split(/,| and /)
+			.map((enabler) => enabler.trim())
+			.filter(Boolean);
+		if (recommendedEnablers.length === 0) {
+			return false;
+		}
+
+		return recommendedEnablers.every((enabler) => implementedEnablerTitles.has(enabler));
+	}
+
 	private isSatisfiedBestPracticeSuggestion(
 		suggestion: ImprovementSuggestion,
 		health: {
@@ -485,6 +526,10 @@ export class SelfImprovementEngine {
 	): boolean {
 		if (suggestion.source !== "best-practice") {
 			return false;
+		}
+
+		if (this.isRedundantImplementedEnablerSuggestion(suggestion)) {
+			return true;
 		}
 
 		if (suggestion.title.startsWith("Optimization dashboard health is ")) {
@@ -528,8 +573,10 @@ export class SelfImprovementEngine {
 		}
 
 		if (suggestion.title === "Strengthen learning capture") {
-			return suggestion.description.trim() ===
-				"Recent iteration history suggests memory quality or impact capture can improve.";
+			return (
+				suggestion.description.trim() ===
+				"Recent iteration history suggests memory quality or impact capture can improve."
+			);
 		}
 
 		if (suggestion.title === "Improve iteration speed") {
