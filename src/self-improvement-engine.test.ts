@@ -445,6 +445,90 @@ describe("SelfImprovementEngine", () => {
 		expect(fallbackSuggestions).toHaveLength(0);
 	});
 
+	it("suppresses weak-signal skill suggestions when they lack actionable evidence", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 58,
+				components: {
+					successRate: 80,
+					timeEfficiency: 73,
+					errorRate: 84,
+					capabilityUtilization: 60,
+					memoryQuality: 52,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "memory",
+					title: "Capture reusable lessons from weak-signal skills",
+					description: "Recent skill effectiveness suggests improvement opportunities exist.",
+					expectedImpact: "Better task selection and stronger cross-session transfer",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+
+		expect(
+			suggestions.some((item) => item.title === "Capture reusable lessons from weak-signal skills"),
+		).toBe(false);
+	});
+
+	it("keeps weak-signal skill suggestions when they include actionable evidence", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 58,
+				components: {
+					successRate: 80,
+					timeEfficiency: 73,
+					errorRate: 84,
+					capabilityUtilization: 60,
+					memoryQuality: 52,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "memory",
+					title: "Capture reusable lessons from weak-signal skills",
+					description:
+						"Recent skill effectiveness suggests weaker learning capture around systematic-debugging (0%). Record what worked, what failed, and when to invoke these skills in MEMORY.md.",
+					expectedImpact:
+						"Improves future skill selection and reduces repeated exploratory mistakes",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const retainedSuggestion = suggestions.find(
+			(item) => item.title === "Capture reusable lessons from weak-signal skills",
+		);
+
+		expect(retainedSuggestion).toBeDefined();
+		expect(retainedSuggestion?.description).toContain("systematic-debugging");
+	});
+
 	it("suppresses memory-only dashboard recommendations when memory health is already strong", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);

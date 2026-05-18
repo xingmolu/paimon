@@ -516,6 +516,20 @@ export class SelfImprovementEngine {
 		return recommendedEnablers.every((enabler) => implementedEnablerTitles.has(enabler));
 	}
 
+	private hasActionableWeakSignalSkillEvidence(suggestion: ImprovementSuggestion): boolean {
+		if (suggestion.title !== "Capture reusable lessons from weak-signal skills") {
+			return false;
+		}
+
+		const description = suggestion.description.toLowerCase();
+		const hasSpecificSkill = /around\s+[a-z0-9-]+\s*\(/.test(description);
+		const hasActionablePrompt =
+			description.includes("record what worked") ||
+			description.includes("record what failed") ||
+			description.includes("when to invoke these skills");
+		return hasSpecificSkill && hasActionablePrompt;
+	}
+
 	private isSatisfiedBestPracticeSuggestion(
 		suggestion: ImprovementSuggestion,
 		health: {
@@ -529,6 +543,13 @@ export class SelfImprovementEngine {
 		}
 
 		if (this.isRedundantImplementedEnablerSuggestion(suggestion)) {
+			return true;
+		}
+
+		if (
+			suggestion.title === "Capture reusable lessons from weak-signal skills" &&
+			!this.hasActionableWeakSignalSkillEvidence(suggestion)
+		) {
 			return true;
 		}
 
