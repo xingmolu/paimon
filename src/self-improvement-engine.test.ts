@@ -9,7 +9,11 @@ import type { ImprovementSuggestion } from "./self-improvement-engine.js";
 import { SelfImprovementEngine } from "./self-improvement-engine.js";
 
 function createEngine(): SelfImprovementEngine {
-	return new SelfImprovementEngine();
+	const engine = new SelfImprovementEngine();
+	(engine as unknown as { suggestions: Map<string, unknown> }).suggestions.clear();
+	(engine as unknown as { dismissedIds: Set<string> }).dismissedIds.clear();
+	(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime = "";
+	return engine;
 }
 
 describe("SelfImprovementEngine", () => {
@@ -633,6 +637,56 @@ describe("SelfImprovementEngine", () => {
 
 		expect(titles).not.toContain("Capture reusable lessons from weak-signal skills");
 		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
+	});
+
+	it("suppresses generic memory bottlenecks when concrete recent-success evidence already exists", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 67,
+				components: {
+					successRate: 83,
+					timeEfficiency: 75,
+					errorRate: 86,
+					capabilityUtilization: 62,
+					memoryQuality: 58,
+				},
+			}),
+			identifyBottlenecks: () => [
+				{
+					type: "memory-issues",
+					name: "memory-quality",
+					description: "Recent iterations are producing fewer high-impact capabilities than usual",
+					suggestion:
+						"Prefer higher-leverage capability work and capture stronger learnings in MEMORY.md.",
+					impact: 72,
+				},
+			],
+			getRecommendations: () => [
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Promote proven memory-backed tasks",
+					description:
+						"Recent successful iterations include Auto-refresh self-improvement suggestions when cached results are empty or stale; Suppress weak-signal skill-learning suggestions unless backed by actionable evidence. Use these concrete wins to guide future task selection and keep new work aligned with demonstrated high-signal improvements.",
+					expectedImpact: "More evidence-based task selection from existing MEMORY.md history",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).toContain("Promote proven memory-backed tasks");
+		expect(titles).not.toContain("Bottleneck: memory-quality");
 	});
 
 	it("suppresses redundant implemented enabler suggestions without contextual file evidence", async () => {

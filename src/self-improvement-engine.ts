@@ -445,11 +445,16 @@ export class SelfImprovementEngine {
 
 	private filterSuggestions(suggestions: ImprovementSuggestion[]): ImprovementSuggestion[] {
 		const health = this.safeGetDashboardHealth();
+		const hasConcreteRecentSuccessEvidence = this.hasConcreteRecentSuccessEvidence(suggestions);
 		return suggestions.filter(
 			(suggestion) =>
 				!this.isLowSignalCodeSuggestion(suggestion) &&
 				!this.isDuplicateCapabilitySuggestion(suggestion) &&
-				!this.isSatisfiedBestPracticeSuggestion(suggestion, health),
+				!this.isSatisfiedBestPracticeSuggestion(
+					suggestion,
+					health,
+					hasConcreteRecentSuccessEvidence,
+				),
 		);
 	}
 
@@ -532,6 +537,22 @@ export class SelfImprovementEngine {
 		return hasSpecificSkill && hasActionablePrompt;
 	}
 
+	private hasConcreteRecentSuccessEvidence(suggestions: ImprovementSuggestion[]): boolean {
+		return suggestions.some((suggestion) => {
+			if (suggestion.source !== "best-practice") {
+				return false;
+			}
+
+			if (suggestion.title === "Promote proven memory-backed tasks") {
+				return suggestion.description
+					.toLowerCase()
+					.includes("recent successful iterations include");
+			}
+
+			return suggestion.title === "Preserve successful skill combinations in memory";
+		});
+	}
+
 	private isSatisfiedBestPracticeSuggestion(
 		suggestion: ImprovementSuggestion,
 		health: {
@@ -539,6 +560,7 @@ export class SelfImprovementEngine {
 			overallScore: number;
 			components?: Partial<HealthComponents>;
 		} | null,
+		hasConcreteRecentSuccessEvidence = false,
 	): boolean {
 		if (suggestion.source !== "best-practice") {
 			return false;
@@ -589,6 +611,14 @@ export class SelfImprovementEngine {
 
 		if (suggestion.title === "Promote proven memory-backed tasks") {
 			return (health?.components?.memoryQuality ?? 0) >= 80;
+		}
+
+		if (
+			hasConcreteRecentSuccessEvidence &&
+			(suggestion.title === "Record why recent work was lower impact" ||
+				suggestion.title === "Bottleneck: memory-quality")
+		) {
+			return true;
 		}
 
 		if (suggestion.title === "Record why recent work was lower impact") {

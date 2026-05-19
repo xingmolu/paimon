@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-19 — capability — Suppressed generic self-improvement memory-quality bottleneck suggestions when recent successful capability evidence already provides concrete next-step guidance, with focused regression coverage.
 - 2026-05-19 — capability — Refreshed self-improvement suggestions automatically when cached results are empty or stale, preventing zero-suggestion task-selection dead ends and adding focused regression coverage.
 - 2026-05-18 — capability — Suppressed weak-signal self-improvement skill-learning recommendations unless they cite a concrete underperforming skill plus actionable memory-capture guidance, with focused regression coverage.
 - 2026-05-18 — capability — Suppressed redundant self-improvement enabler recommendations when they only restate already-implemented capabilities without contextual file evidence, preserving actionable evidence-backed guidance with regression coverage.
