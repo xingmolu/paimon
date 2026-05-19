@@ -948,7 +948,9 @@ export class SelfImprovementEngine {
 	}
 
 	private hasCachedSuggestions(): boolean {
-		return Array.from(this.suggestions.values()).some((suggestion) => !this.dismissedIds.has(suggestion.id));
+		return Array.from(this.suggestions.values()).some(
+			(suggestion) => !this.dismissedIds.has(suggestion.id),
+		);
 	}
 
 	private isLastScanStale(): boolean {

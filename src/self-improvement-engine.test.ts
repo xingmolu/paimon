@@ -28,10 +28,9 @@ describe("SelfImprovementEngine", () => {
 			timestamp: "2026-05-19T00:00:00.000Z",
 		};
 		const scanSpy = vi.spyOn(engine, "scanCodebase").mockImplementation(async () => {
-			(engine as unknown as { suggestions: Map<string, typeof expectedSuggestion> }).suggestions.set(
-				expectedSuggestion.id,
-				expectedSuggestion,
-			);
+			(
+				engine as unknown as { suggestions: Map<string, typeof expectedSuggestion> }
+			).suggestions.set(expectedSuggestion.id, expectedSuggestion);
 			(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime =
 				new Date().toISOString();
 			return [expectedSuggestion];
@@ -57,11 +56,12 @@ describe("SelfImprovementEngine", () => {
 			source: "best-practice",
 			timestamp: "2026-05-19T00:00:00.000Z",
 		} as const;
-		(engine as unknown as { suggestions: Map<string, (typeof cachedSuggestion)> }).suggestions.set(
+		(engine as unknown as { suggestions: Map<string, typeof cachedSuggestion> }).suggestions.set(
 			cachedSuggestion.id,
 			cachedSuggestion,
 		);
-		(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime = new Date().toISOString();
+		(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime =
+			new Date().toISOString();
 		const scanSpy = vi.spyOn(engine, "scanCodebase").mockResolvedValue([cachedSuggestion]);
 
 		const suggestions = await engine.getSuggestionsWithRefresh();
