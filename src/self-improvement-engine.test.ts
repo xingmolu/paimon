@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import * as contextAnalysisModule from "./context-analysis.js";
 import { OptimizationDashboardManager } from "./optimization-dashboard.js";
+import type { ImprovementSuggestion } from "./self-improvement-engine.js";
 import { SelfImprovementEngine } from "./self-improvement-engine.js";
 
 function createEngine(): SelfImprovementEngine {
@@ -12,6 +13,63 @@ function createEngine(): SelfImprovementEngine {
 }
 
 describe("SelfImprovementEngine", () => {
+	it("refreshes suggestions when cache is empty", async () => {
+		const engine = createEngine();
+		const expectedSuggestion: ImprovementSuggestion = {
+			id: "fresh-suggestion",
+			category: "capability",
+			priority: "high",
+			title: "Fresh suggestion",
+			description: "Generated from a refresh scan",
+			impact: "Improves task selection freshness",
+			effort: "simple",
+			confidence: 90,
+			source: "best-practice",
+			timestamp: "2026-05-19T00:00:00.000Z",
+		};
+		const scanSpy = vi.spyOn(engine, "scanCodebase").mockImplementation(async () => {
+			(engine as unknown as { suggestions: Map<string, typeof expectedSuggestion> }).suggestions.set(
+				expectedSuggestion.id,
+				expectedSuggestion,
+			);
+			(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime =
+				new Date().toISOString();
+			return [expectedSuggestion];
+		});
+
+		const suggestions = await engine.getSuggestionsWithRefresh();
+
+		expect(scanSpy).toHaveBeenCalledOnce();
+		expect(suggestions.map((item) => item.id)).toContain(expectedSuggestion.id);
+	});
+
+	it("does not refresh suggestions when cache is recent and populated", async () => {
+		const engine = createEngine();
+		const cachedSuggestion = {
+			id: "cached-suggestion",
+			category: "capability",
+			priority: "medium",
+			title: "Cached suggestion",
+			description: "Already available",
+			impact: "Avoids redundant rescans",
+			effort: "simple",
+			confidence: 85,
+			source: "best-practice",
+			timestamp: "2026-05-19T00:00:00.000Z",
+		} as const;
+		(engine as unknown as { suggestions: Map<string, (typeof cachedSuggestion)> }).suggestions.set(
+			cachedSuggestion.id,
+			cachedSuggestion,
+		);
+		(engine as unknown as { stats: { lastScanTime: string } }).stats.lastScanTime = new Date().toISOString();
+		const scanSpy = vi.spyOn(engine, "scanCodebase").mockResolvedValue([cachedSuggestion]);
+
+		const suggestions = await engine.getSuggestionsWithRefresh();
+
+		expect(scanSpy).not.toHaveBeenCalled();
+		expect(suggestions.map((item) => item.id)).toContain(cachedSuggestion.id);
+	});
+
 	it("creates stable suggestion ids and deduplicates repeated matches within a scan", async () => {
 		const engine = createEngine();
 		const scanFile = vi.spyOn(engine as never, "scanFile" as never).mockReturnValue([

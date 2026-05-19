@@ -68,7 +68,8 @@ async function handleAction(
 		case "suggestions": {
 			const category = params.category as ImprovementCategory | undefined;
 			const priority = params.priority as Priority | undefined;
-			const suggestions = engine.getSuggestions(category, priority);
+			const rootDir = (params.rootDir as string) || ".";
+			const suggestions = await engine.getSuggestionsWithRefresh(category, priority, rootDir);
 			return {
 				success: true,
 				message: `Found ${suggestions.length} suggestions`,

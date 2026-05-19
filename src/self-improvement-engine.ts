@@ -119,6 +119,8 @@ const DEFAULT_CONFIG: SuggestionEngineConfig = {
 	excludePatterns: ["**/*.test.ts", "**/*.d.ts"],
 };
 
+const SUGGESTION_STALE_AFTER_MS = 1000 * 60 * 60 * 6; // 6 hours
+
 /**
  * Code patterns to detect for improvement suggestions.
  * Note: Using string patterns to avoid security false positives
@@ -943,6 +945,40 @@ export class SelfImprovementEngine {
 		} catch {
 			return [];
 		}
+	}
+
+	private hasCachedSuggestions(): boolean {
+		return Array.from(this.suggestions.values()).some((suggestion) => !this.dismissedIds.has(suggestion.id));
+	}
+
+	private isLastScanStale(): boolean {
+		if (!this.stats.lastScanTime) {
+			return true;
+		}
+
+		const lastScan = Date.parse(this.stats.lastScanTime);
+		if (Number.isNaN(lastScan)) {
+			return true;
+		}
+
+		return Date.now() - lastScan > SUGGESTION_STALE_AFTER_MS;
+	}
+
+	async getSuggestionsWithRefresh(
+		category?: ImprovementCategory,
+		priority?: Priority,
+		rootDir = ".",
+	): Promise<ImprovementSuggestion[]> {
+		const needsRefresh = !this.hasCachedSuggestions() || this.isLastScanStale();
+		if (needsRefresh) {
+			try {
+				await this.scanCodebase(rootDir);
+			} catch {
+				// Fall back to cached suggestions if refresh fails
+			}
+		}
+
+		return this.getSuggestions(category, priority);
 	}
 
 	/**
