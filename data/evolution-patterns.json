@@ -207,16 +207,28 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 75% success, impact not yet recorded",
+      "description": "capability tasks: 80% success, impact not yet recorded",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 75,
-      "firstTryRate": 75,
+      "successRate": 80,
+      "firstTryRate": 80,
       "averageTime": 16,
-      "confidence": 52,
-      "sampleSize": 4,
+      "confidence": 55,
+      "sampleSize": 5,
       "examples": [
+        {
+          "taskDescription": "Suppress generic self-improvement memory bottlenecks when recent successful capability evidence already provides concrete next-step guidance",
+          "date": "2026-05-19",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Auto-refresh self-improvement suggestions when cached results are empty or stale",
           "date": "2026-05-19",
@@ -240,20 +252,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Add predictive fallback coverage with rework",
-          "date": "2026-04-23",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "review-changes"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-19T18:07:33.484Z"
+      "lastUpdated": "2026-05-20T03:43:14.308Z"
     },
     {
       "id": "time-pattern-quick",
@@ -521,9 +522,21 @@
       "successRate": 100,
       "firstTryRate": 100,
       "averageTime": 15,
-      "confidence": 60,
-      "sampleSize": 2,
+      "confidence": 65,
+      "sampleSize": 3,
       "examples": [
+        {
+          "taskDescription": "Suppress generic self-improvement memory bottlenecks when recent successful capability evidence already provides concrete next-step guidance",
+          "date": "2026-05-19",
+          "time": 15,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Auto-refresh self-improvement suggestions when cached results are empty or stale",
           "date": "2026-05-19",
@@ -549,9 +562,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-19T18:07:33.484Z"
+      "lastUpdated": "2026-05-20T03:43:14.308Z"
     }
   ],
-  "lastUpdated": "2026-05-19T18:12:21.614Z",
+  "lastUpdated": "2026-05-20T03:48:05.709Z",
   "sessionCount": 2
 }

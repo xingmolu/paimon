@@ -454,6 +454,7 @@ export class SelfImprovementEngine {
 					suggestion,
 					health,
 					hasConcreteRecentSuccessEvidence,
+					suggestions,
 				),
 		);
 	}
@@ -553,6 +554,42 @@ export class SelfImprovementEngine {
 		});
 	}
 
+	private hasConcreteActionableBestPracticeAlternative(
+		suggestion: ImprovementSuggestion,
+		suggestions: ImprovementSuggestion[],
+	): boolean {
+		if (suggestion.source !== "best-practice") {
+			return false;
+		}
+
+		const actionableBestPracticeTitles = new Set([
+			"Capture reusable lessons from weak-signal skills",
+			"Expand error-recovery enablers",
+			"Strengthen self-assessment enablers",
+			"Improve planning and tool-chain enablers",
+			"Promote tool-discovery enablers",
+			"Invest in memory-persistence enablers",
+			"Turn recurring errors into reusable guardrails",
+			"Promote proven memory-backed tasks",
+		]);
+
+		return suggestions.some((existingSuggestion) => {
+			if (existingSuggestion.id === suggestion.id) {
+				return false;
+			}
+
+			if (existingSuggestion.source !== "best-practice") {
+				return false;
+			}
+
+			if (!actionableBestPracticeTitles.has(existingSuggestion.title)) {
+				return false;
+			}
+
+			return existingSuggestion.priority === "high" || existingSuggestion.priority === "critical";
+		});
+	}
+
 	private isSatisfiedBestPracticeSuggestion(
 		suggestion: ImprovementSuggestion,
 		health: {
@@ -561,6 +598,7 @@ export class SelfImprovementEngine {
 			components?: Partial<HealthComponents>;
 		} | null,
 		hasConcreteRecentSuccessEvidence = false,
+		suggestions: ImprovementSuggestion[] = [],
 	): boolean {
 		if (suggestion.source !== "best-practice") {
 			return false;
@@ -578,7 +616,13 @@ export class SelfImprovementEngine {
 		}
 
 		if (suggestion.title.startsWith("Optimization dashboard health is ")) {
-			return health?.status === "excellent" || health?.status === "good";
+			if (health?.status === "excellent" || health?.status === "good") {
+				return true;
+			}
+
+			const hasConcreteActionableBestPracticeAlternative =
+				this.hasConcreteActionableBestPracticeAlternative(suggestion, suggestions);
+			return hasConcreteActionableBestPracticeAlternative;
 		}
 
 		if (suggestion.title === "Strengthen self-assessment enablers") {

@@ -186,7 +186,7 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).toContain("Improve iteration speed");
 		expect(titles).toContain("Reduce recurring errors");
 		expect(titles).toContain("Bottleneck: assess");
-		expect(titles).toContain("Optimization dashboard health is fair");
+		expect(titles).not.toContain("Optimization dashboard health is fair");
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
 		expect(
 			suggestions.find((item) => item.title === "Turn recurring errors into reusable guardrails")
@@ -398,6 +398,56 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).not.toContain("Auto-context detection");
 		expect(titles).not.toContain("Parallel file analysis");
 		expect(titles).not.toContain("Code generation templates");
+	});
+
+	it("suppresses generic optimization-health suggestions when specific actionable best-practice alternatives already exist", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 66,
+				components: {
+					successRate: 83,
+					timeEfficiency: 74,
+					errorRate: 78,
+					capabilityUtilization: 63,
+					memoryQuality: 52,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "capability",
+					title: "Optimization dashboard health is fair",
+					description:
+						"Live evolution health is 66/100. Prioritize improvements that address the weakest dashboard signals.",
+					expectedImpact: "Improves task prioritization with real evolution health signals",
+					effort: "simple",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Expand error-recovery enablers",
+					description:
+						"Error pressure is elevated. Prioritize capabilities that turn recurring failures into faster recovery and prevention loops. Recommended enablers: error-recovery, self-healing, and error-patterns. Likely starting files (100% context confidence): src/error-patterns.test.ts, src/error-patterns.ts, src/tools/error-patterns-tool.ts.",
+					expectedImpact: "Lower rework and more resilient evolution sessions",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Optimization dashboard health is fair");
+		expect(titles).toContain("Expand error-recovery enablers");
 	});
 
 	it("suppresses best-practice suggestions that are already satisfied by current health", async () => {
