@@ -571,6 +571,7 @@ export class SelfImprovementEngine {
 			"Invest in memory-persistence enablers",
 			"Turn recurring errors into reusable guardrails",
 			"Promote proven memory-backed tasks",
+			"Reduce recurring errors",
 		]);
 
 		return suggestions.some((existingSuggestion) => {
@@ -681,7 +682,11 @@ export class SelfImprovementEngine {
 		}
 
 		if (suggestion.title === "Reduce recurring errors") {
-			return (health?.components?.errorRate ?? 0) >= 85;
+			if ((health?.components?.errorRate ?? 0) >= 85) {
+				return true;
+			}
+
+			return this.hasConcreteActionableBestPracticeAlternative(suggestion, suggestions);
 		}
 
 		if (suggestion.title === "Increase tool utilization") {

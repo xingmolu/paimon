@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-20 — capability — Suppressed generic recurring-error self-improvement suggestions when more specific actionable error-recovery guidance already exists, keeping autonomous task selection focused and adding regression coverage.
 - 2026-05-20 — capability — Suppressed generic optimization-health self-improvement suggestions when more specific actionable best-practice guidance already exists, keeping autonomous task selection focused and adding regression coverage.
 - 2026-05-19 — capability — Suppressed generic self-improvement memory-quality bottleneck suggestions when recent successful capability evidence already provides concrete next-step guidance, with focused regression coverage.
 - 2026-05-19 — capability — Refreshed self-improvement suggestions automatically when cached results are empty or stale, preventing zero-suggestion task-selection dead ends and adding focused regression coverage.

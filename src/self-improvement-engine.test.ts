@@ -184,10 +184,11 @@ describe("SelfImprovementEngine", () => {
 		const titles = suggestions.map((item) => item.title);
 
 		expect(titles).toContain("Improve iteration speed");
-		expect(titles).toContain("Reduce recurring errors");
+		expect(titles).not.toContain("Reduce recurring errors");
 		expect(titles).toContain("Bottleneck: assess");
 		expect(titles).not.toContain("Optimization dashboard health is fair");
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
+		expect(titles).toContain("Expand error-recovery enablers");
 		expect(
 			suggestions.find((item) => item.title === "Turn recurring errors into reusable guardrails")
 				?.description,
@@ -448,6 +449,65 @@ describe("SelfImprovementEngine", () => {
 
 		expect(titles).not.toContain("Optimization dashboard health is fair");
 		expect(titles).toContain("Expand error-recovery enablers");
+	});
+
+	it("suppresses generic recurring-error suggestions when specific actionable error-recovery guidance already exists", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 67,
+				components: {
+					successRate: 82,
+					timeEfficiency: 73,
+					errorRate: 78,
+					capabilityUtilization: 61,
+					memoryQuality: 55,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "reliability",
+					title: "Reduce recurring errors",
+					description: "Recent common errors: test.",
+					expectedImpact: "Higher first-try success rate and less rework",
+					effort: "moderate",
+				},
+				{
+					priority: "high",
+					category: "capability",
+					title: "Expand error-recovery enablers",
+					description:
+						"Error pressure is elevated. Prioritize capabilities that turn recurring failures into faster recovery and prevention loops. Recommended enablers: error-recovery, self-healing, and error-patterns. Likely starting files (100% context confidence): src/error-patterns.ts, src/tools/error-patterns-tool.ts.",
+					expectedImpact: "Lower rework and more resilient evolution sessions",
+					effort: "simple",
+				},
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Turn recurring errors into reusable guardrails",
+					description:
+						"Recent iterations still show recurring test errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.",
+					expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Reduce recurring errors");
+		expect(titles).toContain("Expand error-recovery enablers");
+		expect(titles).toContain("Turn recurring errors into reusable guardrails");
 	});
 
 	it("suppresses best-practice suggestions that are already satisfied by current health", async () => {
