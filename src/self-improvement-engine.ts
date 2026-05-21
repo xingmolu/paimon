@@ -554,6 +554,35 @@ export class SelfImprovementEngine {
 		});
 	}
 
+	private hasConcreteRecurringErrorGuardrailEvidence(
+		suggestion: ImprovementSuggestion,
+		suggestions: ImprovementSuggestion[],
+	): boolean {
+		if (suggestion.title !== "Reduce recurring errors") {
+			return false;
+		}
+
+		return suggestions.some((existingSuggestion) => {
+			if (
+				existingSuggestion.id === suggestion.id ||
+				existingSuggestion.source !== "best-practice"
+			) {
+				return false;
+			}
+
+			if (existingSuggestion.title !== "Turn recurring errors into reusable guardrails") {
+				return false;
+			}
+
+			const description = existingSuggestion.description.toLowerCase();
+			return (
+				description.includes("recent iterations still show recurring test errors") ||
+				description.includes("prevention checklist") ||
+				description.includes("preferred recovery steps")
+			);
+		});
+	}
+
 	private hasConcreteActionableBestPracticeAlternative(
 		suggestion: ImprovementSuggestion,
 		suggestions: ImprovementSuggestion[],
@@ -683,6 +712,10 @@ export class SelfImprovementEngine {
 
 		if (suggestion.title === "Reduce recurring errors") {
 			if ((health?.components?.errorRate ?? 0) >= 85) {
+				return true;
+			}
+
+			if (this.hasConcreteRecurringErrorGuardrailEvidence(suggestion, suggestions)) {
 				return true;
 			}
 

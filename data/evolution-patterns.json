@@ -207,16 +207,28 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 75% success, impact not yet recorded",
+      "description": "capability tasks: 80% success, impact not yet recorded",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 75,
-      "firstTryRate": 75,
-      "averageTime": 16,
-      "confidence": 52,
-      "sampleSize": 4,
+      "successRate": 80,
+      "firstTryRate": 80,
+      "averageTime": 17,
+      "confidence": 55,
+      "sampleSize": 5,
       "examples": [
+        {
+          "taskDescription": "Integrate MEMORY-backed recurring test-recovery guidance into self-evaluation recommendations and capability gaps",
+          "date": "2026-05-21",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Suppress generic recurring-error self-improvement suggestions when specific actionable error-recovery alternatives already exist",
           "date": "2026-05-20",
@@ -240,20 +252,9 @@
           ],
           "success": true,
           "firstTry": true
-        },
-        {
-          "taskDescription": "Add predictive fallback coverage with rework",
-          "date": "2026-04-23",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "review-changes"
-          ],
-          "success": true,
-          "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-21T03:54:50.561Z"
+      "lastUpdated": "2026-05-21T18:01:22.595Z"
     },
     {
       "id": "time-pattern-quick",
@@ -520,10 +521,22 @@
       },
       "successRate": 100,
       "firstTryRate": 100,
-      "averageTime": 15,
-      "confidence": 60,
-      "sampleSize": 2,
+      "averageTime": 17,
+      "confidence": 65,
+      "sampleSize": 3,
       "examples": [
+        {
+          "taskDescription": "Integrate MEMORY-backed recurring test-recovery guidance into self-evaluation recommendations and capability gaps",
+          "date": "2026-05-21",
+          "time": 20,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes"
+          ],
+          "success": true,
+          "firstTry": true
+        },
         {
           "taskDescription": "Suppress generic recurring-error self-improvement suggestions when specific actionable error-recovery alternatives already exist",
           "date": "2026-05-20",
@@ -549,9 +562,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-21T03:54:50.561Z"
+      "lastUpdated": "2026-05-21T18:01:22.595Z"
     }
   ],
-  "lastUpdated": "2026-05-21T04:00:17.107Z",
+  "lastUpdated": "2026-05-21T18:05:11.865Z",
   "sessionCount": 2
 }

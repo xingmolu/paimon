@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-21 — capability — Suppressed generic recurring-error self-improvement suggestions when concrete MEMORY-backed recurring test guardrail guidance already exists, keeping task selection focused on actionable prevention steps with regression coverage.
 - 2026-05-21 — capability — Integrated MEMORY-backed recurring test-recovery guidance into self-evaluation recommendations and capability gaps so failed evaluations reuse recent recovery paths, with focused regression coverage.
 - 2026-05-20 — capability — Suppressed generic recurring-error self-improvement suggestions when more specific actionable error-recovery guidance already exists, keeping autonomous task selection focused and adding regression coverage.
 - 2026-05-20 — capability — Suppressed generic optimization-health self-improvement suggestions when more specific actionable best-practice guidance already exists, keeping autonomous task selection focused and adding regression coverage.

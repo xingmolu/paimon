@@ -510,6 +510,55 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
 	});
 
+	it("suppresses generic recurring-error suggestions when MEMORY-backed test guardrail evidence is concrete", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 64,
+				components: {
+					successRate: 80,
+					timeEfficiency: 72,
+					errorRate: 70,
+					capabilityUtilization: 61,
+					memoryQuality: 55,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "reliability",
+					title: "Reduce recurring errors",
+					description: "Recent common errors: test.",
+					expectedImpact: "Higher first-try success rate and less rework",
+					effort: "moderate",
+				},
+				{
+					priority: "high",
+					category: "memory",
+					title: "Turn recurring errors into reusable guardrails",
+					description:
+						"Recent iterations still show recurring test errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.",
+					expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Reduce recurring errors");
+		expect(titles).toContain("Turn recurring errors into reusable guardrails");
+	});
+
 	it("suppresses best-practice suggestions that are already satisfied by current health", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
