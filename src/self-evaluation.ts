@@ -14,6 +14,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { type ScorecardRow, normalizeScorecardResult, parseScorecardRows } from "./scorecard.js";
 
 // Evaluation criteria types
 export type EvaluationCriterion =
@@ -127,6 +128,8 @@ const DEFAULT_CONFIG: SelfEvaluationConfig = {
 	historyRetentionDays: 30,
 	minIterationsForTrend: 5,
 };
+
+const MEMORY_RECOVERY_LOOKBACK = 10;
 
 /**
  * SelfEvaluationManager class
@@ -626,9 +629,13 @@ export class SelfEvaluationManager {
 	private generateRecommendations(
 		criterionScores: CriterionScore[],
 		weaknesses: string[],
-		iterationData: { taskType: string; success: boolean },
+		iterationData: { taskType: string; success: boolean; errors: string[] },
 	): string[] {
 		const recommendations: string[] = [];
+
+		for (const memorySuggestion of this.getMemoryRecoveryRecommendations(iterationData.errors)) {
+			recommendations.push(memorySuggestion);
+		}
 
 		// Collect suggestions from weak areas
 		for (const cs of criterionScores) {
@@ -672,13 +679,19 @@ export class SelfEvaluationManager {
 		if (errorTypes.some((e) => e.includes("lint"))) {
 			gaps.push("lint-recovery: Better lint error recovery needed");
 		}
+		if (this.hasErrorType(iterationData.errors, "test")) {
+			gaps.push("test-recovery: Better recurring test failure recovery guidance needed");
+			for (const memoryGap of this.getMemoryRecoveryCapabilityGaps(iterationData.errors)) {
+				gaps.push(memoryGap);
+			}
+		}
 
 		// Check for weakness-based gaps
 		if (weaknesses.some((w) => w.includes("planning_quality"))) {
 			gaps.push("planning-capability: Better planning and task prediction needed");
 		}
 
-		return gaps;
+		return [...new Set(gaps)];
 	}
 
 	/**
@@ -707,6 +720,82 @@ export class SelfEvaluationManager {
 		}
 
 		return focusAreas.slice(0, 3);
+	}
+
+	private getMemoryRecoveryRecommendations(errors: string[]): string[] {
+		if (!this.hasErrorType(errors, "test")) {
+			return [];
+		}
+
+		return this.getRecentRecoveryRows("test").map((row) => {
+			const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+			const recoveryNote =
+				normalizedResult === "positive"
+					? `Reuse the successful recovery path from MEMORY.md (${row.date}: ${row.description})`
+					: `Review the failed MEMORY.md attempt before retrying (${row.date}: ${row.description})`;
+			const skillNote = row.skillsUsed ? ` Skills used: ${row.skillsUsed}.` : "";
+			return `${recoveryNote}.${skillNote}`.trim();
+		});
+	}
+
+	private getMemoryRecoveryCapabilityGaps(errors: string[]): string[] {
+		return this.getRecentRecoveryRows("test", errors).map(
+			(row) =>
+				`memory-test-recovery: Capture and reuse the ${row.date} ${this.describeMemoryRecoveryResult(row)} path for ${row.description}`,
+		);
+	}
+
+	private getRecentRecoveryRows(errorType: string, errors?: string[]): ScorecardRow[] {
+		if (errors && !this.hasErrorType(errors, errorType)) {
+			return [];
+		}
+
+		return this.loadScorecardRows()
+			.slice(0, MEMORY_RECOVERY_LOOKBACK)
+			.filter((row) => this.normalizeScorecardErrors(row.errors).includes(errorType))
+			.slice(0, 2);
+	}
+
+	private describeMemoryRecoveryResult(row: ScorecardRow): string {
+		const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+		if (normalizedResult === "positive") {
+			return "successful recovery";
+		}
+		if (normalizedResult === "negative") {
+			return "failed recovery";
+		}
+		return "prior recovery";
+	}
+
+	private loadScorecardRows(): ScorecardRow[] {
+		try {
+			const memoryPath = join(process.cwd(), "MEMORY.md");
+			if (!existsSync(memoryPath)) {
+				return [];
+			}
+			return parseScorecardRows(readFileSync(memoryPath, "utf-8"));
+		} catch {
+			return [];
+		}
+	}
+
+	private normalizeScorecardErrors(errors?: string): string[] {
+		const normalized = (errors || "").trim().toLowerCase();
+		if (!normalized || normalized === "none") {
+			return [];
+		}
+		return normalized
+			.split(/[\/,]|\band\b/)
+			.map((part) => part.trim())
+			.filter(Boolean)
+			.map((part) => {
+				if (part === "ts") return "typescript";
+				return part;
+			});
+	}
+
+	private hasErrorType(errors: string[], errorType: string): boolean {
+		return errors.some((error) => error.toLowerCase().includes(errorType));
 	}
 
 	/**

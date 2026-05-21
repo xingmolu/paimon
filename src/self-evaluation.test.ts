@@ -1,3 +1,5 @@
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	type SelfEvaluation,
@@ -6,17 +8,26 @@ import {
 	resetSelfEvaluationManager,
 } from "./self-evaluation.js";
 
+const memoryPath = path.join(process.cwd(), "MEMORY.md");
+
 describe("SelfEvaluationManager", () => {
 	let manager: SelfEvaluationManager;
+	let originalMemory: string | null = null;
 
 	beforeEach(() => {
 		resetSelfEvaluationManager();
 		manager = new SelfEvaluationManager();
+		originalMemory = existsSync(memoryPath) ? readFileSync(memoryPath, "utf-8") : null;
 	});
 
 	afterEach(() => {
 		manager.clearEvaluations();
 		resetSelfEvaluationManager();
+		if (typeof originalMemory === "string") {
+			writeFileSync(memoryPath, originalMemory);
+		} else if (existsSync(memoryPath)) {
+			unlinkSync(memoryPath);
+		}
 	});
 
 	describe("evaluate", () => {
@@ -135,6 +146,77 @@ describe("SelfEvaluationManager", () => {
 			});
 
 			expect(evaluation.recommendations.length).toBeGreaterThan(0);
+		});
+
+		it("should add MEMORY-backed test recovery recommendations for recurring test failures", () => {
+			writeFileSync(
+				memoryPath,
+				[
+					"# Memory",
+					"",
+					"## Recent Scorecard",
+					"",
+					"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+					"|------|------|-------------|------|--------|--------|-------------|",
+					"| 2026-05-19 | capability | Fix timeout-heavy regression suite with rework | ~15m | ✅ | test | evolve, review-changes |",
+					"| 2026-05-18 | capability | Recover from failing regression snapshot update | ~20m | ❌ | test | systematic-debugging |",
+				].join("\n"),
+			);
+
+			const evaluation = manager.evaluate({
+				iterationId: "iter-memory-rec-1",
+				taskType: "capability",
+				taskDescription: "Recover from recurring regression failures",
+				durationMinutes: 35,
+				success: false,
+				errors: ["test timeout"],
+				skillsUsed: ["evolve"],
+				firstTry: false,
+				rework: true,
+				impact: "Medium",
+			});
+
+			expect(evaluation.recommendations.join("\n")).toContain(
+				"Reuse the successful recovery path from MEMORY.md (2026-05-19: Fix timeout-heavy regression suite with rework). Skills used: evolve, review-changes.",
+			);
+			expect(evaluation.recommendations.join("\n")).toContain(
+				"Review the failed MEMORY.md attempt before retrying (2026-05-18: Recover from failing regression snapshot update). Skills used: systematic-debugging.",
+			);
+		});
+
+		it("should add MEMORY-backed capability gaps for recurring test failures", () => {
+			writeFileSync(
+				memoryPath,
+				[
+					"# Memory",
+					"",
+					"## Recent Scorecard",
+					"",
+					"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+					"|------|------|-------------|------|--------|--------|-------------|",
+					"| 2026-05-17 | capability | Stabilize flaky regression coverage | ~15m | ✅ | test | evolve, review-changes |",
+				].join("\n"),
+			);
+
+			const evaluation = manager.evaluate({
+				iterationId: "iter-memory-gap-1",
+				taskType: "capability",
+				taskDescription: "Fix recurring test breakage",
+				durationMinutes: 40,
+				success: false,
+				errors: ["test assertion failed"],
+				skillsUsed: [],
+				firstTry: false,
+				rework: true,
+				impact: "Low",
+			});
+
+			expect(evaluation.capabilityGaps).toContain(
+				"test-recovery: Better recurring test failure recovery guidance needed",
+			);
+			expect(evaluation.capabilityGaps.join("\n")).toContain(
+				"memory-test-recovery: Capture and reuse the 2026-05-17 successful recovery path for Stabilize flaky regression coverage",
+			);
 		});
 	});
 
