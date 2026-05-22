@@ -848,6 +848,99 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).not.toContain("Bottleneck: memory-quality");
 	});
 
+	it("suppresses redundant recent-success suggestions when they only restate the latest journaled wins", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "loadRecentJournalEntries" as never).mockReturnValue([
+			"Auto-refresh self-improvement suggestions when cached results are empty or stale",
+			"Suppress weak-signal skill-learning suggestions unless backed by actionable evidence",
+		]);
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 67,
+				components: {
+					successRate: 83,
+					timeEfficiency: 75,
+					errorRate: 84,
+					capabilityUtilization: 62,
+					memoryQuality: 58,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Promote proven memory-backed tasks",
+					description:
+						"Recent successful iterations include Auto-refresh self-improvement suggestions when cached results are empty or stale; Suppress weak-signal skill-learning suggestions unless backed by actionable evidence. Use these concrete wins to guide future task selection and keep new work aligned with demonstrated high-signal improvements.",
+					expectedImpact: "More evidence-based task selection from existing MEMORY.md history",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+
+		expect(suggestions.some((item) => item.title === "Promote proven memory-backed tasks")).toBe(
+			false,
+		);
+	});
+
+	it("keeps recent-success suggestions when they extend beyond the latest journaled wins", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "loadRecentJournalEntries" as never).mockReturnValue([
+			"Auto-refresh self-improvement suggestions when cached results are empty or stale",
+		]);
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 67,
+				components: {
+					successRate: 83,
+					timeEfficiency: 75,
+					errorRate: 84,
+					capabilityUtilization: 62,
+					memoryQuality: 58,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "medium",
+					category: "memory",
+					title: "Promote proven memory-backed tasks",
+					description:
+						"Recent successful iterations include Auto-refresh self-improvement suggestions when cached results are empty or stale; Suppress weak-signal skill-learning suggestions unless backed by actionable evidence. Use these concrete wins to guide future task selection and keep new work aligned with demonstrated high-signal improvements.",
+					expectedImpact: "More evidence-based task selection from existing MEMORY.md history",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const retainedSuggestion = suggestions.find(
+			(item) => item.title === "Promote proven memory-backed tasks",
+		);
+
+		expect(retainedSuggestion).toBeDefined();
+		expect(retainedSuggestion?.description).toContain(
+			"Suppress weak-signal skill-learning suggestions unless backed by actionable evidence",
+		);
+	});
+
 	it("suppresses redundant implemented enabler suggestions without contextual file evidence", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);

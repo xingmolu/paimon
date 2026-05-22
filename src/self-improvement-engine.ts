@@ -450,6 +450,7 @@ export class SelfImprovementEngine {
 			(suggestion) =>
 				!this.isLowSignalCodeSuggestion(suggestion) &&
 				!this.isDuplicateCapabilitySuggestion(suggestion) &&
+				!this.isLowSignalRecentSuccessSuggestion(suggestion) &&
 				!this.isSatisfiedBestPracticeSuggestion(
 					suggestion,
 					health,
@@ -552,6 +553,66 @@ export class SelfImprovementEngine {
 
 			return suggestion.title === "Preserve successful skill combinations in memory";
 		});
+	}
+
+	private loadRecentJournalEntries(): string[] {
+		const journalPath = path.join(process.cwd(), "JOURNAL.md");
+		try {
+			if (!fs.existsSync(journalPath)) {
+				return [];
+			}
+
+			return fs
+				.readFileSync(journalPath, "utf-8")
+				.split("\n")
+				.map((line) => line.trim())
+				.filter((line) => line.startsWith("- "))
+				.map((line) => line.replace(/^-\s*\d{4}-\d{2}-\d{2}\s+—\s+\w+\s+—\s*/u, ""))
+				.filter(Boolean)
+				.slice(0, 8);
+		} catch {
+			return [];
+		}
+	}
+
+	private isLowSignalRecentSuccessSuggestion(suggestion: ImprovementSuggestion): boolean {
+		if (suggestion.source !== "best-practice") {
+			return false;
+		}
+
+		if (suggestion.title !== "Promote proven memory-backed tasks") {
+			return false;
+		}
+
+		const normalizedDescription = suggestion.description.toLowerCase();
+		if (!normalizedDescription.includes("recent successful iterations include")) {
+			return false;
+		}
+
+		const successfulIterationsSection = normalizedDescription
+			.split("recent successful iterations include")[1]
+			?.split(". use these concrete wins")[0]
+			?.trim();
+		if (!successfulIterationsSection) {
+			return false;
+		}
+
+		const describedIterations = successfulIterationsSection
+			.split(";")
+			.map((entry) => entry.trim())
+			.filter(Boolean);
+		if (describedIterations.length === 0) {
+			return false;
+		}
+
+		const currentJournalEntries = new Set(
+			this.loadRecentJournalEntries().map((entry) => entry.toLowerCase()),
+		);
+		if (currentJournalEntries.size === 0) {
+			return false;
+		}
+
+		return describedIterations.every((entry) => currentJournalEntries.has(entry));
 	}
 
 	private hasConcreteRecurringErrorGuardrailEvidence(
