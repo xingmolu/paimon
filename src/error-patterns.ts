@@ -453,6 +453,7 @@ export class ErrorPatternLearner {
 	): ErrorMatch[] {
 		const rows = this.loadScorecardRows().slice(0, MEMORY_FALLBACK_LOOKBACK);
 		const suggestions: ErrorMatch[] = [];
+		const seenDescriptions = new Set<string>();
 
 		for (const row of rows) {
 			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
@@ -460,25 +461,37 @@ export class ErrorPatternLearner {
 				continue;
 			}
 
+			const description = row.description.trim();
+			if (!description) {
+				continue;
+			}
+
+			const descriptionKey = description.toLowerCase();
+			if (seenDescriptions.has(descriptionKey)) {
+				continue;
+			}
+			seenDescriptions.add(descriptionKey);
+
 			const result = normalizeScorecardResult(row.result, row.firstTry);
+			const firstTryText = row.firstTry ? "first try" : "after rework";
+			const reworkText = row.rework ? " Rework was required." : "";
+			const skillsNote = row.skillsUsed ? ` Skills used: ${row.skillsUsed}.` : "";
 			const summary =
 				result === "negative"
-					? `Recent MEMORY.md failure on ${row.date}: ${row.description}. Review the failing implementation path before retrying.`
+					? `Recent MEMORY.md failure on ${row.date}: ${description}. This ${type} issue remained unresolved ${firstTryText}. Review the failing implementation path before retrying.${reworkText}`
 					: result === "positive"
-						? `Recent successful session on ${row.date} still hit ${type} issues during ${row.description}. Reuse the proven fix path before retrying.`
-						: `Recent MEMORY.md history on ${row.date}: ${row.description}. Review it for prior ${type} recovery context.`;
-			const skillsNote =
-				row.skillsUsed && result === "positive" ? ` Successful skills: ${row.skillsUsed}.` : "";
+						? `Recent successful session on ${row.date} hit ${type} issues during ${description} and recovered ${firstTryText}. Reuse the proven fix path before retrying.${reworkText}`
+						: `Recent MEMORY.md history on ${row.date}: ${description}. Review it for prior ${type} recovery context.${reworkText}`;
 			const pattern: ErrorPattern = {
-				id: `memory-${type}-${row.date}`,
+				id: `memory-${type}-${row.date}-${suggestions.length}`,
 				type,
 				pattern: "MEMORY fallback",
 				description: `MEMORY.md fallback from ${row.date}`,
 				solution: `${summary}${skillsNote}`,
-				confidence: result === "negative" ? 88 : result === "positive" ? 80 : 72,
+				confidence: result === "negative" ? 88 : result === "positive" ? 82 : 72,
 				occurrences: 1,
 				lastSeen: row.date,
-				examples: row.description ? [row.description] : [],
+				examples: [description],
 			};
 
 			suggestions.push({

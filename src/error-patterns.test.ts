@@ -23,7 +23,7 @@ describe("ErrorPatternLearner memory fallback", () => {
 		}
 	});
 
-	it("returns MEMORY-backed suggestions when regex patterns do not match", () => {
+	it("returns enriched MEMORY-backed suggestions when regex patterns do not match", () => {
 		writeFileSync(
 			memoryPath,
 			[
@@ -47,8 +47,38 @@ describe("ErrorPatternLearner memory fallback", () => {
 		expect(suggestions.length).toBeGreaterThan(0);
 		expect(suggestions[0]?.source).toBe("memory");
 		expect(suggestions[0]?.suggestion).toContain("Recent MEMORY.md failure on 2026-05-12");
-		expect(suggestions.map((suggestion) => suggestion.suggestion).join("\n")).toContain(
-			"Successful skills: evolve, review-changes.",
+		expect(suggestions[0]?.suggestion).toContain("remained unresolved");
+		expect(suggestions[1]?.suggestion).toContain("recovered");
+		expect(suggestions[1]?.suggestion).toContain("Skills used: evolve, review-changes.");
+	});
+
+	it("deduplicates repeated MEMORY fallback descriptions", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Type | Description | Time | Result | Errors | Skills Used |",
+				"|------|------|-------------|------|--------|--------|-------------|",
+				"| 2026-05-12 | capability | Stabilize flaky regression suite | ~20m | ✅ | test | evolve |",
+				"| 2026-05-11 | capability | Stabilize flaky regression suite | ~25m | ❌ | test | systematic-debugging |",
+				"| 2026-05-10 | capability | Add timeout guardrails | ~10m | ✅ | test | review-changes |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions(
+			"Regression output diverged from expected artifact",
+			3,
+		);
+
+		expect(suggestions).toHaveLength(2);
+		expect(suggestions[0]?.suggestion).toContain("Stabilize flaky regression suite");
+		expect(suggestions[1]?.suggestion).toContain("Add timeout guardrails");
+		expect(suggestions.map((suggestion) => suggestion.suggestion).join("\n")).not.toContain(
+			"2026-05-11",
 		);
 	});
 
