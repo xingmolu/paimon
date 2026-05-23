@@ -454,8 +454,11 @@ export class ErrorPatternLearner {
 		const rows = this.loadScorecardRows().slice(0, MEMORY_FALLBACK_LOOKBACK);
 		const suggestions: ErrorMatch[] = [];
 		const seenDescriptions = new Set<string>();
+		const rankedRows = rows
+			.map((row, index) => ({ row, index }))
+			.sort((a, b) => this.compareMemoryFallbackRows(a.row, b.row, a.index, b.index));
 
-		for (const row of rows) {
+		for (const { row } of rankedRows) {
 			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
 			if (!normalizedErrors.includes(type)) {
 				continue;
@@ -476,6 +479,12 @@ export class ErrorPatternLearner {
 			const firstTryText = row.firstTry ? "first try" : "after rework";
 			const reworkText = row.rework ? " Rework was required." : "";
 			const skillsNote = row.skillsUsed ? ` Skills used: ${row.skillsUsed}.` : "";
+			const preventionNote = this.buildMemoryPreventionNote(
+				type,
+				row.skillsUsed,
+				this.normalizeScorecardReworkFlag(row.rework),
+				result,
+			);
 			const summary =
 				result === "negative"
 					? `Recent MEMORY.md failure on ${row.date}: ${description}. This ${type} issue remained unresolved ${firstTryText}. Review the failing implementation path before retrying.${reworkText}`
@@ -487,7 +496,7 @@ export class ErrorPatternLearner {
 				type,
 				pattern: "MEMORY fallback",
 				description: `MEMORY.md fallback from ${row.date}`,
-				solution: `${summary}${skillsNote}`,
+				solution: `${summary}${skillsNote}${preventionNote}`,
 				confidence: result === "negative" ? 88 : result === "positive" ? 82 : 72,
 				occurrences: 1,
 				lastSeen: row.date,
@@ -508,6 +517,68 @@ export class ErrorPatternLearner {
 		}
 
 		return suggestions;
+	}
+
+	private compareMemoryFallbackRows(
+		a: ReturnType<typeof parseScorecardRows>[number],
+		b: ReturnType<typeof parseScorecardRows>[number],
+		indexA: number,
+		indexB: number,
+	): number {
+		const priorityDelta = this.getMemoryFallbackPriority(a) - this.getMemoryFallbackPriority(b);
+		if (priorityDelta !== 0) {
+			return priorityDelta;
+		}
+
+		return indexA - indexB;
+	}
+
+	private getMemoryFallbackPriority(row: ReturnType<typeof parseScorecardRows>[number]): number {
+		const result = normalizeScorecardResult(row.result, row.firstTry);
+		const rework = this.normalizeScorecardReworkFlag(row.rework);
+		if (result === "negative") {
+			return 0;
+		}
+		if (result === "positive" && rework) {
+			return 1;
+		}
+		if (result === "positive") {
+			return 2;
+		}
+		return 3;
+	}
+
+	private buildMemoryPreventionNote(
+		type: "typescript" | "test" | "lint" | "runtime",
+		skillsUsed?: string,
+		rework?: boolean,
+		result?: "positive" | "negative" | "unknown",
+	): string {
+		const normalizedSkills = (skillsUsed || "")
+			.split(",")
+			.map((skill) => skill.trim())
+			.filter(Boolean);
+		const hasReview = normalizedSkills.includes("review-changes");
+		const hasDebugging = normalizedSkills.includes("systematic-debugging");
+
+		if (result === "negative" && hasDebugging) {
+			return ` Prevention: re-run systematic-debugging before editing to isolate the failing ${type} path.`;
+		}
+		if (rework && hasReview) {
+			return ` Prevention: run review-changes before assess/build-test so similar ${type} regressions are caught earlier.`;
+		}
+		if (result === "positive" && hasDebugging) {
+			return ` Prevention: reuse systematic-debugging early if the ${type} failure pattern reappears.`;
+		}
+
+		return "";
+	}
+
+	private normalizeScorecardReworkFlag(rework?: string): boolean {
+		const normalized = (rework || "").trim().toLowerCase();
+		return (
+			normalized === "yes" || normalized === "y" || normalized === "true" || normalized === "✅"
+		);
 	}
 
 	private loadScorecardRows() {

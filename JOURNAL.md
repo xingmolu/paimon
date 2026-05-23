@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-23 — capability — Ranked MEMORY-backed errorPatterns fallback suggestions so unresolved failures and successful rework recoveries surface before lower-signal history, and added prevention guidance tied to systematic-debugging/review-changes with focused regression coverage.
 - 2026-05-23 — capability — Refined MEMORY-backed errorPatterns fallback suggestions to deduplicate repeated scorecard recoveries and surface richer unresolved/recovered context with skills-used guidance, plus focused regression coverage.
 - 2026-05-22 — capability — Suppressed redundant MEMORY-backed recent-success self-improvement suggestions when they only restate latest journaled wins, keeping autonomous task selection focused on new reusable guidance with targeted regression coverage.
 - 2026-05-21 — capability — Suppressed generic recurring-error self-improvement suggestions when concrete MEMORY-backed recurring test guardrail guidance already exists, keeping task selection focused on actionable prevention steps with regression coverage.

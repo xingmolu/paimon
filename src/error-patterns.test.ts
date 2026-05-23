@@ -77,9 +77,45 @@ describe("ErrorPatternLearner memory fallback", () => {
 		expect(suggestions).toHaveLength(2);
 		expect(suggestions[0]?.suggestion).toContain("Stabilize flaky regression suite");
 		expect(suggestions[1]?.suggestion).toContain("Add timeout guardrails");
-		expect(suggestions.map((suggestion) => suggestion.suggestion).join("\n")).not.toContain(
-			"2026-05-11",
+		expect(
+			suggestions.filter((suggestion) =>
+				suggestion.suggestion.includes("Stabilize flaky regression suite"),
+			),
+		).toHaveLength(1);
+	});
+
+	it("prioritizes unresolved failures and actionable prevention guidance in MEMORY fallback", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-12 | capability | Green regression sweep | ~10m | ✅ | test | No | evolve |",
+				"| 2026-05-11 | capability | Recover flaky regression after rework | ~25m | ✅ | test | Yes | review-changes, systematic-debugging |",
+				"| 2026-05-10 | capability | Investigate unresolved regression failure | ~30m | ❌ | test | Yes | systematic-debugging |",
+			].join("\n"),
 		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions(
+			"Regression suite still diverges from expected output",
+			3,
+		);
+
+		expect(suggestions).toHaveLength(3);
+		expect(suggestions[0]?.suggestion).toContain("Investigate unresolved regression failure");
+		expect(suggestions[0]?.suggestion).toContain(
+			"Prevention: re-run systematic-debugging before editing",
+		);
+		expect(suggestions[1]?.suggestion).toContain("Recover flaky regression after rework");
+		expect(suggestions[1]?.suggestion).toContain(
+			"Prevention: run review-changes before assess/build-test",
+		);
+		expect(suggestions[2]?.suggestion).toContain("Green regression sweep");
 	});
 
 	it("prefers direct regex pattern matches over MEMORY fallback", () => {
