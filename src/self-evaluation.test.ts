@@ -148,7 +148,7 @@ describe("SelfEvaluationManager", () => {
 			expect(evaluation.recommendations.length).toBeGreaterThan(0);
 		});
 
-		it("should add MEMORY-backed test recovery recommendations for recurring test failures", () => {
+		it("should rank MEMORY-backed recovery recommendations and add prevention guidance for recurring test failures", () => {
 			writeFileSync(
 				memoryPath,
 				[
@@ -156,10 +156,11 @@ describe("SelfEvaluationManager", () => {
 					"",
 					"## Recent Scorecard",
 					"",
-					"| Date | Type | Description | Time | Result | Errors | Skills Used |",
-					"|------|------|-------------|------|--------|--------|-------------|",
-					"| 2026-05-19 | capability | Fix timeout-heavy regression suite with rework | ~15m | ✅ | test | evolve, review-changes |",
-					"| 2026-05-18 | capability | Recover from failing regression snapshot update | ~20m | ❌ | test | systematic-debugging |",
+					"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+					"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+					"| 2026-05-20 | capability | Green regression sweep | ~10m | ✅ | test | No | evolve |",
+					"| 2026-05-19 | capability | Recover flaky regression after rework | ~15m | ✅ | test | Yes | review-changes, systematic-debugging |",
+					"| 2026-05-18 | capability | Investigate unresolved regression failure | ~20m | ❌ | test | Yes | systematic-debugging |",
 				].join("\n"),
 			);
 
@@ -176,15 +177,18 @@ describe("SelfEvaluationManager", () => {
 				impact: "Medium",
 			});
 
-			expect(evaluation.recommendations.join("\n")).toContain(
-				"Reuse the successful recovery path from MEMORY.md (2026-05-19: Fix timeout-heavy regression suite with rework). Skills used: evolve, review-changes.",
+			const memoryRecommendations = evaluation.recommendations.filter((recommendation) =>
+				recommendation.includes("MEMORY.md"),
 			);
-			expect(evaluation.recommendations.join("\n")).toContain(
-				"Review the failed MEMORY.md attempt before retrying (2026-05-18: Recover from failing regression snapshot update). Skills used: systematic-debugging.",
+			expect(memoryRecommendations[0]).toContain(
+				"Review the failed MEMORY.md attempt before retrying (2026-05-18: Investigate unresolved regression failure). Skills used: systematic-debugging. Prevention: re-run systematic-debugging before editing to isolate the failing test path.",
+			);
+			expect(memoryRecommendations[1]).toContain(
+				"Reuse the successful recovery path from MEMORY.md (2026-05-19: Recover flaky regression after rework). Skills used: review-changes, systematic-debugging. Prevention: run review-changes before assess/build-test so similar test regressions are caught earlier.",
 			);
 		});
 
-		it("should add MEMORY-backed capability gaps for recurring test failures", () => {
+		it("should deduplicate MEMORY-backed capability gaps and keep the highest-signal recovery context", () => {
 			writeFileSync(
 				memoryPath,
 				[
@@ -192,9 +196,11 @@ describe("SelfEvaluationManager", () => {
 					"",
 					"## Recent Scorecard",
 					"",
-					"| Date | Type | Description | Time | Result | Errors | Skills Used |",
-					"|------|------|-------------|------|--------|--------|-------------|",
-					"| 2026-05-17 | capability | Stabilize flaky regression coverage | ~15m | ✅ | test | evolve, review-changes |",
+					"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+					"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+					"| 2026-05-17 | capability | Stabilize flaky regression coverage | ~15m | ✅ | test | No | evolve |",
+					"| 2026-05-16 | capability | Stabilize flaky regression coverage | ~18m | ❌ | test | Yes | systematic-debugging |",
+					"| 2026-05-15 | capability | Add timeout guardrails | ~12m | ✅ | test | Yes | review-changes |",
 				].join("\n"),
 			);
 
@@ -214,8 +220,15 @@ describe("SelfEvaluationManager", () => {
 			expect(evaluation.capabilityGaps).toContain(
 				"test-recovery: Better recurring test failure recovery guidance needed",
 			);
-			expect(evaluation.capabilityGaps.join("\n")).toContain(
-				"memory-test-recovery: Capture and reuse the 2026-05-17 successful recovery path for Stabilize flaky regression coverage",
+			const memoryGaps = evaluation.capabilityGaps.filter((gap) =>
+				gap.startsWith("memory-test-recovery:"),
+			);
+			expect(memoryGaps).toHaveLength(2);
+			expect(memoryGaps[0]).toContain(
+				"2026-05-16 failed recovery path for Stabilize flaky regression coverage using skills systematic-debugging. Prevention: re-run systematic-debugging before editing to isolate the failing test path.",
+			);
+			expect(memoryGaps[1]).toContain(
+				"2026-05-15 successful recovery path for Add timeout guardrails using skills review-changes. Prevention: run review-changes before assess/build-test so similar test regressions are caught earlier.",
 			);
 		});
 	});

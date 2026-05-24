@@ -734,14 +734,15 @@ export class SelfEvaluationManager {
 					? `Reuse the successful recovery path from MEMORY.md (${row.date}: ${row.description})`
 					: `Review the failed MEMORY.md attempt before retrying (${row.date}: ${row.description})`;
 			const skillNote = row.skillsUsed ? ` Skills used: ${row.skillsUsed}.` : "";
-			return `${recoveryNote}.${skillNote}`.trim();
+			const preventionNote = this.buildMemoryRecoveryPreventionNote(row);
+			return `${recoveryNote}.${skillNote}${preventionNote}`.trim();
 		});
 	}
 
 	private getMemoryRecoveryCapabilityGaps(errors: string[]): string[] {
 		return this.getRecentRecoveryRows("test", errors).map(
 			(row) =>
-				`memory-test-recovery: Capture and reuse the ${row.date} ${this.describeMemoryRecoveryResult(row)} path for ${row.description}`,
+				`memory-test-recovery: Capture and reuse the ${row.date} ${this.describeMemoryRecoveryResult(row)} path for ${row.description}${this.buildMemoryRecoveryGapContext(row)}`,
 		);
 	}
 
@@ -750,10 +751,95 @@ export class SelfEvaluationManager {
 			return [];
 		}
 
+		const seenDescriptions = new Set<string>();
 		return this.loadScorecardRows()
 			.slice(0, MEMORY_RECOVERY_LOOKBACK)
-			.filter((row) => this.normalizeScorecardErrors(row.errors).includes(errorType))
+			.map((row, index) => ({ row, index }))
+			.filter(({ row }) => this.normalizeScorecardErrors(row.errors).includes(errorType))
+			.sort((a, b) => this.compareMemoryRecoveryRows(a.row, b.row, a.index, b.index))
+			.map(({ row }) => row)
+			.filter((row) => {
+				const descriptionKey = row.description.trim().toLowerCase();
+				if (!descriptionKey || seenDescriptions.has(descriptionKey)) {
+					return false;
+				}
+				seenDescriptions.add(descriptionKey);
+				return true;
+			})
 			.slice(0, 2);
+	}
+
+	private compareMemoryRecoveryRows(
+		left: ScorecardRow,
+		right: ScorecardRow,
+		leftIndex: number,
+		rightIndex: number,
+	): number {
+		const priorityDelta =
+			this.getMemoryRecoveryPriority(left) - this.getMemoryRecoveryPriority(right);
+		if (priorityDelta !== 0) {
+			return priorityDelta;
+		}
+
+		return leftIndex - rightIndex;
+	}
+
+	private getMemoryRecoveryPriority(row: ScorecardRow): number {
+		const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+		const rework = this.normalizeBooleanFlag(row.rework);
+		if (normalizedResult === "negative") {
+			return 0;
+		}
+		if (normalizedResult === "positive" && rework === "yes") {
+			return 1;
+		}
+		if (normalizedResult === "positive") {
+			return 2;
+		}
+		return 3;
+	}
+
+	private buildMemoryRecoveryPreventionNote(row: ScorecardRow): string {
+		const skills = this.parseSkillsUsed(row.skillsUsed);
+		const hasReview = skills.includes("review-changes");
+		const hasDebugging = skills.includes("systematic-debugging");
+		const normalizedResult = normalizeScorecardResult(row.result, row.firstTry);
+		const rework = this.normalizeBooleanFlag(row.rework);
+		if (normalizedResult === "negative" && hasDebugging) {
+			return " Prevention: re-run systematic-debugging before editing to isolate the failing test path.";
+		}
+		if (rework === "yes" && hasReview) {
+			return " Prevention: run review-changes before assess/build-test so similar test regressions are caught earlier.";
+		}
+		if (normalizedResult === "positive" && hasDebugging) {
+			return " Prevention: reuse systematic-debugging early if the same test failure pattern reappears.";
+		}
+		return "";
+	}
+
+	private buildMemoryRecoveryGapContext(row: ScorecardRow): string {
+		const skills = this.parseSkillsUsed(row.skillsUsed);
+		const skillNote = skills.length > 0 ? ` using skills ${skills.join(", ")}` : "";
+		const preventionNote = this.buildMemoryRecoveryPreventionNote(row);
+		return `${skillNote}${preventionNote ? `. ${preventionNote.trim()}` : ""}`;
+	}
+
+	private parseSkillsUsed(skillsUsed?: string): string[] {
+		return (skillsUsed || "")
+			.split(",")
+			.map((skill) => skill.trim())
+			.filter(Boolean);
+	}
+
+	private normalizeBooleanFlag(value?: string): "yes" | "no" | "unknown" {
+		const normalized = (value || "").trim().toLowerCase();
+		if (["yes", "y", "true", "✅"].includes(normalized)) {
+			return "yes";
+		}
+		if (["no", "n", "false", "❌"].includes(normalized)) {
+			return "no";
+		}
+		return "unknown";
 	}
 
 	private describeMemoryRecoveryResult(row: ScorecardRow): string {
