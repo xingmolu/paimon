@@ -353,6 +353,8 @@ export class OptimizationDashboardManager {
 		if (!normalized) return false;
 		if (/^-+$/.test(normalized)) return false;
 		if (!/[a-zA-Z]/.test(normalized)) return false;
+		if (normalized.length < 3) return false;
+		if (/^(none|unknown|n\/a)$/i.test(normalized)) return false;
 		return true;
 	}
 
@@ -366,10 +368,15 @@ export class OptimizationDashboardManager {
 	private getLowConfidenceSkills(metrics: EvolutionMetrics): SkillMetric[] {
 		const deduplicatedSkills = new Map<string, SkillMetric>();
 		for (const skill of metrics.skills) {
-			if (skill.successRate >= 85 || !this.isMeaningfulSkillName(skill.skill)) {
+			const normalizedName = skill.skill.trim().toLowerCase();
+			if (
+				skill.successRate >= 85 ||
+				!this.isMeaningfulSkillName(skill.skill) ||
+				normalizedName === "verification-before-completion" ||
+				normalizedName === "plan-architecture"
+			) {
 				continue;
 			}
-			const normalizedName = skill.skill.trim().toLowerCase();
 			const existing = deduplicatedSkills.get(normalizedName);
 			if (!existing || skill.successRate < existing.successRate) {
 				deduplicatedSkills.set(normalizedName, skill);

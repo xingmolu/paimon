@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-24 — capability — Suppressed weak-signal skill-learning recommendations when dashboard metrics only cite generic low-signal skills, while preserving actionable named guidance with focused regression coverage.
 - 2026-05-24 — capability — Ranked and deduplicated MEMORY-backed self-evaluation recovery recommendations and capability gaps so unresolved test failures and successful rework paths surface first with prevention guidance, plus focused regression coverage.
 - 2026-05-23 — capability — Ranked MEMORY-backed errorPatterns fallback suggestions so unresolved failures and successful rework recoveries surface before lower-signal history, and added prevention guidance tied to systematic-debugging/review-changes with focused regression coverage.
 - 2026-05-23 — capability — Refined MEMORY-backed errorPatterns fallback suggestions to deduplicate repeated scorecard recoveries and surface richer unresolved/recovered context with skills-used guidance, plus focused regression coverage.

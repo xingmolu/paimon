@@ -750,6 +750,73 @@ describe("SelfImprovementEngine", () => {
 		expect(retainedSuggestion?.description).toContain("systematic-debugging");
 	});
 
+	it("suppresses weak-signal skill suggestions when dashboard metrics only surface generic low-signal skills", async () => {
+		const engine = createEngine();
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+
+		const dashboard = new OptimizationDashboardManager({
+			metricsTracker: {
+				getMetrics: () => ({
+					successRate: { current: 80, points: [], weeklyAverage: 82, improvement: -2 },
+					time: {
+						averageMinutes: 18,
+						byTaskType: { capability: 18 },
+						points: [],
+						fastestTask: "Quick fix",
+						slowestTask: "Complex integration",
+					},
+					errors: {
+						totalErrors: 2,
+						byType: { test: 2 },
+						recentErrors: [],
+						points: [],
+						commonPatterns: ["test"],
+					},
+					skills: [
+						{
+							skill: "verification-before-completion",
+							usageCount: 2,
+							successRate: 0,
+							averageTime: 9,
+							trend: "declining",
+						},
+						{
+							skill: "plan-architecture",
+							usageCount: 3,
+							successRate: 0,
+							averageTime: 12,
+							trend: "declining",
+						},
+					],
+					capabilityVelocity: {
+						current: 4,
+						points: [],
+						totalCapabilities: 20,
+						highImpactCount: 8,
+						highImpactPercentage: 40,
+					},
+					lastUpdated: "2026-05-24T00:00:00.000Z",
+					iterationsAnalyzed: 10,
+				}),
+			},
+			toolUsageAnalyticsManager: {
+				getToolStats: () => [],
+			},
+		});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue(dashboard);
+
+		const suggestions = await engine.scanCodebase("src");
+
+		expect(
+			suggestions.some((item) => item.title === "Capture reusable lessons from weak-signal skills"),
+		).toBe(false);
+	});
+
 	it("suppresses memory-only dashboard recommendations when memory health is already strong", async () => {
 		const engine = createEngine();
 		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);

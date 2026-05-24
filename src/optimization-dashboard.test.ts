@@ -309,7 +309,7 @@ describe("OptimizationDashboardManager", () => {
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
 		expect(titles).toContain("Record why recent work was lower impact");
 		expect(skillRecommendation?.description).toContain("review-changes (62%)");
-		expect(skillRecommendation?.description).toContain("plan-architecture (72%)");
+		expect(skillRecommendation?.description).not.toContain("plan-architecture (72%)");
 		expect(skillRecommendation?.description).not.toContain("-------------");
 		expect(errorRecommendation?.description).toContain("recurring lint errors");
 		expect(errorRecommendation?.description).not.toContain("lint (fixed)");
