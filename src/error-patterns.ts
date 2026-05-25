@@ -554,12 +554,10 @@ export class ErrorPatternLearner {
 		rework?: boolean,
 		result?: "positive" | "negative" | "unknown",
 	): string {
-		const normalizedSkills = (skillsUsed || "")
-			.split(",")
-			.map((skill) => skill.trim())
-			.filter(Boolean);
+		const normalizedSkills = this.normalizeSkillNames(skillsUsed);
 		const hasReview = normalizedSkills.includes("review-changes");
 		const hasDebugging = normalizedSkills.includes("systematic-debugging");
+		const hasAssess = normalizedSkills.includes("assess");
 
 		if (result === "negative" && hasDebugging) {
 			return ` Prevention: re-run systematic-debugging before editing to isolate the failing ${type} path.`;
@@ -567,11 +565,25 @@ export class ErrorPatternLearner {
 		if (rework && hasReview) {
 			return ` Prevention: run review-changes before assess/build-test so similar ${type} regressions are caught earlier.`;
 		}
+		if (result === "positive" && rework && hasAssess) {
+			return ` Prevention: after fixing the ${type} issue, rerun assess/build-test immediately to confirm the recovery path stays green.`;
+		}
 		if (result === "positive" && hasDebugging) {
 			return ` Prevention: reuse systematic-debugging early if the ${type} failure pattern reappears.`;
 		}
 
 		return "";
+	}
+
+	private normalizeSkillNames(skillsUsed?: string): string[] {
+		return (skillsUsed || "")
+			.split(/[,/]|\band\b|\+/i)
+			.map((skill) => skill.trim().toLowerCase())
+			.filter(Boolean)
+			.map((skill) => skill.replace(/^skills? used:\s*/u, ""))
+			.map((skill) => skill.replace(/^[-*]\s*/u, ""))
+			.map((skill) => skill.replace(/\s+/g, "-"))
+			.filter(Boolean);
 	}
 
 	private normalizeScorecardReworkFlag(rework?: string): boolean {

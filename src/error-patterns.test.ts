@@ -118,6 +118,38 @@ describe("ErrorPatternLearner memory fallback", () => {
 		expect(suggestions[2]?.suggestion).toContain("Green regression sweep");
 	});
 
+	it("normalizes variant skill formatting for MEMORY-backed prevention notes", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-12 | capability | Recover regression after verification rerun | ~18m | ✅ | runtime/test | Yes | review changes / assess |",
+				"| 2026-05-11 | capability | Investigate repeated regression divergence | ~22m | ❌ | runtime/test | Yes | skills used: systematic debugging / evolve |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions(
+			"Regression snapshot still mismatched in custom golden output",
+			3,
+		);
+
+		expect(suggestions).toHaveLength(2);
+		expect(suggestions[0]?.source).toBe("memory");
+		expect(suggestions[1]?.source).toBe("memory");
+		expect(suggestions[0]?.suggestion).toContain(
+			"Prevention: re-run systematic-debugging before editing",
+		);
+		expect(suggestions[1]?.suggestion).toContain(
+			"Prevention: run review-changes before assess/build-test",
+		);
+	});
+
 	it("prefers direct regex pattern matches over MEMORY fallback", () => {
 		writeFileSync(
 			memoryPath,
