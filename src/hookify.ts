@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { type Hook, type HookType, globalHookManager } from "./hooks.js";
@@ -215,6 +215,15 @@ export class HookifyManager {
 		}
 		const event = rule.config.event;
 		this.stats.rulesByEvent[event] = (this.stats.rulesByEvent[event] || 0) + 1;
+	}
+
+	private decrementEventCount(event: string): void {
+		const current = this.stats.rulesByEvent[event] || 0;
+		if (current <= 1) {
+			delete this.stats.rulesByEvent[event];
+			return;
+		}
+		this.stats.rulesByEvent[event] = current - 1;
 	}
 
 	/**
@@ -624,6 +633,9 @@ Please:
 	setRuleEnabled(name: string, enabled: boolean): boolean {
 		const rule = this.rules.get(name);
 		if (rule) {
+			if (rule.config.enabled !== enabled) {
+				this.stats.enabledRules += enabled ? 1 : -1;
+			}
 			rule.config.enabled = enabled;
 			this.saveRule(rule);
 
@@ -649,13 +661,14 @@ Please:
 
 			// Delete file
 			if (existsSync(rule.path)) {
-				writeFileSync(rule.path, "", "utf-8"); // Clear file (can't delete in sandbox)
+				rmSync(rule.path, { force: true });
 			}
 
 			this.stats.totalRules--;
 			if (rule.config.enabled) {
 				this.stats.enabledRules--;
 			}
+			this.decrementEventCount(rule.config.event);
 
 			return true;
 		}
@@ -700,10 +713,17 @@ Please:
 	 */
 	clearRules(): number {
 		const count = this.rules.size;
-		for (const [name] of this.rules) {
+		for (const name of Array.from(this.rules.keys())) {
 			this.deleteRule(name);
 		}
 		this.rules.clear();
+		this.stats = {
+			totalRules: 0,
+			enabledRules: 0,
+			blockedCount: this.stats.blockedCount,
+			warningCount: this.stats.warningCount,
+			rulesByEvent: {},
+		};
 		return count;
 	}
 }

@@ -179,6 +179,17 @@ describe("HookifyManager", () => {
 			expect(found?.config.enabled).toBe(false);
 		});
 
+		it("should keep enabled rule stats in sync", () => {
+			const rule = manager.createRule("Tracked rule");
+			expect(manager.getStats().enabledRules).toBe(1);
+
+			expect(manager.setRuleEnabled(rule.config.name, false)).toBe(true);
+			expect(manager.getStats().enabledRules).toBe(0);
+
+			expect(manager.setRuleEnabled(rule.config.name, true)).toBe(true);
+			expect(manager.getStats().enabledRules).toBe(1);
+		});
+
 		it("should return false for unknown rule", () => {
 			expect(manager.setRuleEnabled("unknown", true)).toBe(false);
 		});
@@ -189,6 +200,16 @@ describe("HookifyManager", () => {
 			const rule = manager.createRule("Test rule");
 			expect(manager.deleteRule(rule.config.name)).toBe(true);
 			expect(manager.getRule(rule.config.name)).toBeUndefined();
+		});
+
+		it("should remove persisted file and event stats when deleting a rule", () => {
+			const rule = manager.createRule("Warn rm -rf");
+			expect(existsSync(rule.path)).toBe(true);
+			expect(manager.getStats().rulesByEvent.bash).toBe(1);
+
+			expect(manager.deleteRule(rule.config.name)).toBe(true);
+			expect(existsSync(rule.path)).toBe(false);
+			expect(manager.getStats().rulesByEvent.bash).toBeUndefined();
 		});
 
 		it("should return false for unknown rule", () => {
@@ -241,6 +262,23 @@ describe("HookifyManager", () => {
 			const count = manager.clearRules();
 			expect(count).toBe(2);
 			expect(manager.getRules()).toHaveLength(0);
+		});
+
+		it("should reset rule counts while preserving usage counters", () => {
+			const rule = manager.createRule("Block rm -rf commands");
+			const hook = globalHookManager
+				.getHooks("PreToolUse")
+				.find((h) => h.id === `hookify-${rule.config.name}`);
+			expect(hook).toBeDefined();
+			hook?.handler({ tool: "bash", params: { command: "rm -rf tmp" } });
+
+			const count = manager.clearRules();
+			const stats = manager.getStats();
+			expect(count).toBe(1);
+			expect(stats.totalRules).toBe(0);
+			expect(stats.enabledRules).toBe(0);
+			expect(stats.rulesByEvent).toEqual({});
+			expect(stats.blockedCount).toBe(1);
 		});
 	});
 
