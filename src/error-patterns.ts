@@ -536,16 +536,27 @@ export class ErrorPatternLearner {
 	private getMemoryFallbackPriority(row: ReturnType<typeof parseScorecardRows>[number]): number {
 		const result = normalizeScorecardResult(row.result, row.firstTry);
 		const rework = this.normalizeScorecardReworkFlag(row.rework);
+		const normalizedSkills = this.normalizeSkillNames(row.skillsUsed);
+		const hasDebugging = normalizedSkills.includes("systematic-debugging");
+		const hasReview = normalizedSkills.includes("review-changes");
+		const hasAssess = normalizedSkills.includes("assess");
+
 		if (result === "negative") {
-			return 0;
+			return hasDebugging ? 0 : 1;
 		}
 		if (result === "positive" && rework) {
-			return 1;
+			if (hasReview) {
+				return 2;
+			}
+			if (hasDebugging || hasAssess) {
+				return 3;
+			}
+			return 4;
 		}
 		if (result === "positive") {
-			return 2;
+			return hasDebugging || hasReview || hasAssess ? 5 : 6;
 		}
-		return 3;
+		return 7;
 	}
 
 	private buildMemoryPreventionNote(
@@ -559,8 +570,13 @@ export class ErrorPatternLearner {
 		const hasDebugging = normalizedSkills.includes("systematic-debugging");
 		const hasAssess = normalizedSkills.includes("assess");
 
-		if (result === "negative" && hasDebugging) {
-			return ` Prevention: re-run systematic-debugging before editing to isolate the failing ${type} path.`;
+		if (result === "negative") {
+			if (hasDebugging) {
+				return ` Prevention: re-run systematic-debugging before editing to isolate the failing ${type} path.`;
+			}
+			if (hasReview) {
+				return ` Prevention: inspect the last review-changes findings before retrying so the unresolved ${type} path does not repeat.`;
+			}
 		}
 		if (rework && hasReview) {
 			return ` Prevention: run review-changes before assess/build-test so similar ${type} regressions are caught earlier.`;

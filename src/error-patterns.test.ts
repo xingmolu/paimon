@@ -118,6 +118,34 @@ describe("ErrorPatternLearner memory fallback", () => {
 		expect(suggestions[2]?.suggestion).toContain("Green regression sweep");
 	});
 
+	it("prefers actionable recovered sessions over clean wins and generic rework", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-13 | capability | Clean regression success with no guardrails | ~8m | ✅ | test | No | evolve |",
+				"| 2026-05-12 | capability | Recover regression with verification rerun | ~18m | ✅ | test | Yes | assess |",
+				"| 2026-05-11 | capability | Recover regression with review pass | ~20m | ✅ | test | Yes | review-changes, evolve |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions("Regression test output changed again", 3);
+
+		expect(suggestions).toHaveLength(3);
+		expect(suggestions[0]?.suggestion).toContain("Recover regression with review pass");
+		expect(suggestions[1]?.suggestion).toContain("Recover regression with verification rerun");
+		expect(suggestions[1]?.suggestion).toContain(
+			"Prevention: after fixing the test issue, rerun assess/build-test immediately",
+		);
+		expect(suggestions[2]?.suggestion).toContain("Clean regression success with no guardrails");
+	});
+
 	it("normalizes variant skill formatting for MEMORY-backed prevention notes", () => {
 		writeFileSync(
 			memoryPath,
@@ -147,6 +175,29 @@ describe("ErrorPatternLearner memory fallback", () => {
 		);
 		expect(suggestions[1]?.suggestion).toContain(
 			"Prevention: run review-changes before assess/build-test",
+		);
+	});
+
+	it("adds review-based prevention guidance for unresolved failures without debugging skill", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-12 | capability | Unresolved lint cleanup regression | ~12m | ❌ | lint | Yes | review changes |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions("Formatting output still fails lint gate", 1);
+
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0]?.suggestion).toContain(
+			"Prevention: inspect the last review-changes findings before retrying",
 		);
 	});
 
