@@ -384,24 +384,6 @@ export class PredictiveErrorPreventionManager {
 		}
 
 		for (const fallback of this.getMemoryFallbackPredictions(context, now)) {
-			const existingPrediction = predictions.find(
-				(prediction) => prediction.predictedErrorType === fallback.predictedErrorType,
-			);
-			if (existingPrediction) {
-				existingPrediction.preventionSuggestions = Array.from(
-					new Set([...existingPrediction.preventionSuggestions, ...fallback.preventionSuggestions]),
-				).slice(0, 4);
-				existingPrediction.relatedPatterns = Array.from(
-					new Set([...existingPrediction.relatedPatterns, ...fallback.relatedPatterns]),
-				);
-				existingPrediction.context.complexityIndicators = Array.from(
-					new Set([
-						...(existingPrediction.context.complexityIndicators || []),
-						...(fallback.context.complexityIndicators || []),
-					]),
-				);
-				continue;
-			}
 			predictions.push(fallback);
 		}
 
@@ -562,51 +544,57 @@ export class PredictiveErrorPreventionManager {
 				failureCount: number;
 				successCount: number;
 				unknownCount: number;
-				suggestions: Set<string>;
+				suggestions: string[];
 				relatedPatterns: Set<string>;
 			}
 		>();
 
-		for (const row of relevantRows) {
+		const rankedRows = relevantRows
+			.map((row, index) => ({ row, index }))
+			.sort((a, b) => this.compareMemoryFallbackRows(a.row, b.row, a.index, b.index));
+
+		for (const { row } of rankedRows) {
 			const normalizedErrors = this.normalizeScorecardErrors(row.errors);
 			const result = normalizeScorecardResult(row.result, row.firstTry);
+			const rework = this.normalizeScorecardReworkFlag(row.rework);
 			for (const errorType of normalizedErrors) {
+				const preventionNote = this.buildMemoryPreventionNote(
+					errorType,
+					row.skillsUsed,
+					rework,
+					result,
+				);
 				const signal = errorSignals.get(errorType) ?? {
 					count: 0,
 					failureCount: 0,
 					successCount: 0,
 					unknownCount: 0,
-					suggestions: new Set<string>(),
+					suggestions: [],
 					relatedPatterns: new Set<string>(),
 				};
 				signal.count++;
-				signal.relatedPatterns.add(`scorecard-${row.date}`);
-
 				if (result === "negative") {
 					signal.failureCount++;
-					signal.suggestions.add(
-						`Recent MEMORY.md failures recorded ${errorType} errors for ${context.taskType || row.taskType} work; review those fixes before implementation.`,
-					);
 				} else if (result === "positive") {
 					signal.successCount++;
-					signal.suggestions.add(
-						`Recent successful ${context.taskType || row.taskType} work still encountered ${errorType} rework; add an explicit pre-check for it before implementation.`,
-					);
 				} else {
 					signal.unknownCount++;
-					signal.suggestions.add(
-						`Recent MEMORY.md scorecard entries recorded ${errorType} errors for ${context.taskType || row.taskType} work; review similar fixes before implementation.`,
-					);
+				}
+				signal.relatedPatterns.add(`scorecard-${row.date}`);
+
+				for (const suggestion of this.buildMemoryFallbackSuggestions({
+					errorType,
+					result,
+					row,
+					contextTaskType: context.taskType,
+					preventionNote,
+					rework,
+				})) {
+					if (!signal.suggestions.includes(suggestion)) {
+						signal.suggestions.push(suggestion);
+					}
 				}
 
-				if (row.description) {
-					signal.suggestions.add(`Relevant recent task: ${row.description}`);
-				}
-				if (row.skillsUsed && result === "positive") {
-					signal.suggestions.add(
-						`Reuse skills from recent successful work when applicable: ${row.skillsUsed}`,
-					);
-				}
 				errorSignals.set(errorType, signal);
 			}
 		}
@@ -637,7 +625,7 @@ export class PredictiveErrorPreventionManager {
 					timeContext: this.getTimeContext(context.timeOfDay),
 					complexityIndicators: ["memory-scorecard-fallback"],
 				},
-				preventionSuggestions: Array.from(signal.suggestions).slice(0, 3),
+				preventionSuggestions: signal.suggestions.slice(0, 4),
 				relatedPatterns: Array.from(signal.relatedPatterns),
 				detectedAt,
 				source: "memory",
@@ -645,6 +633,145 @@ export class PredictiveErrorPreventionManager {
 		}
 
 		return fallbackPredictions;
+	}
+
+	private compareMemoryFallbackRows(
+		a: ScorecardRow,
+		b: ScorecardRow,
+		indexA: number,
+		indexB: number,
+	) {
+		const priorityDelta = this.getMemoryFallbackPriority(a) - this.getMemoryFallbackPriority(b);
+		if (priorityDelta !== 0) {
+			return priorityDelta;
+		}
+
+		return indexA - indexB;
+	}
+
+	private getMemoryFallbackPriority(row: ScorecardRow): number {
+		const result = normalizeScorecardResult(row.result, row.firstTry);
+		const rework = this.normalizeScorecardReworkFlag(row.rework);
+		const normalizedSkills = this.normalizeSkillNames(row.skillsUsed);
+		const hasDebugging = normalizedSkills.includes("systematic-debugging");
+		const hasReview = normalizedSkills.includes("review-changes");
+		const hasAssess = normalizedSkills.includes("assess");
+
+		if (result === "negative") {
+			return hasDebugging ? 0 : hasReview ? 1 : 2;
+		}
+		if (result === "positive" && rework) {
+			if (hasReview) return 3;
+			if (hasDebugging || hasAssess) return 4;
+			return 5;
+		}
+		if (result === "positive") {
+			return hasDebugging || hasReview || hasAssess ? 6 : 7;
+		}
+		return 8;
+	}
+
+	private buildMemoryFallbackSuggestions({
+		errorType,
+		result,
+		row,
+		contextTaskType,
+		preventionNote,
+		rework,
+	}: {
+		errorType: string;
+		result: "positive" | "negative" | "unknown";
+		row: ScorecardRow;
+		contextTaskType?: string;
+		preventionNote: string;
+		rework: boolean;
+	}): string[] {
+		const taskType = contextTaskType || row.taskType;
+		const suggestions: string[] = [];
+		const hasExplicitRework = typeof row.rework === "string" && row.rework.trim().length > 0;
+
+		if (result === "negative") {
+			suggestions.push(
+				`Recent MEMORY.md failure on ${row.date}: ${row.description}. This ${errorType} issue remained unresolved in ${taskType} work.${preventionNote}`,
+			);
+		} else if (result === "positive" && rework) {
+			suggestions.push(
+				`Recent recovered ${taskType} session on ${row.date}: ${row.description}. ${errorType} issues required rework before finishing cleanly.${preventionNote}`,
+			);
+		} else if (result === "positive" && hasExplicitRework) {
+			suggestions.push(
+				`Recent clean ${taskType} success on ${row.date}: ${row.description}. Review it as a lower-priority reference for avoiding ${errorType} regressions.`,
+			);
+		} else if (result === "positive") {
+			suggestions.push(
+				`Recent successful ${taskType} work on ${row.date}: ${row.description}. Review it as a lower-priority reference for avoiding ${errorType} regressions.`,
+			);
+		} else {
+			suggestions.push(
+				`Recent MEMORY.md scorecard entry on ${row.date} recorded ${errorType} errors for ${taskType} work; review similar fixes before implementation.`,
+			);
+		}
+
+		if (row.skillsUsed && result === "positive") {
+			suggestions.push(
+				`Reuse skills from recent successful work when applicable: ${row.skillsUsed}`,
+			);
+		}
+		if (row.description) {
+			suggestions.push(`Relevant recent task: ${row.description}`);
+		}
+
+		return suggestions;
+	}
+
+	private buildMemoryPreventionNote(
+		errorType: string,
+		skillsUsed?: string,
+		rework?: boolean,
+		result?: "positive" | "negative" | "unknown",
+	): string {
+		const normalizedSkills = this.normalizeSkillNames(skillsUsed);
+		const hasReview = normalizedSkills.includes("review-changes");
+		const hasDebugging = normalizedSkills.includes("systematic-debugging");
+		const hasAssess = normalizedSkills.includes("assess");
+
+		if (result === "negative") {
+			if (hasDebugging) {
+				return ` Prevention: re-run systematic-debugging before editing to isolate the failing ${errorType} path.`;
+			}
+			if (hasReview) {
+				return ` Prevention: inspect the last review-changes findings before retrying so the unresolved ${errorType} path does not repeat.`;
+			}
+		}
+		if (rework && hasReview) {
+			return ` Prevention: run review-changes before assess/build-test so similar ${errorType} regressions are caught earlier.`;
+		}
+		if (result === "positive" && rework && hasAssess) {
+			return ` Prevention: after fixing the ${errorType} issue, rerun assess/build-test immediately to confirm the recovery path stays green.`;
+		}
+		if (result === "positive" && hasDebugging) {
+			return ` Prevention: reuse systematic-debugging early if the ${errorType} failure pattern reappears.`;
+		}
+
+		return "";
+	}
+
+	private normalizeSkillNames(skillsUsed?: string): string[] {
+		return (skillsUsed || "")
+			.split(/[,/]|\band\b|\+/i)
+			.map((skill) => skill.trim().toLowerCase())
+			.filter(Boolean)
+			.map((skill) => skill.replace(/^skills? used:\s*/u, ""))
+			.map((skill) => skill.replace(/^[-*]\s*/u, ""))
+			.map((skill) => skill.replace(/\s+/g, "-"))
+			.filter(Boolean);
+	}
+
+	private normalizeScorecardReworkFlag(rework?: string): boolean {
+		const normalized = (rework || "").trim().toLowerCase();
+		return (
+			normalized === "yes" || normalized === "y" || normalized === "true" || normalized === "✅"
+		);
 	}
 
 	private loadScorecardRows(): ScorecardRow[] {
@@ -659,12 +786,14 @@ export class PredictiveErrorPreventionManager {
 		}
 	}
 
-	private normalizeScorecardErrors(errors?: string): string[] {
+	private normalizeScorecardErrors(
+		errors?: string,
+	): Array<"typescript" | "test" | "lint" | "runtime"> {
 		const normalized = (errors || "").trim().toLowerCase();
 		if (!normalized || normalized === "none") {
 			return [];
 		}
-		return normalized
+		const mapped = normalized
 			.split(/[\/,]|\band\b/)
 			.map((part) => part.trim())
 			.filter(Boolean)
@@ -672,6 +801,10 @@ export class PredictiveErrorPreventionManager {
 				if (part === "ts") return "typescript";
 				return part;
 			});
+		return mapped.filter(
+			(part): part is "typescript" | "test" | "lint" | "runtime" =>
+				part === "typescript" || part === "test" || part === "lint" || part === "runtime",
+		);
 	}
 
 	private updateStats(prediction: ErrorPrediction, context: PredictionContext): void {

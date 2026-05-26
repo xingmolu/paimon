@@ -78,25 +78,62 @@ describe("PredictiveErrorPreventionManager", () => {
 		);
 
 		const manager = await loadManager();
-		const predictions = manager.predict({
-			taskType: "capability",
-			files: ["docs/notes.md"],
-			toolsUsed: ["read"],
-		});
-		const memoryPrediction = predictions.find(
-			(prediction) => prediction.source === "memory" && prediction.predictedErrorType === "test",
-		);
+		const predictions = manager.predict({ taskType: "capability" });
+		const memoryPrediction = predictions.find((prediction) => prediction.source === "memory");
 
 		expect(memoryPrediction).toBeDefined();
 		expect(memoryPrediction?.preventionSuggestions[0]).toContain(
-			"Recent MEMORY.md failures recorded test errors",
+			"Recent MEMORY.md failure on 2026-04-24",
+		);
+		expect(memoryPrediction?.preventionSuggestions[0]).toContain(
+			"Prevention: re-run systematic-debugging before editing",
 		);
 		expect(memoryPrediction?.preventionSuggestions.join("\n")).not.toContain(
 			"Reuse skills from recent successful work when applicable: systematic-debugging",
 		);
 		expect(memoryPrediction?.preventionSuggestions.join("\n")).toContain(
-			"Recent successful capability work still encountered test rework",
+			"Recent clean capability success on 2026-04-23",
 		);
+	});
+
+	it("prioritizes unresolved failures and guarded recoveries ahead of generic clean wins", async () => {
+		writeFileSync(
+			path.join(process.cwd(), "MEMORY.md"),
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-12 | capability | Clean regression success with no guardrails | ~8m | ✅ | test | No | evolve |",
+				"| 2026-05-11 | capability | Recover regression with verification rerun | ~18m | ✅ | test | Yes | assess |",
+				"| 2026-05-10 | capability | Recover regression with review pass | ~20m | ✅ | test | Yes | review changes / evolve |",
+				"| 2026-05-09 | capability | Investigate unresolved regression failure | ~25m | ❌ | test | Yes | skills used: systematic debugging |",
+			].join("\n"),
+		);
+
+		const manager = await loadManager();
+		const predictions = manager.predict({ taskType: "capability" });
+		const memoryPrediction = predictions.find((prediction) => prediction.source === "memory");
+
+		expect(memoryPrediction).toBeDefined();
+		expect(memoryPrediction?.preventionSuggestions[0]).toContain(
+			"Investigate unresolved regression failure",
+		);
+		expect(memoryPrediction?.preventionSuggestions[0]).toContain(
+			"Prevention: re-run systematic-debugging before editing",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).toContain(
+			"Recover regression with review pass",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).toContain(
+			"Prevention: run review-changes before assess/build-test",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).not.toContain(
+			"Clean regression success with no guardrails",
+		);
+		expect(memoryPrediction?.preventionSuggestions.join("\n")).not.toContain("verification rerun");
 	});
 });
 

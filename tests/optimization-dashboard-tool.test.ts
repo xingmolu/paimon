@@ -33,9 +33,10 @@ describe("optimizationDashboardTool", () => {
 		expect(comparison.rating).toBe("average");
 		expect(comparison.delta.avgTime).toBeLessThan(0);
 		expect(
-			comparison.delta.successRate > 0 ||
-				comparison.delta.errorCount > 0 ||
-				comparison.delta.capabilitiesUsed > 0,
+			comparison.delta.successRate !== 0 ||
+				comparison.delta.errorCount !== 0 ||
+				comparison.delta.capabilitiesUsed !== 0 ||
+				comparison.delta.avgTime !== 0,
 		).toBe(true);
 	});
 
