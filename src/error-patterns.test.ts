@@ -201,6 +201,58 @@ describe("ErrorPatternLearner memory fallback", () => {
 		);
 	});
 
+	it("adds assess-based prevention guidance for unresolved failures without debugging hints", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-12 | capability | Unresolved verification-only regression | ~14m | ❌ | test | Yes | assess |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions(
+			"Regression output diverged from expected artifact",
+			2,
+		);
+
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0]?.suggestion).toContain(
+			"Prevention: revisit the last assess/build-test failure details before editing",
+		);
+	});
+
+	it("adds generic recovered-test prevention guidance when no verification skill is recorded", () => {
+		writeFileSync(
+			memoryPath,
+			[
+				"# Memory",
+				"",
+				"## Recent Scorecard",
+				"",
+				"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+				"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+				"| 2026-05-11 | capability | Recover snapshot assertion mismatch without explicit verification skill | ~16m | ✅ | test | Yes | evolve |",
+			].join("\n"),
+		);
+
+		const learner = new ErrorPatternLearner(tempDir);
+		const suggestions = learner.getSuggestions(
+			"Regression output diverged from expected artifact",
+			2,
+		);
+
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0]?.suggestion).toContain(
+			"Prevention: preserve the recovered test command and failing assertion details",
+		);
+	});
+
 	it("prefers direct regex pattern matches over MEMORY fallback", () => {
 		writeFileSync(
 			memoryPath,

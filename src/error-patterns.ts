@@ -569,6 +569,7 @@ export class ErrorPatternLearner {
 		const hasReview = normalizedSkills.includes("review-changes");
 		const hasDebugging = normalizedSkills.includes("systematic-debugging");
 		const hasAssess = normalizedSkills.includes("assess");
+		const hasVerificationSkill = hasReview || hasAssess;
 
 		if (result === "negative") {
 			if (hasDebugging) {
@@ -576,6 +577,12 @@ export class ErrorPatternLearner {
 			}
 			if (hasReview) {
 				return ` Prevention: inspect the last review-changes findings before retrying so the unresolved ${type} path does not repeat.`;
+			}
+			if (hasAssess) {
+				return ` Prevention: revisit the last assess/build-test failure details before editing so the unresolved ${type} path is reproduced and fixed deliberately.`;
+			}
+			if (type === "test") {
+				return " Prevention: capture the failing test name, expected output, and latest diff before editing so the regression path is explicit.";
 			}
 		}
 		if (rework && hasReview) {
@@ -586,6 +593,9 @@ export class ErrorPatternLearner {
 		}
 		if (result === "positive" && hasDebugging) {
 			return ` Prevention: reuse systematic-debugging early if the ${type} failure pattern reappears.`;
+		}
+		if (result === "positive" && rework && !hasVerificationSkill && type === "test") {
+			return " Prevention: preserve the recovered test command and failing assertion details so the same recovery path can be replayed quickly.";
 		}
 
 		return "";
