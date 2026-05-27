@@ -1026,27 +1026,43 @@ export class SelfImprovementEngine {
 				},
 				{
 					taskDescription:
+						"Turn recurring test failures into reusable error-recovery guardrails across memory-backed modules",
+					minimumConfidence: 0.45,
+					maxFiles: 3,
+				},
+				{
+					taskDescription:
+						"Improve memory-backed task selection by refining learning transfer, predictive fallback ranking, and related tests",
+					minimumConfidence: 0.45,
+					maxFiles: 3,
+				},
+				{
+					taskDescription:
 						"Refactor a self-improvement capability while keeping documentation and tests aligned",
 					minimumConfidence: 0.45,
 					maxFiles: 3,
 				},
-			]).slice(0, 2);
+			]);
 
-			return bestAnalyses.map(({ taskDescription, analysis, topFiles, confidencePercent }) => {
-				const topFileList = topFiles.join(", ");
-				return this.createSuggestion({
-					category: "capability",
-					priority: analysis.confidence >= 0.7 ? "high" : "medium",
-					title: `Use auto-context detection for: ${taskDescription}`,
-					description: `The existing context tool found ${analysis.suggestedFiles.length} relevant files (${confidencePercent}% confidence) for a representative evolution task. Start with ${topFileList}.`,
-					suggestedFix: `Run ${buildContextAnalyzeCommand(taskDescription)} before implementation to identify likely files automatically.`,
-					impact:
-						"Reduces context gathering time and improves file-target selection using the existing context capability",
-					effort: "simple",
-					confidence: 82,
-					source: "best-practice",
+			return bestAnalyses
+				.slice(0, 3)
+				.map(({ taskDescription, analysis, topFiles, confidencePercent }) => {
+					const topFileList = topFiles.join(", ");
+					const likelyFilesLabel =
+						analysis.confidence >= 0.7 ? "Start with" : "Likely starting files include";
+					return this.createSuggestion({
+						category: "capability",
+						priority: analysis.confidence >= 0.7 ? "high" : "medium",
+						title: `Use auto-context detection for: ${taskDescription}`,
+						description: `The existing context tool found ${analysis.suggestedFiles.length} relevant files (${confidencePercent}% context confidence) for a representative evolution task. ${likelyFilesLabel} ${topFileList}.`,
+						suggestedFix: `Run ${buildContextAnalyzeCommand(taskDescription)} before implementation to identify likely files automatically.`,
+						impact:
+							"Reduces context gathering time and improves file-target selection for capability, reliability, and memory-backed evolution work using the existing context capability",
+						effort: "simple",
+						confidence: 82,
+						source: "best-practice",
+					});
 				});
-			});
 		} catch {
 			return [];
 		}

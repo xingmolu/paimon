@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-27 — capability — Expanded self-improvement auto-context guidance so representative memory-backed and error-recovery tasks surface more relevant file targets, with focused regression coverage.
 - 2026-05-26 — capability — Refined MEMORY-backed predictive error prevention ranking so unresolved failures and guarded recoveries outrank generic clean wins, with focused regression coverage and a resilient mixed-signal dashboard assertion fix.
 - 2026-05-26 — capability — Refined MEMORY-backed errorPatterns ranking so actionable recovered sessions outrank clean wins, and unresolved review-only failures now emit prevention guidance, with focused regression coverage.
 - 2026-05-25 — reliability — Fixed hookify rule lifecycle bookkeeping so enable/disable stats stay accurate, deleted rules remove persisted files, and clear resets counts without losing usage counters, with focused regression coverage.

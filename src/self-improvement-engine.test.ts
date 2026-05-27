@@ -339,17 +339,133 @@ describe("SelfImprovementEngine", () => {
 				],
 				confidencePercent: 78,
 			},
+			{
+				taskDescription:
+					"Turn recurring test failures into reusable error-recovery guardrails across memory-backed modules",
+				analysis: {
+					taskDescription:
+						"Turn recurring test failures into reusable error-recovery guardrails across memory-backed modules",
+					suggestedFiles: [
+						{
+							path: "src/error-patterns.ts",
+							relevance: 0.84,
+							reason: "",
+							symbols: [],
+							category: "primary",
+						},
+						{
+							path: "src/tools/error-patterns-tool.ts",
+							relevance: 0.8,
+							reason: "",
+							symbols: [],
+							category: "secondary",
+						},
+						{
+							path: "src/predictive-error-prevention.ts",
+							relevance: 0.77,
+							reason: "",
+							symbols: [],
+							category: "secondary",
+						},
+					],
+					relevantSymbols: [],
+					confidence: 0.74,
+					reasoning: "",
+				},
+				primaryFiles: [
+					{
+						path: "src/error-patterns.ts",
+						relevance: 0.84,
+						reason: "",
+						symbols: [],
+						category: "primary",
+					},
+				],
+				topFiles: [
+					"src/error-patterns.ts",
+					"src/tools/error-patterns-tool.ts",
+					"src/predictive-error-prevention.ts",
+				],
+				confidencePercent: 74,
+			},
+			{
+				taskDescription:
+					"Improve memory-backed task selection by refining learning transfer, predictive fallback ranking, and related tests",
+				analysis: {
+					taskDescription:
+						"Improve memory-backed task selection by refining learning transfer, predictive fallback ranking, and related tests",
+					suggestedFiles: [
+						{
+							path: "src/learning-transfer.ts",
+							relevance: 0.85,
+							reason: "",
+							symbols: [],
+							category: "primary",
+						},
+						{
+							path: "src/predictive-error-prevention.ts",
+							relevance: 0.8,
+							reason: "",
+							symbols: [],
+							category: "secondary",
+						},
+						{
+							path: "src/tools/predictive-error-prevention-tool.ts",
+							relevance: 0.76,
+							reason: "",
+							symbols: [],
+							category: "secondary",
+						},
+					],
+					relevantSymbols: [],
+					confidence: 0.69,
+					reasoning: "",
+				},
+				primaryFiles: [
+					{
+						path: "src/learning-transfer.ts",
+						relevance: 0.85,
+						reason: "",
+						symbols: [],
+						category: "primary",
+					},
+				],
+				topFiles: [
+					"src/learning-transfer.ts",
+					"src/predictive-error-prevention.ts",
+					"src/tools/predictive-error-prevention-tool.ts",
+				],
+				confidencePercent: 69,
+			},
 		]);
 
 		const suggestions = await engine.scanCodebase("src");
-		const suggestion = suggestions.find((item) =>
-			item.title.includes("Use auto-context detection"),
+		const titles = suggestions.map((item) => item.title);
+		const toolSuggestion = suggestions.find((item) =>
+			item.title.includes("Add a new self-evolution capability tool"),
+		);
+		const recoverySuggestion = suggestions.find(
+			(item) =>
+				item.title.includes(
+					"Turn recurring test failures into reusable error-recovery guardrails",
+				) || item.title.includes("Add a new self-evolution capability tool"),
+		);
+		const memorySuggestion = suggestions.find((item) =>
+			item.title.includes("Improve memory-backed task selection"),
 		);
 
-		expect(suggestion).toBeDefined();
-		expect(suggestion?.description).toContain("src/tools/index.ts");
-		expect(suggestion?.suggestedFix).toContain("context({action: 'analyze'");
-		expect(suggestion?.impact).toContain("file-target selection");
+		expect(titles.filter((title) => title.includes("Use auto-context detection"))).toHaveLength(2);
+		expect(toolSuggestion).toBeDefined();
+		expect(toolSuggestion?.description).toContain("src/tools/index.ts");
+		expect(toolSuggestion?.description).toContain("78% context confidence");
+		expect(toolSuggestion?.suggestedFix).toContain("context({action: 'analyze'");
+		expect(suggestions.some((item) => item.description.includes("src/learning-transfer.ts"))).toBe(
+			true,
+		);
+		expect(toolSuggestion?.impact).toContain("memory-backed evolution work");
+		expect(memorySuggestion?.description).toContain(
+			"Likely starting files include src/learning-transfer.ts",
+		);
 	});
 
 	it("filters low-signal code-analysis suggestions from tests, generated outputs, and internal detector files", async () => {
