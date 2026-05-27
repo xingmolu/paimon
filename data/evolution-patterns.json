@@ -207,29 +207,48 @@
     {
       "id": "task-type-capability",
       "type": "task-type-success",
-      "description": "capability tasks: 33% success, 67% high impact",
+      "description": "capability tasks: 75% success, impact not yet recorded",
       "characteristics": {
         "taskType": "capability"
       },
-      "successRate": 33,
-      "firstTryRate": 33,
+      "successRate": 75,
+      "firstTryRate": 75,
       "averageTime": 18,
-      "confidence": 49,
-      "sampleSize": 3,
+      "confidence": 52,
+      "sampleSize": 4,
       "examples": [
         {
-          "taskDescription": "Add predictive fallback coverage with rework",
-          "date": "2026-04-23",
+          "taskDescription": "Clean regression success with no guardrails",
+          "date": "2026-05-12",
+          "time": 8,
+          "skillsUsed": [
+            "evolve"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Recover regression with verification rerun",
+          "date": "2026-05-11",
+          "time": 18,
+          "skillsUsed": [
+            "assess"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Recover regression with review pass",
+          "date": "2026-05-10",
           "time": 20,
           "skillsUsed": [
-            "evolve",
-            "review-changes"
+            "review changes / evolve"
           ],
           "success": true,
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-24T03:45:58.963Z"
+      "lastUpdated": "2026-05-27T04:10:37.680Z"
     },
     {
       "id": "time-pattern-quick",
@@ -496,13 +515,25 @@
       },
       "successRate": 100,
       "firstTryRate": 100,
-      "averageTime": 16,
-      "confidence": 70,
-      "sampleSize": 4,
+      "averageTime": 20,
+      "confidence": 65,
+      "sampleSize": 3,
       "examples": [
         {
-          "taskDescription": "Suppress generic recurring-error self-improvement suggestions when concrete MEMORY-backed recurring test guardrail guidance already exists",
-          "date": "2026-05-21",
+          "taskDescription": "Refine MEMORY-backed predictiveErrorPrevention ranking so unresolved failures and guarded recoveries outrank generic clean wins, and fix the mixed-signal optimization dashboard assertion",
+          "date": "2026-05-26",
+          "time": 30,
+          "skillsUsed": [
+            "evolve",
+            "plan-architecture",
+            "review-changes"
+          ],
+          "success": true,
+          "firstTry": true
+        },
+        {
+          "taskDescription": "Refine MEMORY-backed errorPatterns ranking so recovered sessions with actionable guardrails outrank clean wins and unresolved review-only failures gain prevention notes",
+          "date": "2026-05-26",
           "time": 15,
           "skillsUsed": [
             "evolve",
@@ -513,20 +544,8 @@
           "firstTry": true
         },
         {
-          "taskDescription": "Integrate MEMORY-backed recurring test-recovery guidance into self-evaluation recommendations and capability gaps",
-          "date": "2026-05-21",
-          "time": 20,
-          "skillsUsed": [
-            "evolve",
-            "plan-architecture",
-            "review-changes"
-          ],
-          "success": true,
-          "firstTry": true
-        },
-        {
-          "taskDescription": "Suppress generic recurring-error self-improvement suggestions when specific actionable error-recovery alternatives already exist",
-          "date": "2026-05-20",
+          "taskDescription": "Fix hookify rule lifecycle stats and persisted file cleanup so rule management stays trustworthy across sessions",
+          "date": "2026-05-25",
           "time": 15,
           "skillsUsed": [
             "evolve",
@@ -537,9 +556,9 @@
           "firstTry": true
         }
       ],
-      "lastUpdated": "2026-05-22T17:54:03.547Z"
+      "lastUpdated": "2026-05-27T03:59:08.280Z"
     }
   ],
-  "lastUpdated": "2026-05-25T17:47:52.502Z",
-  "sessionCount": 2
+  "lastUpdated": "2026-05-27T04:10:37.682Z",
+  "sessionCount": 4
 }

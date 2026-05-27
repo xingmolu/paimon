@@ -1,45 +1,62 @@
 {
   "successRate": {
-    "current": 50,
+    "current": 100,
     "points": [
       {
-        "date": "2026-W17",
-        "value": 50,
+        "date": "2026-W19",
+        "value": 0,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W20",
+        "value": 100,
+        "trend": "up"
       }
     ],
-    "weeklyAverage": 50,
-    "improvement": 0
+    "weeklyAverage": 75,
+    "improvement": 100
   },
   "time": {
-    "averageMinutes": 17.5,
+    "averageMinutes": 17.75,
     "byTaskType": {
-      "capability": 17.5
+      "capability": 17.75
     },
     "points": [
       {
-        "date": "2026-W17",
-        "value": 17.5,
+        "date": "2026-W19",
+        "value": 25,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W20",
+        "value": 15.333333333333334,
+        "trend": "up"
       }
     ],
-    "fastestTask": "Fix predictive fallback after failing regression",
-    "slowestTask": "Add predictive fallback coverage with rework"
+    "fastestTask": "Clean regression success with no guardrails",
+    "slowestTask": "Investigate unresolved regression failure"
   },
   "errors": {
-    "totalErrors": 2,
+    "totalErrors": 4,
     "byType": {
-      "test": 2
+      "test": 4
     },
     "recentErrors": [
-      "2026-04-24: test in \"Fix predictive fallback after failing regression\"",
-      "2026-04-23: test in \"Add predictive fallback coverage with rework\""
+      "2026-05-12: test in \"Clean regression success with no guardrails\"",
+      "2026-05-11: test in \"Recover regression with verification rerun\"",
+      "2026-05-10: test in \"Recover regression with review pass\"",
+      "2026-05-09: test in \"Investigate unresolved regression failure\""
     ],
     "points": [
       {
-        "date": "2026-W17",
-        "value": 2,
+        "date": "2026-W19",
+        "value": 1,
         "trend": "stable"
+      },
+      {
+        "date": "2026-W20",
+        "value": 3,
+        "trend": "down"
       }
     ],
     "commonPatterns": [
@@ -48,24 +65,31 @@
   },
   "skills": [
     {
-      "skill": "systematic-debugging",
-      "usageCount": 1,
-      "successRate": 0,
-      "averageTime": 15,
-      "trend": "stable"
-    },
-    {
       "skill": "evolve",
       "usageCount": 1,
       "successRate": 100,
+      "averageTime": 8,
+      "trend": "stable"
+    },
+    {
+      "skill": "assess",
+      "usageCount": 1,
+      "successRate": 100,
+      "averageTime": 18,
+      "trend": "stable"
+    },
+    {
+      "skill": "review changes / evolve",
+      "usageCount": 1,
+      "successRate": 100,
       "averageTime": 20,
       "trend": "stable"
     },
     {
-      "skill": "review-changes",
+      "skill": "skills used: systematic debugging",
       "usageCount": 1,
-      "successRate": 100,
-      "averageTime": 20,
+      "successRate": 0,
+      "averageTime": 25,
       "trend": "stable"
     }
   ],
@@ -73,18 +97,22 @@
     "current": 0,
     "points": [
       {
-        "date": "2026-W17",
-        "value": 1
+        "date": "2026-W19",
+        "value": 0.5
+      },
+      {
+        "date": "2026-W20",
+        "value": 1.5
       },
       {
         "date": "total",
         "value": 0
       }
     ],
-    "totalCapabilities": 2,
+    "totalCapabilities": 4,
     "highImpactCount": 0,
     "highImpactPercentage": 0
   },
-  "lastUpdated": "2026-05-25T17:47:52.316Z",
-  "iterationsAnalyzed": 2
+  "lastUpdated": "2026-05-27T04:10:37.618Z",
+  "iterationsAnalyzed": 4
 }
