@@ -1,13 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
+	buildScorecardPreventionNote,
 	extractScorecardTableLines,
+	getScorecardGuardrailSuggestions,
 	hasRecordedImpact,
 	isNegativeScorecardResult,
 	isPositiveScorecardResult,
 	normalizeBooleanFlag,
 	normalizeImpact,
+	normalizeScorecardErrors,
 	normalizeScorecardResult,
+	normalizeScorecardSkillNames,
 	parseScorecardRows,
 } from "./scorecard.js";
 
@@ -157,5 +161,41 @@ describe("scorecard parsing", () => {
 		expect(hasRecordedImpact("High")).toBe(true);
 		expect(hasRecordedImpact("medium")).toBe(true);
 		expect(hasRecordedImpact("")).toBe(false);
+		expect(normalizeScorecardErrors("TS/test and lint")).toEqual(["typescript", "test", "lint"]);
+		expect(normalizeScorecardSkillNames("skills used: review changes / assess")).toEqual([
+			"review-changes",
+			"assess",
+		]);
+	});
+
+	it("builds prioritized guardrail suggestions from scorecard history", () => {
+		const rows = parseScorecardRows(`# Memory
+
+## Recent Scorecard
+
+| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |
+|------|-----------|------------------|------|-----------|--------|---------|-------------|
+| 2026-05-12 | capability | Clean regression success with no guardrails | ~8m | ✅ | test | No | evolve |
+| 2026-05-11 | capability | Recover regression with review pass | ~20m | ✅ | test | Yes | review changes / evolve |
+| 2026-05-10 | capability | Investigate unresolved regression failure | ~25m | ❌ | test | Yes | skills used: systematic debugging |
+`);
+
+		const suggestions = getScorecardGuardrailSuggestions(rows, "test", 3);
+		expect(suggestions).toHaveLength(3);
+		expect(suggestions[0]?.message).toContain("Investigate unresolved regression failure");
+		expect(suggestions[0]?.message).toContain(
+			"Prevention: re-run systematic-debugging before editing",
+		);
+		expect(suggestions[1]?.message).toContain("Recover regression with review pass");
+		expect(suggestions[1]?.message).toContain(
+			"Prevention: run review-changes before assess/build-test",
+		);
+		expect(suggestions[2]?.message).toContain("Clean regression success with no guardrails");
+	});
+
+	it("builds generic prevention guidance for unresolved test failures without recorded skills", () => {
+		expect(buildScorecardPreventionNote("test", undefined, true, "negative")).toContain(
+			"capture the failing test name",
+		);
 	});
 });

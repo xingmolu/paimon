@@ -8,6 +8,7 @@ import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { extractErrorPatterns } from "../errors.js";
 import { getRegressionTester } from "../regression-testing.js";
+import { getScorecardGuardrailSuggestions, parseScorecardRows } from "../scorecard.js";
 import type { AssessmentResult } from "../types.js";
 
 /**
@@ -96,6 +97,20 @@ export const assessTool: AgentTool = {
 			attempts: 0,
 			errorPatterns: [],
 		};
+		const guardrailMessages = new Set<string>();
+		const appendScorecardGuardrails = (errorType: "typescript" | "test" | "lint" | "runtime") => {
+			try {
+				if (!existsSync("MEMORY.md")) return;
+				const rows = parseScorecardRows(readFileSync("MEMORY.md", "utf-8"));
+				for (const suggestion of getScorecardGuardrailSuggestions(rows, errorType, 2)) {
+					if (guardrailMessages.has(suggestion.message)) continue;
+					guardrailMessages.add(suggestion.message);
+					result.recommendations.push(`🧠 Guardrail: ${suggestion.message}`);
+				}
+			} catch {
+				// Ignore scorecard parsing failures during assessment
+			}
+		};
 
 		// Error recovery loop - retry up to maxAttempts times
 		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -148,6 +163,7 @@ export const assessTool: AgentTool = {
 						for (const pattern of highConfPatterns.slice(0, 5)) {
 							result.recommendations.push(`💡 Fix (${pattern.confidence}%): ${pattern.suggestion}`);
 						}
+						appendScorecardGuardrails("typescript");
 					}
 				}
 
@@ -176,6 +192,7 @@ export const assessTool: AgentTool = {
 						}
 						// Merge error patterns (all types, for display later)
 						result.errorPatterns = [...(result.errorPatterns || []), ...patterns];
+						appendScorecardGuardrails("test");
 					}
 				}
 
@@ -264,6 +281,7 @@ export const assessTool: AgentTool = {
 										`💡 Fix (${pattern.confidence}%): ${pattern.suggestion}`,
 									);
 								}
+								appendScorecardGuardrails("lint");
 							}
 						}
 					}
