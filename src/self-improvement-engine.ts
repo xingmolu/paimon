@@ -451,6 +451,7 @@ export class SelfImprovementEngine {
 				!this.isLowSignalCodeSuggestion(suggestion) &&
 				!this.isDuplicateCapabilitySuggestion(suggestion) &&
 				!this.isLowSignalRecentSuccessSuggestion(suggestion) &&
+				!this.isAlreadyCapturedRecurringGuardrailSuggestion(suggestion) &&
 				!this.isSatisfiedBestPracticeSuggestion(
 					suggestion,
 					health,
@@ -613,6 +614,42 @@ export class SelfImprovementEngine {
 		}
 
 		return describedIterations.every((entry) => currentJournalEntries.has(entry));
+	}
+
+	private isAlreadyCapturedRecurringGuardrailSuggestion(
+		suggestion: ImprovementSuggestion,
+	): boolean {
+		if (suggestion.source !== "best-practice") {
+			return false;
+		}
+
+		if (suggestion.title !== "Turn recurring errors into reusable guardrails") {
+			return false;
+		}
+
+		const normalizedDescription = suggestion.description.toLowerCase();
+		if (
+			!normalizedDescription.includes("recent iterations still show recurring test errors") &&
+			!normalizedDescription.includes("prevention checklist") &&
+			!normalizedDescription.includes("preferred recovery steps")
+		) {
+			return false;
+		}
+
+		const currentJournalEntries = this.loadRecentJournalEntries().map((entry) =>
+			entry.toLowerCase(),
+		);
+		if (currentJournalEntries.length === 0) {
+			return false;
+		}
+
+		return currentJournalEntries.some(
+			(entry) =>
+				entry.includes("recurring test") &&
+				(entry.includes("guardrail") ||
+					entry.includes("error-recovery") ||
+					entry.includes("prevention guidance")),
+		);
 	}
 
 	private hasConcreteRecurringErrorGuardrailEvidence(

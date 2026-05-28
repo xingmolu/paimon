@@ -4,6 +4,7 @@ A daily log of Paimon's self-improvements.
 
 ---
 
+- 2026-05-28 — capability — Suppressed redundant self-improvement recurring-test guardrail suggestions when recent journal history already captures prevention guidance, with focused regression coverage.
 - 2026-05-28 — capability — Added scorecard-derived self-assessment guardrails so assess reuses recent MEMORY-backed unresolved and recovered test recoveries when verification fails, with focused regression coverage.
 - 2026-05-27 — capability — Refined MEMORY-backed errorPatterns prevention guidance so verification-only and generic recovered test failures emit actionable recovery steps, with focused regression coverage.
 - 2026-05-27 — capability — Expanded self-improvement auto-context guidance so representative memory-backed and error-recovery tasks surface more relevant file targets, with focused regression coverage.

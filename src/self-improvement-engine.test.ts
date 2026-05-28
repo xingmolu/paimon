@@ -643,7 +643,7 @@ describe("SelfImprovementEngine", () => {
 					timeEfficiency: 72,
 					errorRate: 70,
 					capabilityUtilization: 61,
-					memoryQuality: 55,
+					memoryQuality: 81,
 				},
 			}),
 			identifyBottlenecks: () => [],
@@ -672,7 +672,97 @@ describe("SelfImprovementEngine", () => {
 		const titles = suggestions.map((item) => item.title);
 
 		expect(titles).not.toContain("Reduce recurring errors");
+		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
+	});
+
+	it("suppresses recurring-test guardrail suggestions when recent journal entries already capture that work", async () => {
+		const engine = createEngine();
+		const loadRecentJournalEntries = vi
+			.spyOn(engine as never, "loadRecentJournalEntries" as never)
+			.mockReturnValue([
+				"Added recurring test guardrail guidance so future sessions reuse prevention guidance and error-recovery steps.",
+			]);
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 64,
+				components: {
+					successRate: 80,
+					timeEfficiency: 72,
+					errorRate: 70,
+					capabilityUtilization: 61,
+					memoryQuality: 55,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "memory",
+					title: "Turn recurring errors into reusable guardrails",
+					description:
+						"Recent iterations still show recurring test errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.",
+					expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
+		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
+		loadRecentJournalEntries.mockRestore();
+	});
+
+	it("keeps recurring-test guardrail suggestions when recent journal evidence is absent", async () => {
+		const engine = createEngine();
+		const loadRecentJournalEntries = vi
+			.spyOn(engine as never, "loadRecentJournalEntries" as never)
+			.mockReturnValue(["Unrelated capability improvement with no reusable prevention notes."]);
+		vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+		vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+		vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+		vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+			getHealth: () => ({
+				status: "fair",
+				overallScore: 64,
+				components: {
+					successRate: 80,
+					timeEfficiency: 72,
+					errorRate: 70,
+					capabilityUtilization: 61,
+					memoryQuality: 55,
+				},
+			}),
+			identifyBottlenecks: () => [],
+			getRecommendations: () => [
+				{
+					priority: "high",
+					category: "memory",
+					title: "Turn recurring errors into reusable guardrails",
+					description:
+						"Recent iterations still show recurring test errors. Capture a prevention checklist and preferred recovery steps so future sessions can avoid re-learning the same fix.",
+					expectedImpact: "Stronger cross-session transfer and fewer repeated recovery loops",
+					effort: "simple",
+				},
+			],
+		});
+
+		const suggestions = await engine.scanCodebase("src");
+		const titles = suggestions.map((item) => item.title);
+
 		expect(titles).toContain("Turn recurring errors into reusable guardrails");
+		loadRecentJournalEntries.mockRestore();
 	});
 
 	it("suppresses best-practice suggestions that are already satisfied by current health", async () => {
