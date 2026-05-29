@@ -675,6 +675,67 @@ describe("SelfImprovementEngine", () => {
 		expect(titles).not.toContain("Turn recurring errors into reusable guardrails");
 	});
 
+	it("suppresses memory-backed task suggestions when recent MEMORY scorecard entries already capture the same wins", async () => {
+		const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "self-improvement-scorecard-dedupe-"));
+		const engine = createEngine();
+		const memoryPath = path.join(tempDir, "MEMORY.md");
+		try {
+			fs.writeFileSync(
+				memoryPath,
+				[
+					"# Memory",
+					"",
+					"## Recent Scorecard",
+					"",
+					"| Date | Task Type | Task Description | Time | First Try | Errors | Rework? | Skills Used |",
+					"|------|-----------|------------------|------|-----------|--------|---------|-------------|",
+					"| 2026-05-28 | capability | suppress redundant self-improvement recurring-test guardrail suggestions when recent journal history already captures prevention guidance, with focused regression coverage. | ~12m | ✅ | none | No | evolve |",
+					"| 2026-05-27 | capability | add assess scorecard guardrails so assess reuses recent MEMORY-backed unresolved and recovered test recoveries when verification fails, with focused regression coverage. | ~15m | ✅ | none | No | evolve, assess |",
+				].join("\n"),
+			);
+			process.env.PAIMON_SELF_IMPROVEMENT_MEMORY_PATH = memoryPath;
+			vi.spyOn(engine as never, "scanCodePatterns" as never).mockResolvedValue([]);
+			vi.spyOn(engine as never, "getCapabilityGapSuggestions" as never).mockReturnValue([]);
+			vi.spyOn(engine as never, "getUsageAnalyticsSuggestions" as never).mockReturnValue([]);
+			vi.spyOn(engine as never, "getCompetitorSuggestions" as never).mockReturnValue([]);
+			vi.spyOn(engine as never, "getContextAwareSuggestions" as never).mockReturnValue([]);
+			vi.spyOn(engine as never, "saveData" as never).mockImplementation(() => {});
+			vi.spyOn(engine as never, "getDashboardManager" as never).mockReturnValue({
+				getHealth: () => ({
+					status: "fair",
+					overallScore: 66,
+					components: {
+						successRate: 78,
+						timeEfficiency: 72,
+						errorRate: 70,
+						capabilityUtilization: 60,
+						memoryQuality: 55,
+					},
+				}),
+				identifyBottlenecks: () => [],
+				getRecommendations: () => [
+					{
+						priority: "medium",
+						category: "memory",
+						title: "Promote proven memory-backed tasks",
+						description:
+							"Recent successful iterations include suppress redundant self-improvement recurring-test guardrail suggestions when recent journal history already captures prevention guidance, with focused regression coverage.; add assess scorecard guardrails so assess reuses recent MEMORY-backed unresolved and recovered test recoveries when verification fails, with focused regression coverage.. Use these concrete wins to guide future task selection and keep new work aligned with demonstrated high-signal improvements.",
+						expectedImpact: "More evidence-based task selection from existing MEMORY.md history",
+						effort: "simple",
+					},
+				],
+			});
+
+			const suggestions = await engine.scanCodebase("src");
+			const titles = suggestions.map((item) => item.title);
+
+			expect(titles).not.toContain("Promote proven memory-backed tasks");
+		} finally {
+			process.env.PAIMON_SELF_IMPROVEMENT_MEMORY_PATH = "";
+			fs.rmSync(tempDir, { recursive: true, force: true });
+		}
+	});
+
 	it("suppresses recurring-test guardrail suggestions when recent journal entries already capture that work", async () => {
 		const engine = createEngine();
 		const loadRecentJournalEntries = vi

@@ -25,6 +25,7 @@ import type {
 	OptimizationRecommendation,
 } from "./optimization-dashboard.js";
 import { getOptimizationDashboardManager } from "./optimization-dashboard.js";
+import { parseScorecardRows } from "./scorecard.js";
 import { getToolUsageAnalyticsManager } from "./tool-usage-analytics.js";
 
 /**
@@ -576,6 +577,26 @@ export class SelfImprovementEngine {
 		}
 	}
 
+	private getMemoryFilePath(): string {
+		return process.env.PAIMON_SELF_IMPROVEMENT_MEMORY_PATH || path.join(process.cwd(), "MEMORY.md");
+	}
+
+	private loadRecentScorecardDescriptions(): string[] {
+		const memoryPath = this.getMemoryFilePath();
+		try {
+			if (!fs.existsSync(memoryPath)) {
+				return [];
+			}
+
+			return parseScorecardRows(fs.readFileSync(memoryPath, "utf-8"))
+				.map((row) => row.description.trim().toLowerCase())
+				.filter(Boolean)
+				.slice(0, 8);
+		} catch {
+			return [];
+		}
+	}
+
 	private isLowSignalRecentSuccessSuggestion(suggestion: ImprovementSuggestion): boolean {
 		if (suggestion.source !== "best-practice") {
 			return false;
@@ -609,11 +630,14 @@ export class SelfImprovementEngine {
 		const currentJournalEntries = new Set(
 			this.loadRecentJournalEntries().map((entry) => entry.toLowerCase()),
 		);
-		if (currentJournalEntries.size === 0) {
+		const currentScorecardDescriptions = new Set(this.loadRecentScorecardDescriptions());
+		if (currentJournalEntries.size === 0 && currentScorecardDescriptions.size === 0) {
 			return false;
 		}
 
-		return describedIterations.every((entry) => currentJournalEntries.has(entry));
+		return describedIterations.every(
+			(entry) => currentJournalEntries.has(entry) || currentScorecardDescriptions.has(entry),
+		);
 	}
 
 	private isAlreadyCapturedRecurringGuardrailSuggestion(
@@ -639,16 +663,26 @@ export class SelfImprovementEngine {
 		const currentJournalEntries = this.loadRecentJournalEntries().map((entry) =>
 			entry.toLowerCase(),
 		);
-		if (currentJournalEntries.length === 0) {
+		const currentScorecardDescriptions = this.loadRecentScorecardDescriptions();
+		if (currentJournalEntries.length === 0 && currentScorecardDescriptions.length === 0) {
 			return false;
 		}
 
-		return currentJournalEntries.some(
-			(entry) =>
-				entry.includes("recurring test") &&
-				(entry.includes("guardrail") ||
-					entry.includes("error-recovery") ||
-					entry.includes("prevention guidance")),
+		return (
+			currentJournalEntries.some(
+				(entry) =>
+					entry.includes("recurring test") &&
+					(entry.includes("guardrail") ||
+						entry.includes("error-recovery") ||
+						entry.includes("prevention guidance")),
+			) ||
+			currentScorecardDescriptions.some(
+				(entry) =>
+					entry.includes("recurring test") &&
+					(entry.includes("guardrail") ||
+						entry.includes("error-recovery") ||
+						entry.includes("prevention guidance")),
+			)
 		);
 	}
 
